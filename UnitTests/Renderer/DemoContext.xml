@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<MouCaLab>
+  <Engine3D version="0.1">
+    <Environment>
+      <Extension>VK_KHR_surface</Extension>
+      <Extension os="windows">VK_KHR_win32_surface</Extension>
+      <Extension os="linux">VK_KHR_xlib_surface</Extension>
+      <Extension os="apple">VK_KHR_xcb_surface</Extension>
+    </Environment>
+    <GlobalData>
+      <Data name="resolution" width="1280" height="720" depth="1" />
+    </GlobalData>
+    <Window id="0" title="Deferred Demo" positionX="30" positionY="30" width="1280" height="720" visible="false" resizable="false" border="true" />
+    <Device id="0" mode="render" compatibleWindowId="0">
+      <Extension>VK_KHR_swapchain</Extension>
+      <Extension>VK_KHR_maintenance1</Extension>
+    </Device>
+  </Engine3D>
+</MouCaLab>

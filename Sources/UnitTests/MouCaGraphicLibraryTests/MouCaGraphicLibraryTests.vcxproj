@@ -1,0 +1,255 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{29E64157-C471-4478-8487-CF87DF009D26}</ProjectGuid>
+    <RootNamespace>LibraryTests</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>MouCaGraphicsLibraryTests</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Props\MouCaTechProp.props" />
+    <Import Project="..\..\..\Props\MouCaDebug.props" />
+    <Import Project="..\..\..\Props\GoogleTest.props" />
+    <Import Project="..\..\..\Props\Boost.props" />
+    <Import Project="..\..\..\Props\GLM.props" />
+    <Import Project="..\..\..\Props\GLI.props" />
+    <Import Project="..\..\..\Props\Vulkan.props" />
+    <Import Project="..\..\..\Props\GLFW.props" />
+    <Import Project="..\..\..\Props\ImGUI.props" />
+    <Import Project="..\..\..\Props\Freetype2.props" />
+    <Import Project="..\..\..\Props\OpenVR.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Props\MouCaTechProp.props" />
+    <Import Project="..\..\..\Props\MouCaRelease.props" />
+    <Import Project="..\..\..\Props\GoogleTest.props" />
+    <Import Project="..\..\..\Props\Boost.props" />
+    <Import Project="..\..\..\Props\GLM.props" />
+    <Import Project="..\..\..\Props\GLI.props" />
+    <Import Project="..\..\..\Props\Vulkan.props" />
+    <Import Project="..\..\..\Props\GLFW.props" />
+    <Import Project="..\..\..\Props\ImGUI.props" />
+    <Import Project="..\..\..\Props\Freetype2.props" />
+    <Import Project="..\..\..\Props\OpenVR.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Props\MouCaTechProp.props" />
+    <Import Project="..\..\..\Props\MouCaProfile.props" />
+    <Import Project="..\..\..\Props\GoogleTest.props" />
+    <Import Project="..\..\..\Props\Boost.props" />
+    <Import Project="..\..\..\Props\GLM.props" />
+    <Import Project="..\..\..\Props\GLI.props" />
+    <Import Project="..\..\..\Props\Vulkan.props" />
+    <Import Project="..\..\..\Props\GLFW.props" />
+    <Import Project="..\..\..\Props\ImGUI.props" />
+    <Import Project="..\..\..\Props\Freetype2.props" />
+    <Import Project="..\..\..\Props\OpenVR.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>MOUCACORE_ENGINE;MOUCA_3D_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MOUCA_LAB_INCLUDE)UnitTests\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>LibCore.lib;LibGUI.lib;LibGLFW.lib;LibRT.lib;LibError.lib;LibVulkan.lib;LibVR.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)bin\$(Configuration)$(PlatformArchitecture)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
+    </Link>
+    <PreBuildEvent>
+      <Message>
+      </Message>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>
+      </Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PreprocessorDefinitions>MOUCACORE_ENGINE;MOUCA_3D_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MOUCA_LAB_INCLUDE)UnitTests\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(SolutionDir)bin\$(Configuration)$(PlatformArchitecture)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>LibCore.lib;LibGUI.lib;LibGLFW.lib;LibRT.lib;LibError.lib;LibVulkan.lib;LibVR.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>
+      </Message>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+      <Message>
+      </Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <ClCompile>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PreprocessorDefinitions>MOUCACORE_ENGINE;MOUCA_3D_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MOUCA_LAB_INCLUDE)UnitTests\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(SolutionDir)bin\$(Configuration)$(PlatformArchitecture)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>LibCore.lib;LibGUI.lib;LibGLFW.lib;LibRT.lib;LibError.lib;LibVulkan.lib;LibVR.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>
+      </Message>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+      <Message>
+      </Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\gMouCaTest.cpp" />
+    <ClCompile Include="Dependancies.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\UT_GUIWidget.cpp" />
+    <ClCompile Include="source\main.cpp" />
+    <ClCompile Include="source\UT_GLFWHardware.cpp" />
+    <ClCompile Include="source\UT_GLFWPlatform.cpp" />
+    <ClCompile Include="source\UT_GLFWVirtualMouse.cpp" />
+    <ClCompile Include="source\UT_GLFWWindow.cpp" />
+    <ClCompile Include="source\UT_VulkanBuffer.cpp" />
+    <ClCompile Include="source\UT_VulkanCommandBuffer.cpp" />
+    <ClCompile Include="source\UT_VulkanDevice.cpp" />
+    <ClCompile Include="source\UT_VulkanEnvironment.cpp" />
+    <ClCompile Include="source\UT_VulkanFence.cpp" />
+    <ClCompile Include="source\UT_VulkanFramebuffer.cpp" />
+    <ClCompile Include="source\UT_VulkanPipelineCache.cpp" />
+    <ClCompile Include="source\UT_VulkanPipelineGraphic.cpp" />
+    <ClCompile Include="source\UT_VulkanRenderPass.cpp" />
+    <ClCompile Include="source\UT_VulkanSemaphore.cpp" />
+    <ClCompile Include="source\UT_VulkanShaderProgram.cpp" />
+    <ClCompile Include="source\UT_VulkanSurface.cpp" />
+    <ClCompile Include="source\UT_VulkanSwapChain.cpp" />
+    <ClCompile Include="source\UT_VulkanImage.cpp" />
+    <ClCompile Include="source\VulkanDefaultTest.cpp" />
+    <ClCompile Include="source\VulkanTest.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\gMouCaTest.h" />
+    <ClInclude Include="Dependancies.h" />
+    <ClInclude Include="include\EventManagerEmpty.h" />
+    <ClInclude Include="include\VulkanDefaultTest.h" />
+    <ClInclude Include="include\VulkanTest.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\UnitTests\GLSL\PipelineCompleteStage.frag">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\UnitTests\GLSL\PipelineCompleteStage.vert">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+    </CustomBuild>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

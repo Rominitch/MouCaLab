@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <FREEIMAGE_PATH>$(SolutionDir)..\SDK\Freeimage-3.180\</FREEIMAGE_PATH>
+    <FREIMAGE_DIST>$(FREEIMAGE_PATH)Dist\x64\</FREIMAGE_DIST>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(FREEIMAGE_PATH)Dist\x64\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>FREEIMAGE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(FREEIMAGE_PATH)Dist\x64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="FREEIMAGE_PATH">
+      <Value>$(FREEIMAGE_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="FREIMAGE_DIST">
+      <Value>$(FREIMAGE_DIST)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

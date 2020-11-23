@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<MouCaLab>
+  <Engine3D version="0.1">
+    <Environment>
+      <Extension>VK_KHR_surface</Extension>
+      <Extension os="windows">VK_KHR_win32_surface</Extension>
+      <Extension os="linux">VK_KHR_xlib_surface</Extension>
+      <Extension os="apple">VK_KHR_xcb_surface</Extension>
+    </Environment>
+    <Window id="0" title="RenderPass-BadDependencySubPassDst" positionX="30" positionY="30" width="400" height="400" visible="false" resizable="false" border="true" />
+    <Device id="0" mode="render" compatibleWindowId="0">
+      <Extension>VK_KHR_swapchain</Extension>
+      <Extension>VK_KHR_maintenance1</Extension>
+      <Surfaces>
+        <Surface id="0" windowId="0" presentationMode="VK_PRESENT_MODE_MAILBOX_KHR" />      
+      </Surfaces>
+      <RenderPasses>
+        <RenderPass id="0">
+           <Attachment surfaceId="0" samples="VK_SAMPLE_COUNT_1_BIT" loadOp="VK_ATTACHMENT_LOAD_OP_CLEAR" storeOp="VK_ATTACHMENT_STORE_OP_STORE" stencilLoadOp="VK_ATTACHMENT_LOAD_OP_DONT_CARE" stencilSaveOp="VK_ATTACHMENT_STORE_OP_DONT_CARE" initialLayout="VK_IMAGE_LAYOUT_UNDEFINED" finalLayout="VK_IMAGE_LAYOUT_PRESENT_SRC_KHR" />
+           <SubPass bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS">
+             <ColorAttachment colorAttachment="0" colorLayout="VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL" depthStencilAttachment="VK_ATTACHMENT_UNUSED" depthStencilLayout="VK_IMAGE_LAYOUT_UNDEFINED"/>
+           </SubPass>
+           <Dependency srcSubpass="VK_SUBPASS_EXTERNAL" dstSubpass="40" srcStageMask="VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT" dstStageMask="VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT" srcAccessMask="VK_ACCESS_MEMORY_READ_BIT" dstAccessMask="VK_ACCESS_COLOR_ATTACHMENT_READ_BIT|VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT" dependencyFlags="VK_DEPENDENCY_BY_REGION_BIT"/>
+        </RenderPass>
+      </RenderPasses>
+    </Device>
+  </Engine3D>
+</MouCaLab>

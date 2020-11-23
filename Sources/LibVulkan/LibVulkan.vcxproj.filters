@@ -1,0 +1,240 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Fichiers sources">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Fichiers de ressources">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Device">
+      <UniqueIdentifier>{8615e2a9-29d6-47b2-9ab2-f98eeaf48b05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Device">
+      <UniqueIdentifier>{6fc0ec23-e4b7-4685-8ef7-a00deec11970}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Pipeline">
+      <UniqueIdentifier>{3653682f-55a2-456e-aace-bfe328401e1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Pipeline">
+      <UniqueIdentifier>{875731e3-a08a-493e-8484-099a830ead7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Renderer">
+      <UniqueIdentifier>{cb0d95b5-d29c-4d22-82e7-bfffb0164899}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Renderer">
+      <UniqueIdentifier>{5a05f03a-a29f-49dc-b204-46387644a24c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Buffer">
+      <UniqueIdentifier>{e1a1303f-ad8e-4ac7-b0d8-dff265613a3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Buffer">
+      <UniqueIdentifier>{e743c135-9b07-430c-a7c1-26c6dcb65a67}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Dependancies.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKDevice.h">
+      <Filter>Fichiers d%27en-tête\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKEnvironment.h">
+      <Filter>Fichiers d%27en-tête\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKSwapChain.h">
+      <Filter>Fichiers d%27en-tête\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKSurfaceFormat.h">
+      <Filter>Fichiers d%27en-tête\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKSurface.h">
+      <Filter>Fichiers d%27en-tête\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKCommandBuffer.h">
+      <Filter>Fichiers d%27en-tête\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKSemaphore.h">
+      <Filter>Fichiers d%27en-tête\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKRenderPass.h">
+      <Filter>Fichiers d%27en-tête\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKFrameBuffer.h">
+      <Filter>Fichiers d%27en-tête\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKShaderProgram.h">
+      <Filter>Fichiers d%27en-tête\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKMesh.h">
+      <Filter>Fichiers d%27en-tête\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKBuffer.h">
+      <Filter>Fichiers d%27en-tête\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKCommandPool.h">
+      <Filter>Fichiers d%27en-tête\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKCommand.h">
+      <Filter>Fichiers d%27en-tête\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKPipelineLayout.h">
+      <Filter>Fichiers d%27en-tête\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKMemory.h">
+      <Filter>Fichiers d%27en-tête\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKFence.h">
+      <Filter>Fichiers d%27en-tête\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKPipelineCache.h">
+      <Filter>Fichiers d%27en-tête\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKImage.h">
+      <Filter>Fichiers d%27en-tête\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKDebugReport.h">
+      <Filter>Fichiers d%27en-tête\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKSampler.h">
+      <Filter>Fichiers d%27en-tête\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKScreenshot.h">
+      <Filter>Fichiers d%27en-tête\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="interface\VKDefines.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKPipelineStates.h">
+      <Filter>Fichiers d%27en-tête\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKGraphicsPipeline.h">
+      <Filter>Fichiers d%27en-tête\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKCommandBufferSurface.h">
+      <Filter>Fichiers d%27en-tête\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKDescriptorSet.h">
+      <Filter>Fichiers d%27en-tête\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKContextWindow.h">
+      <Filter>Fichiers d%27en-tête\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKContextDevice.h">
+      <Filter>Fichiers d%27en-tête\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKSequence.h">
+      <Filter>Fichiers d%27en-tête\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKWindowSurface.h">
+      <Filter>Fichiers d%27en-tête\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKSubmitInfo.h">
+      <Filter>Fichiers d%27en-tête\Renderer</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Dependancies.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKDevice.cpp">
+      <Filter>Fichiers sources\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKEnvironment.cpp">
+      <Filter>Fichiers sources\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKSemaphore.cpp">
+      <Filter>Fichiers sources\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKSurfaceFormat.cpp">
+      <Filter>Fichiers sources\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKSwapChain.cpp">
+      <Filter>Fichiers sources\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKCommandBuffer.cpp">
+      <Filter>Fichiers sources\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKRenderPass.cpp">
+      <Filter>Fichiers sources\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKFrameBuffer.cpp">
+      <Filter>Fichiers sources\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKShaderProgram.cpp">
+      <Filter>Fichiers sources\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKMesh.cpp">
+      <Filter>Fichiers sources\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKBuffer.cpp">
+      <Filter>Fichiers sources\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKCommand.cpp">
+      <Filter>Fichiers sources\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKCommandPool.cpp">
+      <Filter>Fichiers sources\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKPipelineLayout.cpp">
+      <Filter>Fichiers sources\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKMemory.cpp">
+      <Filter>Fichiers sources\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKFence.cpp">
+      <Filter>Fichiers sources\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKPipelineCache.cpp">
+      <Filter>Fichiers sources\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKImage.cpp">
+      <Filter>Fichiers sources\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKDebugReport.cpp">
+      <Filter>Fichiers sources\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKSampler.cpp">
+      <Filter>Fichiers sources\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKScreenshot.cpp">
+      <Filter>Fichiers sources\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKSurface.cpp">
+      <Filter>Fichiers sources\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKPipelineStates.cpp">
+      <Filter>Fichiers sources\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKGraphicsPipeline.cpp">
+      <Filter>Fichiers sources\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKCommandBufferSurface.cpp">
+      <Filter>Fichiers sources\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKDescriptorSet.cpp">
+      <Filter>Fichiers sources\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKContextDevice.cpp">
+      <Filter>Fichiers sources\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKContextWindow.cpp">
+      <Filter>Fichiers sources\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKSequence.cpp">
+      <Filter>Fichiers sources\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKSubmitInfo.cpp">
+      <Filter>Fichiers sources\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKWindowSurface.cpp">
+      <Filter>Fichiers sources\Renderer</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

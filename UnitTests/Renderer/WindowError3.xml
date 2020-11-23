@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<MouCaLab>
+  <Engine3D version="0.1">
+    <Environment>
+      <Extension>VK_KHR_surface</Extension>
+      <Extension os="windows">VK_KHR_win32_surface</Extension>
+      <Extension os="linux">VK_KHR_xlib_surface</Extension>
+      <Extension os="apple">VK_KHR_xcb_surface</Extension>
+    </Environment>
+    <Window id="0" title="WindowError-DuplicateID" monitor="0" fullscreen="false" visible="false" />
+    <Window id="0" title="WindowError-DuplicateID" monitor="0" fullscreen="false" visible="false" />
+  </Engine3D>
+</MouCaLab>

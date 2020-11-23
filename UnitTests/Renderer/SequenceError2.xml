@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<MouCaLab>
+  <Engine3D version="0.1">
+    <Environment>
+      <Extension>VK_KHR_surface</Extension>
+      <Extension os="windows">VK_KHR_win32_surface</Extension>
+      <Extension os="linux">VK_KHR_xlib_surface</Extension>
+      <Extension os="apple">VK_KHR_xcb_surface</Extension>
+    </Environment>
+    <Window id="0" title="SequenceError:PresentKHR-BadType" positionX="30" positionY="30" width="400" height="400" visible="false" resizable="false" border="true" />
+    <Device id="0" mode="render" compatibleWindowId="0">
+      <Extension>VK_KHR_swapchain</Extension>
+      <Extension>VK_KHR_maintenance1</Extension>
+      <QueueSequences>
+        <QueueSequence id="0">
+          <Sequence type="ERROR"/>
+        </QueueSequence>
+      </QueueSequences>
+    </Device>
+  </Engine3D>
+</MouCaLab>

@@ -1,0 +1,8 @@
+# ------ Folder ------
+.vs/
+__pycache__/
+.idea/
+
+# ------  Files ------
+*.user
+CodeCoverage.cov

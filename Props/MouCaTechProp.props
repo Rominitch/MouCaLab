@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <MOUCA_BINARY>$(SolutionDir)..\Bin\</MOUCA_BINARY>
+    <MOUCA_COMPILE>$(SolutionDir)..\Compile\</MOUCA_COMPILE>
+    <MOUCA_SDK>$(SolutionDir)..\SDK\</MOUCA_SDK>
+    <MOUCA_LAB_INCLUDE>$(SolutionDir)..\MouCaLab\Sources\</MOUCA_LAB_INCLUDE>
+    <GTEST_PRODUCTION>$(MOUCA_SDK)googletest-1.10.0\include</GTEST_PRODUCTION>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutDir>$(SolutionDir)..\Bin\$(Configuration)$(PlatformArchitecture)\</OutDir>
+    <IntDir>$(SolutionDir)..\Compile\$(Configuration)$(PlatformArchitecture)\$(ProjectName)\</IntDir>
+    <_PropertySheetDisplayName>MouCaTechProp</_PropertySheetDisplayName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>.;$(SolutionDir);$(MOUCA_LAB_INCLUDE);$(MOUCA_SDK);$(MOUCA_SDK)include\;$(GTEST_PRODUCTION);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OpenMPSupport>true</OpenMPSupport>
+      <PrecompiledHeaderFile>Dependancies.h</PrecompiledHeaderFile>
+      <PreprocessorDefinitions>_ENABLE_EXTENDED_ALIGNED_STORAGE;_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS;_WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <UseUnicodeForAssemblerListing>
+      </UseUnicodeForAssemblerListing>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <CompileAsManaged>false</CompileAsManaged>
+      <StringPooling>true</StringPooling>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(MOUCA_SDK);$(MOUCA_BINARY)$(Configuration)$(PlatformArchitecture)\</AdditionalLibraryDirectories>
+      <SubSystem>NotSet</SubSystem>
+      <LargeAddressAware>true</LargeAddressAware>
+      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="MOUCA_BINARY">
+      <Value>$(MOUCA_BINARY)</Value>
+    </BuildMacro>
+    <BuildMacro Include="MOUCA_COMPILE">
+      <Value>$(MOUCA_COMPILE)</Value>
+    </BuildMacro>
+    <BuildMacro Include="MOUCA_SDK">
+      <Value>$(MOUCA_SDK)</Value>
+    </BuildMacro>
+    <BuildMacro Include="MOUCA_LAB_INCLUDE">
+      <Value>$(MOUCA_LAB_INCLUDE)</Value>
+    </BuildMacro>
+    <BuildMacro Include="GTEST_PRODUCTION">
+      <Value>$(GTEST_PRODUCTION)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

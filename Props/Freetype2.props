@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <FREETYPE_PATH>$(SolutionDir)..\SDK\freetype-2.10.2\</FREETYPE_PATH>
+  </PropertyGroup>
+  <PropertyGroup>
+    <_PropertySheetDisplayName>Freetype</_PropertySheetDisplayName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\SDK\QT\Freetype\lib64</AdditionalLibraryDirectories>
+    </Lib>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(FREETYPE_PATH)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(FREETYPE_PATH)lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="FREETYPE_PATH">
+      <Value>$(FREETYPE_PATH)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

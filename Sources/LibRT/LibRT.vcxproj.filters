@@ -1,0 +1,251 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Fichiers sources">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Buffer">
+      <UniqueIdentifier>{c388d509-5cb0-46c1-8d75-34b3ea0c7686}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Tools">
+      <UniqueIdentifier>{e615c53f-55a3-4580-8269-743141396889}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Buffer">
+      <UniqueIdentifier>{52be766b-690c-4877-ab2a-9c47f8a256f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Events">
+      <UniqueIdentifier>{a174ca0c-8054-4e75-b438-3068e20ce1fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Events">
+      <UniqueIdentifier>{ad6c6acf-96c0-4d35-b9ae-d3d7867c51f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Contexts &amp; Environments">
+      <UniqueIdentifier>{4d973ca3-126f-49e6-a69d-d237dae5091f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Scene">
+      <UniqueIdentifier>{9141bdc1-91f7-4cce-8575-8b34deefe9ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Scene">
+      <UniqueIdentifier>{c9e20e73-0b24-4299-a71e-41ac84a9ba57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Tools">
+      <UniqueIdentifier>{7f3f1056-0ebe-47ab-b580-1e87892d3562}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Objects">
+      <UniqueIdentifier>{a9b35c02-9604-411a-b0bd-8c1d3fda0bee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Objects">
+      <UniqueIdentifier>{964092d7-38da-4bab-8fb4-9bc59c1ba876}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Objects\Primitive">
+      <UniqueIdentifier>{f6aa08ac-7c0e-4440-8297-63f5286f8510}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Objects\Camera">
+      <UniqueIdentifier>{45d339de-f65c-46ca-a931-cbe3695620aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Objects\Primitive">
+      <UniqueIdentifier>{6bf077e6-5d19-4bd3-9887-951920c5dc03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Renderer">
+      <UniqueIdentifier>{5f114d4a-a55c-4130-9529-a2f679e22f80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Renderer">
+      <UniqueIdentifier>{720f1646-caf4-4a0a-a0ce-ad5904489a49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Platform">
+      <UniqueIdentifier>{7a1d1813-881d-4b62-8e2b-b246084d3c67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Platform">
+      <UniqueIdentifier>{caa0de3a-f6cd-4498-a301-197bb85d258e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Support draw">
+      <UniqueIdentifier>{03b40331-82ad-4e8a-8c24-c14c691c2fc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Support draw">
+      <UniqueIdentifier>{c4c77b68-d6ab-4290-957e-8b508cc7e9a7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Dependancies.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTCanvas.h">
+      <Filter>Fichiers d%27en-tête\Support draw</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTEnum.h">
+      <Filter>Fichiers d%27en-tête\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTBuffer.h">
+      <Filter>Fichiers d%27en-tête\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTEventManager.h">
+      <Filter>Fichiers d%27en-tête\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTViewport.h">
+      <Filter>Fichiers d%27en-tête\Support draw</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTScene.h">
+      <Filter>Fichiers d%27en-tête\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTBufferCPU.h">
+      <Filter>Fichiers d%27en-tête\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTBufferDescriptor.h">
+      <Filter>Fichiers d%27en-tête\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="RTGlobalDependancies.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTLight.h">
+      <Filter>Fichiers d%27en-tête\Objects\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTMesh.h">
+      <Filter>Fichiers d%27en-tête\Objects\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTObject.h">
+      <Filter>Fichiers d%27en-tête\Objects\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTCamera.h">
+      <Filter>Fichiers d%27en-tête\Objects\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTBoundingBox.h">
+      <Filter>Fichiers d%27en-tête\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTCopy.h">
+      <Filter>Fichiers d%27en-tête\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTHierarchic.h">
+      <Filter>Fichiers d%27en-tête\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTViewer.h">
+      <Filter>Fichiers d%27en-tête\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTGeometry.h">
+      <Filter>Fichiers d%27en-tête\Objects\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTCameraComportement.h">
+      <Filter>Fichiers d%27en-tête\Objects\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTCameraManipulator.h">
+      <Filter>Fichiers d%27en-tête\Objects\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTMonitor.h">
+      <Filter>Fichiers d%27en-tête\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTWindow.h">
+      <Filter>Fichiers d%27en-tête\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTFrustum.h">
+      <Filter>Fichiers d%27en-tête\Objects\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTEnvironment.h">
+      <Filter>Fichiers d%27en-tête\Contexts &amp; Environments</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTRenderDialog.h">
+      <Filter>Fichiers d%27en-tête\Support draw</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTImage.h">
+      <Filter>Fichiers d%27en-tête\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTVirtualMouse.h">
+      <Filter>Fichiers d%27en-tête\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTPlatform.h">
+      <Filter>Fichiers d%27en-tête\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTOrientation.h">
+      <Filter>Fichiers d%27en-tête\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTMassiveInstance.h">
+      <Filter>Fichiers d%27en-tête\Objects\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTTransform.h">
+      <Filter>Fichiers d%27en-tête\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTTypeInfo.h">
+      <Filter>Fichiers d%27en-tête\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTShaderFile.h">
+      <Filter>Fichiers d%27en-tête\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTBBoxes.h">
+      <Filter>Fichiers d%27en-tête\Objects\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTImageGPU.h">
+      <Filter>Fichiers d%27en-tête\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTAnimationBones.h">
+      <Filter>Fichiers d%27en-tête\Objects\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTMaths.h">
+      <Filter>Fichiers d%27en-tête\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RTOrigin.h">
+      <Filter>Fichiers d%27en-tête\Scene</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Dependancies.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RTCanvas.cpp">
+      <Filter>Fichiers sources\Support draw</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RTBufferDescriptor.cpp">
+      <Filter>Fichiers sources\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RTMesh.cpp">
+      <Filter>Fichiers sources\Objects\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RTBoundingBox.cpp">
+      <Filter>Fichiers sources\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RTCopy.cpp">
+      <Filter>Fichiers sources\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RTViewer.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RTCameraManipulator.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RTCameraComportement.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RTGeometry.cpp">
+      <Filter>Fichiers sources\Objects\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RTWindow.cpp">
+      <Filter>Fichiers sources\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RTImage.cpp">
+      <Filter>Fichiers sources\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RTVirtualMouse.cpp">
+      <Filter>Fichiers sources\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RTMassiveInstance.cpp">
+      <Filter>Fichiers sources\Objects\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RTScene.cpp">
+      <Filter>Fichiers sources\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RTShaderFile.cpp">
+      <Filter>Fichiers sources\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RTBBoxes.cpp">
+      <Filter>Fichiers sources\Objects\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RTAnimationBones.cpp">
+      <Filter>Fichiers sources\Objects\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RTMaths.cpp">
+      <Filter>Fichiers sources\Tools</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

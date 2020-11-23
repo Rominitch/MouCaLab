@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Fichiers sources">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Fichiers sources\BasicTools">
+      <UniqueIdentifier>{d9875d26-66d1-4235-a0e3-764e63df15f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Error">
+      <UniqueIdentifier>{2e91af57-146e-4727-badd-dba7b2fab27c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\XML">
+      <UniqueIdentifier>{7aaab75e-67e9-4ef9-9cc9-4a5b5897468f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\RT">
+      <UniqueIdentifier>{e74c3f6a-879b-4bf3-ae62-5263e27adf64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Steam">
+      <UniqueIdentifier>{05d9d56e-9b27-43a5-9115-14c0b286a39e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Network">
+      <UniqueIdentifier>{a9b4069c-0e58-4f54-bdeb-82d34000a95c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Dependancies.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\gMouCaTest.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SteamTest.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Dependancies.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\gMouCaTest.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_BTFile.cpp">
+      <Filter>Fichiers sources\BasicTools</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_BTString.cpp">
+      <Filter>Fichiers sources\BasicTools</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_BTMath.cpp">
+      <Filter>Fichiers sources\BasicTools</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_BTError.cpp">
+      <Filter>Fichiers sources\BasicTools</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_BTException.cpp">
+      <Filter>Fichiers sources\BasicTools</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_BTThread.cpp">
+      <Filter>Fichiers sources\BasicTools</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_BTByteBuffer.cpp">
+      <Filter>Fichiers sources\BasicTools</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_BTResource.cpp">
+      <Filter>Fichiers sources\BasicTools</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_ErrorManager.cpp">
+      <Filter>Fichiers sources\Error</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_ErrorLibrary.cpp">
+      <Filter>Fichiers sources\Error</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_XMLParser.cpp">
+      <Filter>Fichiers sources\XML</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_RTScene.cpp">
+      <Filter>Fichiers sources\RT</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_RTEnum.cpp">
+      <Filter>Fichiers sources\RT</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_RTCameraTrackBall.cpp">
+      <Filter>Fichiers sources\RT</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_RTMonitor.cpp">
+      <Filter>Fichiers sources\RT</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_RTCanvas.cpp">
+      <Filter>Fichiers sources\RT</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_RTViewport.cpp">
+      <Filter>Fichiers sources\RT</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_RTOrientation.cpp">
+      <Filter>Fichiers sources\RT</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_RTCameraFlying.cpp">
+      <Filter>Fichiers sources\RT</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_RTCameraManipulator.cpp">
+      <Filter>Fichiers sources\RT</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_BTProcess.cpp">
+      <Filter>Fichiers sources\BasicTools</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_RTShaderFile.cpp">
+      <Filter>Fichiers sources\RT</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_FileTracker.cpp">
+      <Filter>Fichiers sources\BasicTools</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_BTSignal.cpp">
+      <Filter>Fichiers sources\BasicTools</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_RTBoundingBox.cpp">
+      <Filter>Fichiers sources\RT</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_RTBufferDescriptor.cpp">
+      <Filter>Fichiers sources\RT</Filter>
+    </ClCompile>
+    <ClCompile Include="source\SteamTest.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_Platform.cpp">
+      <Filter>Fichiers sources\Steam</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_Network.cpp">
+      <Filter>Fichiers sources\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_BTIdentifier.cpp">
+      <Filter>Fichiers sources\BasicTools</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_BTLocale.cpp">
+      <Filter>Fichiers sources\BasicTools</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_RTMaths.cpp">
+      <Filter>Fichiers sources\RT</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

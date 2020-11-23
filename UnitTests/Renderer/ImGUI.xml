@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<MouCaLab>
+  <Engine3D version="0.1">
+    <Device externalId="0">
+      <!--  Buffer / Image / Uniform -->
+      <Images>
+        <!-- Font -->
+        <Image id="0" external="0" format="VK_FORMAT_R8G8B8A8_UNORM" usage="VK_IMAGE_USAGE_SAMPLED_BIT|VK_IMAGE_USAGE_TRANSFER_DST_BIT" samples="VK_SAMPLE_COUNT_1_BIT" tiling="VK_IMAGE_TILING_OPTIMAL" sharingMode="VK_SHARING_MODE_EXCLUSIVE" initialLayout="VK_IMAGE_LAYOUT_UNDEFINED" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT">
+          <View id="0" viewType="VK_IMAGE_VIEW_TYPE_2D" format="VK_FORMAT_UNDEFINED" componentSwizzleRed="VK_COMPONENT_SWIZZLE_R" componentSwizzleGreen="VK_COMPONENT_SWIZZLE_G" componentSwizzleBlue="VK_COMPONENT_SWIZZLE_B" componentSwizzleAlpha="VK_COMPONENT_SWIZZLE_A" aspectMask="VK_IMAGE_ASPECT_COLOR_BIT" baseMipLevel="0" levelCount="1" baseArrayLayer="0" layerCount="1" />
+        </Image>
+      </Images>
+      <Samplers>
+        <!-- Font -->
+        <Sampler id="0" magFilter="VK_FILTER_NEAREST" minFilter="VK_FILTER_NEAREST" mipmapMode="VK_SAMPLER_MIPMAP_MODE_LINEAR" addressModeU="VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE" addressModeV="VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE" addressModeW="VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE" mipLodBias="0.0" minLod="0.0" maxLod="1.0" borderColor="VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE" unnormalizedCoordinates="false"/>
+      </Samplers>
+      <Buffers>
+        <!-- GUI mesh -->
+        <Buffer externalId="0" />
+        <Buffer externalId="1" />
+      </Buffers>
+      <!--  Shaders -->
+      <ShaderModules>
+        <ShaderModule id="0" stage="VK_SHADER_STAGE_VERTEX_BIT"   spirv="v_uioverlay.spv" code="v_uioverlay.vert"/>
+        <ShaderModule id="1" stage="VK_SHADER_STAGE_FRAGMENT_BIT" spirv="f_uioverlay.spv" code="f_uioverlay.frag"/>
+      </ShaderModules>
+      <!--  RenderPass / FrameBuffer -->
+      <RenderPasses>
+        <RenderPass externalId="0" />
+      </RenderPasses>
+      <FrameBuffers>
+        <FrameBuffer externalId="0" />
+      </FrameBuffers>
+      <!--  Descriptor / Layout -->
+      <DescriptorPools>
+        <DescriptorPool id="0" maxSets="1">
+          <Size type="VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER" descriptorCount="1" />
+        </DescriptorPool>
+      </DescriptorPools>
+      <DescriptorSetLayouts>
+        <DescriptorSetLayout id="0">
+          <Binding type="VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER" count="1" shaderStageFlags="VK_SHADER_STAGE_FRAGMENT_BIT" />
+        </DescriptorSetLayout>
+      </DescriptorSetLayouts>
+      <PipelineLayouts>
+          <PipelineLayout id="0">
+            <DescriptorSetLayout descriptorSetId="0">
+              <PushConstantRange shaderStageFlags="VK_SHADER_STAGE_VERTEX_BIT" offset="0" size="16" />
+            </DescriptorSetLayout>
+          </PipelineLayout>
+      </PipelineLayouts>
+      <DescriptorSets>
+        <!-- Offscreen -->
+        <DescriptorSet id="0" descriptorPoolId="0">
+          <SetLayout descriptorSetLayoutId="0">
+            <WriteDescriptor descriptorType="VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER" binding="0">
+              <ImageInfo viewId="0" samplerId="0" layout="VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL" />
+            </WriteDescriptor>
+          </SetLayout>
+        </DescriptorSet>
+      <!--  Pipelines -->
+      <GraphicsPipelines>
+        <!-- to Screen -->
+        <GraphicsPipeline id="0" renderPassId="0" pipelineLayoutId="0">
+          <Stages>
+            <Stage shaderModuleId="0" />
+            <Stage shaderModuleId="1" />
+          </Stages>
+          <VertexInput>
+            <BindingDescription binding="0" meshDescriptorId="0" inputRate="VK_VERTEX_INPUT_RATE_VERTEX"/>
+            <AttributeDescription binding="0" location="0" meshDescriptorId="0"/>
+          </VertexInput>
+          <InputAssembly topology="VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST" primitiveRestartEnable="false" />
+          <Rasterization depthClampEnable="false" rasterizerDiscardEnable="false" polygonMode="VK_POLYGON_MODE_FILL" cullMode="VK_CULL_MODE_NONE" frontFace="VK_FRONT_FACE_COUNTER_CLOCKWISE" depthBiasEnable="false" />
+          <BlendState logicOpEnable="false" blendConstantsR="0" blendConstantsG="0" blendConstantsB="0" blendConstantsA="0">
+            <BlendAttachment blendEnable="true" colorWriteMask="VK_COLOR_COMPONENT_R_BIT|VK_COLOR_COMPONENT_G_BIT|VK_COLOR_COMPONENT_B_BIT|VK_COLOR_COMPONENT_A_BIT" srcColorBlendFactor="VK_BLEND_FACTOR_SRC_ALPHA" dstColorBlendFactor="VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA" colorBlendOp="VK_BLEND_OP_ADD" srcAlphaBlendFactor="VK_BLEND_FACTOR_ZERO" dstAlphaBlendFactor="VK_BLEND_FACTOR_ONE" alphaBlendOp="VK_BLEND_OP_ADD" />
+          </BlendState>
+          <DepthStencil depthTestEnable="false" depthWriteEnable="false" depthCompareOp="VK_COMPARE_OP_LESS_OR_EQUAL" />
+          <Multisample rasterizationSamples="VK_SAMPLE_COUNT_1_BIT" alphaToCoverageEnable="false" alphaToOneEnable="false"/>
+          <DynamicState state="VK_DYNAMIC_STATE_VIEWPORT" />
+          <DynamicState state="VK_DYNAMIC_STATE_SCISSOR" />
+          <Viewport />
+        </GraphicsPipeline>
+      </GraphicsPipelines>
+      <!--  CommandGroup -->
+      <CommandsGroups>
+        <CommandsGroup id="0">
+          <Command type="graphicsPipeline" graphicsPipelineId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
+          <Command type="bindDescriptorSets" pipelineLayoutId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS" firstSet="0" descriptorSetId="0" />
+          <Command type="pushConstants" pipelineLayoutId="0" stage="VK_SHADER_STAGE_VERTEX_BIT" external="0"/>
+          <Command type="bindVertexBuffers" firstBinding="0" bindingCount="1">
+            <Buffer bufferId="0" offset="0" />
+          </Command>
+          <Command type="bindIndexBuffers" bufferId="1" offset="0" indexType="VK_INDEX_TYPE_UINT16" />
+          <Command id="0" type="container" />
+        </CommandsGroup>
+      </CommandsGroups>
+    </Device>
+  </Engine3D>
+</MouCaLab>

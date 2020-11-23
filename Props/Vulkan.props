@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <VULKAN_PATH>$(SolutionDir)..\SDK\VulkanSDK\1.2.154.1\</VULKAN_PATH>
+    <COMPILER_SPIRV>$(VULKAN_PATH)bin\glslangValidator.exe</COMPILER_SPIRV>
+    <SPIRV_COMPILATION>$(COMPILER_SPIRV) -H -V -o</SPIRV_COMPILATION>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ExecutablePath>$(VULKAN_PATH)bin;$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(VULKAN_PATH)Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(VULKAN_PATH)Lib;$(VULKAN_PATH)Bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="VULKAN_PATH">
+      <Value>$(VULKAN_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="COMPILER_SPIRV">
+      <Value>$(COMPILER_SPIRV)</Value>
+    </BuildMacro>
+    <BuildMacro Include="SPIRV_COMPILATION">
+      <Value>$(SPIRV_COMPILATION)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

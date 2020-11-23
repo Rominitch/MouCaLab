@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <SQLITE_PATH>$(SolutionDir)..\SDK\sqlite-3.33\</SQLITE_PATH>
+    <SQLITE_INCLUDE>$(SQLITE_PATH)sqlite</SQLITE_INCLUDE>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>DSQLITE_ENABLE_RTREE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SQLITE_INCLUDE);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(SQLITE_PATH)libx64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="SQLITE_PATH">
+      <Value>$(SQLITE_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="SQLITE_INCLUDE">
+      <Value>$(SQLITE_INCLUDE)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

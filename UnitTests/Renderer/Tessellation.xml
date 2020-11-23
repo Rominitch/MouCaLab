@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<MouCaLab>
+  <Engine3D version="0.1">
+    <Environment>
+      <Extension>VK_KHR_surface</Extension>
+      <Extension os="windows">VK_KHR_win32_surface</Extension>
+      <Extension os="linux">VK_KHR_xlib_surface</Extension>
+      <Extension os="apple">VK_KHR_xcb_surface</Extension>
+    </Environment>
+    <GlobalData>
+      <Data name="sampleCount" samples="VK_SAMPLE_COUNT_8_BIT" rasterizationSamples="VK_SAMPLE_COUNT_8_BIT" />
+      <Data name="resolution" width="1280" height="720" depth="1" />
+    </GlobalData>
+    <Window id="0" title="Tessellation Demo" positionX="30" positionY="30" width="1280" height="720" visible="false" resizable="false" border="true" />
+    <Device id="0" mode="render" compatibleWindowId="0">
+      <Extension>VK_KHR_swapchain</Extension>
+      <Extension>VK_KHR_maintenance1</Extension>
+      <!--  Synchronization -->
+      <Semaphores>
+        <Semaphore id="0" /> <!-- Present complete -->
+        <Semaphore id="1" /> <!-- Offscreen        -->
+        <Semaphore id="2" /> <!-- Render complete  -->
+      </Semaphores>
+      <Fences>
+        <Fence id="0" flag="VK_FENCE_CREATE_SIGNALED_BIT"/>
+      </Fences>
+      <!--  Surfaces -->
+      <Surfaces>
+        <Surface id="0" windowId="0" >
+          <UserPreferences presentationMode="VK_PRESENT_MODE_MAILBOX_KHR" />
+        </Surface>
+      </Surfaces>
+      <!--  Buffer / Image / Uniform -->
+      <Images>
+        <!-- Screen Depth -->
+        <Image id="0" fromSurfaceId="0" imageType="VK_IMAGE_TYPE_2D" usage="VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT" samples="VK_SAMPLE_COUNT_1_BIT" tiling="VK_IMAGE_TILING_OPTIMAL" sharingMode="VK_SHARING_MODE_EXCLUSIVE" initialLayout="VK_IMAGE_LAYOUT_UNDEFINED" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT">
+          <View id="0" viewType="VK_IMAGE_VIEW_TYPE_2D" format="VK_FORMAT_UNDEFINED" componentSwizzleRed="VK_COMPONENT_SWIZZLE_R" componentSwizzleGreen="VK_COMPONENT_SWIZZLE_G" componentSwizzleBlue="VK_COMPONENT_SWIZZLE_B" componentSwizzleAlpha="VK_COMPONENT_SWIZZLE_A" aspectMask="VK_IMAGE_ASPECT_DEPTH_BIT|VK_IMAGE_ASPECT_STENCIL_BIT" baseMipLevel="0" levelCount="1" baseArrayLayer="0" layerCount="1" />
+        </Image>
+        <!-- FBO attachments -->
+        <Image id="1" extent="$resolution" format="VK_FORMAT_R16G16B16A16_SFLOAT" imageType="VK_IMAGE_TYPE_2D" usage="VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT|VK_IMAGE_USAGE_SAMPLED_BIT" samples="$sampleCount" tiling="VK_IMAGE_TILING_OPTIMAL" sharingMode="VK_SHARING_MODE_EXCLUSIVE" initialLayout="VK_IMAGE_LAYOUT_UNDEFINED" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT">
+          <View id="1" viewType="VK_IMAGE_VIEW_TYPE_2D" format="VK_FORMAT_UNDEFINED" componentSwizzleRed="VK_COMPONENT_SWIZZLE_R" componentSwizzleGreen="VK_COMPONENT_SWIZZLE_G" componentSwizzleBlue="VK_COMPONENT_SWIZZLE_B" componentSwizzleAlpha="VK_COMPONENT_SWIZZLE_A" aspectMask="VK_IMAGE_ASPECT_COLOR_BIT" baseMipLevel="0" levelCount="1" baseArrayLayer="0" layerCount="1" />
+        </Image>
+        <Image id="2" extent="$resolution" format="VK_FORMAT_R16G16B16A16_SFLOAT" imageType="VK_IMAGE_TYPE_2D" usage="VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT|VK_IMAGE_USAGE_SAMPLED_BIT" samples="$sampleCount" tiling="VK_IMAGE_TILING_OPTIMAL" sharingMode="VK_SHARING_MODE_EXCLUSIVE" initialLayout="VK_IMAGE_LAYOUT_UNDEFINED" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT">
+          <View id="2" viewType="VK_IMAGE_VIEW_TYPE_2D" format="VK_FORMAT_UNDEFINED" componentSwizzleRed="VK_COMPONENT_SWIZZLE_R" componentSwizzleGreen="VK_COMPONENT_SWIZZLE_G" componentSwizzleBlue="VK_COMPONENT_SWIZZLE_B" componentSwizzleAlpha="VK_COMPONENT_SWIZZLE_A" aspectMask="VK_IMAGE_ASPECT_COLOR_BIT" baseMipLevel="0" levelCount="1" baseArrayLayer="0" layerCount="1" />
+        </Image>
+        <Image id="3" extent="$resolution" format="VK_FORMAT_R8G8B8A8_UNORM" imageType="VK_IMAGE_TYPE_2D" usage="VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT|VK_IMAGE_USAGE_SAMPLED_BIT" samples="$sampleCount" tiling="VK_IMAGE_TILING_OPTIMAL" sharingMode="VK_SHARING_MODE_EXCLUSIVE" initialLayout="VK_IMAGE_LAYOUT_UNDEFINED" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT">
+          <View id="3" viewType="VK_IMAGE_VIEW_TYPE_2D" format="VK_FORMAT_UNDEFINED" componentSwizzleRed="VK_COMPONENT_SWIZZLE_R" componentSwizzleGreen="VK_COMPONENT_SWIZZLE_G" componentSwizzleBlue="VK_COMPONENT_SWIZZLE_B" componentSwizzleAlpha="VK_COMPONENT_SWIZZLE_A" aspectMask="VK_IMAGE_ASPECT_COLOR_BIT" baseMipLevel="0" levelCount="1" baseArrayLayer="0" layerCount="1" />
+        </Image>
+        <Image id="4" fromSurfaceId="0" extent="$resolution" imageType="VK_IMAGE_TYPE_2D" usage="VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT" samples="$sampleCount" tiling="VK_IMAGE_TILING_OPTIMAL" sharingMode="VK_SHARING_MODE_EXCLUSIVE" initialLayout="VK_IMAGE_LAYOUT_UNDEFINED" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT">
+          <View id="4" viewType="VK_IMAGE_VIEW_TYPE_2D" format="VK_FORMAT_UNDEFINED" componentSwizzleRed="VK_COMPONENT_SWIZZLE_R" componentSwizzleGreen="VK_COMPONENT_SWIZZLE_G" componentSwizzleBlue="VK_COMPONENT_SWIZZLE_B" componentSwizzleAlpha="VK_COMPONENT_SWIZZLE_A" aspectMask="VK_IMAGE_ASPECT_DEPTH_BIT|VK_IMAGE_ASPECT_STENCIL_BIT" baseMipLevel="0" levelCount="1" baseArrayLayer="0" layerCount="1" />
+        </Image>
+        <!-- Texture -->
+          <!-- Height -->
+        <Image id="5" external="5" format="VK_FORMAT_R16_UNORM" usage="VK_IMAGE_USAGE_SAMPLED_BIT|VK_IMAGE_USAGE_TRANSFER_DST_BIT" samples="VK_SAMPLE_COUNT_1_BIT" tiling="VK_IMAGE_TILING_OPTIMAL" sharingMode="VK_SHARING_MODE_EXCLUSIVE" initialLayout="VK_IMAGE_LAYOUT_UNDEFINED" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT">
+          <View id="5" viewType="VK_IMAGE_VIEW_TYPE_2D" format="VK_FORMAT_UNDEFINED" componentSwizzleRed="VK_COMPONENT_SWIZZLE_R" componentSwizzleGreen="VK_COMPONENT_SWIZZLE_G" componentSwizzleBlue="VK_COMPONENT_SWIZZLE_B" componentSwizzleAlpha="VK_COMPONENT_SWIZZLE_A" aspectMask="VK_IMAGE_ASPECT_COLOR_BIT" baseMipLevel="0" levelCount="1" baseArrayLayer="0" layerCount="1" />
+        </Image>
+          <!-- Color -->
+        <Image id="6" external="6" format="VK_FORMAT_BC3_UNORM_BLOCK" usage="VK_IMAGE_USAGE_SAMPLED_BIT|VK_IMAGE_USAGE_TRANSFER_DST_BIT" samples="VK_SAMPLE_COUNT_1_BIT" tiling="VK_IMAGE_TILING_OPTIMAL" sharingMode="VK_SHARING_MODE_EXCLUSIVE" initialLayout="VK_IMAGE_LAYOUT_UNDEFINED" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT">
+          <View id="6" viewType="VK_IMAGE_VIEW_TYPE_2D_ARRAY" format="VK_FORMAT_UNDEFINED" componentSwizzleRed="VK_COMPONENT_SWIZZLE_R" componentSwizzleGreen="VK_COMPONENT_SWIZZLE_G" componentSwizzleBlue="VK_COMPONENT_SWIZZLE_B" componentSwizzleAlpha="VK_COMPONENT_SWIZZLE_A" aspectMask="VK_IMAGE_ASPECT_COLOR_BIT" baseMipLevel="0" levelCount="1" baseArrayLayer="0" layerCount="1" />
+        </Image>
+      </Images>
+      <Samplers>
+        <!-- FBO sampler -->
+        <Sampler id="0" magFilter="VK_FILTER_NEAREST" minFilter="VK_FILTER_NEAREST" mipmapMode="VK_SAMPLER_MIPMAP_MODE_LINEAR" addressModeU="VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE" addressModeV="VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE" addressModeW="VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE" mipLodBias="0.0" minLod="0.0" maxLod="1.0" borderColor="VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE" unnormalizedCoordinates="false"/>
+        <!-- Texture sampler -->
+        <Sampler id="5" imageId="5" magFilter="VK_FILTER_LINEAR" minFilter="VK_FILTER_LINEAR" mipmapMode="VK_SAMPLER_MIPMAP_MODE_LINEAR" addressModeU="VK_SAMPLER_ADDRESS_MODE_REPEAT" addressModeV="VK_SAMPLER_ADDRESS_MODE_REPEAT" addressModeW="VK_SAMPLER_ADDRESS_MODE_REPEAT" mipLodBias="0.0" minLod="0.0" borderColor="VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE" unnormalizedCoordinates="false" />
+        <Sampler id="6" imageId="6" magFilter="VK_FILTER_LINEAR" minFilter="VK_FILTER_LINEAR" mipmapMode="VK_SAMPLER_MIPMAP_MODE_LINEAR" addressModeU="VK_SAMPLER_ADDRESS_MODE_REPEAT" addressModeV="VK_SAMPLER_ADDRESS_MODE_REPEAT" addressModeW="VK_SAMPLER_ADDRESS_MODE_REPEAT" mipLodBias="0.0" minLod="0.0" borderColor="VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE" unnormalizedCoordinates="false" />
+      </Samplers>
+      <Buffers>
+        <!-- Mesh -->
+          <!-- Landscape -->
+        <Buffer id="0" external="0" usage="VK_BUFFER_USAGE_INDEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT"  memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        <Buffer id="1" external="1" usage="VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        <!-- UBO -->
+          <!-- Screen -->
+        <Buffer id="6" external="6" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT" memoryProperty="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+          <!-- Camera -->
+        <Buffer id="7" external="7" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT" memoryProperty="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+          <!-- Light -->
+        <Buffer id="8" external="8" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT" memoryProperty="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+          <!-- Tessellation -->
+        <Buffer id="10" external="10" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT" memoryProperty="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+      </Buffers>
+      <!--  Shaders -->
+      <ShaderModules>
+        <ShaderModule id="0" stage="VK_SHADER_STAGE_VERTEX_BIT"                  spirv="deferred.vert.spv"             code="deferred.vert"/>
+        <ShaderModule id="1" stage="VK_SHADER_STAGE_FRAGMENT_BIT"                spirv="deferred.frag.spv"             code="deferred.frag"/>
+        <ShaderModule id="2" stage="VK_SHADER_STAGE_VERTEX_BIT"                  spirv="deferred_tesselation.vert.spv" code="deferred_tesselation.vert"/>
+        <ShaderModule id="3" stage="VK_SHADER_STAGE_FRAGMENT_BIT"                spirv="deferred_tesselation.frag.spv" code="deferred_tesselation.frag"/>
+        <ShaderModule id="4" stage="VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT"    spirv="deferred_tesselation.tesc.spv" code="deferred_tesselation.tesc"/>
+        <ShaderModule id="5" stage="VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT" spirv="deferred_tesselation.tese.spv" code="deferred_tesselation.tese"/>
+      </ShaderModules>
+      <!--  RenderPass / FrameBuffer -->
+      <RenderPasses>
+        <RenderPass id="0"> <!-- screen -->
+           <Attachment surfaceId="0" samples="VK_SAMPLE_COUNT_1_BIT" loadOp="VK_ATTACHMENT_LOAD_OP_CLEAR" storeOp="VK_ATTACHMENT_STORE_OP_STORE" stencilLoadOp="VK_ATTACHMENT_LOAD_OP_DONT_CARE" stencilSaveOp="VK_ATTACHMENT_STORE_OP_DONT_CARE" initialLayout="VK_IMAGE_LAYOUT_UNDEFINED" finalLayout="VK_IMAGE_LAYOUT_PRESENT_SRC_KHR" />
+           <Attachment imageId="0" samples="VK_SAMPLE_COUNT_1_BIT" loadOp="VK_ATTACHMENT_LOAD_OP_CLEAR" storeOp="VK_ATTACHMENT_STORE_OP_DONT_CARE" stencilLoadOp="VK_ATTACHMENT_LOAD_OP_DONT_CARE" stencilSaveOp="VK_ATTACHMENT_STORE_OP_DONT_CARE" initialLayout="VK_IMAGE_LAYOUT_UNDEFINED" finalLayout="VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL" />
+           <SubPass bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS">
+             <ColorAttachment colorAttachment="0" colorLayout="VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL" depthStencilAttachment="1" depthStencilLayout="VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL"/>
+           </SubPass>
+           <Dependency srcSubpass="VK_SUBPASS_EXTERNAL" dstSubpass="0" srcStageMask="VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT" dstStageMask="VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT" srcAccessMask="0"                                    dstAccessMask="VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT" dependencyFlags="VK_DEPENDENCY_BY_REGION_BIT"/>
+           <Dependency srcSubpass="0" dstSubpass="VK_SUBPASS_EXTERNAL" srcStageMask="VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT" dstStageMask="VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT"          srcAccessMask="VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT" dstAccessMask="0"                                    dependencyFlags="VK_DEPENDENCY_BY_REGION_BIT"/>
+        </RenderPass>
+          <!-- Terrain -->
+        <RenderPass id="1"> 
+           <Attachment imageId="1" samples="$sampleCount" loadOp="VK_ATTACHMENT_LOAD_OP_CLEAR" storeOp="VK_ATTACHMENT_STORE_OP_STORE" stencilLoadOp="VK_ATTACHMENT_LOAD_OP_DONT_CARE" stencilSaveOp="VK_ATTACHMENT_STORE_OP_DONT_CARE" initialLayout="VK_IMAGE_LAYOUT_UNDEFINED" finalLayout="VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL" />
+           <Attachment imageId="2" samples="$sampleCount" loadOp="VK_ATTACHMENT_LOAD_OP_CLEAR" storeOp="VK_ATTACHMENT_STORE_OP_STORE" stencilLoadOp="VK_ATTACHMENT_LOAD_OP_DONT_CARE" stencilSaveOp="VK_ATTACHMENT_STORE_OP_DONT_CARE" initialLayout="VK_IMAGE_LAYOUT_UNDEFINED" finalLayout="VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL" />
+           <Attachment imageId="3" samples="$sampleCount" loadOp="VK_ATTACHMENT_LOAD_OP_CLEAR" storeOp="VK_ATTACHMENT_STORE_OP_STORE" stencilLoadOp="VK_ATTACHMENT_LOAD_OP_DONT_CARE" stencilSaveOp="VK_ATTACHMENT_STORE_OP_DONT_CARE" initialLayout="VK_IMAGE_LAYOUT_UNDEFINED" finalLayout="VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL" />
+           <Attachment imageId="4" samples="$sampleCount" loadOp="VK_ATTACHMENT_LOAD_OP_CLEAR" storeOp="VK_ATTACHMENT_STORE_OP_STORE" stencilLoadOp="VK_ATTACHMENT_LOAD_OP_DONT_CARE" stencilSaveOp="VK_ATTACHMENT_STORE_OP_DONT_CARE" initialLayout="VK_IMAGE_LAYOUT_UNDEFINED" finalLayout="VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL" />
+           <SubPass bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS">
+             <ColorAttachment colorAttachment="0" colorLayout="VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL" depthStencilAttachment="3" depthStencilLayout="VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL"/>
+             <ColorAttachment colorAttachment="1" colorLayout="VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL" depthStencilAttachment="3" depthStencilLayout="VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL"/>
+             <ColorAttachment colorAttachment="2" colorLayout="VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL" depthStencilAttachment="3" depthStencilLayout="VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL"/>
+           </SubPass>
+           <Dependency srcSubpass="VK_SUBPASS_EXTERNAL" dstSubpass="0" srcStageMask="VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT" dstStageMask="VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT" srcAccessMask="VK_ACCESS_MEMORY_READ_BIT"                                                dstAccessMask="VK_ACCESS_COLOR_ATTACHMENT_READ_BIT|VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT" dependencyFlags="VK_DEPENDENCY_BY_REGION_BIT"/>
+           <Dependency srcSubpass="0" dstSubpass="VK_SUBPASS_EXTERNAL" srcStageMask="VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT" dstStageMask="VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT" srcAccessMask="VK_ACCESS_COLOR_ATTACHMENT_READ_BIT|VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT" dstAccessMask="VK_ACCESS_MEMORY_READ_BIT"                                                dependencyFlags="VK_DEPENDENCY_BY_REGION_BIT"/>
+        </RenderPass>
+      </RenderPasses>
+      <FrameBuffers>
+        <FrameBuffer surfaceId="0" renderPassId="0"> <!-- toScreen -->
+          <Attachment/>
+          <Attachment viewImageId="0" />
+        </FrameBuffer>
+        <FrameBuffer id="1" renderPassId="1">        <!-- gBuffer -->
+          <Attachment viewImageId="1"/>   <!-- Positions -->
+          <Attachment viewImageId="2"/>   <!-- Normals -->
+          <Attachment viewImageId="3"/>   <!-- Albedo -->
+          <Attachment viewImageId="4"/>   <!-- Depth -->
+        </FrameBuffer>
+      </FrameBuffers>
+      <!--  Descriptor / Layout -->
+      <DescriptorPools>
+        <DescriptorPool id="0" maxSets="3">
+          <Size type="VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER"         descriptorCount="8" />
+          <Size type="VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER" descriptorCount="9" />
+        </DescriptorPool>
+      </DescriptorPools>
+      <DescriptorSetLayouts>
+        <DescriptorSetLayout id="0">
+          <Binding type="VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER"         count="1" shaderStageFlags="VK_SHADER_STAGE_VERTEX_BIT" />
+          <Binding type="VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER" count="1" shaderStageFlags="VK_SHADER_STAGE_FRAGMENT_BIT" />
+          <Binding type="VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER" count="1" shaderStageFlags="VK_SHADER_STAGE_FRAGMENT_BIT" />
+          <Binding type="VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER" count="1" shaderStageFlags="VK_SHADER_STAGE_FRAGMENT_BIT" />
+          <Binding type="VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER"         count="1" shaderStageFlags="VK_SHADER_STAGE_FRAGMENT_BIT" />
+          <Binding type="VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER"         count="1" shaderStageFlags="VK_SHADER_STAGE_VERTEX_BIT" />
+        </DescriptorSetLayout>
+        <DescriptorSetLayout id="1">
+          <Binding type="VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER"         count="1" shaderStageFlags="VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT|VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT" />
+        </DescriptorSetLayout>
+        <DescriptorSetLayout id="2">
+          <Binding type="VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER"         count="1" shaderStageFlags="VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT|VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT" />
+          <Binding type="VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER" count="1" shaderStageFlags="VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT|VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT|VK_SHADER_STAGE_FRAGMENT_BIT" />
+          <Binding type="VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER" count="1" shaderStageFlags="VK_SHADER_STAGE_FRAGMENT_BIT" />
+        </DescriptorSetLayout>
+      </DescriptorSetLayouts>
+      <PipelineLayouts>
+          <PipelineLayout id="0">
+            <DescriptorSetLayout descriptorSetId="0"/>
+          </PipelineLayout>
+          <PipelineLayout id="1">
+            <DescriptorSetLayout descriptorSetId="1"/>
+            <DescriptorSetLayout descriptorSetId="2"/>
+          </PipelineLayout>
+      </PipelineLayouts>
+      <DescriptorSets>
+        <!-- Offscreen -->
+        <DescriptorSet id="0" descriptorPoolId="0">
+          <SetLayout descriptorSetLayoutId="0">
+            <WriteDescriptor descriptorType="VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER" binding="0">
+              <BufferInfo bufferId="6" />
+            </WriteDescriptor>
+            <WriteDescriptor descriptorType="VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER" binding="1">
+              <ImageInfo viewId="1" samplerId="0" layout="VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL" />
+            </WriteDescriptor>
+            <WriteDescriptor descriptorType="VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER" binding="2">
+              <ImageInfo viewId="2" samplerId="0" layout="VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL" />
+            </WriteDescriptor>
+            <WriteDescriptor descriptorType="VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER" binding="3">
+              <ImageInfo viewId="3" samplerId="0" layout="VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL" />
+            </WriteDescriptor>
+            <WriteDescriptor descriptorType="VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER" binding="4">
+              <BufferInfo bufferId="8" />
+            </WriteDescriptor>
+          </SetLayout>
+        </DescriptorSet>
+        <!-- Terrain -->
+        <DescriptorSet id="1" descriptorPoolId="0">
+          <SetLayout descriptorSetLayoutId="1">
+            <WriteDescriptor descriptorType="VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER" binding="0">
+              <BufferInfo bufferId="7" />
+            </WriteDescriptor>
+          </SetLayout>
+          <SetLayout descriptorSetLayoutId="2">
+            <WriteDescriptor descriptorType="VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER" binding="0">
+              <BufferInfo bufferId="10" />
+            </WriteDescriptor>
+            <WriteDescriptor descriptorType="VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER" binding="1">
+              <ImageInfo viewId="5" samplerId="5" layout="VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL" />
+            </WriteDescriptor>
+            <WriteDescriptor descriptorType="VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER" binding="2">
+              <ImageInfo viewId="6" samplerId="6" layout="VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL" />
+            </WriteDescriptor>
+          </SetLayout>
+        </DescriptorSet>
+      </DescriptorSets>
+      <!--  Pipelines -->
+      <GraphicsPipelines>
+        <!-- to Screen -->
+          <!-- Basic MSAA-->
+        <GraphicsPipeline id="0" renderPassId="0" pipelineLayoutId="0">
+          <Stages>
+            <Stage shaderModuleId="0"/>
+            <Stage shaderModuleId="1">
+              <Specialization external="9">
+                <Entry constantID="0" offset="0" size="4"/>
+                <Entry constantID="1" offset="4" size="4"/>
+              </Specialization>
+            </Stage>
+          </Stages>
+          <VertexInput />
+          <InputAssembly topology="VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST" primitiveRestartEnable="false" />
+          <Rasterization depthClampEnable="false" rasterizerDiscardEnable="false" polygonMode="VK_POLYGON_MODE_FILL" cullMode="VK_CULL_MODE_NONE" frontFace="VK_FRONT_FACE_COUNTER_CLOCKWISE" depthBiasEnable="false" />
+          <BlendState logicOpEnable="false" blendConstantsR="0" blendConstantsG="0" blendConstantsB="0" blendConstantsA="0">
+            <BlendAttachment blendEnable="false" colorWriteMask="VK_COLOR_COMPONENT_R_BIT|VK_COLOR_COMPONENT_G_BIT|VK_COLOR_COMPONENT_B_BIT|VK_COLOR_COMPONENT_A_BIT"/>
+          </BlendState>
+          <DepthStencil depthTestEnable="true" depthWriteEnable="true" depthCompareOp="VK_COMPARE_OP_LESS_OR_EQUAL" />
+          <Multisample rasterizationSamples="VK_SAMPLE_COUNT_1_BIT" alphaToCoverageEnable="false" alphaToOneEnable="false"/>
+          <DynamicState state="VK_DYNAMIC_STATE_VIEWPORT" />
+          <DynamicState state="VK_DYNAMIC_STATE_SCISSOR" />
+          <Viewport />
+        </GraphicsPipeline>
+        <!-- to GBuffer -->
+          <!-- SampleShading Enabled Fill -->
+        <GraphicsPipeline id="1" renderPassId="1" pipelineLayoutId="1">
+          <Stages>
+            <Stage shaderModuleId="2" />
+            <Stage shaderModuleId="3" />
+            <Stage shaderModuleId="4" />
+            <Stage shaderModuleId="5" />
+          </Stages>
+          <VertexInput>
+            <BindingDescription binding="0" meshDescriptorId="0" inputRate="VK_VERTEX_INPUT_RATE_VERTEX"/>
+            <AttributeDescription binding="0" location="0" meshDescriptorId="0"/>
+          </VertexInput>
+          <InputAssembly topology="VK_PRIMITIVE_TOPOLOGY_PATCH_LIST" primitiveRestartEnable="false" />
+          <Rasterization depthClampEnable="false" rasterizerDiscardEnable="false" polygonMode="VK_POLYGON_MODE_FILL" cullMode="VK_CULL_MODE_BACK_BIT" frontFace="VK_FRONT_FACE_COUNTER_CLOCKWISE" depthBiasEnable="false" />
+          <BlendState logicOpEnable="false" blendConstantsR="0" blendConstantsG="0" blendConstantsB="0" blendConstantsA="0">
+            <BlendAttachment blendEnable="false" colorWriteMask="VK_COLOR_COMPONENT_R_BIT|VK_COLOR_COMPONENT_G_BIT|VK_COLOR_COMPONENT_B_BIT|VK_COLOR_COMPONENT_A_BIT"/>
+            <BlendAttachment blendEnable="false" colorWriteMask="VK_COLOR_COMPONENT_R_BIT|VK_COLOR_COMPONENT_G_BIT|VK_COLOR_COMPONENT_B_BIT|VK_COLOR_COMPONENT_A_BIT"/>
+            <BlendAttachment blendEnable="false" colorWriteMask="VK_COLOR_COMPONENT_R_BIT|VK_COLOR_COMPONENT_G_BIT|VK_COLOR_COMPONENT_B_BIT|VK_COLOR_COMPONENT_A_BIT"/>
+          </BlendState>
+          <DepthStencil depthTestEnable="true" depthWriteEnable="true" depthCompareOp="VK_COMPARE_OP_LESS_OR_EQUAL" />
+          <Multisample rasterizationSamples="$sampleCount" alphaToCoverageEnable="true" alphaToOneEnable="false" minSampleShading="0.25"/>
+          <DynamicState state="VK_DYNAMIC_STATE_VIEWPORT" />
+          <DynamicState state="VK_DYNAMIC_STATE_SCISSOR" />
+          <Viewport />
+          <Tessellation patchControlPoints="4" />
+        </GraphicsPipeline>
+          <!-- SampleShading Enabled Wireframe -->
+        <GraphicsPipeline id="2" renderPassId="1" pipelineLayoutId="1">
+          <Stages>
+            <Stage shaderModuleId="2" />
+            <Stage shaderModuleId="3" />
+            <Stage shaderModuleId="4" />
+            <Stage shaderModuleId="5" />
+          </Stages>
+          <VertexInput>
+            <BindingDescription binding="0" meshDescriptorId="0" inputRate="VK_VERTEX_INPUT_RATE_VERTEX"/>
+            <AttributeDescription binding="0" location="0" meshDescriptorId="0"/>
+          </VertexInput>
+          <InputAssembly topology="VK_PRIMITIVE_TOPOLOGY_PATCH_LIST" primitiveRestartEnable="false" />
+          <Rasterization depthClampEnable="false" rasterizerDiscardEnable="false" polygonMode="VK_POLYGON_MODE_LINE" cullMode="VK_CULL_MODE_BACK_BIT" frontFace="VK_FRONT_FACE_COUNTER_CLOCKWISE" depthBiasEnable="false" />
+          <BlendState logicOpEnable="false" blendConstantsR="0" blendConstantsG="0" blendConstantsB="0" blendConstantsA="0">
+            <BlendAttachment blendEnable="false" colorWriteMask="VK_COLOR_COMPONENT_R_BIT|VK_COLOR_COMPONENT_G_BIT|VK_COLOR_COMPONENT_B_BIT|VK_COLOR_COMPONENT_A_BIT"/>
+            <BlendAttachment blendEnable="false" colorWriteMask="VK_COLOR_COMPONENT_R_BIT|VK_COLOR_COMPONENT_G_BIT|VK_COLOR_COMPONENT_B_BIT|VK_COLOR_COMPONENT_A_BIT"/>
+            <BlendAttachment blendEnable="false" colorWriteMask="VK_COLOR_COMPONENT_R_BIT|VK_COLOR_COMPONENT_G_BIT|VK_COLOR_COMPONENT_B_BIT|VK_COLOR_COMPONENT_A_BIT"/>
+          </BlendState>
+          <DepthStencil depthTestEnable="true" depthWriteEnable="true" depthCompareOp="VK_COMPARE_OP_LESS_OR_EQUAL" />
+          <Multisample rasterizationSamples="$sampleCount" alphaToCoverageEnable="true" alphaToOneEnable="false" minSampleShading="0.25"/>
+          <DynamicState state="VK_DYNAMIC_STATE_VIEWPORT" />
+          <DynamicState state="VK_DYNAMIC_STATE_SCISSOR" />
+          <Viewport />
+          <Tessellation patchControlPoints="4" />
+        </GraphicsPipeline>
+      </GraphicsPipelines>
+      <!--  CommandPools -->
+      <CommandPools>
+        <CommandPool id="0" families="graphic" flags="VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT" />
+      </CommandPools>
+      <!--  CommandBuffers -->
+      <CommandBuffers>
+        <!-- offscreen -->
+        <CommandBuffer id="0" commandPoolId="0" level="VK_COMMAND_BUFFER_LEVEL_PRIMARY">
+          <Command type="beginRenderPass" renderPassId="1" frameBufferId="1" subpassContent="VK_SUBPASS_CONTENTS_INLINE">
+            <CleanValue colorR="0.0" colorG="0.0" colorB="0.0" colorA="0.0" type="float"/>
+            <CleanValue colorR="0.0" colorG="0.0" colorB="0.0" colorA="0.0" type="float"/>
+            <CleanValue colorR="0.5" colorG="0.5" colorB="0.7" colorA="1.0" type="float"/>
+            <CleanValue depth="1.0" stencil="0"/>
+          </Command>
+          <Command type="viewport" y="720" width="1280" height="-720"/>
+          <Command type="scissor"  width="$resolution" height="$resolution"/>
+          <!-- Pipeline -->
+          <Command id="1" type="switch">
+            <SubCommand type="graphicsPipeline" graphicsPipelineId="1" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
+            <SubCommand type="graphicsPipeline" graphicsPipelineId="2" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
+          </Command>
+          <!-- Terrain -->
+          <Command type="bindDescriptorSets" pipelineLayoutId="1" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS" firstSet="0" descriptorSetId="1" />
+          <Command type="bindVertexBuffers" firstBinding="0" bindingCount="1">
+            <Buffer bufferId="1" offset="0" />
+          </Command>
+          <Command type="bindIndexBuffers" bufferId="0" offset="0" indexType="VK_INDEX_TYPE_UINT32" />
+          <Command type="drawIndexed" bufferId="0" instanceCount="1" firstIndex="0" vertexOffset="0" firstInstance="0"/>
+          <Command type="endRenderPass"/>
+        </CommandBuffer>
+        <!-- Screen -->
+        <CommandBuffer surfaceId="0" commandPoolId="0" level="VK_COMMAND_BUFFER_LEVEL_PRIMARY">
+          <Command type="beginRenderPass" surfaceId="0" renderPassId="0" subpassContent="VK_SUBPASS_CONTENTS_INLINE">
+            <CleanValue colorR="0.2" colorG="0.0" colorB="0.0" colorA="1.0" type="float"/> <!-- This color must never shown -->
+            <CleanValue depth="1.0" stencil="0"/>
+          </Command>
+          <Command type="viewport"/>
+          <Command type="scissor"/>
+          <Command type="bindDescriptorSets" pipelineLayoutId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS" firstSet="0" descriptorSetId="0" />
+          <Command type="graphicsPipeline" graphicsPipelineId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
+          <!-- Triangle screen -->
+          <Command type="draw" vertexCount="3" instanceCount="1" firstVertex="0" firstInstance="0"/>
+          <!-- Other draw (ImGUI) -->
+          <Command id="0" type="container" />
+          <Command type="endRenderPass"/>
+        </CommandBuffer>
+      </CommandBuffers>
+      <!--  QueueSequence -->
+      <QueueSequences>
+        <QueueSequence id="0">
+          <Sequence type="acquire" surfaceId="0" semaphoreId="0"/>
+          <Sequence type="waitFence" waitAll="true">
+            <Fence fenceId="0"/>
+          </Sequence>
+          <Sequence type="resetFence">
+            <Fence fenceId="0"/>
+          </Sequence>
+          <Sequence type="submit">
+            <WaitSync semaphoreId="0" pipelineFlag="VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT"/>
+            <CommandBuffer id="0"/>
+            <SignalSync semaphoreId="1"/>
+          </Sequence>
+          <Sequence type="submit" fenceId="0">
+            <WaitSync semaphoreId="1" pipelineFlag="VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT"/>
+            <CommandBuffer surfaceId="0"/>
+            <SignalSync semaphoreId="2"/>
+          </Sequence>
+          <Sequence type="presentKHR">
+            <Swapchain surfaceId="0"/>
+            <Semaphore semaphoreId="2" />
+          </Sequence>
+          <Sequence type="waitFence" waitAll="true">
+            <Fence fenceId="0"/>
+          </Sequence>
+        </QueueSequence>
+      </QueueSequences>
+    </Device>
+  </Engine3D>
+</MouCaLab>

@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{FD3A1C17-7B27-475D-9B05-A57558964AFF}</ProjectGuid>
+    <RootNamespace>LibRT</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\Props\MouCaTechProp.props" />
+    <Import Project="..\..\Props\MouCaDebug.props" />
+    <Import Project="..\..\Props\GLM.props" />
+    <Import Project="..\..\Props\GLI.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\Props\MouCaTechProp.props" />
+    <Import Project="..\..\Props\GLM.props" />
+    <Import Project="..\..\Props\MouCaRelease.props" />
+    <Import Project="..\..\Props\GLI.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\Props\MouCaTechProp.props" />
+    <Import Project="..\..\Props\MouCaProfile.props" />
+    <Import Project="..\..\Props\GLM.props" />
+    <Import Project="..\..\Props\GLI.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile />
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <ClCompile />
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Dependancies.h" />
+    <ClInclude Include="include\RTAnimationBones.h" />
+    <ClInclude Include="include\RTBBoxes.h" />
+    <ClInclude Include="include\RTBoundingBox.h" />
+    <ClInclude Include="include\RTBufferCPU.h" />
+    <ClInclude Include="include\RTBufferDescriptor.h" />
+    <ClInclude Include="include\RTCamera.h" />
+    <ClInclude Include="include\RTCameraComportement.h" />
+    <ClInclude Include="include\RTCameraManipulator.h" />
+    <ClInclude Include="include\RTCopy.h" />
+    <ClInclude Include="include\RTEnum.h" />
+    <ClInclude Include="include\RTBuffer.h" />
+    <ClInclude Include="include\RTCanvas.h" />
+    <ClInclude Include="include\RTImage.h" />
+    <ClInclude Include="include\RTImageGPU.h" />
+    <ClInclude Include="include\RTEnvironment.h" />
+    <ClInclude Include="include\RTEventManager.h" />
+    <ClInclude Include="include\RTFrustum.h" />
+    <ClInclude Include="include\RTGeometry.h" />
+    <ClInclude Include="include\RTHierarchic.h" />
+    <ClInclude Include="include\RTLight.h" />
+    <ClInclude Include="include\RTMassiveInstance.h" />
+    <ClInclude Include="include\RTMaths.h" />
+    <ClInclude Include="include\RTMesh.h" />
+    <ClInclude Include="include\RTMonitor.h" />
+    <ClInclude Include="include\RTObject.h" />
+    <ClInclude Include="include\RTOrientation.h" />
+    <ClInclude Include="include\RTOrigin.h" />
+    <ClInclude Include="include\RTPlatform.h" />
+    <ClInclude Include="include\RTRenderDialog.h" />
+    <ClInclude Include="include\RTScene.h" />
+    <ClInclude Include="include\RTShaderFile.h" />
+    <ClInclude Include="include\RTTransform.h" />
+    <ClInclude Include="include\RTTypeInfo.h" />
+    <ClInclude Include="include\RTViewer.h" />
+    <ClInclude Include="include\RTViewport.h" />
+    <ClInclude Include="include\RTVirtualMouse.h" />
+    <ClInclude Include="include\RTWindow.h" />
+    <ClInclude Include="RTGlobalDependancies.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Dependancies.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\RTAnimationBones.cpp" />
+    <ClCompile Include="source\RTBBoxes.cpp" />
+    <ClCompile Include="source\RTBoundingBox.cpp" />
+    <ClCompile Include="source\RTBufferDescriptor.cpp" />
+    <ClCompile Include="source\RTCameraComportement.cpp" />
+    <ClCompile Include="source\RTCameraManipulator.cpp" />
+    <ClCompile Include="source\RTCanvas.cpp" />
+    <ClCompile Include="source\RTCopy.cpp" />
+    <ClCompile Include="source\RTImage.cpp" />
+    <ClCompile Include="source\RTGeometry.cpp" />
+    <ClCompile Include="source\RTMassiveInstance.cpp" />
+    <ClCompile Include="source\RTMaths.cpp" />
+    <ClCompile Include="source\RTMesh.cpp" />
+    <ClCompile Include="source\RTScene.cpp" />
+    <ClCompile Include="source\RTShaderFile.cpp" />
+    <ClCompile Include="source\RTViewer.cpp" />
+    <ClCompile Include="source\RTVirtualMouse.cpp" />
+    <ClCompile Include="source\RTWindow.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

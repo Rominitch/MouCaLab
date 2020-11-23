@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<MouCaLab>
+  <Engine3D version="0.1">
+    <Environment>
+      <Extension>VK_KHR_surface</Extension>
+      <Extension os="windows">VK_KHR_win32_surface</Extension>
+      <Extension os="linux">VK_KHR_xlib_surface</Extension>
+      <Extension os="apple">VK_KHR_xcb_surface</Extension>
+    </Environment>
+    <Window id="0" title="Image-DuplicateID" positionX="30" positionY="30" width="400" height="400" visible="false" resizable="false" border="true" />
+    <Device id="0" mode="render" compatibleWindowId="0">
+      <Extension>VK_KHR_swapchain</Extension>
+      <Extension>VK_KHR_maintenance1</Extension>
+      <Surfaces>
+        <Surface id="0" windowId="0" />
+      </Surfaces>
+      <Images>
+        <Image id="0" fromSurfaceId="0" imageType="VK_IMAGE_TYPE_2D" usage="VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT" samples="VK_SAMPLE_COUNT_1_BIT" tiling="VK_IMAGE_TILING_OPTIMAL" sharingMode="VK_SHARING_MODE_EXCLUSIVE" initialLayout="VK_IMAGE_LAYOUT_UNDEFINED" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT">
+        </Image>
+        <Image id="0" fromSurfaceId="0" imageType="VK_IMAGE_TYPE_2D" usage="VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT" samples="VK_SAMPLE_COUNT_1_BIT" tiling="VK_IMAGE_TILING_OPTIMAL" sharingMode="VK_SHARING_MODE_EXCLUSIVE" initialLayout="VK_IMAGE_LAYOUT_UNDEFINED" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT">
+        </Image>
+      </Images>
+    </Device>
+  </Engine3D>
+</MouCaLab>

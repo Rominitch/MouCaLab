@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<MouCaLab>
+  <Engine3D version="0.1">
+    <Environment>
+      <Extension>VK_KHR_surface</Extension>
+      <Extension os="windows">VK_KHR_win32_surface</Extension>
+      <Extension os="linux">VK_KHR_xlib_surface</Extension>
+      <Extension os="apple">VK_KHR_xcb_surface</Extension>
+    </Environment>
+    <Window id="0" title="Triangle Demo" positionX="30" positionY="30" width="1280" height="720" visible="false" resizable="false" border="true" />
+    <Device id="0" mode="render" compatibleWindowId="0">
+      <Extension>VK_KHR_swapchain</Extension>
+      <Extension>VK_KHR_maintenance1</Extension>
+      <!--  Synchronization -->
+      <Semaphores>
+        <Semaphore id="0" />
+        <Semaphore id="1" />
+      </Semaphores>
+      <Fences>
+        <Fence id="0" flag="VK_FENCE_CREATE_SIGNALED_BIT"/>
+      </Fences>
+      <!--  Surfaces -->
+      <Surfaces>
+        <Surface id="0" windowId="0" >
+          <UserPreferences presentationMode="VK_PRESENT_MODE_MAILBOX_KHR" />
+        </Surface>
+      </Surfaces>
+      <!--  Buffer / Image / Uniform -->
+      <Images>
+        <Image id="0" fromSurfaceId="0" imageType="VK_IMAGE_TYPE_2D" usage="VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT" samples="VK_SAMPLE_COUNT_1_BIT" tiling="VK_IMAGE_TILING_OPTIMAL" sharingMode="VK_SHARING_MODE_EXCLUSIVE" initialLayout="VK_IMAGE_LAYOUT_UNDEFINED" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT">
+          <View id="0" viewType="VK_IMAGE_VIEW_TYPE_2D" format="VK_FORMAT_UNDEFINED" componentSwizzleRed="VK_COMPONENT_SWIZZLE_R" componentSwizzleGreen="VK_COMPONENT_SWIZZLE_G" componentSwizzleBlue="VK_COMPONENT_SWIZZLE_B" componentSwizzleAlpha="VK_COMPONENT_SWIZZLE_A" aspectMask="VK_IMAGE_ASPECT_DEPTH_BIT|VK_IMAGE_ASPECT_STENCIL_BIT" baseMipLevel="0" levelCount="1" baseArrayLayer="0" layerCount="1" />
+        </Image>
+      </Images>
+      <Buffers>
+        <Buffer id="0" size="192" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT" memoryProperty="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+        <Buffer id="1" size="72" usage="VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        <Buffer id="2" size="12" usage="VK_BUFFER_USAGE_INDEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+      </Buffers>
+      <!--  Shaders -->
+      <ShaderModules>
+        <ShaderModule id="0" stage="VK_SHADER_STAGE_VERTEX_BIT"   spirv="v_triangle.spv" code="v_triangle.vert"/>
+        <ShaderModule id="1" stage="VK_SHADER_STAGE_FRAGMENT_BIT" spirv="f_triangle.spv" code="f_triangle.frag"/>
+      </ShaderModules>
+      <!--  RenderPass / FrameBuffer -->
+      <RenderPasses>
+        <RenderPass id="0">
+           <Attachment surfaceId="0" samples="VK_SAMPLE_COUNT_1_BIT" loadOp="VK_ATTACHMENT_LOAD_OP_CLEAR" storeOp="VK_ATTACHMENT_STORE_OP_STORE" stencilLoadOp="VK_ATTACHMENT_LOAD_OP_DONT_CARE" stencilSaveOp="VK_ATTACHMENT_STORE_OP_DONT_CARE" initialLayout="VK_IMAGE_LAYOUT_UNDEFINED" finalLayout="VK_IMAGE_LAYOUT_PRESENT_SRC_KHR" />
+           <Attachment imageId="0" samples="VK_SAMPLE_COUNT_1_BIT" loadOp="VK_ATTACHMENT_LOAD_OP_CLEAR" storeOp="VK_ATTACHMENT_STORE_OP_DONT_CARE" stencilLoadOp="VK_ATTACHMENT_LOAD_OP_DONT_CARE" stencilSaveOp="VK_ATTACHMENT_STORE_OP_DONT_CARE" initialLayout="VK_IMAGE_LAYOUT_UNDEFINED" finalLayout="VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL" />
+           <SubPass bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS">
+             <ColorAttachment colorAttachment="0" colorLayout="VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL" depthStencilAttachment="1" depthStencilLayout="VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL"/>
+           </SubPass>
+           <Dependency srcSubpass="VK_SUBPASS_EXTERNAL" dstSubpass="0" srcStageMask="VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT" dstStageMask="VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT" srcAccessMask="0"                                    dstAccessMask="VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT" dependencyFlags="VK_DEPENDENCY_BY_REGION_BIT"/>
+           <Dependency srcSubpass="0" dstSubpass="VK_SUBPASS_EXTERNAL" srcStageMask="VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT" dstStageMask="VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT"          srcAccessMask="VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT" dstAccessMask="0"                                    dependencyFlags="VK_DEPENDENCY_BY_REGION_BIT"/>
+        </RenderPass>
+      </RenderPasses>
+      <FrameBuffers>
+        <FrameBuffer surfaceId="0" renderPassId="0">
+          <Attachment/>
+          <Attachment viewImageId="0" />
+        </FrameBuffer>
+      </FrameBuffers>
+      <!--  Descriptor / Layout -->
+      <DescriptorPools>
+        <DescriptorPool id="0" maxSets="1">
+          <Size type="VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER" descriptorCount="1" />
+        </DescriptorPool>
+      </DescriptorPools>
+      <DescriptorSetLayouts>
+        <DescriptorSetLayout id="0">
+          <Binding type="VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER" count="1" shaderStageFlags="VK_SHADER_STAGE_VERTEX_BIT" />
+        </DescriptorSetLayout>
+      </DescriptorSetLayouts>
+      <PipelineLayouts>
+          <PipelineLayout id="0">
+            <DescriptorSetLayout descriptorSetId="0"/>
+          </PipelineLayout>
+      </PipelineLayouts>
+      <DescriptorSets>
+        <DescriptorSet id="0" descriptorPoolId="0">
+          <SetLayout descriptorSetLayoutId="0">
+            <WriteDescriptor descriptorType="VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER" binding="0">
+              <BufferInfo bufferId="0" />
+            </WriteDescriptor>
+          </SetLayout>
+        </DescriptorSet>
+      </DescriptorSets>
+      <!--  Pipelines -->
+      <GraphicsPipelines>
+        <GraphicsPipeline id="0" renderPassId="0" pipelineLayoutId="0">
+          <Stages>
+            <Stage shaderModuleId="0" />
+            <Stage shaderModuleId="1" />
+          </Stages>
+          <VertexInput>
+            <BindingDescription   binding="0" stride="24" inputRate="VK_VERTEX_INPUT_RATE_VERTEX"/>
+            <AttributeDescription binding="0" location="0" offset="0" format="VK_FORMAT_R32G32B32_SFLOAT"/>
+            <AttributeDescription binding="0" location="1" offset="12" format="VK_FORMAT_R32G32B32_SFLOAT"/>
+          </VertexInput>
+          <InputAssembly topology="VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST" primitiveRestartEnable="false" />
+          <Rasterization depthClampEnable="false" rasterizerDiscardEnable="false" polygonMode="VK_POLYGON_MODE_FILL" cullMode="VK_CULL_MODE_NONE" frontFace="VK_FRONT_FACE_COUNTER_CLOCKWISE" depthBiasEnable="false" />
+          <BlendState logicOpEnable="false" blendConstantsR="0" blendConstantsG="0" blendConstantsB="0" blendConstantsA="0">
+            <BlendAttachment blendEnable="false" colorWriteMask="VK_COLOR_COMPONENT_R_BIT|VK_COLOR_COMPONENT_G_BIT|VK_COLOR_COMPONENT_B_BIT|VK_COLOR_COMPONENT_A_BIT"/>
+          </BlendState>
+          <DepthStencil depthTestEnable="true" depthWriteEnable="true" depthCompareOp="VK_COMPARE_OP_LESS_OR_EQUAL" />
+          <Multisample rasterizationSamples="VK_SAMPLE_COUNT_1_BIT" alphaToCoverageEnable="false" alphaToOneEnable="false"/>
+          <DynamicState state="VK_DYNAMIC_STATE_VIEWPORT" />
+          <DynamicState state="VK_DYNAMIC_STATE_SCISSOR" />
+          <Viewport />
+        </GraphicsPipeline>
+      </GraphicsPipelines>
+      <!--  CommandPools -->
+      <CommandPools>
+        <CommandPool id="0" families="graphic" flags="VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT" />
+      </CommandPools>
+      <!--  CommandBuffers -->
+      <CommandBuffers>
+        <CommandBuffer surfaceId="0" commandPoolId="0" level="VK_COMMAND_BUFFER_LEVEL_PRIMARY">
+          <Command type="beginRenderPass" surfaceId="0" renderPassId="0" subpassContent="VK_SUBPASS_CONTENTS_INLINE">
+            <CleanValue colorR="0.0" colorG="0.0" colorB="0.2" colorA="1.0" type="float"/>
+            <CleanValue depth="1.0" stencil="0"/>
+          </Command>
+          <Command type="viewport"/>
+          <Command type="scissor"/>
+          <Command type="bindDescriptorSets" pipelineLayoutId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS" firstSet="0" descriptorSetId="0" />
+          <Command type="graphicsPipeline" graphicsPipelineId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
+          <Command type="bindVertexBuffers" firstBinding="0" bindingCount="1">
+            <Buffer bufferId="1" offset="0" />
+          </Command>
+          <Command type="bindIndexBuffers" bufferId="2" offset="0" indexType="VK_INDEX_TYPE_UINT32" />
+          <Command type="drawIndexed" indexCount="3" instanceCount="1" firstIndex="0" vertexOffset="0" firstInstance="1"/>
+          <Command type="endRenderPass"/>
+        </CommandBuffer>
+      </CommandBuffers>
+      <!--  QueueSequence -->
+      <QueueSequences>
+        <QueueSequence id="0">
+          <Sequence type="acquire" surfaceId="0" semaphoreId="0"/>
+          <Sequence type="waitFence" waitAll="true">
+            <Fence fenceId="0"/>
+          </Sequence>
+          <Sequence type="resetFence">
+            <Fence fenceId="0"/>
+          </Sequence>
+          <Sequence type="submit" fenceId="0">
+            <WaitSync semaphoreId="0" pipelineFlag="VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT"/>
+            <CommandBuffer surfaceId="0"/>
+            <SignalSync semaphoreId="1"/>
+          </Sequence>
+          <Sequence type="presentKHR">
+            <Swapchain surfaceId="0"/>
+            <Semaphore semaphoreId="1" />
+          </Sequence>
+        </QueueSequence>
+      </QueueSequences>
+    </Device>
+  </Engine3D>
+</MouCaLab>

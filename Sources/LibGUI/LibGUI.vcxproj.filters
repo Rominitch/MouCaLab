@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Fichiers sources">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Fichiers de ressources">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Fichiers sources\Widget">
+      <UniqueIdentifier>{7b1ffde6-a9f2-4258-88dd-d2d079e86b75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Widget">
+      <UniqueIdentifier>{fc76a8c6-754d-41fb-85e4-20d5581add7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Font">
+      <UniqueIdentifier>{9418ed21-b1d8-458f-a9fe-c2cf908e2a4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Font">
+      <UniqueIdentifier>{a22e4bdf-c8f6-412c-adaf-ac243b39d281}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Scene">
+      <UniqueIdentifier>{52d2e6b8-4c56-44d2-b821-4aae3d35c18c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Scene">
+      <UniqueIdentifier>{7b92723e-5023-4738-8c0c-94bf79b57f59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\FontSVG">
+      <UniqueIdentifier>{36dc5545-fa78-4d4e-8495-d9f83584acc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\FontSVG">
+      <UniqueIdentifier>{e57947f1-4ef0-4e17-bdc7-75bfee4ea012}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Dependancies.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GUIWidget.h">
+      <Filter>Fichiers d%27en-tête\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GUIButton.h">
+      <Filter>Fichiers d%27en-tête\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GUIFont.h">
+      <Filter>Fichiers d%27en-tête\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GUIText.h">
+      <Filter>Fichiers d%27en-tête\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GUIFontAtlas.h">
+      <Filter>Fichiers d%27en-tête\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GUIFontFile.h">
+      <Filter>Fichiers d%27en-tête\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GUIFontGlyph.h">
+      <Filter>Fichiers d%27en-tête\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GUIFontManager.h">
+      <Filter>Fichiers d%27en-tête\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GUIEclidianDistanceTransformAA.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GUIReader.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GUIScene.h">
+      <Filter>Fichiers d%27en-tête\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GUIPage.h">
+      <Filter>Fichiers d%27en-tête\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GUI3DViewer.h">
+      <Filter>Fichiers d%27en-tête\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GUIFontSVGManager.h">
+      <Filter>Fichiers d%27en-tête\FontSVG</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GUIOutline.h">
+      <Filter>Fichiers d%27en-tête\FontSVG</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GUIBezier.h">
+      <Filter>Fichiers d%27en-tête\FontSVG</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Dependancies.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\GUIWidget.cpp">
+      <Filter>Fichiers sources\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="source\GUIButton.cpp">
+      <Filter>Fichiers sources\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="source\GUIFont.cpp">
+      <Filter>Fichiers sources\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="source\GUIFontAtlas.cpp">
+      <Filter>Fichiers sources\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="source\GUIFontFile.cpp">
+      <Filter>Fichiers sources\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="source\GUIFontGlyph.cpp">
+      <Filter>Fichiers sources\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="source\GUIFontManager.cpp">
+      <Filter>Fichiers sources\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="source\GUIEclidianDistanceTransformAA.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\GUIScene.cpp">
+      <Filter>Fichiers sources\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="source\GUIPage.cpp">
+      <Filter>Fichiers sources\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="source\GUIFontSVGManager.cpp">
+      <Filter>Fichiers sources\FontSVG</Filter>
+    </ClCompile>
+    <ClCompile Include="source\GUIOutline.cpp">
+      <Filter>Fichiers sources\FontSVG</Filter>
+    </ClCompile>
+    <ClCompile Include="source\GUIBezier.cpp">
+      <Filter>Fichiers sources\FontSVG</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

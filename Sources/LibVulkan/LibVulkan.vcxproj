@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{5AFBD3A7-5B02-45BA-88D0-A3E6F3063F9F}</ProjectGuid>
+    <RootNamespace>LibVulkan</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\Props\MouCaTechProp.props" />
+    <Import Project="..\..\Props\MouCaDebug.props" />
+    <Import Project="..\..\Props\GLM.props" />
+    <Import Project="..\..\Props\Vulkan.props" />
+    <Import Project="..\..\Props\GLI.props" />
+    <Import Project="..\..\Props\ImGUI.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\Props\MouCaTechProp.props" />
+    <Import Project="..\..\Props\MouCaRelease.props" />
+    <Import Project="..\..\Props\GLM.props" />
+    <Import Project="..\..\Props\Vulkan.props" />
+    <Import Project="..\..\Props\GLI.props" />
+    <Import Project="..\..\Props\ImGUI.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\Props\MouCaTechProp.props" />
+    <Import Project="..\..\Props\MouCaProfile.props" />
+    <Import Project="..\..\Props\GLM.props" />
+    <Import Project="..\..\Props\Vulkan.props" />
+    <Import Project="..\..\Props\GLI.props" />
+    <Import Project="..\..\Props\ImGUI.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Dependancies.h" />
+    <ClInclude Include="include\VKCommandBufferSurface.h" />
+    <ClInclude Include="include\VKContextDevice.h" />
+    <ClInclude Include="include\VKContextWindow.h" />
+    <ClInclude Include="include\VKDebugReport.h" />
+    <ClInclude Include="include\VKFence.h" />
+    <ClInclude Include="include\VKBuffer.h" />
+    <ClInclude Include="include\VKCommand.h" />
+    <ClInclude Include="include\VKCommandPool.h" />
+    <ClInclude Include="include\VKDescriptorSet.h" />
+    <ClInclude Include="include\VKCommandBuffer.h" />
+    <ClInclude Include="include\VKDevice.h" />
+    <ClInclude Include="include\VKEnvironment.h" />
+    <ClInclude Include="include\VKFrameBuffer.h" />
+    <ClInclude Include="include\VKMemory.h" />
+    <ClInclude Include="include\VKMesh.h" />
+    <ClInclude Include="include\VKPipelineCache.h" />
+    <ClInclude Include="include\VKGraphicsPipeline.h" />
+    <ClInclude Include="include\VKPipelineLayout.h" />
+    <ClInclude Include="include\VKPipelineStates.h" />
+    <ClInclude Include="include\VKSequence.h" />
+    <ClInclude Include="include\VKRenderPass.h" />
+    <ClInclude Include="include\VKSampler.h" />
+    <ClInclude Include="include\VKScreenshot.h" />
+    <ClInclude Include="include\VKSemaphore.h" />
+    <ClInclude Include="include\VKShaderProgram.h" />
+    <ClInclude Include="include\VKSubmitInfo.h" />
+    <ClInclude Include="include\VKSurface.h" />
+    <ClInclude Include="include\VKSurfaceFormat.h" />
+    <ClInclude Include="include\VKSwapChain.h" />
+    <ClInclude Include="include\VKImage.h" />
+    <ClInclude Include="include\VKWindowSurface.h" />
+    <ClInclude Include="interface\VKDefines.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Dependancies.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\VKCommandBufferSurface.cpp" />
+    <ClCompile Include="source\VKContextDevice.cpp" />
+    <ClCompile Include="source\VKContextWindow.cpp" />
+    <ClCompile Include="source\VKBuffer.cpp" />
+    <ClCompile Include="source\VKCommand.cpp" />
+    <ClCompile Include="source\VKCommandPool.cpp" />
+    <ClCompile Include="source\VKDebugReport.cpp" />
+    <ClCompile Include="source\VKDescriptorSet.cpp" />
+    <ClCompile Include="source\VKCommandBuffer.cpp" />
+    <ClCompile Include="source\VKDevice.cpp" />
+    <ClCompile Include="source\VKEnvironment.cpp" />
+    <ClCompile Include="source\VKFence.cpp" />
+    <ClCompile Include="source\VKFrameBuffer.cpp" />
+    <ClCompile Include="source\VKMemory.cpp" />
+    <ClCompile Include="source\VKMesh.cpp" />
+    <ClCompile Include="source\VKPipelineCache.cpp" />
+    <ClCompile Include="source\VKGraphicsPipeline.cpp" />
+    <ClCompile Include="source\VKPipelineLayout.cpp" />
+    <ClCompile Include="source\VKPipelineStates.cpp" />
+    <ClCompile Include="source\VKSequence.cpp" />
+    <ClCompile Include="source\VKRenderPass.cpp" />
+    <ClCompile Include="source\VKSampler.cpp" />
+    <ClCompile Include="source\VKScreenshot.cpp" />
+    <ClCompile Include="source\VKSemaphore.cpp" />
+    <ClCompile Include="source\VKShaderProgram.cpp" />
+    <ClCompile Include="source\VKSubmitInfo.cpp" />
+    <ClCompile Include="source\VKSurface.cpp" />
+    <ClCompile Include="source\VKSurfaceFormat.cpp" />
+    <ClCompile Include="source\VKSwapChain.cpp" />
+    <ClCompile Include="source\VKImage.cpp" />
+    <ClCompile Include="source\VKWindowSurface.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

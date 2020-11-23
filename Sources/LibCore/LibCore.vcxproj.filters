@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Fichiers sources">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Language">
+      <UniqueIdentifier>{daae7090-a4b3-4319-bf35-0b5f0b7d3b59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Errors">
+      <UniqueIdentifier>{96f43c90-edfa-44cb-b094-928b141a7963}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Errors">
+      <UniqueIdentifier>{8feb40a4-2d63-4e9c-8158-66e9fc4ae3bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Language">
+      <UniqueIdentifier>{0dd6da23-f310-4808-be2d-101d075d826b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Patterns &amp; Structures">
+      <UniqueIdentifier>{cf23abd0-dc75-413f-9fb5-c7c859d2cf7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\File">
+      <UniqueIdentifier>{a91ed319-3bc1-4c3b-ad1e-19c5ba825c2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\String">
+      <UniqueIdentifier>{531244ad-5f7f-49b5-8021-03998a8655d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\File">
+      <UniqueIdentifier>{4f2a070c-d518-4b0a-bb5f-04dd26cb98ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Tools">
+      <UniqueIdentifier>{fdc957df-08c6-40d6-9549-01e4cb5b664f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Maths">
+      <UniqueIdentifier>{207f3cab-36b7-4d38-a8da-2daa15570b8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Threading">
+      <UniqueIdentifier>{76f2786e-624d-4f33-8f9e-59a47be0fe85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Resources">
+      <UniqueIdentifier>{a2ebf3f7-40bd-4d30-98df-5bf24807c184}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Tools">
+      <UniqueIdentifier>{241ddca9-aee6-4584-96ca-c4eaa6ff0857}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\OS">
+      <UniqueIdentifier>{ae560bf4-cddf-40cc-a979-3fa43aad7996}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\OS">
+      <UniqueIdentifier>{5a0f2f8c-bdf3-4548-ab34-bcef4b7a5cb4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\BTError.h">
+      <Filter>Fichiers d%27en-tête\Errors</Filter>
+    </ClInclude>
+    <ClInclude Include="Dependancies.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BTString.h">
+      <Filter>Fichiers d%27en-tête\String</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BTFileWrapper.h">
+      <Filter>Fichiers d%27en-tête\File</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BTDefine.h">
+      <Filter>Fichiers d%27en-tête\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BTException.h">
+      <Filter>Fichiers d%27en-tête\Errors</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BTFile.h">
+      <Filter>Fichiers d%27en-tête\File</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BTMaths.h">
+      <Filter>Fichiers d%27en-tête\Maths</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BTThread.h">
+      <Filter>Fichiers d%27en-tête\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BTResource.h">
+      <Filter>Fichiers d%27en-tête\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BTByteBuffer.h">
+      <Filter>Fichiers d%27en-tête\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BTElapser.h">
+      <Filter>Fichiers d%27en-tête\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BTStandardOS.h">
+      <Filter>Fichiers d%27en-tête\OS</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BTProcess.h">
+      <Filter>Fichiers d%27en-tête\OS</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BTFileTracker.h">
+      <Filter>Fichiers d%27en-tête\File</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BTSignal.h">
+      <Filter>Fichiers d%27en-tête\Patterns &amp; Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BTIdentifier.h">
+      <Filter>Fichiers d%27en-tête\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BTOperatingSystem.h">
+      <Filter>Fichiers d%27en-tête\OS</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BTLocale.h">
+      <Filter>Fichiers d%27en-tête\Language</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\BTError.cpp">
+      <Filter>Fichiers sources\Errors</Filter>
+    </ClCompile>
+    <ClCompile Include="Dependancies.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\BTException.cpp">
+      <Filter>Fichiers sources\Errors</Filter>
+    </ClCompile>
+    <ClCompile Include="source\BTFile.cpp">
+      <Filter>Fichiers sources\File</Filter>
+    </ClCompile>
+    <ClCompile Include="source\BTByteBuffer.cpp">
+      <Filter>Fichiers sources\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="source\BTStandardOS.cpp">
+      <Filter>Fichiers sources\OS</Filter>
+    </ClCompile>
+    <ClCompile Include="source\BTProcess.cpp">
+      <Filter>Fichiers sources\OS</Filter>
+    </ClCompile>
+    <ClCompile Include="source\BTFileTracker.cpp">
+      <Filter>Fichiers sources\File</Filter>
+    </ClCompile>
+    <ClCompile Include="source\BTIdentifier.cpp">
+      <Filter>Fichiers sources\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="source\BTLocale.cpp">
+      <Filter>Fichiers sources\Language</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
