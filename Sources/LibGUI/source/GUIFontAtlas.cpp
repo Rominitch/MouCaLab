@@ -21,9 +21,9 @@ void GUIFontAtlas::Release()
 
 void GUIFontAtlas::Initialize(const size_t szWidth, const size_t szHeight, const size_t szNbComponants)
 {
-	BT_ASSERT(0 < szWidth  && szWidth <= TEXTURE_MAX_LIMITATION);	//DEV Issue: Limitation for current texture size
-	BT_ASSERT(0 < szHeight && szHeight <= TEXTURE_MAX_LIMITATION);	//DEV Issue: Limitation for current texture size
-	BT_ASSERT(0 < szNbComponants && szNbComponants <= 4);			//DEV Issue: Limitation 
+	MOUCA_ASSERT(0 < szWidth  && szWidth <= TEXTURE_MAX_LIMITATION);	//DEV Issue: Limitation for current texture size
+	MOUCA_ASSERT(0 < szHeight && szHeight <= TEXTURE_MAX_LIMITATION);	//DEV Issue: Limitation for current texture size
+	MOUCA_ASSERT(0 < szNbComponants && szNbComponants <= 4);			//DEV Issue: Limitation 
 	
 	//First release old data
 	Release();
@@ -48,13 +48,13 @@ void GUIFontAtlas::Initialize(const size_t szWidth, const size_t szHeight, const
 // ----------------------------------------------- texture_atlas_set_region ---
 void GUIFontAtlas::CopyRegion(const size_t x, const size_t y, const size_t width, const size_t height, const unsigned char * data, const size_t stride)
 {
-	BT_ASSERT(data != NULL);
-	BT_ASSERT(m_szWidth > 0 && m_szHeight > 0);
-	BT_ASSERT(x > 0 && y > 0);
-	BT_ASSERT(x < (m_szWidth - 1));
-	BT_ASSERT((x + width) <= (m_szWidth - 1));
-	BT_ASSERT(y < (m_szHeight - 1));
-	BT_ASSERT((y + height) <= (m_szHeight - 1));
+	MOUCA_ASSERT(data != NULL);
+	MOUCA_ASSERT(m_szWidth > 0 && m_szHeight > 0);
+	MOUCA_ASSERT(x > 0 && y > 0);
+	MOUCA_ASSERT(x < (m_szWidth - 1));
+	MOUCA_ASSERT((x + width) <= (m_szWidth - 1));
+	MOUCA_ASSERT(y < (m_szHeight - 1));
+	MOUCA_ASSERT((y + height) <= (m_szHeight - 1));
 
 	unsigned char* pData = static_cast<unsigned char*>(m_Buffer.getData());
 
@@ -101,7 +101,7 @@ int GUIFontAtlas::Fit(const size_t index, const size_t width, const size_t heigh
 
 void GUIFontAtlas::Merge()
 {
-	BT_ASSERT(!m_vNodes.empty());
+	MOUCA_ASSERT(!m_vNodes.empty());
 
 // 	NodesVector::iterator itNode = m_vNodes.begin();
 // 	NodesVector::iterator itNext = itNode+1;

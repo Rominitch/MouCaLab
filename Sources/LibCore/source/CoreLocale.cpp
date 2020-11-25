@@ -22,7 +22,7 @@ _language(defaultLanguage), _country(defaultCountry)
 	{
 		std::vector<Core::String> results;
 		boost::split(results, Core::convertToU8(localeName), [](const auto& c) {return c == u8'-'; });
-		BT_ASSERT(results.size() >= 2);
+		MOUCA_ASSERT(results.size() >= 2);
 
 		_language = results[0];
 		_country  = results[1];

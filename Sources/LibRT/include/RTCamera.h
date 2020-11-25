@@ -45,7 +45,7 @@ namespace RT
                 //projectionMatrix = glm::perspective(45.0f, ratio, 0.0001f, 1000.0f);
                 const float nearC = std::max(0.00001f, middle - scene.getRadius());
                 const float farC  = std::max(0.00001f, middle + scene.getRadius());
-                BT_ASSERT(nearC <= farC);
+                MOUCA_ASSERT(nearC <= farC);
 
                 projectionMatrix = glm::perspective(45.0f, ratio, nearC, farC);
             }

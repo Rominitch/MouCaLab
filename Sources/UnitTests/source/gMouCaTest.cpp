@@ -3,7 +3,7 @@
 Core::Path MouCaEnvironment::g_inputPath;
 Core::Path MouCaEnvironment::g_outputPath;
 Core::Path MouCaEnvironment::g_workingPath;
-bool     MouCaEnvironment::_isDemonstrator = false;
+bool       MouCaEnvironment::_isDemonstrator = false;
 
 #ifdef RT_AVAILABLE
 

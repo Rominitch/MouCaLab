@@ -12,9 +12,9 @@ _initialize(false), _runLoop(false)
 
 Platform::~Platform()
 {
-    BT_ASSERT(!_initialize); // DEV Issue: missing release call !
-    BT_ASSERT(_windows.empty());
-    BT_ASSERT(!_runLoop);
+    MOUCA_ASSERT(!_initialize); // DEV Issue: missing release call !
+    MOUCA_ASSERT(_windows.empty());
+    MOUCA_ASSERT(!_runLoop);
 }
 
 void Platform::initialize()
@@ -92,7 +92,7 @@ void Platform::releaseWindow(const Windows::iterator& itWindow)
 void Platform::releaseWindow(Window*& window)
 {
     MOUCA_PRE_CONDITION(!isNull());
-    BT_ASSERT(window != NULL);
+    MOUCA_ASSERT(window != NULL);
     std::lock_guard<std::mutex> guard(_guardWindows);
 
     const auto itWindow = std::find_if(_windows.begin(), _windows.end(), [&](const WindowSPtr& SWindow) { return (SWindow.get() == window); });
@@ -115,7 +115,7 @@ void Platform::releaseWindow(const WindowWPtr& weakWindow)
 
 bool Platform::isWindowsActive()
 {
-    BT_ASSERT(_initialize);
+    MOUCA_ASSERT(_initialize);
     std::lock_guard<std::mutex> guard(_guardWindows);
     return !_windows.empty();
 }
@@ -134,7 +134,7 @@ void Platform::pollEvents()
 void Platform::runMainLoop()
 {
     MOUCA_PRE_CONDITION(!isNull());
-    BT_ASSERT(!_windows.empty());    //DEV Issue: launch loop without window !
+    MOUCA_ASSERT(!_windows.empty());    //DEV Issue: launch loop without window !
     
     _runLoop = true;
 

@@ -17,7 +17,7 @@ class MouCaEnvironment : public testing::Environment
     public:
         void initialize(int argc, char** argv)
         {
-            BT_ASSERT(argc > 0);
+            MOUCA_ASSERT(argc > 0);
 
             //Read application path
             Core::Path path;
@@ -25,7 +25,7 @@ class MouCaEnvironment : public testing::Environment
             {
                 path = Core::Path(argv[0]).parent_path();
             }
-            BT_ASSERT(std::filesystem::is_directory(path));
+            MOUCA_ASSERT(std::filesystem::is_directory(path));
 
             g_inputPath   = Core::Path(path.wstring()) / L".." / L"Inputs";
             g_outputPath  = Core::Path(path.wstring()) / L".." / L"Outputs";
@@ -43,8 +43,8 @@ class MouCaEnvironment : public testing::Environment
             }
 
             //Post condition all data must be valid !
-            BT_ASSERT(std::filesystem::is_directory(getInputPath()));
-            BT_ASSERT(std::filesystem::is_directory(getOutputPath()));
+            MOUCA_ASSERT(std::filesystem::is_directory(getInputPath()));
+            MOUCA_ASSERT(std::filesystem::is_directory(getOutputPath()));
         }
 
         static const Core::Path& getInputPath()

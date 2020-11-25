@@ -30,7 +30,7 @@ void SwapChain::initialize(const Device& device, const Surface& surface, const S
     MOUCA_PRE_CONDITION(!surface.isNull());
 
     const SurfaceFormat::Configuration& configuration = format.getConfiguration();
-    BT_ASSERT(format.isSupported());
+    MOUCA_ASSERT(format.isSupported());
 
     // Mandatory for screenshot
     const VkImageUsageFlags imageUsage = static_cast<VkImageUsageFlags>( configuration._usage | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT);
@@ -73,7 +73,7 @@ void SwapChain::generateImages(const Device& device, const SurfaceFormat& format
     MOUCA_PRE_CONDITION(_images.empty());
 
     const SurfaceFormat::Configuration& configuration = format.getConfiguration();
-    BT_ASSERT(format.isSupported());
+    MOUCA_ASSERT(format.isSupported());
 
     //Create images
     uint32_t imageCount = 0;
@@ -117,7 +117,7 @@ void SwapChain::release(const Device& device)
     //DEV Issue: defined sequences but not anymore valid swapchain ???
     for(auto& sequence : _linkSequences)
     {
-        BT_ASSERT(!sequence.expired());
+        MOUCA_ASSERT(!sequence.expired());
     }
 #endif
     _linkSequences.clear();

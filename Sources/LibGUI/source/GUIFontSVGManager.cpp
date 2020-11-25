@@ -101,7 +101,7 @@ struct GlyphInfo
 
 void FontSVGManager::buildFontBuffers(RT::BufferCPU& glyphDict, RT::BufferCPU& glyphCells, RT::BufferCPU& glyphPoints)
 {
-    BT_ASSERT(!_fonts.empty());
+    MOUCA_ASSERT(!_fonts.empty());
 
     uint32_t nbGlyphs = 0;
     uint32_t nbCells  = 0;
@@ -116,7 +116,7 @@ void FontSVGManager::buildFontBuffers(RT::BufferCPU& glyphDict, RT::BufferCPU& g
             nbPoints += static_cast<uint32_t>(glyph.second._outline.getPoints().size());
         }
     }
-    BT_ASSERT(nbGlyphs > 0);
+    MOUCA_ASSERT(nbGlyphs > 0);
 
     auto glyphs = reinterpret_cast<DeviceGlyphInfo*>(glyphDict.create(RT::BufferDescriptor(sizeof(DeviceGlyphInfo)), nbGlyphs));
     auto cells  = reinterpret_cast<uint32_t*>(glyphCells.create(RT::BufferDescriptor(sizeof(uint32_t)),          nbCells));
@@ -146,7 +146,7 @@ void FontSVGManager::buildFontBuffers(RT::BufferCPU& glyphDict, RT::BufferCPU& g
 
 void FontSVGManager::buildFontBuffersV2(RT::BufferCPU& glyphDict, RT::BufferCPU& glyphPoints, RT::BufferCPU& glyphControl)
 {
-    BT_ASSERT(!_fonts.empty());
+    MOUCA_ASSERT(!_fonts.empty());
 
     uint32_t nbGlyphs   = 0;
     uint32_t nbControls = 0;
@@ -162,13 +162,13 @@ void FontSVGManager::buildFontBuffersV2(RT::BufferCPU& glyphDict, RT::BufferCPU&
             nbControls += static_cast<uint32_t>(glyph.second._outline.getControlPoint().size());
         }
     }
-    BT_ASSERT(nbGlyphs > 0);
+    MOUCA_ASSERT(nbGlyphs > 0);
 
     auto glyphs   = reinterpret_cast<GlyphInfo*>            (glyphDict.create(RT::BufferDescriptor(sizeof(GlyphInfo)),                nbGlyphs));
     auto points   = reinterpret_cast<Outline::Point*>       (glyphPoints.create(RT::BufferDescriptor(sizeof(Outline::Point)),         nbPoints));
     auto controls = reinterpret_cast<Outline::ControlPoint*>(glyphControl.create(RT::BufferDescriptor(sizeof(Outline::ControlPoint)), nbControls));
 
-    BT_ASSERT(_ordered.size() == nbGlyphs);
+    MOUCA_ASSERT(_ordered.size() == nbGlyphs);
 
     uint32_t pointOffset   = 0;
     uint32_t controlOffset = 0;
@@ -211,10 +211,10 @@ void FontFamilySVG::initialize(FT_Library library)
         }
 
         FT_Error error = FT_Select_Charmap(font._face, ft_encoding_unicode);
-        BT_ASSERT(!error);
+        MOUCA_ASSERT(!error);
         //error = FT_Set_Char_Size(font._face, 0, 64000, 96, 96);
         error = FT_Set_Char_Size(font._face, 0, 6400, 96, 96);
-        BT_ASSERT(!error);
+        MOUCA_ASSERT(!error);
     }
 
     MOUCA_POST_CONDITION(!isNull());
@@ -269,7 +269,7 @@ const FontFamilySVG::GlyphSVG& FontFamilySVG::addGlyph(const GlyphCode& glyphCod
         outline.convert(itFont->_face->glyph->outline);
 
         const auto [it, success] = _glyphs.insert({ glyphCode, std::move(GlyphSVG(std::move(outline), static_cast<float>(itFont->_face->glyph->metrics.horiAdvance * Outline::_scale), static_cast<uint32_t>(_manager._ordered.size()))) });
-        BT_ASSERT(success);
+        MOUCA_ASSERT(success);
         _manager._ordered.emplace_back(&it->second);
         return it->second;
     };

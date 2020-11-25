@@ -39,7 +39,7 @@ namespace Core
             /// \param[in]  printer: link to printer.
             void setPrinter(const ErrorPrinterPtr& printer)
             {
-                BT_ASSERT(printer != nullptr);
+                MOUCA_ASSERT(printer != nullptr);
                 _printer = printer;
             }
 

@@ -21,8 +21,8 @@ void GUIFontManager::Create(const size_t szWidth, const size_t szHeight)
 // ----------------------------------------- font_manager_get_from_filename ---
 GUIFontPolicePtr GUIFontManager::BuildFontFromFilename(const Core::StringOS& strFilename, const float size)
 {
-    BT_ASSERT(!strFilename.empty());
-    BT_ASSERT(size > 0);
+    MOUCA_ASSERT(!strFilename.empty());
+    MOUCA_ASSERT(size > 0);
 
     GUIFontPolicePtr pDemandedFont;
 

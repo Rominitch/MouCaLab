@@ -121,7 +121,7 @@ void Platform::pollEvents()
         {
             case vr::VREvent_TrackedDeviceActivated:
             {
-                BT_ASSERT(event.trackedDeviceIndex < _trackedDevices.size());
+                MOUCA_ASSERT(event.trackedDeviceIndex < _trackedDevices.size());
 
                 auto& trackedDevice = _trackedDevices[event.trackedDeviceIndex];
 
@@ -135,7 +135,7 @@ void Platform::pollEvents()
             break;
             case vr::VREvent_TrackedDeviceDeactivated:
             {
-                BT_ASSERT(event.trackedDeviceIndex < _trackedDevices.size());
+                MOUCA_ASSERT(event.trackedDeviceIndex < _trackedDevices.size());
 
                 auto& trackedDevice = _trackedDevices[event.trackedDeviceIndex];
                 trackedDevice._isConnected = false;
@@ -143,7 +143,7 @@ void Platform::pollEvents()
             break;
             case vr::VREvent_TrackedDeviceUpdated:
             {
-                BT_ASSERT(event.trackedDeviceIndex < _trackedDevices.size());
+                MOUCA_ASSERT(event.trackedDeviceIndex < _trackedDevices.size());
 
                 auto& trackedDevice = _trackedDevices[event.trackedDeviceIndex];
             }

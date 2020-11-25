@@ -109,8 +109,8 @@ namespace RT
             {
                 release();
 
-                BT_ASSERT( descriptor.getByteSize() > 0 );
-                BT_ASSERT( nbElementsBuffer > 0 );
+                MOUCA_ASSERT( descriptor.getByteSize() > 0 );
+                MOUCA_ASSERT( nbElementsBuffer > 0 );
 
                 _nbElements	= nbElementsBuffer;
                 _descriptor	= descriptor;

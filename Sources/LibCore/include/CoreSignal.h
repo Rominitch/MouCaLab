@@ -33,7 +33,7 @@ namespace Core
                 return connect(reinterpret_cast<IdConnexion>(inst),
                                [=](Args... args)
                                {
-                                   BT_ASSERT(inst != nullptr);
+                                   MOUCA_ASSERT(inst != nullptr);
                                    (inst->*func)(args...);
                                });
             }
@@ -45,7 +45,7 @@ namespace Core
                 return connect(reinterpret_cast<IdConnexion>(inst.lock().get()),
                                [=](Args... args)
                                {
-                                   BT_ASSERT(!inst.expired());
+                                   MOUCA_ASSERT(!inst.expired());
                                    ( inst.lock().get()->*func )( args... );
                                });
             }
@@ -56,7 +56,7 @@ namespace Core
                 return connect(reinterpret_cast<IdConnexion>(inst.lock().get()),
                                [=](Args... args)
                                {
-                                   BT_ASSERT(!inst.expired());
+                                   MOUCA_ASSERT(!inst.expired());
                                    ( inst.lock().get()->*func )( args... );
                                });
             }

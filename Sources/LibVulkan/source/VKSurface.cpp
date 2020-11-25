@@ -18,12 +18,12 @@ _surface(VK_NULL_HANDLE)
 
 Surface::~Surface()
 {
-    BT_ASSERT(_surface == VK_NULL_HANDLE);
+    MOUCA_ASSERT(_surface == VK_NULL_HANDLE);
 }
 
 void Surface::initialize(const Environment& environment, const RT::Window& window)
 {
-    BT_ASSERT(_surface == VK_NULL_HANDLE);
+    MOUCA_ASSERT(_surface == VK_NULL_HANDLE);
 
 #ifdef VK_USE_PLATFORM_WIN32_KHR
     //Prepare data
@@ -74,7 +74,7 @@ void Surface::initialize(const Environment& environment, const RT::Window& windo
 
 void Surface::release(const Environment& environment)
 {
-    BT_ASSERT(_surface != VK_NULL_HANDLE);
+    MOUCA_ASSERT(_surface != VK_NULL_HANDLE);
 
     vkDestroySurfaceKHR(environment.getInstance(), _surface, nullptr);
     _surface = VK_NULL_HANDLE;
@@ -82,7 +82,7 @@ void Surface::release(const Environment& environment)
 
 void Surface::computeSurfaceFormat(const Device& device, const SurfaceFormat::Configuration& userPreferences, SurfaceFormat& surfaceFormat)
 {
-    BT_ASSERT(!device.isNull());                 //DEV Issue: Need a valid device !
+    MOUCA_ASSERT(!device.isNull());                 //DEV Issue: Need a valid device !
 
     //Read surface information
     VkSurfaceCapabilitiesKHR surfaceCapabilities;

@@ -45,7 +45,7 @@ namespace RT
         public:
             Viewer(void)
             {
-                BT_ASSERT(isNull());
+                MOUCA_ASSERT(isNull());
             }
             virtual ~Viewer(void)
             {
@@ -54,7 +54,7 @@ namespace RT
                 _camera.reset();
                 //_eventManager.reset();
 
-                BT_ASSERT(isNull());
+                MOUCA_ASSERT(isNull());
             }
 
             void setRenderer(const RT::RendererSPtr& renderer);

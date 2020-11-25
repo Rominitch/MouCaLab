@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Dependancies.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DatabaseManager.cpp">
+      <Filter>Fichiers sources\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DatabaseManagerSqlite.cpp">
+      <Filter>Fichiers sources\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="source\LoaderManager.cpp">
+      <Filter>Fichiers sources\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ResourceManager.cpp">
+      <Filter>Fichiers sources\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\CoreSystem.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Dependancies.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreSystem.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DatabaseManager.h">
+      <Filter>Fichiers d%27en-tête\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DatabaseManagerSqlite.h">
+      <Filter>Fichiers d%27en-tête\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="include\LoaderManager.h">
+      <Filter>Fichiers d%27en-tête\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ResourceManager.h">
+      <Filter>Fichiers d%27en-tête\Resources</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Fichiers d%27en-tête">
+      <UniqueIdentifier>{e7613357-a384-4fbf-9d99-2d1bd650ebac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources">
+      <UniqueIdentifier>{6f4b8bff-e54c-4266-95d2-4d218df9bfb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Resources">
+      <UniqueIdentifier>{7948b8ad-e2cc-4107-9693-d84e34929f32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Resources">
+      <UniqueIdentifier>{51c8822c-4b3e-47f4-90a4-7d2b70d60b57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Database">
+      <UniqueIdentifier>{dbee4e04-523f-4d6d-9756-910c1d6b4ed0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Database">
+      <UniqueIdentifier>{76079992-f702-4fc4-a366-d994c81ff8ca}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

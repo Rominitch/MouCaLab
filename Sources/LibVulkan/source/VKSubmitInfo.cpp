@@ -21,14 +21,14 @@ void SubmitInfo::addSynchronization(const std::vector<WaitSemaphore>& waitSemaph
     _waitStageFlag.reserve(waitSemaphores.size());
     for (const auto& waitSemaphore : waitSemaphores)
     {
-        BT_ASSERT(!waitSemaphore.first.lock()->isNull()); //DEV Issue: Bad semaphore: plesae call intialize() !
+        MOUCA_ASSERT(!waitSemaphore.first.lock()->isNull()); //DEV Issue: Bad semaphore: plesae call intialize() !
         _waitSemaphore.emplace_back(waitSemaphore.first.lock()->getInstance());
         _waitStageFlag.emplace_back(waitSemaphore.second);
     }
     _signalSemaphore.reserve(signalSemaphores.size());
     for (const auto& signalSemaphore : signalSemaphores)
     {
-        BT_ASSERT(!signalSemaphore.lock()->isNull()); //DEV Issue: Bad semaphore: plesae call intialize() !
+        MOUCA_ASSERT(!signalSemaphore.lock()->isNull()); //DEV Issue: Bad semaphore: plesae call intialize() !
         _signalSemaphore.emplace_back(signalSemaphore.lock()->getInstance());
     }
 }

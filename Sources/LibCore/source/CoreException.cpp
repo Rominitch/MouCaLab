@@ -40,7 +40,7 @@ void Exception::addCatchedError(const ErrorData& pLastError) noexcept
 
 const ErrorData& Exception::read(const size_t szId) const noexcept
 {
-    BT_ASSERT(szId < _errorsHierarchy.size());
+    MOUCA_ASSERT(szId < _errorsHierarchy.size());
 
     return _errorsHierarchy[szId];
 }

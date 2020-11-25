@@ -44,7 +44,7 @@ class ThreadPools final
             _threadList.push_back(pThread);
 
             //Add thread to group
-            BT_ASSERT(groupID < _groupList.size());
+            MOUCA_ASSERT(groupID < _groupList.size());
             _groupList[groupID].push_back(pThread);
         }
 

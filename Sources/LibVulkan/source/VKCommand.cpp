@@ -279,7 +279,7 @@ CommandBindMesh(mesh, bindID),
 _indicesCount(static_cast<uint32_t>(mesh.getIndexCount())),
 _instanceCount(instanceCount)
 {
-    BT_ASSERT(!mesh.isNull());
+    MOUCA_ASSERT(!mesh.isNull());
 }
 
 void CommandDrawMesh::execute(const VkCommandBuffer& commandBuffer)
@@ -300,7 +300,7 @@ CommandDrawLines::CommandDrawLines(const Mesh& mesh, const uint32_t bindID, cons
     _instanceCount(instanceCount),
     _widthLine(widthLine)
 {
-    BT_ASSERT(!mesh.isNull());
+    MOUCA_ASSERT(!mesh.isNull());
 }
 
 void CommandDrawLines::execute(const VkCommandBuffer& commandBuffer)
@@ -326,7 +326,7 @@ void CommandDrawLines::execute(const ExecuteCommands& executer)
 CommandBindDescriptorSets::CommandBindDescriptorSets(const PipelineLayout& pipelineLayout, const VkPipelineBindPoint bindPoint, const uint32_t firstSet, const std::vector<VkDescriptorSet>& descriptors, std::vector<uint32_t>&& dynamicOffsets):
 _pipelineLayoutID(pipelineLayout.getInstance()), _bindPoint(bindPoint), _firstSet(firstSet), _descriptorsID(std::move(descriptors)), _dynamicOffsets(std::move(dynamicOffsets))
 {
-    BT_ASSERT(!pipelineLayout.isNull());
+    MOUCA_ASSERT(!pipelineLayout.isNull());
 }
 
 void CommandBindDescriptorSets::execute(const VkCommandBuffer& commandBuffer)
@@ -348,8 +348,8 @@ _source(source),
 _destination(destination),
 _copyRegion(copyRegion)
 {
-    BT_ASSERT(source != VK_NULL_HANDLE);
-    BT_ASSERT(destination != VK_NULL_HANDLE);
+    MOUCA_ASSERT(source != VK_NULL_HANDLE);
+    MOUCA_ASSERT(destination != VK_NULL_HANDLE);
 }
 
 void CommandCopyImage::execute(const VkCommandBuffer& commandBuffer)
@@ -373,10 +373,10 @@ _source(source.getBuffer()),
 _destination(destination.getBuffer()),
 _copyRegion(copyRegion)
 {
-    BT_ASSERT(!source.isNull());
-    BT_ASSERT(!destination.isNull());
-    BT_ASSERT(source.getDescriptor().range >= _copyRegion.size);
-    BT_ASSERT(destination.getDescriptor().range >= _copyRegion.size);
+    MOUCA_ASSERT(!source.isNull());
+    MOUCA_ASSERT(!destination.isNull());
+    MOUCA_ASSERT(source.getDescriptor().range >= _copyRegion.size);
+    MOUCA_ASSERT(destination.getDescriptor().range >= _copyRegion.size);
 }
 
 void CommandCopy::execute(const VkCommandBuffer& commandBuffer)
@@ -419,7 +419,7 @@ _srcStage(srcStage), _dstStage(dstStage), _dependencyFlags(dependencyFlags), _me
 
 void CommandPipelineBarrier::execute(const VkCommandBuffer& commandBuffer)
 {
-    BT_ASSERT(commandBuffer!=VK_NULL_HANDLE);
+    MOUCA_ASSERT(commandBuffer!=VK_NULL_HANDLE);
     vkCmdPipelineBarrier(commandBuffer, _srcStage, _dstStage, _dependencyFlags,
                          static_cast<uint32_t>(_memoryBarriers.size()),
                          _memoryBarriers.empty()       ? nullptr : _memoryBarriers.data(),
@@ -431,7 +431,7 @@ void CommandPipelineBarrier::execute(const VkCommandBuffer& commandBuffer)
 
 void CommandPipelineBarrier::execute(const ExecuteCommands& executer)
 {
-    BT_ASSERT(executer.commandBuffer!=VK_NULL_HANDLE);
+    MOUCA_ASSERT(executer.commandBuffer!=VK_NULL_HANDLE);
     vkCmdPipelineBarrier(executer.commandBuffer, _srcStage, _dstStage, _dependencyFlags,
                          static_cast<uint32_t>(_memoryBarriers.size()),
                          _memoryBarriers.empty()       ? nullptr : _memoryBarriers.data(),

@@ -60,8 +60,8 @@ void ShaderModule::initialize(const Device& device, const Core::String& shaderSo
 
 void ShaderModule::release(const Device& device)
 {
-    BT_ASSERT(!isNull());
-    BT_ASSERT(!device.isNull());
+    MOUCA_ASSERT(!isNull());
+    MOUCA_ASSERT(!device.isNull());
 
     vkDestroyShaderModule(device.getInstance(), _shaderModule, nullptr);
     _shaderModule = VK_NULL_HANDLE;
@@ -113,8 +113,8 @@ void ShaderProgram::initialize(const Device& device, const Core::File& shaderSou
 
 void ShaderProgram::release(const Device& device)
 {
-    BT_ASSERT(!isNull());
-    BT_ASSERT(!device.isNull());
+    MOUCA_ASSERT(!isNull());
+    MOUCA_ASSERT(!device.isNull());
     
     vkDestroyShaderModule(device.getInstance(), _shaderModule, nullptr);
     _shaderModule = VK_NULL_HANDLE;

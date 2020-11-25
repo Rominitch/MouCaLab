@@ -40,7 +40,7 @@ namespace Vulkan
 
             const VkFramebuffer getInstance() const
             {
-                BT_ASSERT(!isNull());
+                MOUCA_ASSERT(!isNull());
                 return _frameBuffer;
             }
 

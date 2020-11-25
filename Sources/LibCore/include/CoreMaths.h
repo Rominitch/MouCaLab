@@ -56,7 +56,7 @@ namespace Core
         constexpr static DataType roundUpperDiv(const DataType value, const DataType divider)
         {
             static_assert(std::numeric_limits<DataType>::is_integer);
-            BT_ASSERT(divider > 0);
+            MOUCA_ASSERT(divider > 0);
 
             return 1 + ((value - 1) / divider);
         }

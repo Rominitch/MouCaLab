@@ -37,7 +37,7 @@ void AnimationBones::updateAnimation(AnimatedGeometry& geometry, const uint32_t 
     auto itNext = std::find_if(animation.cbegin(), animation.cend(), [&](const BonesFrame& frame) {return frame._time > time; });
     auto itFrame = itNext;
     --itFrame;
-    BT_ASSERT(itNext != animation.cbegin());
+    MOUCA_ASSERT(itNext != animation.cbegin());
     if( itNext == animation.cend() )
     {
         if( !geometry.hasLoop() )
@@ -48,7 +48,7 @@ void AnimationBones::updateAnimation(AnimatedGeometry& geometry, const uint32_t 
     
     // Find interpolation factor
     const double interpolate = (time - itFrame->_time) / ( itNext->_time - itFrame->_time );
-    BT_ASSERT(0.0 <= interpolate && interpolate <= 1.0);
+    MOUCA_ASSERT(0.0 <= interpolate && interpolate <= 1.0);
 
     // Parsing all nodes
     computeNodeAnimation(buffer, geometry.getBones(), Transform(), *itFrame, *itNext, interpolate);

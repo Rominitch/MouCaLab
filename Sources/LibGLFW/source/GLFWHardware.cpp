@@ -14,7 +14,7 @@ void Hardware::readHardware()
         BT_THROW_ERROR(u8"GLFWError", u8"NoMonitorError");
     }
     
-    BT_ASSERT(monitors !=nullptr);
+    MOUCA_ASSERT(monitors !=nullptr);
     _monitors.resize(static_cast<size_t>(count));
 
     GLFWmonitor** itMonitor = monitors;

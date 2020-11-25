@@ -101,7 +101,7 @@ VkCommandBuffer CommandBufferSurface::getActiveCommandBuffer() const
     MOUCA_PRE_CONDITION(!_window.expired());   // DEV Issue: No window ?
 
     const auto idBuffer = _window.lock()->getSwapChain().getCurrentImage();
-    BT_ASSERT(idBuffer < _commandBuffers.size());
+    MOUCA_ASSERT(idBuffer < _commandBuffers.size());
     return _commandBuffers[idBuffer];
 }
 

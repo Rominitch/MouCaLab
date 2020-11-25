@@ -5,7 +5,7 @@
 
 #include <LibCore/include/CorePluginEntry.h>
 
-class PlugInTest : public Core::PluginEntry
+class PlugInTest : public Core::PlugInEntry
 {
     public:
         PlugInTest() = default;

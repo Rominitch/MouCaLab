@@ -16,19 +16,19 @@ _memoryPropertyFlags(0),
 _allocatedSize(0),
 _alignment(0)
 {
-    BT_ASSERT(isNull());
+    MOUCA_ASSERT(isNull());
 }
 
 Memory::~Memory()
 {
-    BT_ASSERT(isNull());
+    MOUCA_ASSERT(isNull());
 }
 
 void Memory::release(const Device& device)
 {
-    BT_ASSERT(!isNull());
-    BT_ASSERT(!device.isNull());
-    BT_ASSERT(_mapped == nullptr);   //DEV Issue: need unmapped !!!
+    MOUCA_ASSERT(!isNull());
+    MOUCA_ASSERT(!device.isNull());
+    MOUCA_ASSERT(_mapped == nullptr);   //DEV Issue: need unmapped !!!
     
     vkFreeMemory(device.getInstance(), _memory, nullptr);
     _memory = VK_NULL_HANDLE;
@@ -37,13 +37,13 @@ void Memory::release(const Device& device)
     _allocatedSize = 0;
     _alignment = 0;
 
-    BT_ASSERT(isNull());
+    MOUCA_ASSERT(isNull());
 }
 
 void Memory::allocateMemory(const Device& device, const VkMemoryRequirements& memRequirements)
 {
-    BT_ASSERT(isNull());
-    BT_ASSERT(!device.isNull());
+    MOUCA_ASSERT(isNull());
+    MOUCA_ASSERT(!device.isNull());
 
     VkMemoryAllocateInfo memAllocateInfo =
     {
@@ -73,7 +73,7 @@ void Memory::copy(const Device& device, const VkDeviceSize size, const void *dat
 
     map(device, size);
 
-    BT_ASSERT(_mapped != nullptr);
+    MOUCA_ASSERT(_mapped != nullptr);
     memcpy(_mapped, data, size);
 
     unmap(device);
@@ -83,10 +83,10 @@ void Memory::copy(const Device& device, const VkDeviceSize size, const void *dat
 
 void Memory::map(const Device& device, const VkDeviceSize size, const VkDeviceSize offset)
 {
-    BT_ASSERT(!isNull());
-    BT_ASSERT(!device.isNull());
-    BT_ASSERT(_mapped == nullptr);
-    BT_ASSERT(size != 0);
+    MOUCA_ASSERT(!isNull());
+    MOUCA_ASSERT(!device.isNull());
+    MOUCA_ASSERT(_mapped == nullptr);
+    MOUCA_ASSERT(size != 0);
 
     // Map a part or whole of buffer
     if(vkMapMemory(device.getInstance(), _memory, offset, size, 0, &_mapped) != VK_SUCCESS)
@@ -131,10 +131,10 @@ void Memory::flush(const Device& device, const VkDeviceSize size, const VkDevice
 
 void MemoryBuffer::initialize(const Device& device, const VkBuffer& buffer, const VkMemoryPropertyFlags memoryPropertyFlags)
 {
-    BT_ASSERT(isNull());
-    BT_ASSERT(!device.isNull());
-    BT_ASSERT(buffer != VK_NULL_HANDLE);
-    BT_ASSERT(_mapped == nullptr);
+    MOUCA_ASSERT(isNull());
+    MOUCA_ASSERT(!device.isNull());
+    MOUCA_ASSERT(buffer != VK_NULL_HANDLE);
+    MOUCA_ASSERT(_mapped == nullptr);
 
     _memoryPropertyFlags = memoryPropertyFlags;
 
@@ -154,10 +154,10 @@ void MemoryBuffer::initialize(const Device& device, const VkBuffer& buffer, cons
 
 void MemoryImage::initialize(const Device& device, const VkImage& image, const VkMemoryPropertyFlags memoryPropertyFlags)
 {
-    BT_ASSERT(isNull());
-    BT_ASSERT(!device.isNull());
-    BT_ASSERT(image != VK_NULL_HANDLE);
-    BT_ASSERT(_mapped == nullptr);
+    MOUCA_ASSERT(isNull());
+    MOUCA_ASSERT(!device.isNull());
+    MOUCA_ASSERT(image != VK_NULL_HANDLE);
+    MOUCA_ASSERT(_mapped == nullptr);
 
     _memoryPropertyFlags = memoryPropertyFlags;
 

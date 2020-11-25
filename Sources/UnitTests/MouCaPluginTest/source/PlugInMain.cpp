@@ -3,7 +3,7 @@
 #include "include/PlugInMain.h"
 
 // Declare my template to build entry point into DLL
-DECLARE_PLUG_IN(PlugInTest)
+DECLARE_PLUG_IN(PlugInTest);
 
 void PlugInTest::initialize()
 {

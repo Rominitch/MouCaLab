@@ -115,7 +115,7 @@ String ErrorManager::getError(const ErrorData& error) const
     {
         pLibrary = it->second;
         
-        BT_ASSERT(pLibrary != nullptr);
+        MOUCA_ASSERT(pLibrary != nullptr);
         const ErrorDescription* pDescription = pLibrary->getDescription(error.getErrorLabel());
         ssStream << error.convertMessage(pDescription->getMessage()) << u8"\r\n" << error.convertMessage(pDescription->getSolution());
     }

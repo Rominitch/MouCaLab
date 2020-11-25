@@ -109,7 +109,7 @@ namespace RT
                     {3, Type::Float, ComponentUsage::Tangent}
                 };
 
-                BT_ASSERT(sizeof(Mesh::SGeometry) == descriptors[0].getSizeInByte() + descriptors[1].getSizeInByte() + descriptors[2].getSizeInByte() + descriptors[3].getSizeInByte());
+                MOUCA_ASSERT(sizeof(Mesh::SGeometry) == descriptors[0].getSizeInByte() + descriptors[1].getSizeInByte() + descriptors[2].getSizeInByte() + descriptors[3].getSizeInByte());
 
                 //Buffer Descriptor
                 //static const size_t					                        szNbDescriptors = 2;
@@ -130,7 +130,7 @@ namespace RT
                     {3, Type::UnsignedInt, ComponentUsage::Index}
                 };
 
-                BT_ASSERT(sizeof(Mesh::SIndex) == descriptors[0].getSizeInByte());
+                MOUCA_ASSERT(sizeof(Mesh::SIndex) == descriptors[0].getSizeInByte());
 
                 BufferDescriptor BufferDescriptorIBO;
                 BufferDescriptorIBO.initialize(descriptors);

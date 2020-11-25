@@ -36,7 +36,7 @@ size_t VirtualMouse::createNewCursor( const RT::Image& image, const RT::Point2i&
     };
 
     GLFWcursor* cursor = glfwCreateCursor(&glfwImage, center.x, center.y);
-    BT_ASSERT( cursor != NULL );
+    MOUCA_ASSERT( cursor != NULL );
 
     const size_t id = _cursors.size();
     _cursors.emplace_back( cursor );

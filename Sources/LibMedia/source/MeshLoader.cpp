@@ -38,8 +38,8 @@ void MeshLoader::createMesh(RT::MeshImport& mesh) const
         size_t szVBOSize = 0;
         size_t szIBOSize = 0;
         computeVBOIBOSize(pScene, szVBOSize, szIBOSize);
-        BT_ASSERT(szVBOSize > 0);
-        BT_ASSERT(szIBOSize > 0);
+        MOUCA_ASSERT(szVBOSize > 0);
+        MOUCA_ASSERT(szIBOSize > 0);
 
         //Allocate buffer
         RT::BufferCPUSPtr VBOQuad = std::make_shared<RT::BufferCPU>();
@@ -164,11 +164,11 @@ void MeshLoader::computeVBOIBO(const struct aiScene* pScene, float* pCurrentVert
 
     uint32_t indexBase = 0;
 
-    BT_ASSERT(descriptors.size() == pScene->mNumMeshes);
+    MOUCA_ASSERT(descriptors.size() == pScene->mNumMeshes);
     for(uint32_t uiMesh = 0; uiMesh < pScene->mNumMeshes; ++uiMesh)
     {
         const struct aiMesh* pMesh = pScene->mMeshes[uiMesh];
-        BT_ASSERT(pMesh != nullptr);
+        MOUCA_ASSERT(pMesh != nullptr);
 
         // Need to load bones
         if( description.hasComponentUsage(RT::ComponentUsage::BonesWeights) )
@@ -229,17 +229,17 @@ void MeshLoader::computeVBOIBO(const struct aiScene* pScene, float* pCurrentVert
                     if( descriptor.getFormatType() == RT::Type::Float && descriptor.getNbComponents() == 4 )
                         copier.emplace_back(boneWeightsCopy);
                     else
-                        BT_ASSERT(false);
+                        MOUCA_ASSERT(false);
                 break;
 
                 case RT::ComponentUsage::BonesIds:
                     if( descriptor.getFormatType() == RT::Type::Int && descriptor.getNbComponents() == 4 )
                         copier.emplace_back(boneIDsCopy);
                     else
-                        BT_ASSERT(false);
+                        MOUCA_ASSERT(false);
                 break;
                 default:
-                    BT_ASSERT(false);
+                    MOUCA_ASSERT(false);
             }
         }
 
@@ -270,7 +270,7 @@ void MeshLoader::computeVBOIBO(const struct aiScene* pScene, float* pCurrentVert
                 ++countValid;
             }
             //else
-                //BT_ASSERT_HEADER(false, "Number of indice is not 3.");
+                //MOUCA_ASSERT_HEADER(false, "Number of indice is not 3.");
         }
 
         descriptors[uiMesh]._startIndex = indexBase;

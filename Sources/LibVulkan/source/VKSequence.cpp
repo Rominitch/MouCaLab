@@ -49,7 +49,7 @@ _timeout(timeout), _all(waitAll)
     _fences.reserve(fences.size());
     for (auto& fence : fences)
     {
-        BT_ASSERT(!fence.lock()->isNull());
+        MOUCA_ASSERT(!fence.lock()->isNull());
         _fences.emplace_back(fence.lock()->getInstance());
     }
 }
@@ -66,7 +66,7 @@ SequenceResetFence::SequenceResetFence(const std::vector<FenceWPtr>& fences)
     _fences.reserve(fences.size());
     for (auto& fence : fences)
     {
-        BT_ASSERT(!fence.lock()->isNull());
+        MOUCA_ASSERT(!fence.lock()->isNull());
         _fences.emplace_back(fence.lock()->getInstance());
     }
 }
@@ -102,7 +102,7 @@ VkResult SequenceSubmit::execute(const Device& device)
         *itSubmitInfo = submitInfo->buildSubmitInfo();
         ++itSubmitInfo;
     }
-    BT_ASSERT(itSubmitInfo == _vkSubmitInfos.end());
+    MOUCA_ASSERT(itSubmitInfo == _vkSubmitInfos.end());
 
     return vkQueueSubmit(device.getQueue(), static_cast<uint32_t>(_vkSubmitInfos.size()), _vkSubmitInfos.data(), _fence);
 }

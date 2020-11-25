@@ -105,7 +105,7 @@ namespace GLFW
             /// \returns Get shared pointer to existing window.
             WindowSPtr getWindow(const size_t windowID) const
             {
-                BT_ASSERT(windowID < _windows.size());
+                MOUCA_ASSERT(windowID < _windows.size());
                 return _windows[windowID];
             }
 

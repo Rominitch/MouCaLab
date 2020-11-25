@@ -148,5 +148,8 @@
     <ClCompile Include="source\UT_CoreError.cpp">
       <Filter>Fichiers sources\Core</Filter>
     </ClCompile>
+    <ClCompile Include="source\UT_CorePlugInManager.cpp">
+      <Filter>Fichiers sources\Core</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

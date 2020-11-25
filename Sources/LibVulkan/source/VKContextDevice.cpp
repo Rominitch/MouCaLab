@@ -151,7 +151,7 @@ void ContextDevice::removeImage(ImageWPtr data)
 {
     MOUCA_PRE_CONDITION(!data.expired()); //DEV Issue: Need valid data
     auto itErase = std::find_if(_images.begin(), _images.end(), [&](const auto& image) { return image.get() == data.lock().get(); });
-    BT_ASSERT(itErase != _images.end());
+    MOUCA_ASSERT(itErase != _images.end());
     _images.erase(itErase);
 }
 
@@ -159,7 +159,7 @@ void ContextDevice::removeSemaphore(SemaphoreWPtr semaphore)
 {
     MOUCA_PRE_CONDITION(!semaphore.expired()); //DEV Issue: Need valid data
     auto itErase = std::find_if(_semaphores.begin(), _semaphores.end(), [&](const auto& s) { return s.get() == semaphore.lock().get(); });
-    BT_ASSERT(itErase != _semaphores.end());
+    MOUCA_ASSERT(itErase != _semaphores.end());
     _semaphores.erase(itErase);
 }
 
@@ -167,7 +167,7 @@ void ContextDevice::removeFrameBuffer(FrameBufferWPtr framebuffer)
 {
     MOUCA_PRE_CONDITION(!framebuffer.expired()); //DEV Issue: Need valid data
     auto itErase = std::find_if(_frameBuffers.begin(), _frameBuffers.end(), [&](const auto& s) { return s.get() == framebuffer.lock().get(); });
-    BT_ASSERT(itErase != _frameBuffers.end());
+    MOUCA_ASSERT(itErase != _frameBuffers.end());
     _frameBuffers.erase(itErase);
 }
 
@@ -175,7 +175,7 @@ void ContextDevice::removeRenderPass(RenderPassWPtr renderpass)
 {
     MOUCA_PRE_CONDITION(!renderpass.expired()); //DEV Issue: Need valid data
     auto itErase = std::find_if(_renderPasses.begin(), _renderPasses.end(), [&](const auto& s) { return s.get() == renderpass.lock().get(); });
-    BT_ASSERT(itErase != _renderPasses.end());
+    MOUCA_ASSERT(itErase != _renderPasses.end());
     _renderPasses.erase(itErase);
 }
 
@@ -183,7 +183,7 @@ void ContextDevice::removeFence(FenceWPtr fence)
 {
     MOUCA_PRE_CONDITION(!fence.expired()); //DEV Issue: Need valid data
     auto itErase = std::find_if(_fences.begin(), _fences.end(), [&](const auto& s) { return s.get() == fence.lock().get(); });
-    BT_ASSERT(itErase != _fences.end());
+    MOUCA_ASSERT(itErase != _fences.end());
     _fences.erase(itErase);
 }
 

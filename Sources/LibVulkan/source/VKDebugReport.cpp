@@ -10,18 +10,18 @@ namespace Vulkan
 DebugReport::DebugReport():
 _callback(VK_NULL_HANDLE)
 {
-    BT_ASSERT(isNull());
+    MOUCA_ASSERT(isNull());
 }
 
 DebugReport::~DebugReport()
 {
-    BT_ASSERT(isNull());
+    MOUCA_ASSERT(isNull());
 }
 
 void DebugReport::initialize(const VkInstance& vulkanInstance)
 {
-    BT_ASSERT(isNull());
-    BT_ASSERT(vulkanInstance != VK_NULL_HANDLE);
+    MOUCA_ASSERT(isNull());
+    MOUCA_ASSERT(vulkanInstance != VK_NULL_HANDLE);
   
     const VkDebugReportCallbackCreateInfoEXT callbackCreateInfo =
     {
@@ -47,7 +47,7 @@ void DebugReport::initialize(const VkInstance& vulkanInstance)
 
 void DebugReport::release(const VkInstance& vulkanInstance)
 {
-    BT_ASSERT(!isNull());
+    MOUCA_ASSERT(!isNull());
     auto func = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(vulkanInstance, "vkDestroyDebugReportCallbackEXT");
     if(func == nullptr)
     {

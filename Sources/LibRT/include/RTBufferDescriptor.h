@@ -192,7 +192,7 @@ namespace RT
 
             const ComponentDescriptor& getComponentDescriptor(const size_t szDescriptor) const
             {
-                BT_ASSERT(szDescriptor < _descriptors.size());
+                MOUCA_ASSERT(szDescriptor < _descriptors.size());
                 return _descriptors[szDescriptor];
             }
 

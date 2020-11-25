@@ -28,7 +28,7 @@ namespace Vulkan
 
             ~DescriptorPool()
             {
-                BT_ASSERT(isNull());
+                MOUCA_ASSERT(isNull());
             }
 
             void initialize(const Device& device, const std::vector<VkDescriptorPoolSize>& poolSizes, const uint32_t maxSets);
@@ -62,7 +62,7 @@ namespace Vulkan
 
             ~DescriptorSetLayout()
             {
-                BT_ASSERT(isNull());
+                MOUCA_ASSERT(isNull());
             }
 
             void addBinding(const VkDescriptorType type, const uint32_t count, const VkShaderStageFlags stageFlags);

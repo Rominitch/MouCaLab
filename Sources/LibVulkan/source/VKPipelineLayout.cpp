@@ -51,7 +51,7 @@ void PipelineLayout::initialize(const Device& device, const std::vector<VkDescri
 
 void PipelineLayout::release(const Device& device)
 {
-    BT_ASSERT(!isNull());
+    MOUCA_ASSERT(!isNull());
 
     vkDestroyPipelineLayout(device.getInstance(), _layout, nullptr);
     _layout = VK_NULL_HANDLE;

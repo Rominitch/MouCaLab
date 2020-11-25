@@ -19,19 +19,5 @@
 //MouCa Common
 #include <LibRT/RTGlobalDependancies.h>
 
-#include <MouCaCore/MouCaCoreImport.h>
-
 #define RT_AVAILABLE
 #include "../include/gMouCaTest.h"
-
-#ifdef  MOUCAENGINE
-#	ifdef  MOUCAENGINE_EXPORTS 
-#	define MOUCAENGINE_API __declspec(dllexport)
-#	else
-#	define MOUCAENGINE_API __declspec(dllimport)
-#	endif
-#else
-#define MOUCAENGINE_API
-#endif
-
-//#define VULKAN_USER

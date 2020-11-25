@@ -135,7 +135,7 @@ void Image::removeView(const Device& device, ImageViewWPtr view)
     auto itView = std::find_if(_views.begin(), _views.end(),
                                [&](const auto& currentView)
                                { return currentView.get() == view.lock().get(); });
-    BT_ASSERT(itView != _views.end()); ///DEV Issue: Not existing ! Already delete ? Bad Image ?
+    MOUCA_ASSERT(itView != _views.end()); ///DEV Issue: Not existing ! Already delete ? Bad Image ?
 
     // Release
     (*itView)->release(device);
@@ -149,7 +149,7 @@ void Image::resize(const Device& device, const VkExtent3D& newSize)
 
     // Clean Vulkan memory
     release(device, false);
-    BT_ASSERT(isNull());
+    MOUCA_ASSERT(isNull());
 
     // Change size
     _imageCreateInfo.extent = newSize;
@@ -162,13 +162,13 @@ void Image::resize(const Device& device, const VkExtent3D& newSize)
 
     // Allocate memory (MANDATORY to create view)
     _memory.initialize(device, _image, _memory.getFlags());
-    BT_ASSERT(!isNull());
+    MOUCA_ASSERT(!isNull());
 
     // Reallocation of view
     for (auto& view : _views)
     {
         view->initialize(device, *this, view->getInfo().viewType, view->getInfo().format, view->getInfo().components, view->getInfo().subresourceRange);
-        BT_ASSERT(!view->isNull());
+        MOUCA_ASSERT(!view->isNull());
     }
 
     MOUCA_POST_CONDITION(!isNull());

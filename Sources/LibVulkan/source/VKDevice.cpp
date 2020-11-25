@@ -301,7 +301,7 @@ void Device::initializeBestGPU(const Environment& environment, const std::vector
 
 void Device::release()
 {
-    BT_ASSERT(!isNull());
+    MOUCA_ASSERT(!isNull());
 
     waitIdle();
 
@@ -432,7 +432,7 @@ uint32_t Device::getQueueFamiliyIndex(VkQueueFlagBits queueFlags) const
 
 void Device::readFormatProperties(const VkFormat format, VkFormatProperties& formatProps) const
 {
-    BT_ASSERT(_physicalDevice != VK_NULL_HANDLE);        //DEV Issue: Missing initialize ?
+    MOUCA_ASSERT(_physicalDevice != VK_NULL_HANDLE);        //DEV Issue: Missing initialize ?
     vkGetPhysicalDeviceFormatProperties(_physicalDevice, format, &formatProps);
 }
 

@@ -34,7 +34,7 @@ _window(nullptr), _manager(manager)
     {
         _window = glfwCreateWindow(videoMode->width, videoMode->height, windowName.c_str(), handleMonitor, nullptr);
     }    
-    BT_ASSERT(_window != nullptr);
+    MOUCA_ASSERT(_window != nullptr);
 
     finalizeWindowHandler();
 }
@@ -52,7 +52,7 @@ _window(nullptr), _manager(manager)
 
     //Build window
     _window = glfwCreateWindow(viewport.getWidth(), viewport.getHeight(), windowName.c_str(), nullptr, nullptr);
-    BT_ASSERT(_window != nullptr);
+    MOUCA_ASSERT(_window != nullptr);
     
     glfwSetWindowPos(_window, viewport.getX(), viewport.getY());
 
@@ -108,7 +108,7 @@ void Window::finalizeWindowHandler()
 
 bool Window::needClose() const
 {
-    BT_ASSERT(_window != nullptr);
+    MOUCA_ASSERT(_window != nullptr);
     return glfwWindowShouldClose(_window) != GLFW_FALSE;
 }
 
@@ -118,10 +118,10 @@ void Window::onDemandClose(GLFWwindow* glfwWindow)
     Window* window = getWindow(glfwWindow);
     
     //Demand to manager to remove window = close.
-    BT_ASSERT(window->_manager != nullptr);
+    MOUCA_ASSERT(window->_manager != nullptr);
     window->_manager->releaseWindow(window);
     // Check window is properly remove
-    BT_ASSERT(window == nullptr);
+    MOUCA_ASSERT(window == nullptr);
 }
 
 void Window::onIconify(GLFWwindow* glfwWindow, int iconified)

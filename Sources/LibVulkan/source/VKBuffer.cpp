@@ -18,19 +18,19 @@ _usageFlags(0),
 _currentSize(0),
 _memoryProperty(VK_NULL_HANDLE)
 {
-    BT_ASSERT(isNull());
+    MOUCA_ASSERT(isNull());
 }
 
 Buffer::~Buffer()
 {
-    BT_ASSERT(isNull());
+    MOUCA_ASSERT(isNull());
 }
 
 void Buffer::initialize(const Device& device, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize size, const void *data)
 {
-    BT_ASSERT(isNull());
-    BT_ASSERT(!device.isNull());
-    BT_ASSERT(size > 0);
+    MOUCA_ASSERT(isNull());
+    MOUCA_ASSERT(!device.isNull());
+    MOUCA_ASSERT(size > 0);
 
     //Create the buffer handle
     VkBufferCreateInfo bufferCreateInfo =

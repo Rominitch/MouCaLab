@@ -449,7 +449,7 @@ VkFormat PipelineStateCreateInfo::computeDescriptorFormat(const RT::ComponentDes
         break;
 
         default:
-            BT_ASSERT(false); // DEV Issue: None implemented case !
+            MOUCA_ASSERT(false); // DEV Issue: None implemented case !
     }
     return format;
 }

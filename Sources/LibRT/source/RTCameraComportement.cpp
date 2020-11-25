@@ -55,7 +55,7 @@ void CameraTrackBall::updateSupportMatrix()
 
 void CameraTrackBall::rotate(const Vector2& angleRad)
 {
-    BT_ASSERT(_linkCamera != nullptr);
+    MOUCA_ASSERT(_linkCamera != nullptr);
 
     //Add angle
     _movement[ThetaRad] = Core::Maths::angleCyclic(_movement[ThetaRad] + angleRad.x);
@@ -69,7 +69,7 @@ void CameraTrackBall::rotate(const Vector2& angleRad)
 
 void CameraTrackBall::zoom(const float& fZoom)
 {
-    BT_ASSERT(_linkCamera != nullptr);
+    MOUCA_ASSERT(_linkCamera != nullptr);
     _movement[Depth] = glm::clamp(_movement[Depth] + fZoom, _limit[MinDepth], _limit[MaxDepth]);
 
     //Compute matrix

@@ -28,7 +28,7 @@ void ImageFI::initialize(const Core::Path& path)
     if (FreeImage_FIFSupportsReading(imageFormat))
     {
         FIBITMAP* imageData = FreeImage_LoadU(imageFormat, path.c_str(), 0);
-        BT_ASSERT(imageData != nullptr); // DEV Issue: file is not exist !
+        MOUCA_ASSERT(imageData != nullptr); // DEV Issue: file is not exist !
         _imageData = FreeImage_ConvertTo32Bits(imageData);
         FreeImage_Unload(imageData);
     }

@@ -16,15 +16,15 @@ _instance( VK_NULL_HANDLE )
 
 Environment::~Environment()
 {
-    BT_ASSERT(isNull());
+    MOUCA_ASSERT(isNull());
 }
 
 void Environment::initialize(const RT::ApplicationInfo& info, const std::vector<const char*>& extensions)
 {
-    BT_ASSERT(_graphicsDevices.empty());	//DEV Issue: second call ?
-    BT_ASSERT(_rejectDevices.empty());		//DEV Issue: second call ?
-    BT_ASSERT(_computeDevices.empty());		//DEV Issue: second call ?
-    BT_ASSERT(isNull());	                //DEV Issue: second call ?
+    MOUCA_ASSERT(_graphicsDevices.empty());	//DEV Issue: second call ?
+    MOUCA_ASSERT(_rejectDevices.empty());		//DEV Issue: second call ?
+    MOUCA_ASSERT(_computeDevices.empty());		//DEV Issue: second call ?
+    MOUCA_ASSERT(isNull());	                //DEV Issue: second call ?
 
     VkApplicationInfo application_info =
     {
@@ -191,7 +191,7 @@ void Environment::release()
 #endif
 
     //Release instance
-    BT_ASSERT(_instance != VK_NULL_HANDLE); //DEV Issue: release before initialize ?
+    MOUCA_ASSERT(_instance != VK_NULL_HANDLE); //DEV Issue: release before initialize ?
     vkDestroyInstance(_instance, nullptr);
     _instance = VK_NULL_HANDLE;
     
@@ -200,7 +200,7 @@ void Environment::release()
 
 void Environment::checkExtensions(const std::vector<const char*>& extensions) const
 {
-    BT_ASSERT(!extensions.empty()); //DEV Issue: need to check extension only if sent !
+    MOUCA_ASSERT(!extensions.empty()); //DEV Issue: need to check extension only if sent !
 
     //Read extensions supported by all
     uint32_t nbExtensions = 0;

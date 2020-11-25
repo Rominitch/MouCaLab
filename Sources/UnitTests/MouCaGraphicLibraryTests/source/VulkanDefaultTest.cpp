@@ -78,7 +78,7 @@ void VulkanDefaultTest::SetUp()
 
 void VulkanDefaultTest::createRenderer()
 {
-    BT_ASSERT(!_scene.getCameras().empty());
+    MOUCA_ASSERT(!_scene.getCameras().empty());
     // Create renderer
     {
         auto render = std::make_shared<Vulkan::RendererMultiSample>(&_deviceContext, MouCaEnvironment::getInputPath());

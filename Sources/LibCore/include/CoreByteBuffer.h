@@ -121,7 +121,7 @@ namespace Core
             template<typename DataType>
             ByteBuffer& operator>>(DataType& data)
             {
-                BT_ASSERT(_readPointer + sizeof(DataType) <= _buffer.size());
+                MOUCA_ASSERT(_readPointer + sizeof(DataType) <= _buffer.size());
 
                 memcpy(&data, reinterpret_cast<const MemoryByte*>(&_buffer[_readPointer]), sizeof(DataType));
                 _readPointer += sizeof(DataType);
@@ -139,7 +139,7 @@ namespace Core
                 size_t sizeS = 0;
                 *this >> sizeS;
 
-                BT_ASSERT(_readPointer + sizeS * sizeof(char) <= _buffer.size());
+                MOUCA_ASSERT(_readPointer + sizeS * sizeof(char) <= _buffer.size());
                 data.resize(sizeS);
                 memcpy(data.data(), reinterpret_cast<const MemoryByte*>(&_buffer[_readPointer]), sizeS);
                 _readPointer += sizeS;

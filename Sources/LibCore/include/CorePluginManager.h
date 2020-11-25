@@ -5,17 +5,19 @@
 
 namespace Core
 {
-    class PluginEntry;
-    using PluginEntrySPtr = std::shared_ptr<PluginEntry>;
+    class PlugInEntry;
+    using PluginEntrySPtr = std::shared_ptr<PlugInEntry>;
 
     class PlugInManager : public std::enable_shared_from_this<PlugInManager>
     {
+        MOUCA_NOCOPY_NOMOVE(PlugInManager);
+
         protected:
             class PlugInState final
             {
                 public:
                     void*			_hHandle;
-                    Core::StringOS	_name;
+                    Path  	        _name;
                     PluginEntrySPtr _plugInInstance;
             
                     PlugInState(const std::wstring& strName):
@@ -49,7 +51,7 @@ namespace Core
                 release();
             }
 
-            PlugInEntrySPtr loadDynamicLibrary(const Core::StringOS& strDynamicLibraryPath);
+            PluginEntrySPtr loadDynamicLibrary(const Path& strDynamicLibraryPath);
     };
 
 };

@@ -21,9 +21,9 @@ void BoundingBox::expand( const std::vector<Point3>& allPoints )
 
     for( const Point3& point : allPoints )
     {
-        BT_ASSERT( std::isfinite( point.x ) ); // DEV Issue: Broken point.
-        BT_ASSERT( std::isfinite( point.y ) );
-        BT_ASSERT( std::isfinite( point.z ) );
+        MOUCA_ASSERT( std::isfinite( point.x ) ); // DEV Issue: Broken point.
+        MOUCA_ASSERT( std::isfinite( point.y ) );
+        MOUCA_ASSERT( std::isfinite( point.z ) );
 
         _minMaxPoint[Min].x = std::min( _minMaxPoint[Min].x, point.x );
         _minMaxPoint[Min].y = std::min( _minMaxPoint[Min].y, point.y );
@@ -46,9 +46,9 @@ void BoundingBox::expand( const size_t size, const RT::Point3* allPoints )
 
     for( const Point3* point = &allPoints[0]; point != &allPoints[size]; ++point )
     {
-        BT_ASSERT( std::isfinite( point->x ) ); // DEV Issue: Broken point.
-        BT_ASSERT( std::isfinite( point->y ) );
-        BT_ASSERT( std::isfinite( point->z ) );
+        MOUCA_ASSERT( std::isfinite( point->x ) ); // DEV Issue: Broken point.
+        MOUCA_ASSERT( std::isfinite( point->y ) );
+        MOUCA_ASSERT( std::isfinite( point->z ) );
 
         _minMaxPoint[Min].x = std::min( _minMaxPoint[Min].x, point->x );
         _minMaxPoint[Min].y = std::min( _minMaxPoint[Min].y, point->y );

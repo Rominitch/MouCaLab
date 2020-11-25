@@ -45,13 +45,13 @@ void Mesh::initialize(const Device& device, const VkDeviceSize vertexSize, const
 
 void Mesh::release(const Device& device)
 {
-    BT_ASSERT(!isNull());
+    MOUCA_ASSERT(!isNull());
 
     _vertices.release(device);
 
     _indices.release(device);
 
-    BT_ASSERT(isNull());
+    MOUCA_ASSERT(isNull());
 }
 
 }

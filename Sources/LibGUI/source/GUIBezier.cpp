@@ -75,7 +75,7 @@ namespace GUI
             }
 
 			default:
-				BT_ASSERT(false); // Unknown state : missing enum ?
+				MOUCA_ASSERT(false); // Unknown state : missing enum ?
 				return false;
         }
     }

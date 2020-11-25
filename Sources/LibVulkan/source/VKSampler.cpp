@@ -12,12 +12,12 @@ namespace Vulkan
 Sampler::Sampler():
 _sampler(VK_NULL_HANDLE)
 {
-    BT_ASSERT(isNull());
+    MOUCA_ASSERT(isNull());
 }
 
 Sampler::~Sampler()
 {
-    BT_ASSERT(isNull());
+    MOUCA_ASSERT(isNull());
 }
 
 void Sampler::initialize(const Device& device, VkFilter magFilter, VkFilter minFilter, VkSamplerMipmapMode mipmapMode,
@@ -61,8 +61,8 @@ void Sampler::initialize(const Device& device, VkFilter magFilter, VkFilter minF
 
 void Sampler::initialize(const Device& device, const float& maxLOD, const VkSamplerAddressMode addressModeUVW, float anisotropy, const VkFilter filter)
 {
-    BT_ASSERT(isNull());
-    BT_ASSERT(!device.isNull());
+    MOUCA_ASSERT(isNull());
+    MOUCA_ASSERT(!device.isNull());
 
     // Create sampler
     VkSamplerCreateInfo samplerInfo =
@@ -95,8 +95,8 @@ void Sampler::initialize(const Device& device, const float& maxLOD, const VkSamp
 
 void Sampler::release(const Device& device)
 {
-    BT_ASSERT(!isNull());
-    BT_ASSERT(!device.isNull());
+    MOUCA_ASSERT(!isNull());
+    MOUCA_ASSERT(!device.isNull());
 
     vkDestroySampler(device.getInstance(), _sampler, nullptr);
     _sampler = VK_NULL_HANDLE;

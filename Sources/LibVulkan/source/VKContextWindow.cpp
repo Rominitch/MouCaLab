@@ -78,7 +78,7 @@ void ContextWindow::fillFrameBuffer(RenderPassWPtr renderPass)
         // Get index of swapchain View
         const Device& device = _linkContext->getDevice();
         //     const auto itImage = std::find(attachments.cbegin(), attachments.cend(), static_cast<VkImageView>(VK_NULL_HANDLE));
-        //     BT_ASSERT(itImage != attachments.end());
+        //     MOUCA_ASSERT(itImage != attachments.end());
         //     const size_t index = std::distance(attachments.cbegin(), itImage);
 
         // Transfer attachment and setup swapchain
@@ -133,7 +133,7 @@ void ContextWindow::createCommandBuffer(Commands&& commands, CommandPoolSPtr poo
         
         ++itCommand;
     }
-    BT_ASSERT(itCommand == commands.end()); //Security
+    MOUCA_ASSERT(itCommand == commands.end()); //Security
     
     //Security to never access it anymore
     commands.clear();

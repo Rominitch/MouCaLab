@@ -36,13 +36,13 @@ void Scene::release()
 
 void Scene::addPage(PageSPtr& newPage)
 {
-    BT_ASSERT(std::find(_pages.cbegin(), _pages.cend(), newPage) == _pages.cend());  // DEV Issue: already in scene ?
+    MOUCA_ASSERT(std::find(_pages.cbegin(), _pages.cend(), newPage) == _pages.cend());  // DEV Issue: already in scene ?
     _pages.push_back(newPage);
 }
 
 void Scene::removePage(PageSPtr& page)
 {
-    BT_ASSERT(std::find(_pages.cbegin(), _pages.cend(), page) != _pages.cend());  // DEV Issue: not in scene
+    MOUCA_ASSERT(std::find(_pages.cbegin(), _pages.cend(), page) != _pages.cend());  // DEV Issue: not in scene
     _pages.erase(std::find(_pages.cbegin(), _pages.cend(), page));
 
     // Disable active page
@@ -73,7 +73,7 @@ void Scene::update()
                 // Size modulate by anchor
                 const int dirH = (widget2D->getAnchor() & GUI::Widget2D::MaskHorizontal);
                 const int dirV = (widget2D->getAnchor() & GUI::Widget2D::MaskVertical) >> 4;
-                BT_ASSERT(0 <= dirH && dirH < directions.size()
+                MOUCA_ASSERT(0 <= dirH && dirH < directions.size()
                        && 0 <= dirV && dirV < directions.size());
                 const RT::Point2& size = widget2D->getSize()
                                        * RT::Point2(directions[dirH], directions[dirV]);

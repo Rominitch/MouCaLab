@@ -87,7 +87,7 @@ void FileTracker::TrackerThread::registerResource( Core::ResourceSPtr resource )
     else
     {
         // Add new resources + tracking system
-        BT_ASSERT( folder.size() < MAX_PATH );
+        MOUCA_ASSERT( folder.size() < MAX_PATH );
         const HANDLE modifyHandle = FindFirstChangeNotification( folder.c_str(), FALSE, FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_SIZE );
         if( modifyHandle == INVALID_HANDLE_VALUE )
         {
@@ -122,7 +122,7 @@ void FileTracker::TrackerThread::unregisterResource( Core::ResourceSPtr resource
             if( itTracked->second.size() == 1 )
             {
 //                 auto itHandle = std::find_if( _waitHandle.begin(), _waitHandle.end(), [&]( const HANDLE& handle ) { return handle == itTracked->first._handle; } );
-//                 BT_ASSERT( itHandle != _waitHandle.end() );
+//                 MOUCA_ASSERT( itHandle != _waitHandle.end() );
 //                 _waitHandle.erase( itHandle );
                 _updateHandleList = true;
                 itTracked = _tracked.erase( itTracked );
@@ -183,7 +183,7 @@ void FileTracker::TrackerThread::run()
                         auto itTracked = std::find_if( _tracked.begin(), _tracked.end(), [&]( const std::pair<key, std::vector<FileInfo>>& data ) { return data.first._handle == handle; } );
                         for( auto& fileInfo : itTracked->second )
                         {
-                            BT_ASSERT( fileInfo._data.lock() );
+                            MOUCA_ASSERT( fileInfo._data.lock() );
                             ResourceSPtr resource = fileInfo._data.lock();
                             // Check if this file has same edited time than before
                             auto newTime = std::filesystem::last_write_time( std::filesystem::path( resource->getTrackedFilename() ) );

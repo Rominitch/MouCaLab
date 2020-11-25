@@ -8,8 +8,8 @@
  */
 void GUIEclidianDistanceTransformAA::ComputeGradient(RT::Vector2d* pGradiant) const
 {
-	BT_ASSERT(m_pImage!=NULL && m_MemorySize > 1);	//DEV Issue: Initialization missing or failed
-	BT_ASSERT(pGradiant!=NULL);
+	MOUCA_ASSERT(m_pImage!=NULL && m_MemorySize > 1);	//DEV Issue: Initialization missing or failed
+	MOUCA_ASSERT(pGradiant!=NULL);
 
 	for(size_t uiY = 1; uiY < m_szHeight-1; uiY++)
 	{ // Avoid edges where the kernels would spill over
@@ -57,7 +57,7 @@ double GUIEclidianDistanceTransformAA::edgedf(const RT::Vector2d& gradiant, cons
 	else
 	{
 		const double glength = 1.0/sqrt(glm::dot(gradiant, gradiant));
-		BT_ASSERT(glength>0.0);
+		MOUCA_ASSERT(glength>0.0);
 		
 		/* Everything is symmetric wrt sign and transposition,
 		 * so move to first octant (gx>=0, gy>=0, gx>=gy) to
@@ -120,7 +120,7 @@ void GUIEclidianDistanceTransformAA::DistanceComputeUpdate(const size_t szIndex,
 	const RT::Vector2us& cdist = pDistancePts[szIndex];
 	RT::Vector2us newDistanceDirection = cdist + direction;
 
-	BT_ASSERT((size_t)cdist.x-(size_t)cdist.y*m_szWidth <= szIndex);
+	MOUCA_ASSERT((size_t)cdist.x-(size_t)cdist.y*m_szWidth <= szIndex);
 	const size_t closest = szIndex-(size_t)cdist.x-(size_t)cdist.y*m_szWidth;
 	const double newDistance = distaa3(m_pImage, m_pGradiantPts, closest, newDistanceDirection);
 	if(newDistance < dOldDistance-epsilon)
@@ -138,7 +138,7 @@ void GUIEclidianDistanceTransformAA::DistanceCompute(const size_t szIndex, const
 	const RT::Vector2us& cdist = pDistancePts[szIndex];
 	RT::Vector2us newDistanceDirection = cdist + direction;
 
-	BT_ASSERT((size_t)cdist.x-(size_t)cdist.y*m_szWidth <= szIndex);
+	MOUCA_ASSERT((size_t)cdist.x-(size_t)cdist.y*m_szWidth <= szIndex);
 	const size_t closest = szIndex-(size_t)cdist.x-(size_t)cdist.y*m_szWidth;
 	const double newDistance = distaa3(m_pImage, m_pGradiantPts, closest, newDistanceDirection);
 	if(newDistance < dOldDistance-epsilon)
@@ -613,8 +613,8 @@ void GUIEclidianDistanceTransformAA::edtaa3(RT::Vector2us* pDistancePts, double*
 
 void GUIEclidianDistanceTransformAA::distanceMap(double* pImage, const size_t szWidth, const size_t szHeight)
 {
-	BT_ASSERT(m_pImage!=nullptr);
-	BT_ASSERT(szWidth > 1 && szHeight > 1);
+	MOUCA_ASSERT(m_pImage!=nullptr);
+	MOUCA_ASSERT(szWidth > 1 && szHeight > 1);
 
 	//Copy all information
 	m_szWidth		= szWidth;
@@ -668,7 +668,7 @@ void GUIEclidianDistanceTransformAA::distanceMap(double* pImage, const size_t sz
 	}
 	delete [] pInside; //Release at this time
 	vmin = abs(vmin);
-	BT_ASSERT(vmin != std::numeric_limits<double>::infinity());
+	MOUCA_ASSERT(vmin != std::numeric_limits<double>::infinity());
 
 	const double d1_2Vmin = 1.0/(2.0*vmin);
 	for(size_t szPixel=0; szPixel<m_MemorySize; ++szPixel)

@@ -37,7 +37,7 @@ void GPUImageReader::initialize(const ContextWindow& context, const RT::Componen
     {
         imageFormat = VK_FORMAT_R32_SINT;
     }
-    BT_ASSERT(imageFormat != VK_FORMAT_UNDEFINED); //DEV Issue: unsupported format.
+    MOUCA_ASSERT(imageFormat != VK_FORMAT_UNDEFINED); //DEV Issue: unsupported format.
     
     const auto& device = context.getContextDevice().getDevice();
 
@@ -257,7 +257,7 @@ void GPUImageReader::extractTo(const VkImage& srcImage, const ContextWindow& con
     // Map image memory so we can start copying from it
     _image.getMemory().map(device);
     uint8_t* data = _image.getMemory().getMappedMemory<uint8_t>();
-    BT_ASSERT(data != nullptr);
+    MOUCA_ASSERT(data != nullptr);
     data += subResourceLayout.offset;
 
     // Copy to image buffer CPU
@@ -287,7 +287,7 @@ void GPUImageReader::extractTo(const VkImage& srcImage, const ContextDevice& con
     // Map image memory so we can start copying from it
     _image.getMemory().map(device);
     char* data = _image.getMemory().getMappedMemory<char>();
-    BT_ASSERT(data != nullptr);
+    MOUCA_ASSERT(data != nullptr);
     data += subResourceLayout.offset;
 
     int32_t* widgetID = reinterpret_cast<int32_t*>(data);

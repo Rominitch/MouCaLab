@@ -5,10 +5,10 @@
 
 namespace Core
 {
-    class PluginEntry
+    class PlugInEntry
     {
         public:
-            virtual ~PluginEntry() = default;
+            virtual ~PlugInEntry() = default;
 
             virtual void setApplicationArguments(const int argc, const char** argv) = 0;
 
@@ -16,21 +16,16 @@ namespace Core
             virtual void release()    = 0;
 
         protected:
-            PluginEntry() = default;
+            PlugInEntry() = default;
     };
 
-    using PlugInEntryPtr = PluginEntry*;
-    using PlugInEntrySPtr = std::shared_ptr<PluginEntry>;
-    using PlugInEntryWPtr = std::weak_ptr<PluginEntry>;
-    using PlugInEntryUPtr = std::unique_ptr<PluginEntry>;
+    using PlugInEntrySPtr = std::shared_ptr<PlugInEntry>;
+    using PlugInEntryWPtr = std::weak_ptr<PlugInEntry>;
+    using PlugInEntryUPtr = std::unique_ptr<PlugInEntry>;
 }
 
 #define DECLARE_PLUG_IN(classPlugIn)														\
-                                                                                            \
-static classPlugIn* g_instance = NULL;                                                      \
-                                                                                            \
-extern "C" __declspec(dllexport) Core::PlugInEntryPtr CALLBACK PlugInLoadingEntryPoint()	\
+extern "C" __declspec(dllexport) Core::PlugInEntry* CALLBACK PlugInLoadingEntryPoint()	    \
 {																							\
-    g_instance = new classPlugIn();															\
-    return g_instance;																	    \
+    return new classPlugIn(); 											                    \
 }                                                                                           \

@@ -24,7 +24,7 @@
 namespace Core
 {
 
-using PlugInLoadingEntryPoint = PluginEntrySPtr (CALLBACK *)(void);
+using PlugInLoadingEntryPoint = PlugInEntry* (CALLBACK *)(void);
 
 PlugInManager::PlugInArray::const_iterator PlugInManager::searchPlugIn(const PlugInManager::PlugInState& _instance) const
 {
@@ -38,20 +38,20 @@ PlugInManager::PlugInArray::const_iterator PlugInManager::searchPlugIn(const Plu
     return itSearch;
 }
 
-PlugInEntrySPtr PlugInManager::loadDynamicLibrary(const Core::StringOS& strDynamicLibraryPath)
+PlugInEntrySPtr PlugInManager::loadDynamicLibrary(const Path& dynamicLibraryPath)
 {
-    BT_ASSERT(!strDynamicLibraryPath.empty());
+    MOUCA_ASSERT(!dynamicLibraryPath.empty());
 
     PlugInEntrySPtr pPlugInInformation;
 
     //Search if plugIn is already loaded
-    auto itPlugIn = searchPlugIn(PlugInState(strDynamicLibraryPath));
+    auto itPlugIn = searchPlugIn(PlugInState(dynamicLibraryPath));
     if(itPlugIn==_loadedPlugins.cend())
     {
-        DYNLIB_HANDLE hGetProcIDDLL = DYNLIB_LOAD(strDynamicLibraryPath.c_str());
+        DYNLIB_HANDLE hGetProcIDDLL = DYNLIB_LOAD(dynamicLibraryPath.c_str());
         if(!hGetProcIDDLL)
         {
-            BT_THROW_ERROR_1(u8"BasicError", u8"DLLLoadingMissingFile", Core::convertToU8(strDynamicLibraryPath));
+            BT_THROW_ERROR_1(u8"BasicError", u8"DLLLoadingMissingFile", dynamicLibraryPath.u8string());
         }
 
         //Try to load entry point
@@ -67,11 +67,11 @@ PlugInEntrySPtr PlugInManager::loadDynamicLibrary(const Core::StringOS& strDynam
             BT_THROW_ERROR(u8"BasicError", u8"DLLCorruptionFile");
         }
 
+        pPlugInInformation = PluginEntrySPtr(pPlugInInstance);
+
         //Memorize PlugIn
-        auto* completPlugIn = new PlugInState(hGetProcIDDLL, strDynamicLibraryPath, pPlugInInstance);
+        auto* completPlugIn = new PlugInState(hGetProcIDDLL, dynamicLibraryPath, pPlugInInformation);
         _loadedPlugins.push_back(std::shared_ptr<PlugInState>(completPlugIn));
-        
-        pPlugInInformation = pPlugInInstance;
     }
     else
         pPlugInInformation = (*itPlugIn)->_plugInInstance;
@@ -83,7 +83,7 @@ void PlugInManager::release()
 {
     for(auto& plugIn : _loadedPlugins)
     {
-        BT_ASSERT(plugIn->_plugInInstance.use_count() <= 1); // DEV Issue: Need latest instance to guaranty memory security !
+        MOUCA_ASSERT(plugIn->_plugInInstance.use_count() <= 1); // DEV Issue: Need latest instance to guaranty memory security !
 
         // Clean instance
         plugIn->_plugInInstance.reset();

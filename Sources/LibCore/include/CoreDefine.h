@@ -7,7 +7,7 @@
 
 /// Assertion 
 #ifndef NDEBUG
-#   define BT_ASSERT_HEADER(condition, header)                                                                                  \
+#   define MOUCA_ASSERT_HEADER(condition, header)                                                                                  \
     if(!static_cast<bool>(condition))                                                                                           \
     {                                                                                                                           \
         Core::String message;                                                                                                   \
@@ -19,24 +19,24 @@
         assert(condition);                                                                                                      \
     }
 
-#   define MOUCA_PRE_CONDITION(condition)  BT_ASSERT_HEADER(condition, u8"Pre-condition assert")
-#   define MOUCA_POST_CONDITION(condition) BT_ASSERT_HEADER(condition, u8"Post-condition assert")
+#   define MOUCA_PRE_CONDITION(condition)  MOUCA_ASSERT_HEADER(condition, u8"Pre-condition assert")
+#   define MOUCA_POST_CONDITION(condition) MOUCA_ASSERT_HEADER(condition, u8"Post-condition assert")
 
-#   define BT_ASSERT(condition) BT_ASSERT_HEADER(condition, u8"Application assert")
+#   define MOUCA_ASSERT(condition) MOUCA_ASSERT_HEADER(condition, u8"Application assert")
 
 #   define BT_LAST_REFERENCED(iterable)                                                                                         \
     for(const auto& iter : iterable)                                                                                            \
     {                                                                                                                           \
-        BT_ASSERT(iter.use_count() == 1);                                                                                       \
+        MOUCA_ASSERT(iter.use_count() == 1);                                                                                       \
     }
 
 #   define BT_NOT_LAST_REFERENCED(iterable)                                                                                     \
     for(const auto& iter : iterable)                                                                                            \
     {                                                                                                                           \
-        BT_ASSERT(iter.use_count() != 1);                                                                                       \
+        MOUCA_ASSERT(iter.use_count() != 1);                                                                                       \
     }
 
-#   define BT_ASSERT_EQ(ref, cmp)                                                                                               \
+#   define MOUCA_ASSERT_EQ(ref, cmp)                                                                                               \
     if(ref != cmp)                                                                                                              \
     {                                                                                                                           \
         Core::String message;                                                                                                   \
@@ -89,10 +89,10 @@ void assertBetween(const uint8_t ref, const uint8_t lowEd, const uint8_t HighTh,
     assert(lowEd <= ref && ref < HighTh);
     }
 }
- #   define BT_ASSERT_BETWEEN(ref, lowEd, HighTh)                                                                                \
+ #   define MOUCA_ASSERT_BETWEEN(ref, lowEd, HighTh)                                                                                \
         assertBetween(ref, lowEd, HighTh, #ref, #lowEd, #HighTh, __FILE__, __LINE__);
 */
-#   define BT_ASSERT_BETWEEN(ref, lowEd, HighTh)                                                                                \
+#   define MOUCA_ASSERT_BETWEEN(ref, lowEd, HighTh)                                                                                \
     if(lowEd > ref || ref >= HighTh)                                                                                            \
     {                                                                                                                           \
         Core::String message;                                                                                                   \
@@ -107,7 +107,7 @@ void assertBetween(const uint8_t ref, const uint8_t lowEd, const uint8_t HighTh,
         assert(lowEd <= ref && ref < HighTh);                                                                                   \
     }
 
-#   define BT_ASSERT_BETWEEN_EQ(ref, lowEq, HighEq)                                                                             \
+#   define MOUCA_ASSERT_BETWEEN_EQ(ref, lowEq, HighEq)                                                                             \
     if(lowEq > ref || ref > HighEq)                                                                                             \
     {                                                                                                                           \
         Core::String message;                                                                                                   \
@@ -141,12 +141,12 @@ void assertBetween(const uint8_t ref, const uint8_t lowEd, const uint8_t HighTh,
 #else
 #   define MOUCA_PRE_CONDITION(condition)      void(0)
 #   define MOUCA_POST_CONDITION(condition)     void(0)
-#   define BT_ASSERT(condition)             void(0)
-#   define BT_ASSERT_HEADER(condition, h)   void(0)
+#   define MOUCA_ASSERT(condition)             void(0)
+#   define MOUCA_ASSERT_HEADER(condition, h)   void(0)
 
-#   define BT_ASSERT_EQ(ref, cmp)            void(0)
-#   define BT_ASSERT_BETWEEN(ref, le, ht)    void(0)
-#   define BT_ASSERT_BETWEEN_EQ(ref, le, he) void(0)
+#   define MOUCA_ASSERT_EQ(ref, cmp)            void(0)
+#   define MOUCA_ASSERT_BETWEEN(ref, le, ht)    void(0)
+#   define MOUCA_ASSERT_BETWEEN_EQ(ref, le, he) void(0)
 #   define BT_LAST_REFERENCED(iterable)      void(0)
 #   define BT_NOT_LAST_REFERENCED(iterable)  void(0)
 

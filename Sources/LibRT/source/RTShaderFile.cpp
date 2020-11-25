@@ -15,7 +15,7 @@ ShaderFile::ShaderFile(const Core::Path& compiledPath, const ShaderKind kind, co
 Core::File(compiledPath, filepath.empty() ? Core::Resource::Mode::Critical : Core::Resource::Mode::AutoRefreshCritical), _kind(kind), _sourceFilepath(filepath)
 {
     MOUCA_PRE_CONDITION(_sourceFilepath.empty() || std::filesystem::exists(_sourceFilepath) ); // DEV Issue: Need valid file if wanted.
-    BT_ASSERT_BETWEEN(_kind, RT::ShaderKind::Vertex, RT::ShaderKind::NbShaders);
+    MOUCA_ASSERT_BETWEEN(_kind, RT::ShaderKind::Vertex, RT::ShaderKind::NbShaders);
 
     MOUCA_POST_CONDITION(!isNull() && !isLoaded());
 }

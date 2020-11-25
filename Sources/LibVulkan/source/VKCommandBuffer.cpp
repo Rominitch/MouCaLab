@@ -63,12 +63,12 @@ void ICommandBuffer::executeCommand(const ExecuteCommands& executer, const VkCom
 CommandBuffer::CommandBuffer():
 _commandBuffer(VK_NULL_HANDLE)
 {
-    BT_ASSERT(isNull());
+    MOUCA_ASSERT(isNull());
 }
 
 CommandBuffer::~CommandBuffer()
 {
-    BT_ASSERT(isNull());
+    MOUCA_ASSERT(isNull());
 }
 
 void CommandBuffer::initialize(const Device& device, const CommandPoolSPtr pool, const VkCommandBufferLevel level, const VkCommandBufferUsageFlags usage)

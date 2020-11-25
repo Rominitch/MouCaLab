@@ -152,6 +152,7 @@
     <ClCompile Include="source\UT_CoreIdentifier.cpp" />
     <ClCompile Include="source\UT_CoreLocale.cpp" />
     <ClCompile Include="source\UT_CoreMath.cpp" />
+    <ClCompile Include="source\UT_CorePlugInManager.cpp" />
     <ClCompile Include="source\UT_CoreProcess.cpp" />
     <ClCompile Include="source\UT_CoreResource.cpp" />
     <ClCompile Include="source\UT_CoreSignal.cpp" />

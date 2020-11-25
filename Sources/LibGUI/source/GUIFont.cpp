@@ -10,7 +10,7 @@ namespace GUI
 
 void Font::CreateTextureFont(const Core::Path& strFontTTLUnicode, Core::FileWrapperBase& FileOutput)
 {
-    BT_ASSERT(!strFontTTLUnicode.empty());
+    MOUCA_ASSERT(!strFontTTLUnicode.empty());
 
     try
     {
@@ -91,7 +91,7 @@ void Font::CreateTextureFont(const Core::Path& strFontTTLUnicode, Core::FileWrap
                     FT_Bitmap& bitmap = bitmap_glyph->bitmap;
 
                     //Add new glyph to symbols Map
-                    BT_ASSERT(mapSymbols.find(iCharCode) == mapSymbols.cend());
+                    MOUCA_ASSERT(mapSymbols.find(iCharCode) == mapSymbols.cend());
                     //mapSymbols[iCharCode] = STextureGlyph(iCharCode, );
 
                     if(szStartPointer[0] + bitmap.width > szTextureSize)

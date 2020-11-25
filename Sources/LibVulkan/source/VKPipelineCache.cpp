@@ -12,17 +12,17 @@ namespace Vulkan
 PipelineCache::PipelineCache():
 _pipelineCache(VK_NULL_HANDLE)
 {
-    BT_ASSERT(isNull());
+    MOUCA_ASSERT(isNull());
 }
 
 PipelineCache::~PipelineCache()
 {
-    BT_ASSERT(isNull());
+    MOUCA_ASSERT(isNull());
 }
 
 void PipelineCache::initialize(const Device& device)
 {
-    BT_ASSERT(isNull());
+    MOUCA_ASSERT(isNull());
     const VkPipelineCacheCreateInfo pipelineCacheCreateInfo =
     {
         VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO,   // VkStructureType               sType;
@@ -40,7 +40,7 @@ void PipelineCache::initialize(const Device& device)
 
 void PipelineCache::release(const Device& device)
 {
-    BT_ASSERT(!isNull());
+    MOUCA_ASSERT(!isNull());
 
     vkDestroyPipelineCache(device.getInstance(), _pipelineCache, nullptr);
     _pipelineCache = VK_NULL_HANDLE;

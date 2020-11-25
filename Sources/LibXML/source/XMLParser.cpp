@@ -56,7 +56,7 @@ void XercesParser::openXMLFile(const Core::Path& strFilePath)
     {
         BT_THROW_ERROR_1(u8"BasicError", u8"NULLPointerError", u8"_parser"); // DEV Issue: Missing XML::Platform !
     }
-    BT_ASSERT(_parser != nullptr);
+    MOUCA_ASSERT(_parser != nullptr);
 
     //Basic configuration
     _parser->setValidationScheme(xercesc::XercesDOMParser::Val_Never);
@@ -103,7 +103,7 @@ ResultUPtr XercesParser::getNode(const Core::String& strName) const
     }
     else
     {
-        BT_ASSERT(_parseStack.top() != NULL);
+        MOUCA_ASSERT(_parseStack.top() != NULL);
 
         nodeList=_parseStack.top()->getElementsByTagName(XercesString(strName).toXMLChar());
     }
@@ -191,7 +191,7 @@ ResultUPtr XercesParser::getNodeFrom(const Node& node, const Core::String& strNa
     {
         // no need to free this pointer - owned by the parent parser object
         xercesc::DOMDocument* pXMLDoc = _parser->getDocument();
-        BT_ASSERT(pXMLDoc != nullptr);
+        MOUCA_ASSERT(pXMLDoc != nullptr);
         nodeList = pXMLDoc->getElementsByTagName(XercesString(strName).toXMLChar());
     }
     else

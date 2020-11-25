@@ -16,8 +16,8 @@ bool SurfaceFormat::isSupported() const
 
 void SurfaceFormat::initialize(const Configuration& preferred, const VkSurfaceCapabilitiesKHR& surfaceCapabilities, const std::vector<VkSurfaceFormatKHR>& surfaceFormats, const std::vector<VkPresentModeKHR>& presentModes)
 {
-    BT_ASSERT(!surfaceFormats.empty()); //DEV Issue: Need a valid list !
-    BT_ASSERT(!presentModes.empty());   //DEV Issue: Need a valid list !
+    MOUCA_ASSERT(!surfaceFormats.empty()); //DEV Issue: Need a valid list !
+    MOUCA_ASSERT(!presentModes.empty());   //DEV Issue: Need a valid list !
 
     _configuration = preferred;
 
@@ -58,7 +58,7 @@ void SurfaceFormat::initialize(const Configuration& preferred, const VkSurfaceCa
     //---------------------------------------------------------------------------------------------
     // Take current transform (supposed supported)
     _configuration._transform = surfaceCapabilities.currentTransform;
-    BT_ASSERT(surfaceCapabilities.supportedTransforms & surfaceCapabilities.currentTransform);
+    MOUCA_ASSERT(surfaceCapabilities.supportedTransforms & surfaceCapabilities.currentTransform);
     
     //---------------------------------------------------------------------------------------------
     // Check presentation exists or use first

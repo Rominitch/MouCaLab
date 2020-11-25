@@ -35,13 +35,13 @@ namespace Vulkan
         ///	\return	VkInstance of environment.
         const VkInstance& getInstance() const
         {
-            BT_ASSERT(!isNull());
+            MOUCA_ASSERT(!isNull());
             return _instance;
         }
 
         const void* getGenericInstance() const override
         {
-            BT_ASSERT(!isNull());
+            MOUCA_ASSERT(!isNull());
             return reinterpret_cast<void*>(_instance);
         }
 

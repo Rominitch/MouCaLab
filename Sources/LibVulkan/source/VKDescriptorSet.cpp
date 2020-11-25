@@ -40,8 +40,8 @@ void DescriptorPool::initialize(const Device& device, const std::vector<VkDescri
 
 void DescriptorPool::release(const Device& device)
 {
-    BT_ASSERT(!isNull());
-    BT_ASSERT(!device.isNull());
+    MOUCA_ASSERT(!isNull());
+    MOUCA_ASSERT(!device.isNull());
 
     vkDestroyDescriptorPool(device.getInstance(), _pool, nullptr);
     _pool = VK_NULL_HANDLE;
@@ -50,12 +50,12 @@ void DescriptorPool::release(const Device& device)
 DescriptorSetLayout::DescriptorSetLayout():
 _layout(VK_NULL_HANDLE)
 {
-    BT_ASSERT(isNull());
+    MOUCA_ASSERT(isNull());
 }
 
 void DescriptorSetLayout::addBinding(const VkDescriptorType type, const uint32_t count, const VkShaderStageFlags stageFlags)
 {
-    BT_ASSERT(isNull()); //DEV Issue: Already call initialize()
+    MOUCA_ASSERT(isNull()); //DEV Issue: Already call initialize()
 
     const VkDescriptorSetLayoutBinding descriptorSetLayoutCreateInfo =
     {
@@ -71,7 +71,7 @@ void DescriptorSetLayout::addBinding(const VkDescriptorType type, const uint32_t
 
 void DescriptorSetLayout::addUniformBinding(const VkShaderStageFlags stageFlags)
 {
-    BT_ASSERT(isNull());
+    MOUCA_ASSERT(isNull());
 
     const VkDescriptorSetLayoutBinding descriptorSetLayoutCreateInfo =
     {
@@ -87,7 +87,7 @@ void DescriptorSetLayout::addUniformBinding(const VkShaderStageFlags stageFlags)
 
 void DescriptorSetLayout::addImageSamplerBinding(const VkShaderStageFlags stageFlags)
 {
-    BT_ASSERT(isNull());
+    MOUCA_ASSERT(isNull());
 
     const VkDescriptorSetLayoutBinding descriptorSetLayoutCreateInfo =
     {
@@ -103,9 +103,9 @@ void DescriptorSetLayout::addImageSamplerBinding(const VkShaderStageFlags stageF
 
 void DescriptorSetLayout::initialize(const Device& device)
 {
-    BT_ASSERT(isNull());
-    BT_ASSERT(!device.isNull());
-    BT_ASSERT(!_bindings.empty()); // DEV Issue: Missing binding !
+    MOUCA_ASSERT(isNull());
+    MOUCA_ASSERT(!device.isNull());
+    MOUCA_ASSERT(!_bindings.empty()); // DEV Issue: Missing binding !
 
     const VkDescriptorSetLayoutCreateInfo info =
     {
@@ -120,19 +120,19 @@ void DescriptorSetLayout::initialize(const Device& device)
     {
         BT_THROW_ERROR(u8"Vulkan", u8"DescriptorLayoutCreationError");
     }
-    BT_ASSERT(!isNull());
+    MOUCA_ASSERT(!isNull());
 }
 
 void DescriptorSetLayout::release(const Device& device)
 {
-    BT_ASSERT(!isNull());
-    BT_ASSERT(!device.isNull());
+    MOUCA_ASSERT(!isNull());
+    MOUCA_ASSERT(!device.isNull());
 
     vkDestroyDescriptorSetLayout(device.getInstance(), _layout, nullptr);
     _layout = VK_NULL_HANDLE;
     
     _bindings.clear();
-    BT_ASSERT(isNull());
+    MOUCA_ASSERT(isNull());
 }
 
 WriteDescriptorSet::WriteDescriptorSet(const uint32_t dstBinding, const VkDescriptorType type, std::vector<VkDescriptorImageInfo>&& vkImageInfo):
@@ -292,7 +292,7 @@ void DescriptorSet::release(const Device& device)
     _descriptors.clear();
     _pool.reset();
 
-    BT_ASSERT(isNull());
+    MOUCA_ASSERT(isNull());
 }
 
 }
