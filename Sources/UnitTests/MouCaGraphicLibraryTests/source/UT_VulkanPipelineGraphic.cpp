@@ -2,7 +2,7 @@
 
 #include "include/VulkanTest.h"
 
-#include <LibCore/include/BTFile.h>
+#include <LibCore/include/CoreFile.h>
 
 #include <LibGLFW/include/GLFWPlatform.h>
 #include <LibGLFW/include/GLFWWindow.h>

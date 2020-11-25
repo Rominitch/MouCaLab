@@ -17,7 +17,7 @@ void BoundingBox::refreshData()
 
 void BoundingBox::expand( const std::vector<Point3>& allPoints )
 {
-    BT_PRE_CONDITION( !allPoints.empty() ); // DEV Issue: Need a valid list.
+    MOUCA_PRE_CONDITION( !allPoints.empty() ); // DEV Issue: Need a valid list.
 
     for( const Point3& point : allPoints )
     {
@@ -36,13 +36,13 @@ void BoundingBox::expand( const std::vector<Point3>& allPoints )
 
     // Finalize
     refreshData();
-    BT_POST_CONDITION( all( lessThanEqual( _minMaxPoint[Min], _minMaxPoint[Max] ) ) );
-    BT_POST_CONDITION( std::isfinite( _radius ) ); // DEV Issue: Broken BBox.
+    MOUCA_POST_CONDITION( all( lessThanEqual( _minMaxPoint[Min], _minMaxPoint[Max] ) ) );
+    MOUCA_POST_CONDITION( std::isfinite( _radius ) ); // DEV Issue: Broken BBox.
 }
 
 void BoundingBox::expand( const size_t size, const RT::Point3* allPoints )
 {
-    BT_PRE_CONDITION( size > 0 && allPoints != nullptr ); // DEV Issue: Need a valid list.
+    MOUCA_PRE_CONDITION( size > 0 && allPoints != nullptr ); // DEV Issue: Need a valid list.
 
     for( const Point3* point = &allPoints[0]; point != &allPoints[size]; ++point )
     {
@@ -61,8 +61,8 @@ void BoundingBox::expand( const size_t size, const RT::Point3* allPoints )
 
     // Finalize
     refreshData();
-    BT_POST_CONDITION( all( lessThanEqual( _minMaxPoint[Min], _minMaxPoint[Max] ) ) );
-    BT_POST_CONDITION( std::isfinite( _radius ) ); // DEV Issue: Broken BBox.
+    MOUCA_POST_CONDITION( all( lessThanEqual( _minMaxPoint[Min], _minMaxPoint[Max] ) ) );
+    MOUCA_POST_CONDITION( std::isfinite( _radius ) ); // DEV Issue: Broken BBox.
 }
 
 }

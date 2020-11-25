@@ -54,95 +54,113 @@
     <Filter Include="Fichiers sources\OS">
       <UniqueIdentifier>{5a0f2f8c-bdf3-4548-ab34-bcef4b7a5cb4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fichiers sources\PlugIn">
+      <UniqueIdentifier>{80ab3d33-6ca1-4d67-ad10-1051fef8d3dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\PlugIn">
+      <UniqueIdentifier>{397f7767-9c0f-44b5-8cfd-a2105b472714}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\BTError.h">
-      <Filter>Fichiers d%27en-tête\Errors</Filter>
-    </ClInclude>
     <ClInclude Include="Dependancies.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="include\BTString.h">
-      <Filter>Fichiers d%27en-tête\String</Filter>
+    <ClInclude Include="include\CorePluginManager.h">
+      <Filter>Fichiers d%27en-tête\PlugIn</Filter>
     </ClInclude>
-    <ClInclude Include="include\BTFileWrapper.h">
-      <Filter>Fichiers d%27en-tête\File</Filter>
+    <ClInclude Include="include\CorePluginEntry.h">
+      <Filter>Fichiers d%27en-tête\PlugIn</Filter>
     </ClInclude>
-    <ClInclude Include="include\BTDefine.h">
-      <Filter>Fichiers d%27en-tête\Tools</Filter>
-    </ClInclude>
-    <ClInclude Include="include\BTException.h">
+    <ClInclude Include="include\CoreError.h">
       <Filter>Fichiers d%27en-tête\Errors</Filter>
     </ClInclude>
-    <ClInclude Include="include\BTFile.h">
+    <ClInclude Include="include\CoreException.h">
+      <Filter>Fichiers d%27en-tête\Errors</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreString.h">
+      <Filter>Fichiers d%27en-tête\String</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreDefine.h">
+      <Filter>Fichiers d%27en-tête\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreFile.h">
       <Filter>Fichiers d%27en-tête\File</Filter>
     </ClInclude>
-    <ClInclude Include="include\BTMaths.h">
+    <ClInclude Include="include\CoreMaths.h">
       <Filter>Fichiers d%27en-tête\Maths</Filter>
     </ClInclude>
-    <ClInclude Include="include\BTThread.h">
-      <Filter>Fichiers d%27en-tête\Threading</Filter>
-    </ClInclude>
-    <ClInclude Include="include\BTResource.h">
-      <Filter>Fichiers d%27en-tête\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="include\BTByteBuffer.h">
-      <Filter>Fichiers d%27en-tête\Tools</Filter>
-    </ClInclude>
-    <ClInclude Include="include\BTElapser.h">
-      <Filter>Fichiers d%27en-tête\Tools</Filter>
-    </ClInclude>
-    <ClInclude Include="include\BTStandardOS.h">
+    <ClInclude Include="include\CoreOperatingSystem.h">
       <Filter>Fichiers d%27en-tête\OS</Filter>
     </ClInclude>
-    <ClInclude Include="include\BTProcess.h">
+    <ClInclude Include="include\CoreProcess.h">
       <Filter>Fichiers d%27en-tête\OS</Filter>
     </ClInclude>
-    <ClInclude Include="include\BTFileTracker.h">
-      <Filter>Fichiers d%27en-tête\File</Filter>
+    <ClInclude Include="include\CoreStandardOS.h">
+      <Filter>Fichiers d%27en-tête\OS</Filter>
     </ClInclude>
-    <ClInclude Include="include\BTSignal.h">
+    <ClInclude Include="include\CoreSignal.h">
       <Filter>Fichiers d%27en-tête\Patterns &amp; Structures</Filter>
     </ClInclude>
-    <ClInclude Include="include\BTIdentifier.h">
+    <ClInclude Include="include\CoreResource.h">
+      <Filter>Fichiers d%27en-tête\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreThread.h">
+      <Filter>Fichiers d%27en-tête\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreFileTracker.h">
+      <Filter>Fichiers d%27en-tête\File</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreByteBuffer.h">
       <Filter>Fichiers d%27en-tête\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="include\BTOperatingSystem.h">
-      <Filter>Fichiers d%27en-tête\OS</Filter>
+    <ClInclude Include="include\CoreElapser.h">
+      <Filter>Fichiers d%27en-tête\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="include\BTLocale.h">
+    <ClInclude Include="include\CoreIdentifier.h">
+      <Filter>Fichiers d%27en-tête\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreThreadPools.h">
+      <Filter>Fichiers d%27en-tête\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLocale.h">
       <Filter>Fichiers d%27en-tête\Language</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreFileWrapper.h">
+      <Filter>Fichiers d%27en-tête\File</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\BTError.cpp">
-      <Filter>Fichiers sources\Errors</Filter>
-    </ClCompile>
     <ClCompile Include="Dependancies.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="source\BTException.cpp">
+    <ClCompile Include="source\CorePluginManager.cpp">
+      <Filter>Fichiers sources\PlugIn</Filter>
+    </ClCompile>
+    <ClCompile Include="source\CoreError.cpp">
       <Filter>Fichiers sources\Errors</Filter>
     </ClCompile>
-    <ClCompile Include="source\BTFile.cpp">
+    <ClCompile Include="source\CoreException.cpp">
+      <Filter>Fichiers sources\Errors</Filter>
+    </ClCompile>
+    <ClCompile Include="source\CoreFile.cpp">
       <Filter>Fichiers sources\File</Filter>
     </ClCompile>
-    <ClCompile Include="source\BTByteBuffer.cpp">
-      <Filter>Fichiers sources\Tools</Filter>
-    </ClCompile>
-    <ClCompile Include="source\BTStandardOS.cpp">
+    <ClCompile Include="source\CoreProcess.cpp">
       <Filter>Fichiers sources\OS</Filter>
     </ClCompile>
-    <ClCompile Include="source\BTProcess.cpp">
+    <ClCompile Include="source\CoreStandardOS.cpp">
       <Filter>Fichiers sources\OS</Filter>
     </ClCompile>
-    <ClCompile Include="source\BTFileTracker.cpp">
+    <ClCompile Include="source\CoreFileTracker.cpp">
       <Filter>Fichiers sources\File</Filter>
     </ClCompile>
-    <ClCompile Include="source\BTIdentifier.cpp">
+    <ClCompile Include="source\CoreByteBuffer.cpp">
       <Filter>Fichiers sources\Tools</Filter>
     </ClCompile>
-    <ClCompile Include="source\BTLocale.cpp">
+    <ClCompile Include="source\CoreIdentifier.cpp">
+      <Filter>Fichiers sources\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="source\CoreLocale.cpp">
       <Filter>Fichiers sources\Language</Filter>
     </ClCompile>
   </ItemGroup>

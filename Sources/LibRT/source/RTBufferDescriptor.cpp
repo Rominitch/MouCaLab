@@ -12,9 +12,9 @@ ComponentDescriptor::ComponentDescriptor(const uint64_t nbComponents, const Type
 _formatType(formatType), _nbComponents(nbComponents), _sizeInByte(0), _componentUsage(componentUsage), _isNormalized(bNormalized)
 {
     //Check error
-    BT_PRE_CONDITION(nbComponents > 0);
-    BT_PRE_CONDITION(formatType < Type::NbTypes);
-    BT_PRE_CONDITION(componentUsage < ComponentUsage::NbUsages);
+    MOUCA_PRE_CONDITION(nbComponents > 0);
+    MOUCA_PRE_CONDITION(formatType < Type::NbTypes);
+    MOUCA_PRE_CONDITION(componentUsage < ComponentUsage::NbUsages);
 
     //Compute Size of descriptor
     _sizeInByte = computeSizeOf(_formatType) * _nbComponents;

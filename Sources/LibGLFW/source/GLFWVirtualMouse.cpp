@@ -22,7 +22,7 @@ void VirtualMouse::applyMode(const Window& window) const
 
 size_t VirtualMouse::createNewCursor( const RT::Image& image, const RT::Point2i& center )
 {
-    BT_PRE_CONDITION(!image.isNull());
+    MOUCA_PRE_CONDITION(!image.isNull());
 
     const uint32_t layer = 0;
     const uint32_t level = 0;
@@ -40,13 +40,13 @@ size_t VirtualMouse::createNewCursor( const RT::Image& image, const RT::Point2i&
 
     const size_t id = _cursors.size();
     _cursors.emplace_back( cursor );
-    BT_POST_CONDITION(id < _cursors.size());
+    MOUCA_POST_CONDITION(id < _cursors.size());
     return id;
 }
 
 void VirtualMouse::deleteCursor( const size_t id )
 {
-    BT_PRE_CONDITION(id < _cursors.size());
+    MOUCA_PRE_CONDITION(id < _cursors.size());
     auto it = _cursors.begin();
     std::advance(it, id);
 
@@ -56,7 +56,7 @@ void VirtualMouse::deleteCursor( const size_t id )
 
 void VirtualMouse::applyCursor( const RT::Window& window, const size_t id )
 {
-    BT_PRE_CONDITION( id < _cursors.size() );
+    MOUCA_PRE_CONDITION( id < _cursors.size() );
     auto it = _cursors.begin();
     std::advance( it, id );
 

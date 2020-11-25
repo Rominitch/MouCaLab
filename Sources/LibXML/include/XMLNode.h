@@ -12,7 +12,7 @@ namespace XML
             explicit XercesString(const Core::String& unicode):
             _xmlChar(xercesc::XMLString::transcode(unicode.c_str()))
             {
-                BT_PRE_CONDITION(_xmlChar!=NULL);
+                MOUCA_PRE_CONDITION(_xmlChar!=NULL);
             }
 
             ~XercesString()
@@ -22,13 +22,13 @@ namespace XML
 
             Core::String toString() const
             {
-                BT_PRE_CONDITION(_xmlChar!=NULL);
+                MOUCA_PRE_CONDITION(_xmlChar!=NULL);
                 return Core::String(xercesc::XMLString::transcode(_xmlChar));
             }
 
             const XMLCh* toXMLChar() const
             {
-                BT_PRE_CONDITION(_xmlChar!=NULL);
+                MOUCA_PRE_CONDITION(_xmlChar!=NULL);
                 return _xmlChar;
             }
 
@@ -62,7 +62,7 @@ namespace XML
 
             void getValue(Core::String& value) const override
             {
-                BT_PRE_CONDITION(!isNull());
+                MOUCA_PRE_CONDITION(!isNull());
                 value = Core::String(xercesc::XMLString::transcode(_node->getFirstChild()->getNodeValue()));
             }
 

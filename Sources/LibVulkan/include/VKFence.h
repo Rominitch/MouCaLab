@@ -26,7 +26,7 @@ namespace Vulkan
 
             const VkFence& getInstance() const
             {
-                BT_PRE_CONDITION(!isNull());
+                MOUCA_PRE_CONDITION(!isNull());
                 return _fence;
             }
 

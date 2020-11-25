@@ -42,7 +42,7 @@ namespace GUI
             PageWPtr getActivePage() const { return _activePage; }
             void setActivePage(PageWPtr page)
             {
-                BT_PRE_CONDITION(page.expired() ||
+                MOUCA_PRE_CONDITION(page.expired() ||
                                  std::find_if(_pages.cbegin(), _pages.cend(), [&](const auto& currentPage) { return page.lock() == currentPage; }) != _pages.cend());
                 _activePage = page;
             }

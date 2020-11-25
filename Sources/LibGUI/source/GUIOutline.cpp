@@ -395,7 +395,7 @@ struct Cell
             _start_len = 0;
         }
 
-		BT_POST_CONDITION(_from == UINT32_MAX && _to == UINT32_MAX);
+		MOUCA_POST_CONDITION(_from == UINT32_MAX && _to == UINT32_MAX);
         return ret;
     }
 
@@ -453,7 +453,7 @@ struct Cells
     Cells(const BoundingBox2D& bbox, uint32_t cellX, uint32_t cellY):
 	_cells(cellX * cellY)
     {
-		BT_PRE_CONDITION(cellX > 0 && cellY > 0);
+		MOUCA_PRE_CONDITION(cellX > 0 && cellY > 0);
 
         const float w = bbox._max.x - bbox._min.x;
 		const float h = bbox._max.y - bbox._min.y;
@@ -470,7 +470,7 @@ struct Cells
 				++itCell;
             }
         }
-		BT_POST_CONDITION(itCell == _cells.end());
+		MOUCA_POST_CONDITION(itCell == _cells.end());
     }
 
     bool for_each_wipcell_add_bezier(const BoundingBox2D& globalBBox, const glm::vec2& cellSize, const BezierCurve& curve, const uint32_t idPoint, const uint32_t ucontour_begin)

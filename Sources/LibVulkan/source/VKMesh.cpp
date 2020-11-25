@@ -16,20 +16,20 @@ namespace Vulkan
 Mesh::Mesh():
 _indexCount(0)
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 Mesh::~Mesh()
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 void Mesh::initialize(const Device& device, const VkDeviceSize vertexSize, const VkDeviceSize indexSize, const uint32_t indexCount, const bool GPUOnly)
 {
-    BT_PRE_CONDITION(isNull());
-    BT_PRE_CONDITION(vertexSize > 0 && indexSize > 0);
-    BT_PRE_CONDITION(!device.isNull());
-    BT_PRE_CONDITION(indexCount > 0);
+    MOUCA_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(vertexSize > 0 && indexSize > 0);
+    MOUCA_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(indexCount > 0);
 
     const VkMemoryPropertyFlagBits mode = GPUOnly ? VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT : VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 
@@ -40,7 +40,7 @@ void Mesh::initialize(const Device& device, const VkDeviceSize vertexSize, const
                         indexSize);
     _indexCount = indexCount;
 
-    BT_POST_CONDITION(!isNull());
+    MOUCA_POST_CONDITION(!isNull());
 }
 
 void Mesh::release(const Device& device)

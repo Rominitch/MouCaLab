@@ -91,7 +91,7 @@ void GPUImageReader::release(const ContextWindow& context)
 
 void GPUImageReader::extractTo(const VkImage& srcImage, const ContextDevice& contextDevice, const RT::Array3ui& positionSrc, const RT::Array3ui& positionDst, const RT::Array3ui& sizes)
 {
-    BT_PRE_CONDITION(!contextDevice.isNull());  //DEV Issue: Need a valid context.
+    MOUCA_PRE_CONDITION(!contextDevice.isNull());  //DEV Issue: Need a valid context.
 
     const auto& device = contextDevice.getDevice();
     auto commandBuffer = std::make_shared<CommandBuffer>();
@@ -242,8 +242,8 @@ void GPUImageReader::extractTo(const VkImage& srcImage, const ContextDevice& con
 void GPUImageReader::extractTo(const VkImage& srcImage, const ContextWindow& context, const RT::Array3ui& positionSrc, const RT::Array3ui& positionDst, const RT::Array3ui& sizes, RT::Image& diskImage)
 {
     const auto& contextDevice = context.getContextDevice();
-    BT_PRE_CONDITION(!contextDevice.isNull());          //DEV Issue: Need a valid context.
-    BT_PRE_CONDITION(diskImage.isNull());               //DEV Issue: 
+    MOUCA_PRE_CONDITION(!contextDevice.isNull());          //DEV Issue: Need a valid context.
+    MOUCA_PRE_CONDITION(diskImage.isNull());               //DEV Issue: 
 
     extractTo(srcImage, contextDevice, positionSrc, positionDst, sizes);
 
@@ -272,8 +272,8 @@ void GPUImageReader::extractTo(const VkImage& srcImage, const ContextWindow& con
 
 void GPUImageReader::extractTo(const VkImage& srcImage, const ContextDevice& contextDevice, const RT::Array3ui& positionSrc, const RT::Array3ui& positionDst, const RT::Array3ui& sizes, RT::BufferCPU& output)
 {
-    BT_PRE_CONDITION(!contextDevice.isNull());          //DEV Issue: Need a valid context.
-    BT_PRE_CONDITION(output.getData() != nullptr);      //DEV Issue: 
+    MOUCA_PRE_CONDITION(!contextDevice.isNull());          //DEV Issue: Need a valid context.
+    MOUCA_PRE_CONDITION(output.getData() != nullptr);      //DEV Issue: 
 
     extractTo(srcImage, contextDevice, positionSrc, positionDst, sizes);
     const auto& device = contextDevice.getDevice();

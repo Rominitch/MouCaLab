@@ -18,19 +18,19 @@ Device::Device() :
     _colorFormat(VK_FORMAT_UNDEFINED),
     _depthFormat(VK_FORMAT_UNDEFINED)
 {
-    BT_PRE_CONDITION(isNull());			                //Dev Issue: Bad constructor !
+    MOUCA_PRE_CONDITION(isNull());			                //Dev Issue: Bad constructor !
 }
 
 Device::~Device()
 {
-    BT_PRE_CONDITION(isNull());			                //Dev Issue: Missing release()
-    BT_PRE_CONDITION(_queueGraphic == VK_NULL_HANDLE);	//Dev Issue: Missing release()
+    MOUCA_PRE_CONDITION(isNull());			                //Dev Issue: Missing release()
+    MOUCA_PRE_CONDITION(_queueGraphic == VK_NULL_HANDLE);	//Dev Issue: Missing release()
 }
 
 void Device::initialize(const VkPhysicalDevice physicalDevice, const uint32_t queueFamilyID, const std::vector<const char*>& extensions)
 {
-    BT_PRE_CONDITION(isNull());
-    BT_PRE_CONDITION(physicalDevice != VK_NULL_HANDLE);
+    MOUCA_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(physicalDevice != VK_NULL_HANDLE);
 
     //Search Queue families
     uint32_t nbQueueFamilies = 0;
@@ -147,14 +147,14 @@ void Device::initialize(const VkPhysicalDevice physicalDevice, const uint32_t qu
     }
 #endif
 
-    BT_POST_CONDITION(!isNull());
+    MOUCA_POST_CONDITION(!isNull());
 }
 
 void Device::configureDevice(const VkPhysicalDevice physicalDevice, const VkDevice deviceID, const uint32_t queueFamilyID)
 {
-    BT_PRE_CONDITION(isNull());
-    BT_PRE_CONDITION(physicalDevice != VK_NULL_HANDLE);
-    BT_PRE_CONDITION(deviceID != VK_NULL_HANDLE);
+    MOUCA_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(physicalDevice != VK_NULL_HANDLE);
+    MOUCA_PRE_CONDITION(deviceID != VK_NULL_HANDLE);
 
     //Set current id
     _physicalDevice = physicalDevice;
@@ -189,15 +189,15 @@ void Device::configureDevice(const VkPhysicalDevice physicalDevice, const VkDevi
             break;
         }
     }
-    BT_POST_CONDITION(_depthFormat != VK_FORMAT_UNDEFINED);
-    BT_POST_CONDITION(!isNull());
+    MOUCA_POST_CONDITION(_depthFormat != VK_FORMAT_UNDEFINED);
+    MOUCA_POST_CONDITION(!isNull());
 }
 
 void Device::initializeBestGPU(const Environment& environment, const std::vector<const char*>& extensions, const Surface* surface, const VkPhysicalDeviceFeatures& enabled)
 {
-    BT_PRE_CONDITION(!environment.isNull());
-    BT_PRE_CONDITION(isNull());
-    BT_PRE_CONDITION(surface == nullptr || !surface->isNull());
+    MOUCA_PRE_CONDITION(!environment.isNull());
+    MOUCA_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(surface == nullptr || !surface->isNull());
 
     std::set<DeviceCandidate, DeviceCandidate::Less> canditates;
 
@@ -296,7 +296,7 @@ void Device::initializeBestGPU(const Environment& environment, const std::vector
     // Initialize device
     initialize(canditates.begin()->deviceID, canditates.begin()->queueFamilyID, extensions);
 
-    BT_POST_CONDITION(!isNull());
+    MOUCA_POST_CONDITION(!isNull());
 }
 
 void Device::release()
@@ -311,12 +311,12 @@ void Device::release()
     _device       = VK_NULL_HANDLE;
     _queueGraphic = VK_NULL_HANDLE;
 
-    BT_POST_CONDITION(isNull());
+    MOUCA_POST_CONDITION(isNull());
 }
 
 void Device::waitIdle() const
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 
     //Finish current task
     if( vkDeviceWaitIdle(_device) != VK_SUCCESS)
@@ -329,8 +329,8 @@ void Device::waitIdle() const
 
 void Device::checkExtensions(const VkPhysicalDevice& physicalDevice, const std::vector<const char*>& extensions) const
 {
-    BT_PRE_CONDITION(physicalDevice != VK_NULL_HANDLE);	//DEV Issue: Need to have a valid physical device !
-    BT_PRE_CONDITION(!extensions.empty());				//DEV Issue: need to check extension only if sent !
+    MOUCA_PRE_CONDITION(physicalDevice != VK_NULL_HANDLE);	//DEV Issue: Need to have a valid physical device !
+    MOUCA_PRE_CONDITION(!extensions.empty());				//DEV Issue: need to check extension only if sent !
 
     //Read extensions supported by all
     uint32_t nbExtensions = 0;

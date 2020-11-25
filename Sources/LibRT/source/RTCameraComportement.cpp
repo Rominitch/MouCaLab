@@ -28,14 +28,14 @@ void CameraTrackBall::attachCamera(const ObjectSPtr& camera)
 
 void CameraTrackBall::attachSupport(ObjectWPtr support)
 {
-    BT_PRE_CONDITION(_linkCamera.get() != nullptr);
-    BT_PRE_CONDITION(!support.expired() );
+    MOUCA_PRE_CONDITION(_linkCamera.get() != nullptr);
+    MOUCA_PRE_CONDITION(!support.expired() );
 
     _support = support;
 
     updateSupportMatrix();
 
-    BT_POST_CONDITION(!_support.expired());
+    MOUCA_POST_CONDITION(!_support.expired());
 }
 
 void CameraTrackBall::updateSupportMatrix()
@@ -86,8 +86,8 @@ void CameraTrackBall::moveTo(const CameraOrientation& orientation)
 
 void CameraTrackBall::setDepthRange( const GeoFloat minDepth, const GeoFloat maxDepth )
 {
-    BT_PRE_CONDITION( 0 < minDepth );
-    BT_PRE_CONDITION( minDepth <= maxDepth );
+    MOUCA_PRE_CONDITION( 0 < minDepth );
+    MOUCA_PRE_CONDITION( minDepth <= maxDepth );
     _limit[MinDepth] = minDepth;
     _limit[MaxDepth] = maxDepth;
 }

@@ -16,7 +16,7 @@ namespace XML
 
 bool XercesNode::hasAttribute(const Core::String& label) const
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 
     const xercesc::DOMAttr* attribute = _node->getAttributeNode(XercesString(label).toXMLChar());
     return (attribute != nullptr);
@@ -24,7 +24,7 @@ bool XercesNode::hasAttribute(const Core::String& label) const
 
 void XercesNode::getAttribute(const Core::String& label, bool& value) const
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 
     const xercesc::DOMAttr* attribute = _node->getAttributeNode(XercesString(label).toXMLChar());
     if (attribute == nullptr)
@@ -51,7 +51,7 @@ void XercesNode::getAttribute(const Core::String& label, bool& value) const
 
 void XercesNode::getAttribute(const Core::String& label, Core::String& value) const
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 
     const xercesc::DOMAttr* attribute = _node->getAttributeNode(XercesString(label).toXMLChar());
     if(attribute == nullptr)
@@ -64,7 +64,7 @@ void XercesNode::getAttribute(const Core::String& label, Core::String& value) co
 
 void XercesNode::getAttribute(const Core::String& label, uint32_t& value) const
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 
     const xercesc::DOMAttr* attribute = _node->getAttributeNode(XercesString(label).toXMLChar());
     if(attribute == nullptr)
@@ -76,7 +76,7 @@ void XercesNode::getAttribute(const Core::String& label, uint32_t& value) const
 
 void XercesNode::getAttribute(const Core::String& label, int32_t& value) const
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 
     const xercesc::DOMAttr* attribute = _node->getAttributeNode(XercesString(label).toXMLChar());
     if(attribute == nullptr)
@@ -88,7 +88,7 @@ void XercesNode::getAttribute(const Core::String& label, int32_t& value) const
 
 void XercesNode::getAttribute(const Core::String& label, uint64_t& value) const
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 
     const xercesc::DOMAttr* attribute = _node->getAttributeNode(XercesString(label).toXMLChar());
     if(attribute == nullptr)
@@ -100,7 +100,7 @@ void XercesNode::getAttribute(const Core::String& label, uint64_t& value) const
 
 void XercesNode::getAttribute(const Core::String& label, int64_t&  value) const
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 
     const xercesc::DOMAttr* attribute = _node->getAttributeNode(XercesString(label).toXMLChar());
     if(attribute == nullptr)
@@ -112,7 +112,7 @@ void XercesNode::getAttribute(const Core::String& label, int64_t&  value) const
 
 void XercesNode::getAttribute(const Core::String& label, float& value) const
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 
     const xercesc::DOMAttr* attribute = _node->getAttributeNode(XercesString(label).toXMLChar());
     if(attribute == nullptr)

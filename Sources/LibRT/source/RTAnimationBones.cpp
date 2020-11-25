@@ -10,21 +10,21 @@ namespace RT
 
 void AnimationImporter::initialize(AnimationBonesSPtr animation)
 {
-    BT_PRE_CONDITION(!isNull() && !_animation);
+    MOUCA_PRE_CONDITION(!isNull() && !_animation);
 
     _animation = animation;
 
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 }
 
 void AnimationImporter::release()
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 
     _filename.clear();
     _animation.reset();
 
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 void AnimationBones::updateAnimation(AnimatedGeometry& geometry, const uint32_t idAnimation, const double time) const

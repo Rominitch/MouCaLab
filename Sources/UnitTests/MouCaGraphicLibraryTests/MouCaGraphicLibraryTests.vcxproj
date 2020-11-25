@@ -15,7 +15,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{29E64157-C471-4478-8487-CF87DF009D26}</ProjectGuid>
+    <ProjectGuid>{E40ECDD9-0B92-4054-8113-706AD85D9233}</ProjectGuid>
     <RootNamespace>LibraryTests</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>MouCaGraphicsLibraryTests</ProjectName>

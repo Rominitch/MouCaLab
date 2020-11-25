@@ -32,7 +32,7 @@ ConnectionTCP::~ConnectionTCP()
 
 void ConnectionTCP::bind(const Core::String& ip, const uint16_t port)
 {
-    BT_PRE_CONDITION(shared_from_this());             // Dev Issue: Not created by make_shared !
+    MOUCA_PRE_CONDITION(shared_from_this());             // Dev Issue: Not created by make_shared !
 
     // Build end point
     auto endpoint = boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(ip), port);
@@ -42,8 +42,8 @@ void ConnectionTCP::bind(const Core::String& ip, const uint16_t port)
 
 void ConnectionTCP::send(IMessage& messageByte)
 {
-    BT_PRE_CONDITION(shared_from_this());             // Dev Issue: Not created by make_shared !
-    BT_PRE_CONDITION(!_linkIOService.stopped());
+    MOUCA_PRE_CONDITION(shared_from_this());             // Dev Issue: Not created by make_shared !
+    MOUCA_PRE_CONDITION(!_linkIOService.stopped());
 
     boost::asio::async_write(_socketTCP, boost::asio::buffer(messageByte.getBuffer().getData(), messageByte.getBuffer().size()),
                              [&](const boost::system::error_code& error, const size_t transfered)
@@ -54,7 +54,7 @@ void ConnectionTCP::send(IMessage& messageByte)
 
 void ConnectionTCP::receive()
 {
-    BT_PRE_CONDITION(shared_from_this());             // Dev Issue: Not created by make_shared !
+    MOUCA_PRE_CONDITION(shared_from_this());             // Dev Issue: Not created by make_shared !
 
     LOG_MESSAGE("Receive: Start");
 
@@ -82,7 +82,7 @@ void ConnectionTCP::receive()
 
 void ConnectionTCP::accept()
 {
-    BT_PRE_CONDITION(shared_from_this());
+    MOUCA_PRE_CONDITION(shared_from_this());
 
     receive();
 }
@@ -111,7 +111,7 @@ void ConnectionTCP::handleRead(const boost::system::error_code& error, const siz
         // Block: To delete IMessage and release lock before launch another receive
         {
             auto messagesManager = _messagesManager.lock();
-            BT_PRE_CONDITION(messagesManager != nullptr); // DEV Issue: need manager to make something of message.
+            MOUCA_PRE_CONDITION(messagesManager != nullptr); // DEV Issue: need manager to make something of message.
 
 #ifdef BUFFER_MODE
             IMessage message(_inPacket.data().data(), _inPacket.data().size());
@@ -169,8 +169,8 @@ void Network::handleAccept(AcceptorWPtr acceptorWeak, IMessagesManagerWPtr manag
     LOG_MESSAGE("handleAccept: Start");
 
     auto acceptor = acceptorWeak.lock();
-    BT_PRE_CONDITION(acceptor != nullptr);
-    BT_PRE_CONDITION(manager.lock() != nullptr);
+    MOUCA_PRE_CONDITION(acceptor != nullptr);
+    MOUCA_PRE_CONDITION(manager.lock() != nullptr);
 
     if (!_IOService.stopped())
     {

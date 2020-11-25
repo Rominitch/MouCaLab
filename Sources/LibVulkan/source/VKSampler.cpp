@@ -27,8 +27,8 @@ void Sampler::initialize(const Device& device, VkFilter magFilter, VkFilter minF
                          float  minLod, float maxLod,
                          VkBorderColor borderColor, VkBool32 unnormalizedCoordinates)
 {
-    BT_PRE_CONDITION(isNull());
-    BT_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
 
     // Create sampler
     const VkSamplerCreateInfo samplerInfo

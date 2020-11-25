@@ -64,12 +64,12 @@ void Memory::allocateMemory(const Device& device, const VkMemoryRequirements& me
 
 void Memory::copy(const Device& device, const VkDeviceSize size, const void *data)
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(!device.isNull());
-    BT_PRE_CONDITION(_mapped == nullptr);
-    BT_PRE_CONDITION(size != 0);
-    BT_PRE_CONDITION(data != nullptr);
-    BT_PRE_CONDITION(_memoryPropertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);      /// DEV Issue: Only hosted can use this API ! 
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(_mapped == nullptr);
+    MOUCA_PRE_CONDITION(size != 0);
+    MOUCA_PRE_CONDITION(data != nullptr);
+    MOUCA_PRE_CONDITION(_memoryPropertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);      /// DEV Issue: Only hosted can use this API ! 
 
     map(device, size);
 
@@ -78,7 +78,7 @@ void Memory::copy(const Device& device, const VkDeviceSize size, const void *dat
 
     unmap(device);
 
-    BT_POST_CONDITION(_mapped == nullptr);
+    MOUCA_POST_CONDITION(_mapped == nullptr);
 }
 
 void Memory::map(const Device& device, const VkDeviceSize size, const VkDeviceSize offset)
@@ -94,14 +94,14 @@ void Memory::map(const Device& device, const VkDeviceSize size, const VkDeviceSi
         BT_THROW_ERROR(u8"Vulkan", u8"BufferMappingError");
     }
 
-    BT_POST_CONDITION(_mapped != nullptr);
+    MOUCA_POST_CONDITION(_mapped != nullptr);
 }
 
 void Memory::unmap(const Device& device)
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(!device.isNull());
-    BT_PRE_CONDITION(_mapped != nullptr);
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(_mapped != nullptr);
 
     vkUnmapMemory(device.getInstance(), _memory);
     _mapped = nullptr;
@@ -109,9 +109,9 @@ void Memory::unmap(const Device& device)
 
 void Memory::flush(const Device& device, const VkDeviceSize size, const VkDeviceSize offset) const
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(!device.isNull());
-    BT_PRE_CONDITION(_mapped != nullptr);
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(_mapped != nullptr);
 
     const VkMappedMemoryRange mappedRange = 
     {
@@ -126,7 +126,7 @@ void Memory::flush(const Device& device, const VkDeviceSize size, const VkDevice
     {
         BT_THROW_ERROR(u8"Vulkan", u8"FlushMappedBufferError");
     }
-    BT_POST_CONDITION(_mapped != nullptr);
+    MOUCA_POST_CONDITION(_mapped != nullptr);
 }
 
 void MemoryBuffer::initialize(const Device& device, const VkBuffer& buffer, const VkMemoryPropertyFlags memoryPropertyFlags)

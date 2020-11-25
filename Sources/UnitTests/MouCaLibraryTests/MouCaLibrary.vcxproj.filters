@@ -9,9 +9,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Fichiers sources\BasicTools">
-      <UniqueIdentifier>{d9875d26-66d1-4235-a0e3-764e63df15f0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Fichiers sources\Error">
       <UniqueIdentifier>{2e91af57-146e-4727-badd-dba7b2fab27c}</UniqueIdentifier>
     </Filter>
@@ -26,6 +23,9 @@
     </Filter>
     <Filter Include="Fichiers sources\Network">
       <UniqueIdentifier>{a9b4069c-0e58-4f54-bdeb-82d34000a95c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Core">
+      <UniqueIdentifier>{d9875d26-66d1-4235-a0e3-764e63df15f0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -48,30 +48,6 @@
     </ClCompile>
     <ClCompile Include="..\source\gMouCaTest.cpp">
       <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="source\UT_BTFile.cpp">
-      <Filter>Fichiers sources\BasicTools</Filter>
-    </ClCompile>
-    <ClCompile Include="source\UT_BTString.cpp">
-      <Filter>Fichiers sources\BasicTools</Filter>
-    </ClCompile>
-    <ClCompile Include="source\UT_BTMath.cpp">
-      <Filter>Fichiers sources\BasicTools</Filter>
-    </ClCompile>
-    <ClCompile Include="source\UT_BTError.cpp">
-      <Filter>Fichiers sources\BasicTools</Filter>
-    </ClCompile>
-    <ClCompile Include="source\UT_BTException.cpp">
-      <Filter>Fichiers sources\BasicTools</Filter>
-    </ClCompile>
-    <ClCompile Include="source\UT_BTThread.cpp">
-      <Filter>Fichiers sources\BasicTools</Filter>
-    </ClCompile>
-    <ClCompile Include="source\UT_BTByteBuffer.cpp">
-      <Filter>Fichiers sources\BasicTools</Filter>
-    </ClCompile>
-    <ClCompile Include="source\UT_BTResource.cpp">
-      <Filter>Fichiers sources\BasicTools</Filter>
     </ClCompile>
     <ClCompile Include="source\UT_ErrorManager.cpp">
       <Filter>Fichiers sources\Error</Filter>
@@ -109,17 +85,8 @@
     <ClCompile Include="source\UT_RTCameraManipulator.cpp">
       <Filter>Fichiers sources\RT</Filter>
     </ClCompile>
-    <ClCompile Include="source\UT_BTProcess.cpp">
-      <Filter>Fichiers sources\BasicTools</Filter>
-    </ClCompile>
     <ClCompile Include="source\UT_RTShaderFile.cpp">
       <Filter>Fichiers sources\RT</Filter>
-    </ClCompile>
-    <ClCompile Include="source\UT_FileTracker.cpp">
-      <Filter>Fichiers sources\BasicTools</Filter>
-    </ClCompile>
-    <ClCompile Include="source\UT_BTSignal.cpp">
-      <Filter>Fichiers sources\BasicTools</Filter>
     </ClCompile>
     <ClCompile Include="source\UT_RTBoundingBox.cpp">
       <Filter>Fichiers sources\RT</Filter>
@@ -136,14 +103,50 @@
     <ClCompile Include="source\UT_Network.cpp">
       <Filter>Fichiers sources\Network</Filter>
     </ClCompile>
-    <ClCompile Include="source\UT_BTIdentifier.cpp">
-      <Filter>Fichiers sources\BasicTools</Filter>
-    </ClCompile>
-    <ClCompile Include="source\UT_BTLocale.cpp">
-      <Filter>Fichiers sources\BasicTools</Filter>
-    </ClCompile>
     <ClCompile Include="source\UT_RTMaths.cpp">
       <Filter>Fichiers sources\RT</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_CoreThreadPools.cpp">
+      <Filter>Fichiers sources\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_CoreFileTracker.cpp">
+      <Filter>Fichiers sources\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_CoreThread.cpp">
+      <Filter>Fichiers sources\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_CoreString.cpp">
+      <Filter>Fichiers sources\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_CoreSignal.cpp">
+      <Filter>Fichiers sources\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_CoreResource.cpp">
+      <Filter>Fichiers sources\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_CoreProcess.cpp">
+      <Filter>Fichiers sources\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_CoreLocale.cpp">
+      <Filter>Fichiers sources\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_CoreMath.cpp">
+      <Filter>Fichiers sources\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_CoreIdentifier.cpp">
+      <Filter>Fichiers sources\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_CoreFile.cpp">
+      <Filter>Fichiers sources\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_CoreByteBuffer.cpp">
+      <Filter>Fichiers sources\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_CoreException.cpp">
+      <Filter>Fichiers sources\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_CoreError.cpp">
+      <Filter>Fichiers sources\Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

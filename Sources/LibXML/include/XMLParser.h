@@ -34,22 +34,22 @@ namespace XML
 
             size_t getNbElements() const override
             {
-                BT_PRE_CONDITION(_findNodesList!=NULL);
+                MOUCA_PRE_CONDITION(_findNodesList!=NULL);
                 return _findNodesList->getLength();
             }
 
             NodeUPtr getNode(const size_t szNode) const override
             {
-                BT_PRE_CONDITION(_findNodesList!=NULL);
+                MOUCA_PRE_CONDITION(_findNodesList!=NULL);
 #ifndef XERCES_SPEED_DEBUG
-                BT_PRE_CONDITION(szNode < _findNodesList->getLength());
+                MOUCA_PRE_CONDITION(szNode < _findNodesList->getLength());
 #endif
                 xercesc::DOMNode* pNode = _findNodesList->item(szNode);
 #ifndef XERCES_SPEED_DEBUG
-                BT_PRE_CONDITION(pNode != NULL && pNode->getNodeType() && pNode->getNodeType() == xercesc::DOMNode::ELEMENT_NODE);
+                MOUCA_PRE_CONDITION(pNode != NULL && pNode->getNodeType() && pNode->getNodeType() == xercesc::DOMNode::ELEMENT_NODE);
 #endif
 
-                BT_PRE_CONDITION(dynamic_cast<const DOMElement*>(pNode) != NULL);
+                MOUCA_PRE_CONDITION(dynamic_cast<const DOMElement*>(pNode) != NULL);
                 return std::make_unique<XercesNode>(static_cast<DOMElement*>(pNode));
             }
         private:

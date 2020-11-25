@@ -15,7 +15,7 @@ namespace RT
                             Point3(-std::numeric_limits<float>::infinity(), -std::numeric_limits<float>::infinity(), -std::numeric_limits<float>::infinity())}}),
             _radius( 0.0f )
             {
-                BT_POST_CONDITION( !isValid() );
+                MOUCA_POST_CONDITION( !isValid() );
             }
 
             BoundingBox( const BoundingBox& copy ) = default;
@@ -23,13 +23,13 @@ namespace RT
             BoundingBox(const Point3& min, const Point3& max):
             _radius(0.0f)
             {
-                BT_PRE_CONDITION(all( lessThanEqual(min, max)));
+                MOUCA_PRE_CONDITION(all( lessThanEqual(min, max)));
 
                 _minMaxPoint[Min] = min;
                 _minMaxPoint[Max] = max;
 
                 refreshData();
-                BT_POST_CONDITION( isValid() );
+                MOUCA_POST_CONDITION( isValid() );
             }
 
             ~BoundingBox() = default;

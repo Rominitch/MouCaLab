@@ -12,32 +12,32 @@ namespace RT
 Canvas::Canvas():
 _resolutionPixel(0, 0)
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 Canvas::~Canvas()
 {
-    BT_PRE_CONDITION(isNull()); // DEV Issue: missing release();
+    MOUCA_PRE_CONDITION(isNull()); // DEV Issue: missing release();
 }
 
 void Canvas::initialize(const EventManagerWPtr& eventManager, const Array2ui& resolution)
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 
     _eventManager    = eventManager;
     _resolutionPixel = resolution;
 
-    BT_POST_CONDITION(!isNull());
+    MOUCA_POST_CONDITION(!isNull());
 }
 
 void Canvas::release()
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 
     _eventManager.reset();
     _resolutionPixel = Array2ui(0, 0);
 
-    BT_POST_CONDITION(isNull());
+    MOUCA_POST_CONDITION(isNull());
 }
 
 }

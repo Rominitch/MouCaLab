@@ -7,5 +7,5 @@
 #include <Boost.h>
 
 // MouCa includes
-#include <LibCore/include/BTOperatingSystem.h>
-#include <LibCore/include/BTDefine.h>
+#include <LibCore/include/CoreOperatingSystem.h>
+#include <LibCore/include/CoreDefine.h>

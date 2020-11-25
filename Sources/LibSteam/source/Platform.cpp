@@ -11,12 +11,12 @@ namespace Steam
 Platform::Platform():
 _initialize(false)
 {
-    BT_POST_CONDITION(isNull());                /// DEV Issue: missing call release() ?
+    MOUCA_POST_CONDITION(isNull());                /// DEV Issue: missing call release() ?
 }
 
 Platform::~Platform()
 {
-    BT_POST_CONDITION(isNull());                /// DEV Issue: missing call release() ?
+    MOUCA_POST_CONDITION(isNull());                /// DEV Issue: missing call release() ?
 }
 
 bool Platform::isNull() const
@@ -26,7 +26,7 @@ bool Platform::isNull() const
 
 void Platform::initialize()
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 
     if(SteamAPI_RestartAppIfNecessary(k_uAppIdInvalid))
         BT_THROW_ERROR(u8"Steam", u8"APINeedRestartError");
@@ -45,12 +45,12 @@ void Platform::initialize()
 
     _initialize = true;
 
-    BT_POST_CONDITION(!isNull());
+    MOUCA_POST_CONDITION(!isNull());
 }
 
 void Platform::release()
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 
     // Shutdown the SteamAPI
     SteamAPI_Shutdown();
@@ -60,7 +60,7 @@ void Platform::release()
 
     _initialize = false;
 
-    BT_POST_CONDITION(isNull());
+    MOUCA_POST_CONDITION(isNull());
 }
 
 }

@@ -2,9 +2,9 @@
 
 #include <LibXML/include/XMLParser.h>
 
-#include <LibError/include/BTErrorLibrary.h>
-#include <LibError/include/BTErrorPrinter.h>
-#include <LibError/include/BTErrorManager.h>
+#include <LibError/include/ErrorLibrary.h>
+#include <LibError/include/ErrorPrinter.h>
+#include <LibError/include/ErrorManager.h>
 
 class ErrorManager : public ::testing::Test
 {

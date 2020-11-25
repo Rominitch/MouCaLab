@@ -12,25 +12,25 @@ namespace Vulkan
 PipelineLayout::PipelineLayout() :
 _layout(VK_NULL_HANDLE)
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 PipelineLayout::~PipelineLayout()
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 void PipelineLayout::addPushConstant(const VkPushConstantRange& constant)
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 
     _constants.emplace_back(constant);
 }
 
 void PipelineLayout::initialize(const Device& device, const std::vector<VkDescriptorSetLayout>& descriptorLayouts)
 {
-    BT_PRE_CONDITION(isNull());
-    BT_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
 
     VkPipelineLayoutCreateInfo layoutCreateInfo =
     {

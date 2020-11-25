@@ -13,12 +13,12 @@ namespace Media
             ImageFI() :
             _imageData(nullptr)
             {
-                BT_PRE_CONDITION(isNull());
+                MOUCA_PRE_CONDITION(isNull());
             }
 
             ~ImageFI() override
             {
-                BT_PRE_CONDITION(isNull());
+                MOUCA_PRE_CONDITION(isNull());
             }
 
             void initialize(const Core::Path& path);
@@ -48,7 +48,7 @@ namespace Media
 
             void const* const getRAWData(const uint32_t layer, const uint32_t level) const override
             {
-                BT_PRE_CONDITION(level < getLevels());
+                MOUCA_PRE_CONDITION(level < getLevels());
                 BT_UNUSED(layer);
                 BT_UNUSED(level);
                 return FreeImage_GetBits(_imageData);

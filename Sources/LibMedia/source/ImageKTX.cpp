@@ -7,13 +7,13 @@ namespace Media
 
 void ImageKTX::initialize(const Core::Path& path)
 {
-    BT_PRE_CONDITION(isNull());
-    BT_PRE_CONDITION(!path.empty());
+    MOUCA_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(!path.empty());
 
     // Create Gli image
     _glImage = std::make_unique<gli::texture>(gli::load(path.string()));
 
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 }
 
 void ImageKTX::createFill(const RT::BufferCPUBase& imageBuffer, const uint32_t width, const uint32_t height)
@@ -23,11 +23,11 @@ void ImageKTX::createFill(const RT::BufferCPUBase& imageBuffer, const uint32_t w
 
 void ImageKTX::release()
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 
     _glImage.reset();
 
-    BT_POST_CONDITION(isNull());
+    MOUCA_POST_CONDITION(isNull());
 }
 
 uint32_t ImageKTX::getLayers() const
@@ -75,8 +75,8 @@ size_t ImageKTX::getMemorySize() const
 
 void ImageKTX::saveImage(const Core::Path& filename)
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(!filename.empty());
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!filename.empty());
 
     if( !gli::save(*_glImage, filename.string()) )
     {

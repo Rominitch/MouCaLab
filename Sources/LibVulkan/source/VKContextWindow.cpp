@@ -25,8 +25,8 @@ _linkContext(nullptr), _linkSurface(nullptr), _swapChain(std::make_shared<SwapCh
 
 void ContextWindow::initialize(const ContextDevice& linkContext, const WindowSurface& linkSurface, const SurfaceFormat::Configuration& configuration)
 {
-    BT_PRE_CONDITION(!linkContext.isNull());
-    BT_PRE_CONDITION(!linkSurface._surface->isNull());
+    MOUCA_PRE_CONDITION(!linkContext.isNull());
+    MOUCA_PRE_CONDITION(!linkSurface._surface->isNull());
 
     _linkContext = &linkContext;
     _linkSurface = &linkSurface;
@@ -40,15 +40,15 @@ void ContextWindow::initialize(const ContextDevice& linkContext, const WindowSur
     _swapChain->initialize(device, *linkSurface._surface.get(), _format);
     _swapChain->generateImages(device, _format);
 
-    BT_POST_CONDITION(!_swapChain->isNull() && !_swapChain->getImages().empty()); // DEV Issue: Not ready ?
+    MOUCA_POST_CONDITION(!_swapChain->isNull() && !_swapChain->getImages().empty()); // DEV Issue: Not ready ?
 }
 
 void ContextWindow::createFrameBuffer(RenderPassWPtr renderPass, const ViewAttachments& attachments)
 {
-    BT_PRE_CONDITION(!attachments.empty());
-    BT_PRE_CONDITION(!_swapChain->isNull());
-    BT_PRE_CONDITION(!renderPass.expired() && !renderPass.lock()->isNull());
-    //BT_PRE_CONDITION( std::count(attachments.begin(), attachments.end(), ImageViewWPtr()) == 1 );
+    MOUCA_PRE_CONDITION(!attachments.empty());
+    MOUCA_PRE_CONDITION(!_swapChain->isNull());
+    MOUCA_PRE_CONDITION(!renderPass.expired() && !renderPass.lock()->isNull());
+    //MOUCA_PRE_CONDITION( std::count(attachments.begin(), attachments.end(), ImageViewWPtr()) == 1 );
     
     // Keep configuration
     _viewAttachments = attachments;
@@ -63,9 +63,9 @@ void ContextWindow::createFrameBuffer(RenderPassWPtr renderPass, const ViewAttac
 
 void ContextWindow::fillFrameBuffer(RenderPassWPtr renderPass)
 {
-    BT_PRE_CONDITION(!_swapChain->isNull());
-    BT_PRE_CONDITION(!renderPass.expired() && !renderPass.lock()->isNull());
-    BT_PRE_CONDITION(!_frameBuffers.empty());
+    MOUCA_PRE_CONDITION(!_swapChain->isNull());
+    MOUCA_PRE_CONDITION(!renderPass.expired() && !renderPass.lock()->isNull());
+    MOUCA_PRE_CONDITION(!_frameBuffers.empty());
 
     auto itSwapChainImage = _swapChain->getImages().cbegin();
 
@@ -92,13 +92,13 @@ void ContextWindow::fillFrameBuffer(RenderPassWPtr renderPass)
         ++itSwapChainImage;
     }
 
-    BT_POST_CONDITION(itSwapChainImage == _swapChain->getImages().cend()); //Security
+    MOUCA_POST_CONDITION(itSwapChainImage == _swapChain->getImages().cend()); //Security
 }
 
 void ContextWindow::createCommandBuffer(Commands&& commands, CommandPoolSPtr pool, const VkCommandBufferLevel level, const VkCommandBufferUsageFlags usage)
 {
-    BT_PRE_CONDITION(!_linkContext->isNull());
-    BT_PRE_CONDITION(shared_from_this() != nullptr);
+    MOUCA_PRE_CONDITION(!_linkContext->isNull());
+    MOUCA_PRE_CONDITION(shared_from_this() != nullptr);
 
     // Create
     _commandBuffer = std::make_shared<CommandBufferSurface>();
@@ -110,12 +110,12 @@ void ContextWindow::createCommandBuffer(Commands&& commands, CommandPoolSPtr poo
     //Security to never access it anymore
     commands.clear();
 
-    BT_POST_CONDITION(!_commandBuffer->isNull()); // DEV Issue: Not ready ?
+    MOUCA_POST_CONDITION(!_commandBuffer->isNull()); // DEV Issue: Not ready ?
 
     /*
-    BT_PRE_CONDITION(_commandBuffers.empty()); // DEV Issue: Already build CommandBuffer ?
-    BT_PRE_CONDITION(!_linkContext->isNull());
-    BT_PRE_CONDITION(commands.size() == _swapChain->getImages().size());
+    MOUCA_PRE_CONDITION(_commandBuffers.empty()); // DEV Issue: Already build CommandBuffer ?
+    MOUCA_PRE_CONDITION(!_linkContext->isNull());
+    MOUCA_PRE_CONDITION(commands.size() == _swapChain->getImages().size());
 
     const Device& device = _linkContext->getDevice();
 
@@ -138,21 +138,21 @@ void ContextWindow::createCommandBuffer(Commands&& commands, CommandPoolSPtr poo
     //Security to never access it anymore
     commands.clear();
 
-    BT_POST_CONDITION(!_commandBuffers.empty()); // DEV Issue: Not ready ?
+    MOUCA_POST_CONDITION(!_commandBuffers.empty()); // DEV Issue: Not ready ?
     */
 }
 
 void ContextWindow::updateCommandBuffer(const VkCommandBufferResetFlags reset) const
 {
-    BT_PRE_CONDITION(!_linkContext->isNull());
-    BT_PRE_CONDITION(!_commandBuffer->isNull());
+    MOUCA_PRE_CONDITION(!_linkContext->isNull());
+    MOUCA_PRE_CONDITION(!_commandBuffer->isNull());
 
     _commandBuffer->execute(reset);
 }
 
 void ContextWindow::release()
 {
-    BT_PRE_CONDITION(!_linkContext->isNull());
+    MOUCA_PRE_CONDITION(!_linkContext->isNull());
 
     const Device& device = _linkContext->getDevice();
 
@@ -176,15 +176,15 @@ void ContextWindow::release()
 
 void ContextWindow::setReady(bool ready)
 {
-    BT_PRE_CONDITION(_swapChain != nullptr);
+    MOUCA_PRE_CONDITION(_swapChain != nullptr);
 
     _swapChain->setReady(ready);
 }
 
 void ContextWindow::resize(const VkExtent2D& newSize)
 {
-    BT_PRE_CONDITION(!_swapChain->isReady());                       //DEV Issue: Please disable rendering before and properly !
-    BT_PRE_CONDITION(newSize.width != 0 && newSize.height != 0);    //DEV Issue: Need valid size !
+    MOUCA_PRE_CONDITION(!_swapChain->isReady());                       //DEV Issue: Please disable rendering before and properly !
+    MOUCA_PRE_CONDITION(newSize.width != 0 && newSize.height != 0);    //DEV Issue: Need valid size !
 
     // Check we have different size
     const auto& surfaceSize = _format.getConfiguration()._extent;
@@ -222,8 +222,8 @@ void ContextWindow::resize(const VkExtent2D& newSize)
     // Ready to run
     _swapChain->setReady(true);
 
-    BT_POST_CONDITION(!_swapChain->isNull()); //DEV Issue: All must working !
-    BT_POST_CONDITION(_swapChain->isReady()); //DEV Issue: All must working !
+    MOUCA_POST_CONDITION(!_swapChain->isNull()); //DEV Issue: All must working !
+    MOUCA_POST_CONDITION(_swapChain->isReady()); //DEV Issue: All must working !
 }
 
 ICommandBufferWPtr ContextWindow::getICommandBuffer() const

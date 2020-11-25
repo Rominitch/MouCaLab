@@ -136,7 +136,7 @@ namespace Vulkan
 
             ~DescriptorSet()
             {
-                BT_POST_CONDITION(isNull());
+                MOUCA_POST_CONDITION(isNull());
             }
 
             void initialize(const Device& device, const DescriptorPoolWPtr& descriptorPool, const std::vector<VkDescriptorSetLayout>& layouts);
@@ -150,7 +150,7 @@ namespace Vulkan
 
             const VkDescriptorSet& getInstance(const size_t id) const
             {
-                BT_PRE_CONDITION(id < _descriptors.size());
+                MOUCA_PRE_CONDITION(id < _descriptors.size());
                 return _descriptors[id];
             }
 

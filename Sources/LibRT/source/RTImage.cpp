@@ -12,25 +12,25 @@ namespace RT
 
 void ImageLinkedCPU::initialize(const Target target, const RT::BufferCPUBaseWPtr& imageBuffer, const RT::Array3ui& extents)
 {
-    BT_PRE_CONDITION(isNull());                 //DEV Issue: Need none initialized image.
-    BT_PRE_CONDITION(!imageBuffer.expired());   //DEV Issue: Need valid data.
-    BT_PRE_CONDITION(extents.x >= 1 && extents.y >= 1 && extents.z >= 1); //DEV Issue: Need valid size.
+    MOUCA_PRE_CONDITION(isNull());                 //DEV Issue: Need none initialized image.
+    MOUCA_PRE_CONDITION(!imageBuffer.expired());   //DEV Issue: Need valid data.
+    MOUCA_PRE_CONDITION(extents.x >= 1 && extents.y >= 1 && extents.z >= 1); //DEV Issue: Need valid size.
 
     _target       = target;
     _linkedBuffer = imageBuffer;
     _extents      = extents;
 
-    BT_POST_CONDITION(!isNull()); //DEV Issue: Ready to work.
+    MOUCA_POST_CONDITION(!isNull()); //DEV Issue: Ready to work.
 }
 
 void ImageLinkedCPU::release()
 {
-    BT_PRE_CONDITION(!isNull()); //DEV Issue: Not initialize ?
+    MOUCA_PRE_CONDITION(!isNull()); //DEV Issue: Not initialize ?
 
     _linkedBuffer.reset();
     _extents = { 0,0,0 };
 
-    BT_POST_CONDITION(isNull()); //DEV Issue: Ready to work.
+    MOUCA_POST_CONDITION(isNull()); //DEV Issue: Ready to work.
 }
 
 void ImageLinkedCPU::createFill(const RT::BufferCPUBase& imageBuffer, const uint32_t width, const uint32_t height)
@@ -51,23 +51,23 @@ bool ImageLinkedCPU::compare(const Image & reference, const size_t nbMaxDefectPi
 
 void const* const ImageLinkedCPU::getRAWData(const uint32_t layer, const uint32_t level) const
 {
-    BT_PRE_CONDITION(!isNull()); //DEV Issue: Ready to work.
+    MOUCA_PRE_CONDITION(!isNull()); //DEV Issue: Ready to work.
 
     return _linkedBuffer.lock()->getData();
 }
 
 size_t ImageLinkedCPU::getMemoryOffset(const uint32_t layer, const uint32_t level) const
 {
-    BT_PRE_CONDITION(!isNull()); //DEV Issue: Ready to work.
-    BT_PRE_CONDITION(layer < getLayers());
-    BT_PRE_CONDITION(level < getLevels());
+    MOUCA_PRE_CONDITION(!isNull()); //DEV Issue: Ready to work.
+    MOUCA_PRE_CONDITION(layer < getLayers());
+    MOUCA_PRE_CONDITION(level < getLevels());
 
     return 0;
 }
 
 size_t ImageLinkedCPU::getMemorySize() const
 {
-    BT_PRE_CONDITION(!isNull()); //DEV Issue: Ready to work.
+    MOUCA_PRE_CONDITION(!isNull()); //DEV Issue: Ready to work.
 
     return _linkedBuffer.lock()->getByteSize();
 }

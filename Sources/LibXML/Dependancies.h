@@ -7,10 +7,10 @@
 #include <Xerces.h>
 
 //Very used file
-#include <LibCore/include/BTOperatingSystem.h>
-#include <LibCore/include/BTString.h>
-#include <LibCore/include/BTError.h>
-#include <LibCore/include/BTDefine.h>
-#include <LibCore/include/BTException.h>
+#include <LibCore/include/CoreOperatingSystem.h>
+#include <LibCore/include/CoreString.h>
+#include <LibCore/include/CoreError.h>
+#include <LibCore/include/CoreDefine.h>
+#include <LibCore/include/CoreException.h>
 
-#include <LibError/include/BTErrorManager.h>
+#include <LibError/include/ErrorManager.h>

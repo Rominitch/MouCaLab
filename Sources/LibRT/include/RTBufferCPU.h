@@ -54,18 +54,18 @@ namespace RT
 
         void create(const RT::BufferDescriptor& descriptor, const size_t szNbElementBuffer, HandleBuffer linkedPointer, const size_t pitch = 0)
         {
-            BT_PRE_CONDITION(_handle == nullptr);
-            BT_PRE_CONDITION(szNbElementBuffer > 0);
-            BT_PRE_CONDITION(linkedPointer != nullptr);
-            BT_PRE_CONDITION(descriptor.getByteSize() > 0);
+            MOUCA_PRE_CONDITION(_handle == nullptr);
+            MOUCA_PRE_CONDITION(szNbElementBuffer > 0);
+            MOUCA_PRE_CONDITION(linkedPointer != nullptr);
+            MOUCA_PRE_CONDITION(descriptor.getByteSize() > 0);
 
             _handle     = linkedPointer;
             _nbElements = szNbElementBuffer;
             _descriptor = descriptor;
             _pitchRow   = pitch;
 
-            BT_POST_CONDITION(_handle != nullptr);
-            BT_POST_CONDITION(&static_cast<char*>(_handle)[(szNbElementBuffer-1) * descriptor.getByteSize()] != nullptr); //DEV Issue: access to last elements.
+            MOUCA_POST_CONDITION(_handle != nullptr);
+            MOUCA_POST_CONDITION(&static_cast<char*>(_handle)[(szNbElementBuffer-1) * descriptor.getByteSize()] != nullptr); //DEV Issue: access to last elements.
         }
 
         void release() override

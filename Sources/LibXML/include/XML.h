@@ -3,7 +3,7 @@
 /// \license No license
 #pragma once
 
-#include <LibCore/include/BTResource.h>
+#include <LibCore/include/CoreResource.h>
 
 namespace XML
 {

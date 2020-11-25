@@ -3,7 +3,7 @@
 /// \license No license
 #pragma once
 
-#include <LibCore/include/BTByteBuffer.h>
+#include <LibCore/include/CoreByteBuffer.h>
 
 namespace Network
 {
@@ -26,7 +26,7 @@ namespace Network
             IMessage(const void* buffer, const uint64_t sizeBuffer):
             _code(0)
             {
-                BT_PRE_CONDITION(sizeBuffer >= 8); // DEV Issue: Message too small: need code.
+                MOUCA_PRE_CONDITION(sizeBuffer >= 8); // DEV Issue: Message too small: need code.
                 const char* data = reinterpret_cast<const char*>(buffer);
 
                 // Read code

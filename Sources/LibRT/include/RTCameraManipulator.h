@@ -38,7 +38,7 @@ namespace RT
 
             void initialize(CameraWPtr camera)
             {
-                BT_PRE_CONDITION(!camera.expired());
+                MOUCA_PRE_CONDITION(!camera.expired());
 
                 _linkCamera = camera;
 

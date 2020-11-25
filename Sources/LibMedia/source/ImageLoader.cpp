@@ -16,7 +16,7 @@ namespace Media
 
 RT::ImageSPtr ImageLoader::openImage(const Core::Path& fileName)
 {
-    BT_PRE_CONDITION( !fileName.empty() );
+    MOUCA_PRE_CONDITION( !fileName.empty() );
 
     const Core::String ext = fileName.extension().u8string();
     // Special OpenGL/Vulkan format

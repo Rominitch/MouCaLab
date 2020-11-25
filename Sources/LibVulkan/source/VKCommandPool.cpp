@@ -12,18 +12,18 @@ namespace Vulkan
 CommandPool::CommandPool():
 _commandPool(VK_NULL_HANDLE)
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 CommandPool::~CommandPool()
 {
-    BT_POST_CONDITION(isNull());
+    MOUCA_POST_CONDITION(isNull());
 }
 
 void CommandPool::initialize(const Device& device, const uint32_t queueFamilyID, const VkCommandPoolCreateFlags flags)
 {
-    BT_PRE_CONDITION(isNull());
-    BT_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
 
     VkCommandPoolCreateInfo createInfo =
     {
@@ -39,18 +39,18 @@ void CommandPool::initialize(const Device& device, const uint32_t queueFamilyID,
         BT_THROW_ERROR(u8"Vulkan", u8"CommandPoolCreationError");
     }
 
-    BT_POST_CONDITION(!isNull());
+    MOUCA_POST_CONDITION(!isNull());
 }
 
 void CommandPool::release(const Device& device)
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
 
     vkDestroyCommandPool(device.getInstance(), _commandPool, nullptr);
     _commandPool = VK_NULL_HANDLE;
 
-    BT_POST_CONDITION(isNull());
+    MOUCA_POST_CONDITION(isNull());
 }
 
 }

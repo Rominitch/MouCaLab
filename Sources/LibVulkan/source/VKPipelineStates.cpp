@@ -17,7 +17,7 @@ namespace Vulkan
 
 void PipelineStageShaders::addShaderModule(const ShaderModuleWPtr shaderWeak, ShaderSpecialization&& specialization)
 {
-    BT_PRE_CONDITION(!shaderWeak.expired());
+    MOUCA_PRE_CONDITION(!shaderWeak.expired());
 
     // Register data (keep memory alive)
     auto idData = _shaderData.size();
@@ -65,12 +65,12 @@ void PipelineStageShaders::addShaderGeneric(const ShaderProgram& shader, const V
         specializationInfo                                          // const VkSpecializationInfo                    *pSpecializationInfo
     });
 
-    BT_POST_CONDITION(specializationInfo == nullptr || (specializationInfo->pData != nullptr && specializationInfo->dataSize > 0));
+    MOUCA_POST_CONDITION(specializationInfo == nullptr || (specializationInfo->pData != nullptr && specializationInfo->dataSize > 0));
 }
 
 void PipelineStageShaders::addShaderProgram(const RT::ShaderKind id, const ShaderProgram& shader)
 {
-    BT_PRE_CONDITION(id < RT::ShaderKind::NbShaders);
+    MOUCA_PRE_CONDITION(id < RT::ShaderKind::NbShaders);
 
     const std::array<VkShaderStageFlagBits, static_cast<size_t>(RT::ShaderKind::NbShaders)> flags =
     {

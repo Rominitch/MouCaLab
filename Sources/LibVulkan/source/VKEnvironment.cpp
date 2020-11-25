@@ -172,13 +172,13 @@ void Environment::initialize(const RT::ApplicationInfo& info, const std::vector<
     }
 
     //Final check to see if we not loose data
-    BT_POST_CONDITION(_rejectDevices.size() + _graphicsDevices.size() + _computeDevices.size() == physicalDevices.size());
-    BT_POST_CONDITION(!isNull());
+    MOUCA_POST_CONDITION(_rejectDevices.size() + _graphicsDevices.size() + _computeDevices.size() == physicalDevices.size());
+    MOUCA_POST_CONDITION(!isNull());
 }
 
 void Environment::release()
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
     //Clean context and associated device
 
     //Lost physical devices
@@ -195,7 +195,7 @@ void Environment::release()
     vkDestroyInstance(_instance, nullptr);
     _instance = VK_NULL_HANDLE;
     
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 void Environment::checkExtensions(const std::vector<const char*>& extensions) const

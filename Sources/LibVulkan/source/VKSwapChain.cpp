@@ -15,19 +15,19 @@ namespace Vulkan
 SwapChain::SwapChain():
 _swapChain(VK_NULL_HANDLE), _currentImage(0), _ready(false)
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 SwapChain::~SwapChain()
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 void SwapChain::initialize(const Device& device, const Surface& surface, const SurfaceFormat& format)
 {
-    BT_PRE_CONDITION(isNull());
-    BT_PRE_CONDITION(!device.isNull());
-    BT_PRE_CONDITION(!surface.isNull());
+    MOUCA_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(!surface.isNull());
 
     const SurfaceFormat::Configuration& configuration = format.getConfiguration();
     BT_ASSERT(format.isSupported());
@@ -63,14 +63,14 @@ void SwapChain::initialize(const Device& device, const Surface& surface, const S
         BT_THROW_ERROR("Vulkan", "SwapChainError");
     }
 
-    BT_POST_CONDITION(!isNull());
+    MOUCA_POST_CONDITION(!isNull());
 }
 
 void SwapChain::generateImages(const Device& device, const SurfaceFormat& format)
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(!device.isNull());
-    BT_PRE_CONDITION(_images.empty());
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(_images.empty());
 
     const SurfaceFormat::Configuration& configuration = format.getConfiguration();
     BT_ASSERT(format.isSupported());
@@ -109,8 +109,8 @@ void SwapChain::generateImages(const Device& device, const SurfaceFormat& format
 
 void SwapChain::release(const Device& device)
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
     
     /*
 #ifdef _DEBUG
@@ -134,13 +134,13 @@ void SwapChain::release(const Device& device)
 
     _ready = false;
 
-    BT_POST_CONDITION(isNull());
+    MOUCA_POST_CONDITION(isNull());
 }
 
 
 void SwapChain::registerSequence(SequenceWPtr sequence)
 {
-    BT_PRE_CONDITION(std::find_if(_linkSequences.cbegin(), _linkSequences.cend(),
+    MOUCA_PRE_CONDITION(std::find_if(_linkSequences.cbegin(), _linkSequences.cend(),
                     [&](const auto current)
                     {
                         return current.lock() == sequence.lock();
@@ -157,7 +157,7 @@ void SwapChain::unregisterSequence(SequenceWPtr sequence)
                                     {
                                         return current.lock() == sequence.lock();
                                     });
-    BT_PRE_CONDITION(itSequence != _linkSequences.end());
+    MOUCA_PRE_CONDITION(itSequence != _linkSequences.end());
     // Remove item
     _linkSequences.erase(itSequence);
 }
@@ -166,20 +166,20 @@ SwapChainImage::SwapChainImage():
 _image(VK_NULL_HANDLE),
 _view(VK_NULL_HANDLE)
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 SwapChainImage::~SwapChainImage()
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 void SwapChainImage::initialize(const Device& device, const VkFormat& format, const VkImage& image)
 {
-    BT_PRE_CONDITION(isNull());
-    BT_PRE_CONDITION(image != VK_NULL_HANDLE);
-    BT_PRE_CONDITION(!device.isNull());
-    BT_PRE_CONDITION(format != VK_NULL_HANDLE);
+    MOUCA_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(image != VK_NULL_HANDLE);
+    MOUCA_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(format != VK_NULL_HANDLE);
 
     _image = image;
 
@@ -211,19 +211,19 @@ void SwapChainImage::initialize(const Device& device, const VkFormat& format, co
         BT_THROW_ERROR(u8"Vulkan", u8"ImageViewCreationError");
     }
     
-    BT_POST_CONDITION(!isNull());
+    MOUCA_POST_CONDITION(!isNull());
 }
 
 void SwapChainImage::release(const Device& device)
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 
     vkDestroyImageView(device.getInstance(), _view, nullptr);
     _view = VK_NULL_HANDLE;
 
     _image = VK_NULL_HANDLE;
 
-    BT_POST_CONDITION(isNull());
+    MOUCA_POST_CONDITION(isNull());
 }
 
 }

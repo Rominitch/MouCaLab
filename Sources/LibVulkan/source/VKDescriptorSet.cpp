@@ -18,8 +18,8 @@ _pool(VK_NULL_HANDLE)
 
 void DescriptorPool::initialize(const Device& device, const std::vector<VkDescriptorPoolSize>& poolSizes, const uint32_t maxSets)
 {
-    BT_PRE_CONDITION(isNull());
-    BT_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
 
     const VkDescriptorPoolCreateInfo info =
     {
@@ -35,7 +35,7 @@ void DescriptorPool::initialize(const Device& device, const std::vector<VkDescri
     {
         BT_THROW_ERROR(u8"Vulkan", u8"DescriptorPoolCreationError");
     }
-    BT_POST_CONDITION(!isNull());
+    MOUCA_POST_CONDITION(!isNull());
 }
 
 void DescriptorPool::release(const Device& device)
@@ -157,8 +157,8 @@ _dstBinding(dstBinding), _type(type), _vkBufferView(std::move(bufferView))
 
 VkWriteDescriptorSet WriteDescriptorSet::compute(const DescriptorSet& set, const uint32_t setId)
 {
-    BT_PRE_CONDITION(!set.isNull());
-    BT_PRE_CONDITION(setId < set.getDescriptorSets().size());
+    MOUCA_PRE_CONDITION(!set.isNull());
+    MOUCA_PRE_CONDITION(setId < set.getDescriptorSets().size());
 
     // Compute local vulkan array
     if(!_imageInfo.empty())
@@ -201,10 +201,10 @@ VkWriteDescriptorSet WriteDescriptorSet::compute(const DescriptorSet& set, const
 
 void DescriptorSet::initialize(const Device& device, const DescriptorPoolWPtr& descriptorPool, const std::vector<VkDescriptorSetLayout>& layouts)
 {
-    BT_PRE_CONDITION(isNull());
-    BT_PRE_CONDITION(!device.isNull());
-    BT_PRE_CONDITION(!descriptorPool.expired() && !descriptorPool.lock()->isNull());
-    BT_PRE_CONDITION(!layouts.empty());
+    MOUCA_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(!descriptorPool.expired() && !descriptorPool.lock()->isNull());
+    MOUCA_PRE_CONDITION(!layouts.empty());
 
     // Resize array of descriptors
     //_descriptors.resize(1);// layouts.size());
@@ -235,19 +235,19 @@ void DescriptorSet::initialize(const Device& device, const DescriptorPoolWPtr& d
         }
     }
 
-    BT_POST_CONDITION(!isNull());
+    MOUCA_POST_CONDITION(!isNull());
 #ifndef NDEBUG
     for (const auto desc : _descriptors)
     {
-        BT_PRE_CONDITION(desc != VK_NULL_HANDLE);
+        MOUCA_PRE_CONDITION(desc != VK_NULL_HANDLE);
     }
 #endif
 }
 
 void DescriptorSet::update(const Device& device, const uint32_t setId, std::vector<WriteDescriptorSet>&& writeDescriptor)
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
 
     _writeDescriptor = std::move(writeDescriptor);
     _setId           = setId;
@@ -257,9 +257,9 @@ void DescriptorSet::update(const Device& device, const uint32_t setId, std::vect
 
 void DescriptorSet::update(const Device& device)
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(!device.isNull());
-    BT_PRE_CONDITION(!_writeDescriptor.empty());
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(!_writeDescriptor.empty());
 
     std::vector<VkWriteDescriptorSet> writeSets;
     writeSets.resize(_writeDescriptor.size());
@@ -281,9 +281,9 @@ void DescriptorSet::update(const Device& device)
 
 void DescriptorSet::release(const Device& device)
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(!device.isNull());
-    BT_PRE_CONDITION(!_pool.expired());
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(!_pool.expired());
 
     if(vkFreeDescriptorSets(device.getInstance(), _pool.lock()->getInstance(), static_cast<uint32_t>(_descriptors.size()), _descriptors.data()) != VK_SUCCESS)
     {

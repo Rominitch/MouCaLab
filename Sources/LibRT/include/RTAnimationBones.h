@@ -3,7 +3,7 @@
 /// \license No license
 #pragma once
 
-#include <LibCore/include/BTResource.h>
+#include <LibCore/include/CoreResource.h>
 
 #include <LibRT/include/RTGeometry.h>
 #include <LibRT/include/RTTransform.h>
@@ -159,13 +159,13 @@ namespace RT
             AnimationImporter():
             Core::Resource()
             {
-                BT_PRE_CONDITION(isNull());
+                MOUCA_PRE_CONDITION(isNull());
             }
 
             /// Destructor
             ~AnimationImporter()
             {
-                BT_POST_CONDITION(isNull());
+                MOUCA_POST_CONDITION(isNull());
             }
 
             //------------------------------------------------------------------------

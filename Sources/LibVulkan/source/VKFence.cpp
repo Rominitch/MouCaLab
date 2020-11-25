@@ -12,18 +12,18 @@ namespace Vulkan
 Fence::Fence():
 _fence(VK_NULL_HANDLE), _timeout(0)
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 Fence::~Fence()
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 void Fence::initialize(const Device& device, const VkFenceCreateFlags flag)
 {
-    BT_PRE_CONDITION(isNull());
-    BT_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
 
     const VkFenceCreateInfo fenceCreateInfo =
     {
@@ -37,7 +37,7 @@ void Fence::initialize(const Device& device, const VkFenceCreateFlags flag)
         BT_THROW_ERROR(u8"Vulkan", u8"FenceCreationError");
     }
 
-    BT_POST_CONDITION(!isNull());
+    MOUCA_POST_CONDITION(!isNull());
 }
 
 void Fence::initialize(const Device& device, uint64_t timeout, const VkFenceCreateFlags flag)
@@ -49,21 +49,21 @@ void Fence::initialize(const Device& device, uint64_t timeout, const VkFenceCrea
 
 VkResult Fence::wait(const Device& device) const
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
 
     return vkWaitForFences(device.getInstance(), 1, &_fence, VK_TRUE, _timeout);
 }
 
 void Fence::release(const Device& device)
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
 
     vkDestroyFence(device.getInstance(), _fence, nullptr);
     _fence = VK_NULL_HANDLE;
 
-    BT_POST_CONDITION(isNull());
+    MOUCA_POST_CONDITION(isNull());
 }
 
 }

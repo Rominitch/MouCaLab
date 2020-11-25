@@ -14,8 +14,8 @@ namespace Media
 
 void MeshLoader::createMesh(RT::MeshImport& mesh) const
 {
-    BT_PRE_CONDITION(Core::File::isExist( mesh.getFilename()));
-    BT_PRE_CONDITION(mesh.getDescriptor().getNbDescriptors() > 0);
+    MOUCA_PRE_CONDITION(Core::File::isExist( mesh.getFilename()));
+    MOUCA_PRE_CONDITION(mesh.getDescriptor().getNbDescriptors() > 0);
     
     // Build import flag for ASSIMP
     int flag = aiProcess_FlipWindingOrder | aiProcess_Triangulate | aiProcess_PreTransformVertices;
@@ -70,8 +70,8 @@ void MeshLoader::createMesh(RT::MeshImport& mesh) const
         }
 
         mesh.getEditMesh().initialize(VBOQuad, IBOQuad, descriptor, RT::FaceOrder::CounterClockWise, RT::Topology::Triangles, bbox );
-        BT_POST_CONDITION(mesh.getEditMesh().getNbVertices()  > 0); // DEV Issue: nothing ?
-        BT_POST_CONDITION(mesh.getEditMesh().getNbPolygones() > 0); // DEV Issue: nothing ?
+        MOUCA_POST_CONDITION(mesh.getEditMesh().getNbVertices()  > 0); // DEV Issue: nothing ?
+        MOUCA_POST_CONDITION(mesh.getEditMesh().getNbPolygones() > 0); // DEV Issue: nothing ?
     }
 }
 
@@ -93,10 +93,10 @@ void MeshLoader::computeVBOIBOSize(const struct aiScene* pScene, size_t& szVBOSi
 
 void MeshLoader::computeVBOIBO(const struct aiScene* pScene, float* pCurrentVertex, uint32_t* pCurrentIndex, const RT::BufferDescriptor& description, std::vector<RT::Mesh::SubMeshDescriptor>& descriptors, const bool invertedY, RT::BoundingBox& bbox ) const
 {
-    BT_PRE_CONDITION(pScene != nullptr);
-    BT_PRE_CONDITION(pCurrentVertex != nullptr);
-    BT_PRE_CONDITION(pCurrentIndex != nullptr);
-    BT_PRE_CONDITION(description.getNbDescriptors() > 0 && description.getComponentDescriptor(0).getComponentUsage() == RT::ComponentUsage::Vertex);
+    MOUCA_PRE_CONDITION(pScene != nullptr);
+    MOUCA_PRE_CONDITION(pCurrentVertex != nullptr);
+    MOUCA_PRE_CONDITION(pCurrentIndex != nullptr);
+    MOUCA_PRE_CONDITION(description.getNbDescriptors() > 0 && description.getComponentDescriptor(0).getComponentUsage() == RT::ComponentUsage::Vertex);
 
     RT::AnimationBones bones;
 

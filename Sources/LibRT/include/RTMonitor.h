@@ -29,7 +29,7 @@ namespace RT
 
             void initialize(const Core::String name, const RT::ViewportInt32& monitorArea, const RT::Array2& physicSize, const uint32_t refreshRate, void* handle)
             {
-                BT_PRE_CONDITION(monitorArea.getHeight() > 0 && monitorArea.getWidth() > 0);
+                MOUCA_PRE_CONDITION(monitorArea.getHeight() > 0 && monitorArea.getWidth() > 0);
 
                 _name = name;
                 _monitorArea = monitorArea;

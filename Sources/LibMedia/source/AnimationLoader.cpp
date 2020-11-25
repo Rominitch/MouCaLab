@@ -14,7 +14,7 @@ namespace Media
 
 const aiNodeAnim* findNodeAnim(const aiAnimation* animation, const std::string& nodeName)
 {
-    BT_PRE_CONDITION(animation != nullptr);
+    MOUCA_PRE_CONDITION(animation != nullptr);
 
     for( uint32_t i = 0; i < animation->mNumChannels; i++ )
     {
@@ -111,7 +111,7 @@ void loadAnimation(RT::AnimationBones::Animation& currentAnimation, RT::Animatio
 //-------------------------------------------------------------------------------------------------
 void AnimationLoader::createAnimation(RT::AnimationImporter& animationImport) const
 {
-    BT_PRE_CONDITION(!animationImport.getFilename().empty());
+    MOUCA_PRE_CONDITION(!animationImport.getFilename().empty());
     Assimp::Importer    importer;
     const aiScene*      scene = importer.ReadFile(Core::convertToU8(animationImport.getFilename()), 0);
 

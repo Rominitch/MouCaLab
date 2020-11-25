@@ -9,12 +9,12 @@ namespace Media
         public:
             ImageKTX()
             {
-                BT_PRE_CONDITION(isNull());
+                MOUCA_PRE_CONDITION(isNull());
             }
 
             ~ImageKTX() override
             {
-                BT_PRE_CONDITION(isNull());
+                MOUCA_PRE_CONDITION(isNull());
             }
 
             void initialize(const Core::Path& path);

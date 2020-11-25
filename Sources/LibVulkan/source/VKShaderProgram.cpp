@@ -21,20 +21,20 @@ const std::array<RT::ShaderKind, static_cast<size_t>(RT::ShaderKind::NbShaders)>
 ShaderModule::ShaderModule() :
 _shaderModule(VK_NULL_HANDLE), _stage(static_cast<VkShaderStageFlagBits>(0))
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 ShaderModule::~ShaderModule()
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 void ShaderModule::initialize(const Device& device, const Core::String& shaderSource, const std::string& name, const VkShaderStageFlagBits stage)
 {
-    BT_PRE_CONDITION(isNull());
-    BT_PRE_CONDITION(!device.isNull());
-    BT_PRE_CONDITION(!shaderSource.empty());
-    BT_PRE_CONDITION(!name.empty());
+    MOUCA_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(!shaderSource.empty());
+    MOUCA_PRE_CONDITION(!name.empty());
 
     _name  = name;
     _stage = stage;
@@ -55,7 +55,7 @@ void ShaderModule::initialize(const Device& device, const Core::String& shaderSo
         BT_THROW_ERROR(u8"Vulkan", u8"ShaderCreationError");
     }
 
-    BT_POST_CONDITION(!isNull());
+    MOUCA_POST_CONDITION(!isNull());
 }
 
 void ShaderModule::release(const Device& device)
@@ -70,20 +70,20 @@ void ShaderModule::release(const Device& device)
 ShaderProgram::ShaderProgram():
 _shaderModule(VK_NULL_HANDLE)
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 ShaderProgram::~ShaderProgram()
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 void ShaderProgram::initialize(const Device& device, const Core::File& shaderSourceFile, const std::string& name)
 {
-    BT_PRE_CONDITION(isNull());
-    BT_PRE_CONDITION(!device.isNull());
-    BT_PRE_CONDITION(shaderSourceFile.isExist());
-    BT_PRE_CONDITION(!name.empty());
+    MOUCA_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(shaderSourceFile.isExist());
+    MOUCA_PRE_CONDITION(!name.empty());
 
     _name = name;
 

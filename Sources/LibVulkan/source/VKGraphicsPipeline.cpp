@@ -17,21 +17,21 @@ namespace Vulkan
 GraphicsPipeline::GraphicsPipeline() :
 _pipeline(VK_NULL_HANDLE)
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 GraphicsPipeline::~GraphicsPipeline()
 {
-    BT_POST_CONDITION(isNull());
+    MOUCA_POST_CONDITION(isNull());
 }
 
 void GraphicsPipeline::initialize(const Device& device, const RenderPass& renderPass, const PipelineLayout& layout, const PipelineCache& pipelineCache)
 {
-    BT_PRE_CONDITION(isNull());                                 // DEV Issue: Must be never initialize !
-    BT_PRE_CONDITION(!device.isNull());                         // DEV Issue: 
-    BT_PRE_CONDITION(!renderPass.isNull());                     // DEV Issue: 
-    BT_PRE_CONDITION(!layout.isNull());                         // DEV Issue: 
-    BT_PRE_CONDITION(_infos.getStages().getNbShaders() > 0);    // DEV Issue: Need at least one shader program linked !
+    MOUCA_PRE_CONDITION(isNull());                                 // DEV Issue: Must be never initialize !
+    MOUCA_PRE_CONDITION(!device.isNull());                         // DEV Issue: 
+    MOUCA_PRE_CONDITION(!renderPass.isNull());                     // DEV Issue: 
+    MOUCA_PRE_CONDITION(!layout.isNull());                         // DEV Issue: 
+    MOUCA_PRE_CONDITION(_infos.getStages().getNbShaders() > 0);    // DEV Issue: Need at least one shader program linked !
 
     const std::array<VkGraphicsPipelineCreateInfo, 1> infos{ _infos.buildInfo(renderPass, layout) };
 
@@ -39,16 +39,16 @@ void GraphicsPipeline::initialize(const Device& device, const RenderPass& render
     {
         BT_THROW_ERROR(u8"Vulkan", u8"PipelineGraphicCreationError");
     }
-    BT_POST_CONDITION(!isNull()); //Dev Issue: Must be initialize !
+    MOUCA_POST_CONDITION(!isNull()); //Dev Issue: Must be initialize !
 }
 
 void GraphicsPipeline::initialize(const Device& device, RenderPassWPtr renderPass, PipelineLayoutWPtr layout, PipelineCacheWPtr pipelineCache)
 {
-    BT_PRE_CONDITION(isNull());                                 // DEV Issue: Must be never initialize !
-    BT_PRE_CONDITION(!device.isNull());                         // DEV Issue: 
-    BT_PRE_CONDITION(!renderPass.lock()->isNull());              // DEV Issue: 
-    BT_PRE_CONDITION(!layout.lock()->isNull());                  // DEV Issue: 
-    BT_PRE_CONDITION(_infos.getStages().getNbShaders() > 0);    // DEV Issue: Need at least one shader program linked !
+    MOUCA_PRE_CONDITION(isNull());                                 // DEV Issue: Must be never initialize !
+    MOUCA_PRE_CONDITION(!device.isNull());                         // DEV Issue: 
+    MOUCA_PRE_CONDITION(!renderPass.lock()->isNull());              // DEV Issue: 
+    MOUCA_PRE_CONDITION(!layout.lock()->isNull());                  // DEV Issue: 
+    MOUCA_PRE_CONDITION(_infos.getStages().getNbShaders() > 0);    // DEV Issue: Need at least one shader program linked !
     
     // Keep data
     _renderPass     = renderPass;
@@ -62,17 +62,17 @@ void GraphicsPipeline::initialize(const Device& device, RenderPassWPtr renderPas
     {
         BT_THROW_ERROR(u8"Vulkan", u8"PipelineGraphicCreationError");
     }
-    BT_POST_CONDITION(!isNull()); //Dev Issue: Must be initialize !
+    MOUCA_POST_CONDITION(!isNull()); //Dev Issue: Must be initialize !
 }
 
 void GraphicsPipeline::release(const Device& device)
 {
-    BT_PRE_CONDITION(!isNull()); //Dev Issue: Must be initialize !
+    MOUCA_PRE_CONDITION(!isNull()); //Dev Issue: Must be initialize !
 
     vkDestroyPipeline(device.getInstance(), _pipeline, nullptr);
     _pipeline = VK_NULL_HANDLE;
 
-    BT_POST_CONDITION(isNull()); //Dev Issue: Must be clean !
+    MOUCA_POST_CONDITION(isNull()); //Dev Issue: Must be clean !
 }
 
 }

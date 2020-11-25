@@ -75,7 +75,7 @@ namespace Vulkan
 
             void        setCurrentImage(const uint32_t currentImage)
             {
-                BT_PRE_CONDITION( currentImage < _images.size() ); //DEV Issue: Out of range !
+                MOUCA_PRE_CONDITION( currentImage < _images.size() ); //DEV Issue: Out of range !
                 _currentImage = currentImage;
             }
             uint32_t    getCurrentImage() const                      { return _currentImage; }

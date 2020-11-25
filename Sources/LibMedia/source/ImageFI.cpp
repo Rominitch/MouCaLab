@@ -10,7 +10,7 @@ namespace Media
 
 void ImageFI::initialize(const Core::Path& path)
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
     
     //Get file format
     FREE_IMAGE_FORMAT imageFormat = FreeImage_GetFileTypeU(path.c_str(), 0);
@@ -37,18 +37,18 @@ void ImageFI::initialize(const Core::Path& path)
         BT_THROW_ERROR_1(u8"ModuleError", u8"FIReadFileError", path.u8string());
     }
 
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 }
 
 void ImageFI::createFill(const RT::BufferCPUBase& imageBuffer, const uint32_t width, const uint32_t height)
 {
-    BT_PRE_CONDITION( isNull() );
-    BT_PRE_CONDITION(imageBuffer.getData() != nullptr);
-    BT_PRE_CONDITION(width > 0 && height > 0);
-    BT_PRE_CONDITION(width * height == imageBuffer.getNbElements());
+    MOUCA_PRE_CONDITION( isNull() );
+    MOUCA_PRE_CONDITION(imageBuffer.getData() != nullptr);
+    MOUCA_PRE_CONDITION(width > 0 && height > 0);
+    MOUCA_PRE_CONDITION(width * height == imageBuffer.getNbElements());
 
     const RT::BufferDescriptor& descriptor = imageBuffer.getDescriptor();
-    BT_PRE_CONDITION(descriptor.getNbDescriptors() == 1 && descriptor.getComponentDescriptor(0).getNbComponents() == 4); //DEV: We support only rgba component
+    MOUCA_PRE_CONDITION(descriptor.getNbDescriptors() == 1 && descriptor.getComponentDescriptor(0).getNbComponents() == 4); //DEV: We support only rgba component
 
     //Create new buffer
     _imageData = FreeImage_Allocate(static_cast<int>(width), static_cast<int>(height), 8 * static_cast<int>(descriptor.getByteSize()));
@@ -79,29 +79,29 @@ void ImageFI::createFill(const RT::BufferCPUBase& imageBuffer, const uint32_t wi
     // Change orientation to Y down
     FreeImage_FlipVertical(_imageData);
 
-    BT_POST_CONDITION(!isNull());
+    MOUCA_POST_CONDITION(!isNull());
 }
 
 void ImageFI::release()
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
     FreeImage_Unload(_imageData);
     _imageData = nullptr;
 
-    BT_POST_CONDITION(isNull());
+    MOUCA_POST_CONDITION(isNull());
 }
 
 RT::Array3ui ImageFI::getExtents(const uint32_t level) const
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(level < getLevels());
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(level < getLevels());
     return { FreeImage_GetWidth(_imageData), FreeImage_GetHeight(_imageData), 1 };
 }
 
 void ImageFI::saveImage(const Core::Path& filename)
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(!filename.empty());
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!filename.empty());
 
     //Check we have a picture
     if(_imageData == nullptr)
@@ -135,7 +135,7 @@ void ImageFI::saveImage(const Core::Path& filename)
 bool ImageFI::compare(const RT::Image& reference, const size_t nbMaxDefectPixels, const double maxDistance4D,
                       size_t* nbDefectPixels, double* distance) const
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 
     const uint32_t layer = 0;
     const uint32_t level = 0;
@@ -193,8 +193,8 @@ bool ImageFI::compare(const RT::Image& reference, const size_t nbMaxDefectPixels
 
 size_t ImageFI::getMemoryOffset(const uint32_t layer, const uint32_t level) const
 {
-    BT_PRE_CONDITION(layer < getLayers());
-    BT_PRE_CONDITION(level < getLevels());
+    MOUCA_PRE_CONDITION(layer < getLayers());
+    MOUCA_PRE_CONDITION(level < getLevels());
     
     // Just a single buffer with one image (no layer or mip-mapping)
     return 0;

@@ -3,7 +3,7 @@
 /// \license No license
 #pragma once
 
-#include <LibCore/include/BTSignal.h>
+#include <LibCore/include/CoreSignal.h>
 
 namespace RT
 {

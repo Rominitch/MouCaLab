@@ -13,18 +13,18 @@ namespace Vulkan
 RenderPass::RenderPass():
 _renderPass(VK_NULL_HANDLE)
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 RenderPass::~RenderPass()
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 void RenderPass::initialize(const Device& device, std::vector<VkAttachmentDescription>&& attachments, std::vector<VkSubpassDescription>&& subpasses, std::vector<VkSubpassDependency>&& dependencies)
 {
-    BT_PRE_CONDITION(isNull());
-    BT_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
    
     _attachments    = std::move(attachments);
     _subpasses      = std::move(subpasses);
@@ -51,8 +51,8 @@ void RenderPass::initialize(const Device& device, std::vector<VkAttachmentDescri
 
 void RenderPass::release(const Device& device)
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
 
     vkDestroyRenderPass(device.getInstance(), _renderPass, nullptr);
     _renderPass = VK_NULL_HANDLE;

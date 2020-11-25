@@ -127,7 +127,7 @@ namespace Vulkan
 
             void insertImage(ImageSPtr data)
             {
-                BT_PRE_CONDITION(data); //DEV Issue: Need valid data
+                MOUCA_PRE_CONDITION(data); //DEV Issue: Need valid data
                 _images.emplace_back(data);
             }
 
@@ -135,13 +135,13 @@ namespace Vulkan
 
             void insertBuffer(BufferSPtr data)
             {
-                BT_PRE_CONDITION(data); //DEV Issue: Need valid data
+                MOUCA_PRE_CONDITION(data); //DEV Issue: Need valid data
                 _buffers.emplace_back(data);
             }
 
             void insertSemaphore(SemaphoreSPtr semaphore)
             {
-                BT_PRE_CONDITION(semaphore); //DEV Issue: Need valid data
+                MOUCA_PRE_CONDITION(semaphore); //DEV Issue: Need valid data
                 _semaphores.emplace_back(semaphore);
             }
 
@@ -149,7 +149,7 @@ namespace Vulkan
 
             void insertFrameBuffer(FrameBufferSPtr framebuffer)
             {
-                BT_PRE_CONDITION(framebuffer); //DEV Issue: Need valid data
+                MOUCA_PRE_CONDITION(framebuffer); //DEV Issue: Need valid data
                 _frameBuffers.emplace_back(framebuffer);
             }
 
@@ -157,7 +157,7 @@ namespace Vulkan
 
             void insertRenderPass(RenderPassSPtr renderpass)
             {
-                BT_PRE_CONDITION(renderpass); //DEV Issue: Need valid data
+                MOUCA_PRE_CONDITION(renderpass); //DEV Issue: Need valid data
                 _renderPasses.emplace_back(renderpass);
             }
 
@@ -165,68 +165,68 @@ namespace Vulkan
 
             void insertFence(FenceSPtr fence)
             {
-                BT_PRE_CONDITION(fence); //DEV Issue: Need valid data
+                MOUCA_PRE_CONDITION(fence); //DEV Issue: Need valid data
                 _fences.emplace_back(fence);
             }
             void removeFence(FenceWPtr fence);
 
             void insertSequence(RT::QueueSequenceSPtr sequences)
             {
-                BT_PRE_CONDITION(sequences); //DEV Issue: Need valid data
+                MOUCA_PRE_CONDITION(sequences); //DEV Issue: Need valid data
                 _sequences.emplace_back(sequences);
             }
 
             void insertGraphicsPipeline(GraphicsPipelineSPtr pipelineGraphic)
             {
-                BT_PRE_CONDITION(pipelineGraphic); //DEV Issue: Need valid data
+                MOUCA_PRE_CONDITION(pipelineGraphic); //DEV Issue: Need valid data
                 _graphicsPipelines.emplace_back(pipelineGraphic);
             }
 
             void insertPipelineLayout(PipelineLayoutSPtr pipelineLayout)
             {
-                BT_PRE_CONDITION(pipelineLayout); //DEV Issue: Need valid data
+                MOUCA_PRE_CONDITION(pipelineLayout); //DEV Issue: Need valid data
                 _pipelineLayouts.emplace_back(pipelineLayout);
             }
 
             void insertDescriptorSetLayout(DescriptorSetLayoutSPtr descriptorSetLayout)
             {
-                BT_PRE_CONDITION(descriptorSetLayout); //DEV Issue: Need valid data
+                MOUCA_PRE_CONDITION(descriptorSetLayout); //DEV Issue: Need valid data
                 _descriptorSetLayouts.emplace_back(descriptorSetLayout);
             }
 
             void insertShaderModule(ShaderModuleSPtr shader)
             {
-                BT_PRE_CONDITION(shader); //DEV Issue: Need valid data
+                MOUCA_PRE_CONDITION(shader); //DEV Issue: Need valid data
                 _shaderModules.emplace_back(shader);
             }
 
             void insertDescriptorSet(DescriptorSetSPtr descriptorSet)
             {
-                BT_PRE_CONDITION(descriptorSet); //DEV Issue: Need valid data
+                MOUCA_PRE_CONDITION(descriptorSet); //DEV Issue: Need valid data
                 _descriptorSets.emplace_back(descriptorSet);
             }
 
             void insertDescriptorPool(DescriptorPoolSPtr descriptorPool)
             {
-                BT_PRE_CONDITION(descriptorPool); //DEV Issue: Need valid data
+                MOUCA_PRE_CONDITION(descriptorPool); //DEV Issue: Need valid data
                 _descriptorPools.emplace_back(descriptorPool);
             }
 
             void insertSampler(SamplerSPtr sampler)
             {
-                BT_PRE_CONDITION(sampler); //DEV Issue: Need valid data
+                MOUCA_PRE_CONDITION(sampler); //DEV Issue: Need valid data
                 _samplers.emplace_back(sampler);
             }
 
             void insertCommandBuffer(CommandBufferSPtr commandBuffer)
             {
-                BT_PRE_CONDITION(commandBuffer); //DEV Issue: Need valid data
+                MOUCA_PRE_CONDITION(commandBuffer); //DEV Issue: Need valid data
                 _commandBuffers.emplace_back(commandBuffer);
             }
 
             void insertCommandPool(CommandPoolSPtr commandPool)
             {
-                BT_PRE_CONDITION(commandPool); //DEV Issue: Need valid data
+                MOUCA_PRE_CONDITION(commandPool); //DEV Issue: Need valid data
                 _commandPools.emplace_back(commandPool);
             }
 

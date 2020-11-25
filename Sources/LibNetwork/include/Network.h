@@ -3,7 +3,7 @@
 /// \license No license
 #pragma once
 
-#include <LibCore/include/BTThread.h>
+#include <LibCore/include/CoreThread.h>
 
 #include <LibNetwork/interface/IMessage.h>
 

@@ -112,13 +112,13 @@ namespace Vulkan
 
             const VkPhysicalDevice& getPhysicalDevice() const
             {
-                BT_PRE_CONDITION(!isNull());
+                MOUCA_PRE_CONDITION(!isNull());
                 return _physicalDevice;
             }
 
             const VkPhysicalDeviceProperties& getPhysicalDeviceProperties() const
             {
-                BT_PRE_CONDITION(!isNull());
+                MOUCA_PRE_CONDITION(!isNull());
                 return _properties;
             }
 
@@ -128,7 +128,7 @@ namespace Vulkan
             /// \returns Vulkan device handle.
             const VkDevice& getInstance() const
             {
-                BT_PRE_CONDITION(!isNull());
+                MOUCA_PRE_CONDITION(!isNull());
                 return _device;
             }
 

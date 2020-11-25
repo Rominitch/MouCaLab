@@ -21,12 +21,12 @@ _semaphore(semaphore.expired() ? VK_NULL_HANDLE : semaphore.lock()->getInstance(
 _fence(fence.expired() ? VK_NULL_HANDLE : fence.lock()->getInstance()),
 _timeout(timeout)
 {
-    BT_PRE_CONDITION(!_swapChain.expired()); //DEV Issue: Bad swapchain !
+    MOUCA_PRE_CONDITION(!_swapChain.expired()); //DEV Issue: Bad swapchain !
 }
 
 VkResult SequenceAcquire::execute(const Device& device)
 {
-    BT_PRE_CONDITION(!_swapChain.expired()); //DEV Issue: Never call initialized !
+    MOUCA_PRE_CONDITION(!_swapChain.expired()); //DEV Issue: Never call initialized !
 
     auto sw = _swapChain.lock();
     if (!sw->isReady())
@@ -44,7 +44,7 @@ VkResult SequenceAcquire::execute(const Device& device)
 SequenceWaitFence::SequenceWaitFence(const std::vector<FenceWPtr>& fences, const uint64_t timeout, const VkBool32 waitAll):
 _timeout(timeout), _all(waitAll)
 {
-    BT_PRE_CONDITION(!fences.empty());
+    MOUCA_PRE_CONDITION(!fences.empty());
 
     _fences.reserve(fences.size());
     for (auto& fence : fences)
@@ -61,7 +61,7 @@ VkResult SequenceWaitFence::execute(const Device& device)
 
 SequenceResetFence::SequenceResetFence(const std::vector<FenceWPtr>& fences)
 {
-    BT_PRE_CONDITION(!fences.empty());
+    MOUCA_PRE_CONDITION(!fences.empty());
 
     _fences.reserve(fences.size());
     for (auto& fence : fences)
@@ -79,7 +79,7 @@ VkResult SequenceResetFence::execute(const Device& device)
 SequenceSubmit::SequenceSubmit(SubmitInfos&& submitInfos, FenceWPtr fence):
 _fence(fence.expired() ? VK_NULL_HANDLE : fence.lock()->getInstance())
 {
-    BT_PRE_CONDITION(!submitInfos.empty()); //DEV Issue: Need valid data !
+    MOUCA_PRE_CONDITION(!submitInfos.empty()); //DEV Issue: Need valid data !
     
     _submitInfos = std::move(submitInfos);
     _vkSubmitInfos.reserve(submitInfos.size());
@@ -88,12 +88,12 @@ _fence(fence.expired() ? VK_NULL_HANDLE : fence.lock()->getInstance())
         _vkSubmitInfos.emplace_back(submitInfo->buildSubmitInfo());
     }
 
-    BT_POST_CONDITION(!_vkSubmitInfos.empty()); //DEV Issue: Not ready ?
+    MOUCA_POST_CONDITION(!_vkSubmitInfos.empty()); //DEV Issue: Not ready ?
 }
 
 VkResult SequenceSubmit::execute(const Device& device)
 {
-    BT_PRE_CONDITION(!_vkSubmitInfos.empty()); //DEV Issue: nothing to submit ?
+    MOUCA_PRE_CONDITION(!_vkSubmitInfos.empty()); //DEV Issue: nothing to submit ?
 
     // Update SubmitInfo (possibly based on changing SwapChain CommandBuffer)
     auto itSubmitInfo = _vkSubmitInfos.begin();
@@ -110,7 +110,7 @@ VkResult SequenceSubmit::execute(const Device& device)
 SequencePresentKHR::SequencePresentKHR(const std::vector<SemaphoreWPtr>& semaphores, const std::vector<SwapChainWPtr>& swapChains):
 _swapChains(swapChains)
 {
-    BT_PRE_CONDITION(!swapChains.empty());
+    MOUCA_PRE_CONDITION(!swapChains.empty());
 
     _semaphores.reserve(semaphores.size());
     for (const auto& semaphore : semaphores)
@@ -173,8 +173,8 @@ SequencePresentKHR::~SequencePresentKHR()
 
 VkResult SequencePresentKHR::execute(const Device& device)
 {
-    BT_PRE_CONDITION(!device.isNull());
-    BT_PRE_CONDITION(device.getQueue() != VK_NULL_HANDLE);
+    MOUCA_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(device.getQueue() != VK_NULL_HANDLE);
 
     // Update with current ID (memory don't change so don't touch to _presentInfo)
     auto itImageID = _imageId.begin();
@@ -201,7 +201,7 @@ void SequencePresentKHR::update()
         *itSwap = swapChain.lock()->getInstance();
         ++itSwap;
     }
-    BT_POST_CONDITION(_swapChainIDs.end() == itSwap);
+    MOUCA_POST_CONDITION(_swapChainIDs.end() == itSwap);
 }
 
 }

@@ -22,8 +22,8 @@ namespace RT
 
             virtual void computePerspectiveCamera(const ViewportInt32& screenViewport)
             {
-                BT_PRE_CONDITION(screenViewport.getWidth() > 0);
-                BT_PRE_CONDITION(screenViewport.getHeight() > 0);
+                MOUCA_PRE_CONDITION(screenViewport.getWidth() > 0);
+                MOUCA_PRE_CONDITION(screenViewport.getHeight() > 0);
 
                 const float ratio = static_cast<float>(screenViewport.getWidth()) / static_cast<float>(screenViewport.getHeight());
                 projectionMatrix = glm::perspective(45.0f, ratio, 1.0f, 100000.0f);
@@ -31,9 +31,9 @@ namespace RT
 
             virtual void computePerspectiveCamera(const ViewportInt32& screenViewport, const RT::BoundingBox& scene)
             {
-                BT_PRE_CONDITION(screenViewport.getWidth() > 0);
-                BT_PRE_CONDITION(screenViewport.getHeight() > 0);
-                BT_PRE_CONDITION(scene.isValid());
+                MOUCA_PRE_CONDITION(screenViewport.getWidth() > 0);
+                MOUCA_PRE_CONDITION(screenViewport.getHeight() > 0);
+                MOUCA_PRE_CONDITION(scene.isValid());
 
                 const float ratio = static_cast<float>(screenViewport.getWidth()) / static_cast<float>(screenViewport.getHeight());
 

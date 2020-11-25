@@ -29,15 +29,15 @@ _renderPassBeginInfo(
     _clearColor.empty() ? VK_NULL_HANDLE : _clearColor.data()   // const VkClearValue*    pClearValues
 })
 {
-    BT_PRE_CONDITION(!frameBuffer.expired() && !frameBuffer.lock()->isNull());
-    BT_PRE_CONDITION(!renderPass.isNull());
+    MOUCA_PRE_CONDITION(!frameBuffer.expired() && !frameBuffer.lock()->isNull());
+    MOUCA_PRE_CONDITION(!renderPass.isNull());
 }
 
 void CommandBeginRenderPass::execute(const VkCommandBuffer& commandBuffer)
 {
-    BT_PRE_CONDITION(!_frameBuffer.expired() ); //DEV Issue: Need a valid FrameBuffer
+    MOUCA_PRE_CONDITION(!_frameBuffer.expired() ); //DEV Issue: Need a valid FrameBuffer
     const auto frameBuffer = _frameBuffer.lock();
-    BT_PRE_CONDITION(!frameBuffer->isNull());
+    MOUCA_PRE_CONDITION(!frameBuffer->isNull());
 
     // Refresh frameBuffer info
     _renderPassBeginInfo.renderArea.extent = frameBuffer->getResolution();
@@ -48,9 +48,9 @@ void CommandBeginRenderPass::execute(const VkCommandBuffer& commandBuffer)
 
 void CommandBeginRenderPass::execute(const ExecuteCommands& executer)
 {
-    BT_PRE_CONDITION(!_frameBuffer.expired()); //DEV Issue: Need a valid FrameBuffer
+    MOUCA_PRE_CONDITION(!_frameBuffer.expired()); //DEV Issue: Need a valid FrameBuffer
     const auto frameBuffer = _frameBuffer.lock();
-    BT_PRE_CONDITION(!frameBuffer->isNull());
+    MOUCA_PRE_CONDITION(!frameBuffer->isNull());
 
     // Refresh frameBuffer info
     _renderPassBeginInfo.renderArea.extent = frameBuffer->getResolution();
@@ -72,20 +72,20 @@ _renderPassBeginInfo(
     _clearColor.empty() ? VK_NULL_HANDLE : _clearColor.data()   // const VkClearValue*    pClearValues
 })
 {
-    BT_PRE_CONDITION(!_frameBuffer.empty());
-    BT_PRE_CONDITION(!renderPass.isNull());
+    MOUCA_PRE_CONDITION(!_frameBuffer.empty());
+    MOUCA_PRE_CONDITION(!renderPass.isNull());
 }
 
 void CommandBeginRenderPassSurface::execute(const VkCommandBuffer& commandBuffer)
 {
-    BT_PRE_CONDITION(false); //DEV Issue: Not callable API
+    MOUCA_PRE_CONDITION(false); //DEV Issue: Not callable API
 }
 
 void CommandBeginRenderPassSurface::execute(const ExecuteCommands& executer)
 {
-    BT_PRE_CONDITION(executer.idSwap < _frameBuffer.size()); //DEV Issue: Need a valid FrameBuffer
+    MOUCA_PRE_CONDITION(executer.idSwap < _frameBuffer.size()); //DEV Issue: Need a valid FrameBuffer
     const auto frameBuffer = _frameBuffer[executer.idSwap].lock();
-    BT_PRE_CONDITION(!frameBuffer->isNull());
+    MOUCA_PRE_CONDITION(!frameBuffer->isNull());
 
     // Refresh frameBuffer info
     _renderPassBeginInfo.renderArea.extent = frameBuffer->getResolution();
@@ -127,7 +127,7 @@ void CommandScissor::execute(const ExecuteCommands& executer)
 CommandPipeline::CommandPipeline(const GraphicsPipeline& pipeline, const VkPipelineBindPoint bindPoint):
 _pipeline(pipeline), _bindPoint(bindPoint)
 {
-    BT_POST_CONDITION(!_pipeline.isNull());
+    MOUCA_POST_CONDITION(!_pipeline.isNull());
 }
 
 void CommandPipeline::execute(const VkCommandBuffer& commandBuffer)
@@ -171,13 +171,13 @@ void CommandDrawIndexed::execute(const ExecuteCommands& executer)
 CommandBindVertexBuffer::CommandBindVertexBuffer(const uint32_t firstBinding, const uint32_t bindingCount, std::vector<VkBuffer>&& buffers, std::vector<VkDeviceSize>&& offsets):
 _firstBinding(firstBinding), _bindingCount(bindingCount), _buffersId(std::move(buffers)), _offsets(std::move(offsets))
 {
-    BT_PRE_CONDITION(_buffersId.size() == _offsets.size());
+    MOUCA_PRE_CONDITION(_buffersId.size() == _offsets.size());
 }
 
 CommandBindVertexBuffer::CommandBindVertexBuffer(const uint32_t firstBinding, const uint32_t bindingCount, std::vector<Vulkan::BufferWPtr>&& buffer, std::vector<VkDeviceSize>&& offsets):
 _firstBinding(firstBinding), _bindingCount(bindingCount), _buffers(std::move(buffer)), _buffersId(_buffers.size()), _offsets(std::move(offsets))
 {
-    BT_PRE_CONDITION(_buffersId.size() == _offsets.size());
+    MOUCA_PRE_CONDITION(_buffersId.size() == _offsets.size());
 }
 
 void CommandBindVertexBuffer::execute(const VkCommandBuffer& commandBuffer)
@@ -229,7 +229,7 @@ _vertices(mesh.getVertices().getBuffer()),
 _offsets(0),
 _bindID(bindID)
 {
-    BT_PRE_CONDITION(!mesh.isNull());
+    MOUCA_PRE_CONDITION(!mesh.isNull());
 }
 
 void CommandBindMesh::execute(const VkCommandBuffer& commandBuffer)
@@ -247,7 +247,7 @@ void CommandBindMesh::execute(const ExecuteCommands& executer)
 CommandDrawMeshIndexed::CommandDrawMeshIndexed(const Mesh& mesh, const uint32_t bindID):
 CommandBindMesh(mesh, bindID)
 {
-    BT_PRE_CONDITION(!mesh.isNull());
+    MOUCA_PRE_CONDITION(!mesh.isNull());
 
     _indexed.reserve(mesh.getIndexed().size());
     for(const auto& index : mesh.getIndexed())
@@ -394,12 +394,12 @@ _source(source.getBuffer()),
 _destination(destination.getImage()),
 _copyRegion(std::move(copyRegion))
 {
-    BT_PRE_CONDITION(!source.isNull());
-    BT_PRE_CONDITION(!destination.isNull());
+    MOUCA_PRE_CONDITION(!source.isNull());
+    MOUCA_PRE_CONDITION(!destination.isNull());
 
-    BT_POST_CONDITION(_destination != VK_NULL_HANDLE);
-    BT_POST_CONDITION(_source != VK_NULL_HANDLE);
-    BT_POST_CONDITION(!_copyRegion.empty());
+    MOUCA_POST_CONDITION(_destination != VK_NULL_HANDLE);
+    MOUCA_POST_CONDITION(_source != VK_NULL_HANDLE);
+    MOUCA_POST_CONDITION(!_copyRegion.empty());
 }
 
 void CommandCopyBufferToImage::execute(const VkCommandBuffer& commandBuffer)
@@ -471,8 +471,8 @@ void CommandBlit::execute(const ExecuteCommands& executer)
 CommandPushConstants::CommandPushConstants(const PipelineLayout& pipelineLayout, const VkShaderStageFlags stage, const uint32_t memorySize, const void* buffer):
 _pipelineLayout(pipelineLayout.getInstance()), _stage(stage), _memorySize(memorySize), _buffer(buffer)
 {
-    BT_PRE_CONDITION(!pipelineLayout.isNull());
-    BT_PRE_CONDITION(_memorySize > 0 && _buffer != nullptr);
+    MOUCA_PRE_CONDITION(!pipelineLayout.isNull());
+    MOUCA_PRE_CONDITION(_memorySize > 0 && _buffer != nullptr);
 }
 
 void CommandPushConstants::execute(const VkCommandBuffer& commandBuffer)
@@ -507,14 +507,14 @@ _idNode(0)
 
 void CommandSwitch::execute(const VkCommandBuffer& commandBuffer)
 {
-    BT_PRE_CONDITION(_idNode < _commands.size());
+    MOUCA_PRE_CONDITION(_idNode < _commands.size());
 
     _commands[_idNode]->execute(commandBuffer);
 }
 
 void CommandSwitch::execute(const ExecuteCommands& executer)
 {
-    BT_PRE_CONDITION(_idNode < _commands.size());
+    MOUCA_PRE_CONDITION(_idNode < _commands.size());
 
     _commands[_idNode]->execute(executer);
 }

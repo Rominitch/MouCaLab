@@ -24,8 +24,8 @@ _usage(0)
 
 void ICommandBuffer::executeCommand(const ExecuteCommands& executer, const VkCommandBufferResetFlags reset) const
 {
-    BT_PRE_CONDITION(!isNull());            //DEV Issue: missing to call initialize;
-    BT_PRE_CONDITION(!_commands.empty());   //DEV Issue: missing to call registerCommands;
+    MOUCA_PRE_CONDITION(!isNull());            //DEV Issue: missing to call initialize;
+    MOUCA_PRE_CONDITION(!_commands.empty());   //DEV Issue: missing to call registerCommands;
 
     // Reset
     if (vkResetCommandBuffer(executer.commandBuffer, reset) != VK_SUCCESS)
@@ -73,9 +73,9 @@ CommandBuffer::~CommandBuffer()
 
 void CommandBuffer::initialize(const Device& device, const CommandPoolSPtr pool, const VkCommandBufferLevel level, const VkCommandBufferUsageFlags usage)
 {
-    BT_PRE_CONDITION(isNull());         //DEV Issue: Already initialize ?
-    BT_PRE_CONDITION(!device.isNull()); //DEV Issue: Bad device ?
-    BT_PRE_CONDITION(!pool->isNull());  //DEV Issue: Bad pool ?
+    MOUCA_PRE_CONDITION(isNull());         //DEV Issue: Already initialize ?
+    MOUCA_PRE_CONDITION(!device.isNull()); //DEV Issue: Bad device ?
+    MOUCA_PRE_CONDITION(!pool->isNull());  //DEV Issue: Bad pool ?
 
     // Copy data
     _usage = usage;
@@ -97,13 +97,13 @@ void CommandBuffer::initialize(const Device& device, const CommandPoolSPtr pool,
         BT_THROW_ERROR(u8"Vulkan", u8"CommandBufferCreationError");
     }
 
-    BT_POST_CONDITION(!isNull());    //DEV Issue: Not initialize ?
+    MOUCA_POST_CONDITION(!isNull());    //DEV Issue: Not initialize ?
 }
 
 void CommandBuffer::release(const Device& device)
 {
-    BT_PRE_CONDITION(!isNull());        //DEV Issue: Not initialize ?
-    BT_PRE_CONDITION(!_pool.expired()); //DEV Issue: Pool was delete before command.
+    MOUCA_PRE_CONDITION(!isNull());        //DEV Issue: Not initialize ?
+    MOUCA_PRE_CONDITION(!_pool.expired()); //DEV Issue: Pool was delete before command.
 
     // Delete command buffer
     vkFreeCommandBuffers(device.getInstance(), _pool.lock()->getInstance(), 1, &_commandBuffer);
@@ -114,25 +114,25 @@ void CommandBuffer::release(const Device& device)
 
     _pool.reset();
 
-    BT_POST_CONDITION(isNull());    //DEV Issue: Still alive ?
+    MOUCA_POST_CONDITION(isNull());    //DEV Issue: Still alive ?
 }
 
 void CommandBuffer::registerCommands(Commands&& commands)
 {
-    BT_PRE_CONDITION(!commands.empty());    //DEV Issue: insert no command ?
+    MOUCA_PRE_CONDITION(!commands.empty());    //DEV Issue: insert no command ?
     _commands = std::move(commands);
 }
 
 void CommandBuffer::addCommands(Commands&& commands)
 {
-    BT_PRE_CONDITION(!commands.empty());    //DEV Issue: insert no command ?
+    MOUCA_PRE_CONDITION(!commands.empty());    //DEV Issue: insert no command ?
 
     _commands.insert(_commands.end(), std::make_move_iterator(commands.begin()), std::make_move_iterator(commands.end()));
 }
 
 void CommandBuffer::addCommand(CommandUPtr&& command)
 {
-    BT_PRE_CONDITION(command != nullptr);    //DEV Issue: insert no command ?
+    MOUCA_PRE_CONDITION(command != nullptr);    //DEV Issue: insert no command ?
 
     _commands.emplace_back(std::move(command));
 }

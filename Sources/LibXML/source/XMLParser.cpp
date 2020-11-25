@@ -23,18 +23,18 @@ Platform::~Platform()
 
 XercesParser::XercesParser()
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 XercesParser::~XercesParser()
 {
-    BT_PRE_CONDITION(!isLoaded());
+    MOUCA_PRE_CONDITION(!isLoaded());
 }
 
 void XercesParser::release()
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(_parseStack.empty()); // DEV Issue: you need to clean stack BEFORE call release: bad pair Push/Pop.
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(_parseStack.empty()); // DEV Issue: you need to clean stack BEFORE call release: bad pair Push/Pop.
 
     _parser.reset();
     _filename.clear();
@@ -42,8 +42,8 @@ void XercesParser::release()
 
 void XercesParser::openXMLFile(const Core::Path& strFilePath)
 {
-    BT_PRE_CONDITION(!strFilePath.empty() || !_filename.empty());
-    BT_PRE_CONDITION(_parser == nullptr);
+    MOUCA_PRE_CONDITION(!strFilePath.empty() || !_filename.empty());
+    MOUCA_PRE_CONDITION(_parser == nullptr);
 
     // Use best file (priority to given file then latest register)
     const Core::Path fileXML = !strFilePath.empty() ? strFilePath : _filename;
@@ -80,12 +80,12 @@ void XercesParser::openXMLFile(const Core::Path& strFilePath)
 
     _filename = fileXML;
 
-    BT_POST_CONDITION(!isNull());
+    MOUCA_POST_CONDITION(!isNull());
 }
 
 ResultUPtr XercesParser::getNode(const Core::String& strName) const
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 
     xercesc::DOMNodeList* nodeList=nullptr;
     if(_parseStack.empty())
@@ -126,18 +126,18 @@ XercesParser::AutoPop XercesParser::autoPushNode(const Node& node)
 
 void XercesParser::pushNode(const Node& node)
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(dynamic_cast<const XercesNode*>(&node) !=  nullptr);
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(dynamic_cast<const XercesNode*>(&node) !=  nullptr);
     const DOMElement* element = static_cast<const XercesNode*>(&node)->getNode();
-    BT_PRE_CONDITION(element != nullptr);
+    MOUCA_PRE_CONDITION(element != nullptr);
 
     _parseStack.push(element);
 }
 
 void XercesParser::popNode()
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(!_parseStack.empty());
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!_parseStack.empty());
     _parseStack.pop();
 }
 
@@ -177,14 +177,14 @@ NodeUPtr XercesParser::searchNodeGeneric(const ResultUPtr& result, const Core::S
 
 NodeUPtr XercesParser::searchNode(const Core::String& strNodeLabel, const Core::String& strParameterLabel, const Core::String& strValue) const
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 
     return searchNodeGeneric(getNode(strNodeLabel), strParameterLabel, strValue);
 }
 
 ResultUPtr XercesParser::getNodeFrom(const Node& node, const Core::String& strName) const
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 
     xercesc::DOMNodeList* nodeList = nullptr;
     if (node.isNull())
@@ -211,7 +211,7 @@ ResultUPtr XercesParser::getNodeFrom(const Node& node, const Core::String& strNa
 
 NodeUPtr XercesParser::searchNodeFrom(const Node& node, const Core::String& nodeLabel, const Core::String& parameterLabel, const Core::String& value) const
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 
     return searchNodeGeneric(getNodeFrom(node, nodeLabel), parameterLabel, value);
 }

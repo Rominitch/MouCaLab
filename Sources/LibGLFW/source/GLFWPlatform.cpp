@@ -19,7 +19,7 @@ Platform::~Platform()
 
 void Platform::initialize()
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
     
     // Set error callback
     glfwSetErrorCallback(Platform::errorCallback);
@@ -35,24 +35,24 @@ void Platform::initialize()
 
     _initialize = true;
 
-    BT_POST_CONDITION(!isNull());
+    MOUCA_POST_CONDITION(!isNull());
 }
 
 void Platform::release()
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(_windows.empty());
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(_windows.empty());
 
     //Stop GLFW
     glfwTerminate();
     _initialize = false;
 
-    BT_POST_CONDITION(isNull());
+    MOUCA_POST_CONDITION(isNull());
 }
 
 WindowWPtr Platform::createWindow(const RT::ViewportInt32& viewport, const Core::String& windowsName, const RT::Window::Mode mode)
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
     WindowSPtr window(new Window(viewport, windowsName, mode, this));
     _windows.push_back(window);
     
@@ -65,7 +65,7 @@ WindowWPtr Platform::createWindow(const RT::ViewportInt32& viewport, const Core:
 
 WindowWPtr Platform::createWindow(const RT::Monitor& monitor, const Core::String& windowsName, const RT::Window::Mode mode)
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
     WindowSPtr window(new Window(monitor, windowsName, mode, this));
     _windows.push_back(window);
 
@@ -74,9 +74,9 @@ WindowWPtr Platform::createWindow(const RT::Monitor& monitor, const Core::String
 
 void Platform::releaseWindow(const Windows::iterator& itWindow)
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(itWindow->use_count() == 1); // Be sure we have latest element (current) !
-    BT_PRE_CONDITION(itWindow != _windows.end());
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(itWindow->use_count() == 1); // Be sure we have latest element (current) !
+    MOUCA_PRE_CONDITION(itWindow != _windows.end());
 
     // Remove connection
     _mainMouse.onChangeMode().disconnect(itWindow->get());
@@ -91,7 +91,7 @@ void Platform::releaseWindow(const Windows::iterator& itWindow)
 
 void Platform::releaseWindow(Window*& window)
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
     BT_ASSERT(window != NULL);
     std::lock_guard<std::mutex> guard(_guardWindows);
 
@@ -104,8 +104,8 @@ void Platform::releaseWindow(Window*& window)
 
 void Platform::releaseWindow(const WindowWPtr& weakWindow)
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(!weakWindow.expired());
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!weakWindow.expired());
 
     std::lock_guard<std::mutex> guard(_guardWindows);
 
@@ -127,13 +127,13 @@ void Platform::errorCallback(int error, const char* description)
 
 void Platform::pollEvents()
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
     glfwPollEvents();
 }
 
 void Platform::runMainLoop()
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
     BT_ASSERT(!_windows.empty());    //DEV Issue: launch loop without window !
     
     _runLoop = true;

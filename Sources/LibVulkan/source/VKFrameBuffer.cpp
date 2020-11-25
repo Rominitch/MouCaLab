@@ -15,21 +15,21 @@ namespace Vulkan
 FrameBuffer::FrameBuffer():
 _resolution({ 0,0 }), _frameBuffer(VK_NULL_HANDLE)
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 FrameBuffer::~FrameBuffer()
 {
-    BT_POST_CONDITION(isNull());
+    MOUCA_POST_CONDITION(isNull());
 }
 
 void FrameBuffer::initialize(const Device& device, RenderPassWPtr renderPass, const VkExtent2D& resolution, const Attachments& attachments)
 {
-    BT_PRE_CONDITION(isNull());
-    BT_PRE_CONDITION(!device.isNull());
-    BT_PRE_CONDITION(!attachments.empty());
-    BT_PRE_CONDITION(!renderPass.expired() && !renderPass.lock()->isNull());
-    BT_PRE_CONDITION(resolution.width > 0 && resolution.height > 0);
+    MOUCA_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(!attachments.empty());
+    MOUCA_PRE_CONDITION(!renderPass.expired() && !renderPass.lock()->isNull());
+    MOUCA_PRE_CONDITION(resolution.width > 0 && resolution.height > 0);
 
     _renderPass = renderPass;
     _resolution = resolution;
@@ -52,13 +52,13 @@ void FrameBuffer::initialize(const Device& device, RenderPassWPtr renderPass, co
         BT_THROW_ERROR(u8"Vulkan", u8"FrameBufferCreationError");
     }
 
-    BT_POST_CONDITION(!isNull());
+    MOUCA_POST_CONDITION(!isNull());
 }
 
 void FrameBuffer::release(const Device& device)
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
 
     // Destroy
     vkDestroyFramebuffer(device.getInstance(), _frameBuffer, nullptr);
@@ -67,7 +67,7 @@ void FrameBuffer::release(const Device& device)
     _frameBuffer = VK_NULL_HANDLE;
     _resolution = { 0,0 };
 
-    BT_POST_CONDITION(isNull());
+    MOUCA_POST_CONDITION(isNull());
 }
 
 }

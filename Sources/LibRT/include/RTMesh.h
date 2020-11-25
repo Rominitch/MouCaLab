@@ -3,7 +3,7 @@
 /// \license No license
 #pragma once
 
-#include <LibCore/include/BTResource.h>
+#include <LibCore/include/CoreResource.h>
 
 #include <LibRT/include/RTBoundingBox.h>
 #include <LibRT/include/RTBufferCPU.h>
@@ -70,7 +70,7 @@ namespace RT
 
             void setFaceOrder(const FaceOrder order)
             {
-                BT_PRE_CONDITION(order < FaceOrder::NbFaceOrder);
+                MOUCA_PRE_CONDITION(order < FaceOrder::NbFaceOrder);
                 _faceOrder = order;
             }
 
@@ -176,34 +176,34 @@ namespace RT
             MeshImport() :
             _flag( DefaultImport )
             {
-                BT_PRE_CONDITION( isNull() );
+                MOUCA_PRE_CONDITION( isNull() );
             }
 
             ~MeshImport() override
             {
-                BT_PRE_CONDITION( !isLoaded() );
+                MOUCA_PRE_CONDITION( !isLoaded() );
             }
 
             void setFileInfo(const Core::Path& filename, const BufferDescriptor& descriptor, const Flag flag)
             {
-                BT_PRE_CONDITION( isNull() );
+                MOUCA_PRE_CONDITION( isNull() );
                 
                 Core::Resource::setFileInfo(filename);
 
                 _descriptor = descriptor;
                 _flag       = flag;
 
-                BT_POST_CONDITION( !isNull() );
+                MOUCA_POST_CONDITION( !isNull() );
             }
 
             void release() override
             {
-                BT_PRE_CONDITION( !isNull() );
+                MOUCA_PRE_CONDITION( !isNull() );
 
                 _filename.clear();
                 _mesh.release();
 
-                BT_PRE_CONDITION( isNull() );
+                MOUCA_PRE_CONDITION( isNull() );
             }
 
             bool isNull() const override

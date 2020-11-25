@@ -12,24 +12,24 @@ namespace GUI
 FontSVGManager::FontSVGManager():
 _library(nullptr)
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 }
 
 FontSVGManager::~FontSVGManager()
 {
-    BT_POST_CONDITION(isNull());
+    MOUCA_POST_CONDITION(isNull());
 }
 
 void FontSVGManager::initialize()
 {
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(isNull());
 
     if (FT_Init_FreeType(&_library))
     {
         BT_THROW_ERROR(u8"GUI", u8"FreeType2InitError");
     }
     
-    BT_POST_CONDITION(!isNull());
+    MOUCA_POST_CONDITION(!isNull());
 }
 
 void FontSVGManager::release()
@@ -200,8 +200,8 @@ void FontSVGManager::buildFontBuffersV2(RT::BufferCPU& glyphDict, RT::BufferCPU&
 
 void FontFamilySVG::initialize(FT_Library library)
 {
-    BT_PRE_CONDITION(library != nullptr);
-    BT_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(library != nullptr);
+    MOUCA_PRE_CONDITION(isNull());
 
     for(auto& font : _fonts)
     {
@@ -217,12 +217,12 @@ void FontFamilySVG::initialize(FT_Library library)
         BT_ASSERT(!error);
     }
 
-    BT_POST_CONDITION(!isNull());
+    MOUCA_POST_CONDITION(!isNull());
 }
 
 void FontFamilySVG::release()
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
 
     _glyphs.clear();
 
@@ -235,7 +235,7 @@ void FontFamilySVG::release()
     }
     _fonts.clear();
 
-    BT_POST_CONDITION(isNull());
+    MOUCA_POST_CONDITION(isNull());
 }
 
 bool FontFamilySVG::isNull() const
@@ -250,7 +250,7 @@ bool FontFamilySVG::isNull() const
 
 const FontFamilySVG::GlyphSVG& FontFamilySVG::addGlyph(const GlyphCode& glyphCode)
 {
-    BT_PRE_CONDITION(_glyphs.find(glyphCode) == _glyphs.cend());
+    MOUCA_PRE_CONDITION(_glyphs.find(glyphCode) == _glyphs.cend());
     
     FT_UInt glyph_index = 0;
     auto itFont = _fonts.cbegin();
@@ -291,14 +291,14 @@ const FontFamilySVG::GlyphSVG& FontFamilySVG::addGlyph(const GlyphCode& glyphCod
 
 const FontFamilySVG::GlyphSVG& FontFamilySVG::readGlyph(const GlyphCode& glyph) const
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(_glyphs.find(glyph) != _glyphs.cend());
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(_glyphs.find(glyph) != _glyphs.cend());
     return _glyphs.find(glyph)->second;
 }
 
 bool FontFamilySVG::tryGlyph(const GlyphCode& glyphCode, FontFamilySVG::GlyphSVG& glyphSVG)
 {
-    BT_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!isNull());
     
     auto itGlyph = _glyphs.find(glyphCode);
     if(itGlyph == _glyphs.cend())

@@ -3,7 +3,7 @@
 /// \license No license
 #pragma once
 
-#include <LibCore/include/BTResource.h>
+#include <LibCore/include/CoreResource.h>
 
 namespace RT
 {
@@ -169,7 +169,7 @@ namespace RT
 
             RT::Array3ui getExtents(const uint32_t level) const override
             {
-                BT_PRE_CONDITION(level < getLevels());
+                MOUCA_PRE_CONDITION(level < getLevels());
                 BT_UNUSED(level);
                 return _extents;
             }
@@ -200,16 +200,16 @@ namespace RT
 
             void release() override
             {
-                BT_PRE_CONDITION(!isNull());
+                MOUCA_PRE_CONDITION(!isNull());
                 if (_image != nullptr)
                 {
-                    BT_PRE_CONDITION(_image.use_count() == 1); // DEV Issue: Not latest instance ?
+                    MOUCA_PRE_CONDITION(_image.use_count() == 1); // DEV Issue: Not latest instance ?
                     _image->release();
                     _image.reset();
                 }
                 _filename.clear();
 
-                BT_POST_CONDITION(isNull());
+                MOUCA_POST_CONDITION(isNull());
             }
 
             //------------------------------------------------------------------------

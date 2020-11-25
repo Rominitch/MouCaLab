@@ -1,6 +1,6 @@
 #pragma once
 
-#include <LibCore/include/BTIdentifier.h>
+#include <LibCore/include/CoreIdentifier.h>
 
 #include <LibRT/include/RTHierarchic.h>
 

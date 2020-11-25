@@ -71,9 +71,9 @@ void Buffer::initialize(const Device& device, VkBufferUsageFlags usageFlags, VkM
 
 void Buffer::release(const Device& device)
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(!device.isNull()); 
-    BT_PRE_CONDITION(!_memory.isNull());
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!device.isNull()); 
+    MOUCA_PRE_CONDITION(!_memory.isNull());
 
     vkDestroyBuffer(device.getInstance(), _buffer, nullptr);
     _buffer = VK_NULL_HANDLE;
@@ -83,14 +83,14 @@ void Buffer::release(const Device& device)
 
 void Buffer::resize(const Device& device, VkDeviceSize size)
 {
-    BT_PRE_CONDITION(!isNull());
-    BT_PRE_CONDITION(!device.isNull());
-    BT_PRE_CONDITION(size > 0);
+    MOUCA_PRE_CONDITION(!isNull());
+    MOUCA_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(size > 0);
 
     release(device);
     initialize(device, _usageFlags, _memoryProperty, size);
 
-    BT_POST_CONDITION(!isNull());
+    MOUCA_POST_CONDITION(!isNull());
 }
 
 const VkDescriptorBufferInfo& Buffer::getDescriptor() const

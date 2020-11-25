@@ -14,7 +14,7 @@ namespace Vulkan
 
 void SubmitInfo::addSynchronization(const std::vector<WaitSemaphore>& waitSemaphores, const std::vector<SemaphoreWPtr>& signalSemaphores)
 {
-    BT_PRE_CONDITION(_waitSemaphore.empty() && _waitStageFlag.empty()); //DEV Issue: Already call initialize !
+    MOUCA_PRE_CONDITION(_waitSemaphore.empty() && _waitStageFlag.empty()); //DEV Issue: Already call initialize !
 
     // Build array (keep memory alive)
     _waitSemaphore.reserve(waitSemaphores.size());
@@ -35,8 +35,8 @@ void SubmitInfo::addSynchronization(const std::vector<WaitSemaphore>& waitSemaph
 
 void SubmitInfo::initialize(std::vector<ICommandBufferWPtr>&& commandBuffers)
 {
-    BT_PRE_CONDITION(_commands.empty());        //DEV Issue: Already call initialize !
-    BT_PRE_CONDITION(!commandBuffers.empty());  //DEV Issue : Need valid data
+    MOUCA_PRE_CONDITION(_commands.empty());        //DEV Issue: Already call initialize !
+    MOUCA_PRE_CONDITION(!commandBuffers.empty());  //DEV Issue : Need valid data
 
     _commandBuffers = std::move(commandBuffers);
 
@@ -46,7 +46,7 @@ void SubmitInfo::initialize(std::vector<ICommandBufferWPtr>&& commandBuffers)
 
 VkSubmitInfo SubmitInfo::buildSubmitInfo()
 {
-    BT_PRE_CONDITION(!_commandBuffers.empty()); //DEV Issue: Missing call initialize !
+    MOUCA_PRE_CONDITION(!_commandBuffers.empty()); //DEV Issue: Missing call initialize !
 
     // Compute current state of CommandBuffer
     auto itCommand = _commands.begin();

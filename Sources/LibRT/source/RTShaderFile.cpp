@@ -3,8 +3,8 @@
 /// \license No license
 #include "Dependancies.h"
 
-#include "LibCore/include/BTProcess.h"
-#include "LibCore/include/BTStandardOS.h"
+#include "LibCore/include/CoreProcess.h"
+#include "LibCore/include/CoreStandardOS.h"
 
 #include "LibRT/include/RTShaderFile.h"
 
@@ -14,20 +14,20 @@ namespace RT
 ShaderFile::ShaderFile(const Core::Path& compiledPath, const ShaderKind kind, const Core::Path& filepath) :
 Core::File(compiledPath, filepath.empty() ? Core::Resource::Mode::Critical : Core::Resource::Mode::AutoRefreshCritical), _kind(kind), _sourceFilepath(filepath)
 {
-    BT_PRE_CONDITION(_sourceFilepath.empty() || std::filesystem::exists(_sourceFilepath) ); // DEV Issue: Need valid file if wanted.
+    MOUCA_PRE_CONDITION(_sourceFilepath.empty() || std::filesystem::exists(_sourceFilepath) ); // DEV Issue: Need valid file if wanted.
     BT_ASSERT_BETWEEN(_kind, RT::ShaderKind::Vertex, RT::ShaderKind::NbShaders);
 
-    BT_POST_CONDITION(!isNull() && !isLoaded());
+    MOUCA_POST_CONDITION(!isNull() && !isLoaded());
 }
 
 ShaderFile::~ShaderFile()
 {
-    BT_POST_CONDITION(!isLoaded());
+    MOUCA_POST_CONDITION(!isLoaded());
 }
 
 void ShaderFile::compile()
 {
-    BT_PRE_CONDITION( !_sourceFilepath.empty() ); // DEV Issue: Need valid source file: API is consider like disabled.
+    MOUCA_PRE_CONDITION( !_sourceFilepath.empty() ); // DEV Issue: Need valid source file: API is consider like disabled.
 
     const Core::Path executable = Core::Path(Core::getEnvironmentVariable("VULKAN_SDK")) / u8"bin" / u8"glslangValidator.exe";
 

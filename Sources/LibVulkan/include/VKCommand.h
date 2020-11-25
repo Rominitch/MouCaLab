@@ -380,7 +380,7 @@ namespace Vulkan
 
             void transfer(Commands&& commands)
             {
-                BT_PRE_CONDITION(!commands.empty());
+                MOUCA_PRE_CONDITION(!commands.empty());
                 for(auto& command : commands)
                 {
                     _commands.emplace_back(std::move(command));
@@ -391,7 +391,7 @@ namespace Vulkan
 
             void transfer(CommandUPtr&& command)
             {
-                BT_PRE_CONDITION(command != nullptr);
+                MOUCA_PRE_CONDITION(command != nullptr);
                 _commands.emplace_back(std::move(command));
             }
 
@@ -413,7 +413,7 @@ namespace Vulkan
 
             void setIdNode(const size_t idNode)
             {
-                BT_PRE_CONDITION(idNode < _commands.size());
+                MOUCA_PRE_CONDITION(idNode < _commands.size());
                 _idNode = idNode;
             }
 
