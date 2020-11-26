@@ -8,16 +8,6 @@
 #include <LibVulkan/include/VKDevice.h>
 #include <LibVulkan/include/VKPipelineCache.h>
 
-namespace RT
-{
-    class Sequence;
-    using SequenceSPtr = std::shared_ptr<Sequence>;
-
-    using QueueSequence = std::vector<RT::SequenceSPtr>;
-    using QueueSequenceSPtr = std::shared_ptr<QueueSequence>;
-    using QueueSequences = std::vector<QueueSequenceSPtr>;
-}
-
 namespace Vulkan
 {
     class Buffer;
@@ -83,6 +73,13 @@ namespace Vulkan
     using SamplerWPtr = std::weak_ptr<Sampler>;
     using Samplers    = std::vector<SamplerSPtr>;
 
+    class Sequence;
+    using SequenceSPtr = std::shared_ptr<Sequence>;
+
+    using QueueSequence     = std::vector<SequenceSPtr>;
+    using QueueSequenceSPtr = std::shared_ptr<QueueSequence>;
+    using QueueSequences    = std::vector<QueueSequenceSPtr>;
+
     class Semaphore;
     using SemaphoreSPtr = std::shared_ptr<Semaphore>;
     using SemaphoreWPtr = std::weak_ptr<Semaphore>;
@@ -119,7 +116,7 @@ namespace Vulkan
                 return _device.isNull() && _pipelineCache.isNull();
             }
 
-            const RT::QueueSequences&   getQueueSequences() const   { return _sequences; }
+            const QueueSequences&   getQueueSequences() const   { return _sequences; }
 
             //------------------------------------------------------------------------
             /// \brief  Return current device.
@@ -170,7 +167,7 @@ namespace Vulkan
             }
             void removeFence(FenceWPtr fence);
 
-            void insertSequence(RT::QueueSequenceSPtr sequences)
+            void insertSequence(QueueSequenceSPtr sequences)
             {
                 MOUCA_PRE_CONDITION(sequences); //DEV Issue: Need valid data
                 _sequences.emplace_back(sequences);
@@ -259,7 +256,7 @@ namespace Vulkan
         // Sequence
             CommandPools         _commandPools;          ///< [OWNERSHIP]
             CommandBuffers       _commandBuffers;        ///< [OWNERSHIP]
-            RT::QueueSequences   _sequences;             ///< [OWNERSHIP]
+            QueueSequences       _sequences;             ///< [OWNERSHIP]
     };
 
     using ContextDeviceSPtr = std::shared_ptr<ContextDevice>;

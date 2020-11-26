@@ -39,8 +39,8 @@
       </Buffers>
       <!--  Shaders -->
       <ShaderModules>
-        <ShaderModule id="0" stage="VK_SHADER_STAGE_VERTEX_BIT"   spirv="v_triangle.spv" code="v_triangle.vert"/>
-        <ShaderModule id="1" stage="VK_SHADER_STAGE_FRAGMENT_BIT" spirv="f_triangle.spv" code="f_triangle.frag"/>
+        <ShaderModule id="0" stage="VK_SHADER_STAGE_VERTEX_BIT"   spirv="triangle.vert.spv" code="triangle.vert"/>
+        <ShaderModule id="1" stage="VK_SHADER_STAGE_FRAGMENT_BIT" spirv="triangle.frag.spv" code="triangle.frag"/>
       </ShaderModules>
       <!--  RenderPass / FrameBuffer -->
       <RenderPasses>

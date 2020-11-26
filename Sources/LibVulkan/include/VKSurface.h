@@ -42,4 +42,6 @@ namespace Vulkan
         private:
             VkSurfaceKHR		_surface;		///< Surface ID.
     };
+
+    using SurfaceUPtr = std::unique_ptr<Surface>;
 }

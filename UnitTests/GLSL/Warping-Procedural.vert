@@ -1,3 +1,6 @@
+/// https://github.com/Rominitch/MouCaLab
+/// \author  Rominitch
+/// \license No license
 #version 450
 
 layout (location = 0) out vec2 outUV;

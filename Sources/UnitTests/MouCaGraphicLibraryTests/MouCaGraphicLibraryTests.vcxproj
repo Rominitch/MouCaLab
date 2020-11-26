@@ -91,7 +91,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PreprocessorDefinitions>MOUCACORE_ENGINE;MOUCA_3D_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(MOUCA_LAB_INCLUDE)UnitTests\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MOUCA_LAB_TEST);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -119,7 +119,7 @@
     <ClCompile>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PreprocessorDefinitions>MOUCACORE_ENGINE;MOUCA_3D_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(MOUCA_LAB_INCLUDE)UnitTests\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MOUCA_LAB_TEST);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)bin\$(Configuration)$(PlatformArchitecture)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -144,7 +144,7 @@
     <ClCompile>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PreprocessorDefinitions>MOUCACORE_ENGINE;MOUCA_3D_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(MOUCA_LAB_INCLUDE)UnitTests\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MOUCA_LAB_TEST);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -195,14 +195,12 @@
     <ClCompile Include="source\UT_VulkanSurface.cpp" />
     <ClCompile Include="source\UT_VulkanSwapChain.cpp" />
     <ClCompile Include="source\UT_VulkanImage.cpp" />
-    <ClCompile Include="source\VulkanDefaultTest.cpp" />
     <ClCompile Include="source\VulkanTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\gMouCaTest.h" />
     <ClInclude Include="Dependancies.h" />
     <ClInclude Include="include\EventManagerEmpty.h" />
-    <ClInclude Include="include\VulkanDefaultTest.h" />
     <ClInclude Include="include\VulkanTest.h" />
   </ItemGroup>
   <ItemGroup>

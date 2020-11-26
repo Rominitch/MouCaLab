@@ -21,8 +21,8 @@
       </Buffers>
       <!--  Shaders -->
       <ShaderModules>
-        <ShaderModule id="0" stage="VK_SHADER_STAGE_VERTEX_BIT"   spirv="v_uioverlay.spv" code="v_uioverlay.vert"/>
-        <ShaderModule id="1" stage="VK_SHADER_STAGE_FRAGMENT_BIT" spirv="f_uioverlay.spv" code="f_uioverlay.frag"/>
+        <ShaderModule id="0" stage="VK_SHADER_STAGE_VERTEX_BIT"   spirv="uioverlay.vert.spv" code="uioverlay.vert"/>
+        <ShaderModule id="1" stage="VK_SHADER_STAGE_FRAGMENT_BIT" spirv="uioverlay.frag.spv" code="uioverlay.frag"/>
       </ShaderModules>
       <!--  RenderPass / FrameBuffer -->
       <RenderPasses>

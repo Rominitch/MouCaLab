@@ -1,0 +1,777 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{04AAFBCC-88E4-4E29-BF7B-314E27A991AC}</ProjectGuid>
+    <RootNamespace>LibraryTests</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\Props\MouCaTechProp.props" />
+    <Import Project="..\..\Props\MouCaDebug.props" />
+    <Import Project="..\..\Props\GoogleTest.props" />
+    <Import Project="..\..\Props\Boost.props" />
+    <Import Project="..\..\Props\GLM.props" />
+    <Import Project="..\..\Props\GLI.props" />
+    <Import Project="..\..\Props\Vulkan.props" />
+    <Import Project="..\..\Props\GLFW.props" />
+    <Import Project="..\..\Props\ImGUI.props" />
+    <Import Project="..\..\Props\Freetype2.props" />
+    <Import Project="..\..\Props\OpenVR.props" />
+    <Import Project="..\..\Props\Xerces3.props" />
+    <Import Project="..\..\Props\sqlite.props" />
+    <Import Project="..\..\Props\FreeImage.props" />
+    <Import Project="..\..\Props\KTX.props" />
+    <Import Project="..\..\Props\Assimp.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\Props\MouCaTechProp.props" />
+    <Import Project="..\..\Props\MouCaRelease.props" />
+    <Import Project="..\..\Props\GoogleTest.props" />
+    <Import Project="..\..\Props\Boost.props" />
+    <Import Project="..\..\Props\GLM.props" />
+    <Import Project="..\..\Props\GLI.props" />
+    <Import Project="..\..\Props\Vulkan.props" />
+    <Import Project="..\..\Props\GLFW.props" />
+    <Import Project="..\..\Props\ImGUI.props" />
+    <Import Project="..\..\Props\Freetype2.props" />
+    <Import Project="..\..\Props\OpenVR.props" />
+    <Import Project="..\..\Props\Xerces3.props" />
+    <Import Project="..\..\Props\sqlite.props" />
+    <Import Project="..\..\Props\FreeImage.props" />
+    <Import Project="..\..\Props\KTX.props" />
+    <Import Project="..\..\Props\Assimp.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\Props\MouCaTechProp.props" />
+    <Import Project="..\..\Props\MouCaProfile.props" />
+    <Import Project="..\..\Props\GoogleTest.props" />
+    <Import Project="..\..\Props\Boost.props" />
+    <Import Project="..\..\Props\GLM.props" />
+    <Import Project="..\..\Props\GLI.props" />
+    <Import Project="..\..\Props\Vulkan.props" />
+    <Import Project="..\..\Props\GLFW.props" />
+    <Import Project="..\..\Props\ImGUI.props" />
+    <Import Project="..\..\Props\Freetype2.props" />
+    <Import Project="..\..\Props\OpenVR.props" />
+    <Import Project="..\..\Props\Xerces3.props" />
+    <Import Project="..\..\Props\sqlite.props" />
+    <Import Project="..\..\Props\FreeImage.props" />
+    <Import Project="..\..\Props\KTX.props" />
+    <Import Project="..\..\Props\Assimp.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>MOUCACORE_ENGINE;MOUCA_3D_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MOUCA_LAB_TEST);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>LibCore.lib;LibGUI.lib;LibGLFW.lib;LibRT.lib;LibError.lib;LibMedia.lib;LibVulkan.lib;LibBasicTools.lib;LibVR.lib;LibXML.lib;MouCaCore.lib;MouCaGraphicEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)bin\$(Configuration)$(PlatformArchitecture)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
+    </Link>
+    <PreBuildEvent>
+      <Message>
+      </Message>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>
+      </Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PreprocessorDefinitions>MOUCACORE_ENGINE;MOUCA_3D_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MOUCA_LAB_TEST);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(SolutionDir)bin\$(Configuration)$(PlatformArchitecture)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>LibCore.lib;LibGUI.lib;LibGLFW.lib;LibRT.lib;LibError.lib;LibMedia.lib;LibVulkan.lib;LibBasicTools.lib;LibVR.lib;LibXML.lib;MouCaCore.lib;MouCaGraphicEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>
+      </Message>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+      <Message>
+      </Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <ClCompile>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PreprocessorDefinitions>MOUCACORE_ENGINE;MOUCA_3D_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MOUCA_LAB_TEST);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(SolutionDir)bin\$(Configuration)$(PlatformArchitecture)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>LibCore.lib;LibGUI.lib;LibGLFW.lib;LibRT.lib;LibError.lib;LibMedia.lib;LibVulkan.lib;LibBasicTools.lib;LibVR.lib;LibXML.lib;MouCaCore.lib;MouCaGraphicEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>
+      </Message>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+      <Message>
+      </Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\UnitTests\source\gMouCaTest.cpp" />
+    <ClCompile Include="Dependancies.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\EventManager3D.cpp" />
+    <ClCompile Include="source\MouCaLab.cpp" />
+    <ClCompile Include="source\UT_Deferred.cpp" />
+    <ClCompile Include="source\main.cpp" />
+    <ClCompile Include="source\UT_MathematicalRendering.cpp" />
+    <ClCompile Include="source\UT_Triangle.cpp" />
+    <ClCompile Include="source\UT_TriangleScreenSpace.cpp" />
+    <ClCompile Include="source\UT_VRPlatform.cpp" />
+    <ClCompile Include="source\UT_FontSVG.cpp" />
+    <ClCompile Include="source\UT_Tessellation.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\UnitTests\include\gMouCaTest.h" />
+    <ClInclude Include="Dependancies.h" />
+    <ClInclude Include="include\EventManager3D.h" />
+    <ClInclude Include="include\MouCaLab.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\UnitTests\Renderer\CommandBeginRenderPassError.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\CommandBeginRenderPassError1.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\CommandError.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\Deferred.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\DeviceError.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\DeviceError1.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\DeviceSemaphoreError.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\DeviceSurfaceError.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\DeviceSurfaceError1.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\Environment.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\EnvironmentError.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\FenceError.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\FormatError.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\FrameBufferError.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\FrameBufferError1.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\FrameBufferError2.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\FullDescriptor.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\GraphicsPipelineError.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\GraphicsPipelineError1.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\ImageError.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\ImageError1.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\ImageError2.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\LiteralEnumError.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\MathematicalRendering.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\NumberOrLiteral.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\RenderPassError.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\RenderPassError1.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\RenderPassError2.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\RenderPassError3.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\RenderPassError4.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\RenderPassError5.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\RenderPassError6.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\RenderPassError7.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\SequenceError.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\SequenceError1.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\SequenceError2.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\SequenceError3.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\ShaderEdition.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\Triangle.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\TriangleScreenSpace.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\VersionError.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\WindowCreate.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\WindowCreateMonitor.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\WindowError1.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\WindowError2.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\WindowError3.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\WindowExisting.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\UnitTests\GLSL\debug.frag">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\deferred.frag">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\mrt.frag">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\triangle.frag">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\triangleSS.frag">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\Warping-Procedural.frag">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\debug.vert">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\deferred.vert">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\mrt.vert">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\triangle.vert">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\triangleSS.vert">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\Warping-Procedural.vert">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\UnitTests\GLSL\uioverlay.frag">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\uioverlay.vert">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\UnitTests\GLSL\deferred_tesselation.frag">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\deferred_tesselation.tesc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\deferred_tesselation.tese">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\deferred_tesselation.vert">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\UnitTests\GLSL\font.frag">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\font.vert">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\UnitTests\GLSL\font_screen.frag">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\font_screen.vert">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\UnitTests\GLSL\fontV2.frag">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\fontV2.vert">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+    </CustomBuild>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

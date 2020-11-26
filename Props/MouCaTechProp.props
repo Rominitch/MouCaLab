@@ -6,6 +6,7 @@
     <MOUCA_COMPILE>$(SolutionDir)..\Compile\</MOUCA_COMPILE>
     <MOUCA_SDK>$(SolutionDir)..\SDK\</MOUCA_SDK>
     <MOUCA_LAB_INCLUDE>$(SolutionDir)..\MouCaLab\Sources\</MOUCA_LAB_INCLUDE>
+    <MOUCA_LAB_TEST>$(MOUCA_LAB_INCLUDE)UnitTests\</MOUCA_LAB_TEST>
     <GTEST_PRODUCTION>$(MOUCA_SDK)googletest-1.10.0\include</GTEST_PRODUCTION>
   </PropertyGroup>
   <PropertyGroup>
@@ -51,6 +52,9 @@
     </BuildMacro>
     <BuildMacro Include="MOUCA_LAB_INCLUDE">
       <Value>$(MOUCA_LAB_INCLUDE)</Value>
+    </BuildMacro>
+    <BuildMacro Include="MOUCA_LAB_TEST">
+      <Value>$(MOUCA_LAB_TEST)</Value>
     </BuildMacro>
     <BuildMacro Include="GTEST_PRODUCTION">
       <Value>$(GTEST_PRODUCTION)</Value>

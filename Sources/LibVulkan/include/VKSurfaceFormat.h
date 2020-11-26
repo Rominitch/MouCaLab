@@ -5,7 +5,6 @@
 
 namespace Vulkan
 {
-
     class SurfaceFormat final
     {
         MOUCA_NOCOPY(SurfaceFormat);

@@ -3,6 +3,8 @@
 /// \license No license
 #pragma once
 
+#include <LibVulkan/include/VKSurface.h>
+
 // Forward declaration
 namespace RT
 {
@@ -12,9 +14,6 @@ namespace RT
 
 namespace Vulkan
 {
-    class Surface;
-    using SurfaceUPtr = std::unique_ptr<Surface>;
-
     //----------------------------------------------------------------------------
     /// \brief Vulkan Surface linked to real window.
     class WindowSurface final
@@ -23,7 +22,7 @@ namespace Vulkan
 
         public:
             RT::RenderDialogWPtr    _linkWindow;    ///< [LINK] Link to existing window.
-            Vulkan::SurfaceUPtr     _surface;       ///< [OWNERSHIP] Vulkan surface.
+            SurfaceUPtr             _surface;       ///< [OWNERSHIP] Vulkan surface.
 
             /// Constructor
             WindowSurface(RT::RenderDialogWPtr linkWindow);

@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Fichiers sources">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Fichiers de ressources">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Fichiers sources\Manager">
+      <UniqueIdentifier>{5ab23dcc-fc7e-4dc2-bf5f-b0723a441cbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Manager">
+      <UniqueIdentifier>{3ba90d85-77ab-4ad6-9629-c741e73bce31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Loader">
+      <UniqueIdentifier>{a5c794b8-5f2b-4592-bc5e-13d0ae4d148e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Loader">
+      <UniqueIdentifier>{28461d3e-4cbd-4cb4-8206-67b29390f0ac}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Dependancies.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SceneSynchronizer.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ImGUIManager.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine3DTransfer.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine3DXMLLoader.h">
+      <Filter>Fichiers d%27en-tête\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VulkanEnum.h">
+      <Filter>Fichiers d%27en-tête\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GraphicEngine.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GraphicConfiguration.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VulkanManager.h">
+      <Filter>Fichiers d%27en-tête\Manager</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Dependancies.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\SceneSynchronizer.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Engine3DTransfer.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ImGUIManager.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Engine3DXMLLoader.cpp">
+      <Filter>Fichiers sources\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VulkanEnum.cpp">
+      <Filter>Fichiers sources\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="source\GraphicEngine.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VulkanManager.cpp">
+      <Filter>Fichiers sources\Manager</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

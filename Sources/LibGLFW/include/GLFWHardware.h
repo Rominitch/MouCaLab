@@ -18,12 +18,12 @@ namespace GLFW
             // Create information from scratch.
             void readHardware();
 
-            const std::vector<RT::Monitor>& getMonitors() const
+            const RT::Monitors& getMonitors() const
             {
                 return _monitors;
             }
 
         private:
-            std::vector<RT::Monitor> _monitors; ///< List of monitors
+            RT::Monitors _monitors; ///< List of monitors
     };
 }

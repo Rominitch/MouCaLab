@@ -46,12 +46,6 @@
     <ClCompile Include="source\UT_VulkanPipelineCache.cpp">
       <Filter>Source Files\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="source\VulkanTest.cpp">
-      <Filter>Source Files\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="source\VulkanDefaultTest.cpp">
-      <Filter>Source Files\Vulkan</Filter>
-    </ClCompile>
     <ClCompile Include="source\UT_GLFWHardware.cpp">
       <Filter>Source Files\GLFW</Filter>
     </ClCompile>
@@ -73,6 +67,9 @@
     <ClCompile Include="source\UT_VulkanImage.cpp">
       <Filter>Source Files\Vulkan</Filter>
     </ClCompile>
+    <ClCompile Include="source\VulkanTest.cpp">
+      <Filter>Source Files\Testing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -88,9 +85,6 @@
     </Filter>
     <Filter Include="Source Files\GUI">
       <UniqueIdentifier>{41f8eb9f-315c-4f92-87d5-b22234344e4f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Vulkan">
-      <UniqueIdentifier>{332a33ad-4b63-4a45-893e-c17428d169ee}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\GLFW">
       <UniqueIdentifier>{18780e13-79f8-4534-892b-05b9165a8f68}</UniqueIdentifier>
@@ -109,16 +103,13 @@
     <ClInclude Include="Dependancies.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\VulkanTest.h">
-      <Filter>Header Files\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="include\VulkanDefaultTest.h">
-      <Filter>Header Files\Vulkan</Filter>
-    </ClInclude>
     <ClInclude Include="include\EventManagerEmpty.h">
       <Filter>Header Files\Testing</Filter>
     </ClInclude>
     <ClInclude Include="..\include\gMouCaTest.h">
+      <Filter>Header Files\Testing</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VulkanTest.h">
       <Filter>Header Files\Testing</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,3 +1,6 @@
+/// https://github.com/Rominitch/MouCaLab
+/// \author  Rominitch
+/// \license No license
 #version 450
 
 layout (binding = 1) uniform sampler2DMS samplerPosition;

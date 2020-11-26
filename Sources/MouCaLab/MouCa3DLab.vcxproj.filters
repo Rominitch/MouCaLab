@@ -1,0 +1,303 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="source\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dependancies.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_MathematicalRendering.cpp">
+      <Filter>Source Files\Demo</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_Triangle.cpp">
+      <Filter>Source Files\Demo</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_TriangleScreenSpace.cpp">
+      <Filter>Source Files\Demo</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_VRPlatform.cpp">
+      <Filter>Source Files\Demo</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_Deferred.cpp">
+      <Filter>Source Files\Demo</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_Tessellation.cpp">
+      <Filter>Source Files\Demo</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UT_FontSVG.cpp">
+      <Filter>Source Files\Demo</Filter>
+    </ClCompile>
+    <ClCompile Include="source\MouCaLab.cpp">
+      <Filter>Source Files\Testing</Filter>
+    </ClCompile>
+    <ClCompile Include="source\EventManager3D.cpp">
+      <Filter>Source Files\Testing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\UnitTests\source\gMouCaTest.cpp">
+      <Filter>Source Files\Testing</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{6ae598ba-7490-403c-b41f-fe893ff36fa1}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{f8bd1c0e-6064-4450-888e-9a2f4cc1fa90}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{15a502c5-01a3-4d3e-828a-336863e3495a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Testing">
+      <UniqueIdentifier>{3dbd6c1f-b80b-416d-a444-1925ee89900f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Testing">
+      <UniqueIdentifier>{d3489051-1ddc-46f5-80ae-72abfd7c0885}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Demo">
+      <UniqueIdentifier>{c1eeec4a-c835-4d95-951e-7c3bd21f8825}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer">
+      <UniqueIdentifier>{bba4c541-429f-4ec9-a939-ebf0ad627405}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer\Error">
+      <UniqueIdentifier>{315839ff-e9a2-4ede-9176-6c9562846fa4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Common">
+      <UniqueIdentifier>{4dc18ec3-8b42-4a5f-87dc-f41bddbcb764}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Dependancies.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MouCaLab.h">
+      <Filter>Header Files\Testing</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EventManager3D.h">
+      <Filter>Header Files\Testing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\UnitTests\include\gMouCaTest.h">
+      <Filter>Header Files\Testing</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\UnitTests\GLSL\deferred_tesselation.frag">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\deferred_tesselation.tesc">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\deferred_tesselation.tese">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\deferred_tesselation.vert">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\font.frag">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\font.vert">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\font_screen.frag">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\font_screen.vert">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\fontV2.frag">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\fontV2.vert">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\debug.frag">
+      <Filter>Shaders\Common</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\debug.vert">
+      <Filter>Shaders\Common</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\deferred.frag">
+      <Filter>Shaders\Common</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\deferred.vert">
+      <Filter>Shaders\Common</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\mrt.frag">
+      <Filter>Shaders\Common</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\mrt.vert">
+      <Filter>Shaders\Common</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\triangleSS.vert">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\triangle.vert">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\Warping-Procedural.vert">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\triangle.frag">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\triangleSS.frag">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\Warping-Procedural.frag">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\uioverlay.frag">
+      <Filter>Shaders\Common</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\UnitTests\GLSL\uioverlay.vert">
+      <Filter>Shaders\Common</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\UnitTests\Renderer\Deferred.xml">
+      <Filter>Renderer</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\Environment.xml">
+      <Filter>Renderer</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\MathematicalRendering.xml">
+      <Filter>Renderer</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\CommandBeginRenderPassError.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\CommandBeginRenderPassError1.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\CommandError.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\DeviceError.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\DeviceError1.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\DeviceSemaphoreError.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\DeviceSurfaceError.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\DeviceSurfaceError1.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\EnvironmentError.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\FenceError.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\FormatError.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\FrameBufferError.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\FrameBufferError2.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\FrameBufferError1.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\GraphicsPipelineError.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\GraphicsPipelineError1.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\LiteralEnumError.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\RenderPassError.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\RenderPassError1.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\RenderPassError2.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\RenderPassError3.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\RenderPassError4.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\ImageError.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\ImageError1.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\ImageError2.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\Triangle.xml">
+      <Filter>Renderer</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\TriangleScreenSpace.xml">
+      <Filter>Renderer</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\ShaderEdition.xml">
+      <Filter>Renderer</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\RenderPassError5.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\RenderPassError6.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\RenderPassError7.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\SequenceError.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\SequenceError1.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\SequenceError2.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\SequenceError3.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\NumberOrLiteral.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\WindowError1.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\WindowError2.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\WindowError3.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\WindowExisting.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\WindowCreateMonitor.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\WindowCreate.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\VersionError.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\FullDescriptor.xml">
+      <Filter>Renderer\Error</Filter>
+    </Xml>
+  </ItemGroup>
+</Project>

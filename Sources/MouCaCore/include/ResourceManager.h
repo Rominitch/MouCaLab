@@ -69,7 +69,8 @@ namespace MouCaCore
 
                 //Admin -> from 0x01000000 to 0xff000000
                 AdminGenerated  = 0x01000000,
-                ShadersSource   = 0x02000000
+                ShadersSource   = 0x02000000,
+                Renderer        = 0x03000000
             };
 
             ResourceManager() = default;

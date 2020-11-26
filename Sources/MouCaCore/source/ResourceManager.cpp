@@ -139,7 +139,7 @@ RT::ShaderFileSPtr ResourceManager::openShader( const Core::Path& filePath, cons
     MOUCA_PRE_CONDITION( !filePath.empty() );
 
     // Build default Spir-V filepath
-    const Core::StringOS realFilePath = std::filesystem::absolute(
+    const Core::Path realFilePath = std::filesystem::absolute(
                                     std::filesystem::exists( filePath ) 
                                     ? filePath
                                     : std::filesystem::path(getResourceFolder(ResourceFolder::Shaders) / std::filesystem::path(filePath)));

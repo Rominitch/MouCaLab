@@ -39,15 +39,15 @@ namespace RT
                 _handle         = handle;
 
                 const float radio = static_cast<float>(_monitorArea.getWidth())/static_cast<float>(_monitorArea.getHeight());
-                if(fabs(radio-16.0f/9.0f) < 1e-5f)
+                if(std::abs(radio-16.0f/9.0f) < 1e-5f)
                 {
                     _screenRatio = Screen16_9;
                 }
-                else if(fabs(radio-16.0f/10.0f) < 1e-5f)
+                else if(std::abs(radio-16.0f/10.0f) < 1e-5f)
                 {
                     _screenRatio = Screen16_10;
                 }
-                else if(fabs(radio-4.0f/3.0f) < 1e-5f)
+                else if(std::abs(radio-4.0f/3.0f) < 1e-5f)
                 {
                     _screenRatio = Screen4_3;
                 }
@@ -100,4 +100,6 @@ namespace RT
             uint32_t          _refreshRate;
             void*               _handle;
     };
+
+    using Monitors = std::vector<Monitor>;
 }

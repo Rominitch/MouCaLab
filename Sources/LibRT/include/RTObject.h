@@ -74,5 +74,8 @@ namespace RT
         private:
             MOUCA_NOCOPY_NOMOVE(Object);
     };
+
+    using ObjectSPtr = std::shared_ptr<Object>;
+    using ObjectWPtr = std::weak_ptr<Object>;
 }
 

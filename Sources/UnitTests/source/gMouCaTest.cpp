@@ -1,3 +1,6 @@
+/// https://github.com/Rominitch/MouCaLab
+/// \author  Rominitch
+/// \license No license
 #include "Dependancies.h"
 
 Core::Path MouCaEnvironment::g_inputPath;
@@ -8,6 +11,7 @@ bool       MouCaEnvironment::_isDemonstrator = false;
 #ifdef RT_AVAILABLE
 
 #include <LibRT/include/RTEnum.h>
+#include <LibRT/include/RTViewport.h>
 
 namespace testing
 {
