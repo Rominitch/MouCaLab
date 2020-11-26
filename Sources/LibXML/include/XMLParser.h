@@ -9,12 +9,12 @@
 #define XERCES_SPEED_DEBUG
 namespace XML
 {
-    class Platform final
+    class XercesPlatform final : public Platform
     {
         public:
-            Platform();
+            XercesPlatform();
 
-            ~Platform();
+            ~XercesPlatform() override;
     };
 
     class XercesResult final : public Result

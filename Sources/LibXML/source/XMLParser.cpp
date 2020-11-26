@@ -5,7 +5,7 @@
 namespace XML
 {
 
-Platform::Platform()
+XercesPlatform::XercesPlatform()
 {
     try
     {
@@ -15,7 +15,7 @@ Platform::Platform()
     {}
 }
 
-Platform::~Platform()
+XercesPlatform::~XercesPlatform()
 {
     //Release Xerces used
     xercesc::XMLPlatformUtils::Terminate();

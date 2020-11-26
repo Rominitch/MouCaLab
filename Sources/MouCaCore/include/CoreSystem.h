@@ -8,7 +8,7 @@
 
 #include <LibError/include/ErrorManager.h>
 
-#include <LibXML/include/XMLParser.h>
+#include <LibXML/include/XML.h>
 
 #include "MouCaCore/include/LoaderManager.h"
 #include "MouCaCore/include/ResourceManager.h"
@@ -64,7 +64,7 @@ namespace MouCaCore
             void printException(const Core::Exception& exception) const;
 
         protected:
-            XML::Platform           _xmlPlatform;
+            XML::PlatformUPtr       _xmlPlatform;
             Core::PlugInManager     _pluginManager;
             Core::ThreadPools	    _threadPool;
             ResourceManagerSPtr     _resourceManager;
