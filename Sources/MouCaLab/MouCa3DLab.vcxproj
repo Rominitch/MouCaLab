@@ -109,8 +109,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>LibCore.lib;LibGUI.lib;LibGLFW.lib;LibRT.lib;LibError.lib;LibMedia.lib;LibVulkan.lib;LibBasicTools.lib;LibVR.lib;LibXML.lib;MouCaCore.lib;MouCaGraphicEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)bin\$(Configuration)$(PlatformArchitecture)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>LibCore.lib;LibGUI.lib;LibGLFW.lib;LibRT.lib;LibError.lib;LibMedia.lib;LibVulkan.lib;LibVR.lib;LibXML.lib;MouCaCore.lib;MouCaGraphicEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
     </Link>
@@ -136,8 +135,7 @@
       <AdditionalIncludeDirectories>$(MOUCA_LAB_TEST);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)bin\$(Configuration)$(PlatformArchitecture)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>LibCore.lib;LibGUI.lib;LibGLFW.lib;LibRT.lib;LibError.lib;LibMedia.lib;LibVulkan.lib;LibBasicTools.lib;LibVR.lib;LibXML.lib;MouCaCore.lib;MouCaGraphicEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>LibCore.lib;LibGUI.lib;LibGLFW.lib;LibRT.lib;LibError.lib;LibMedia.lib;LibVulkan.lib;LibVR.lib;LibXML.lib;MouCaCore.lib;MouCaGraphicEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>
@@ -164,8 +162,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)bin\$(Configuration)$(PlatformArchitecture)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>LibCore.lib;LibGUI.lib;LibGLFW.lib;LibRT.lib;LibError.lib;LibMedia.lib;LibVulkan.lib;LibBasicTools.lib;LibVR.lib;LibXML.lib;MouCaCore.lib;MouCaGraphicEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>LibCore.lib;LibGUI.lib;LibGLFW.lib;LibRT.lib;LibError.lib;LibMedia.lib;LibVulkan.lib;LibVR.lib;LibXML.lib;MouCaCore.lib;MouCaGraphicEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>

@@ -53,10 +53,10 @@ void GraphicEngine::getDefaultConfiguration(GraphicConfiguration& configuration)
     };
 #else
     // Add Primary screen windows
-    GraphicConfiguration::Window config
+    GraphicConfiguration::ConfigurationWindow config
     {
         _hardware.getMonitors().begin()->getMonitorArea(),
-        _hardware.getMonitors().,
+        _hardware.getMonitors().begin()->getMonitorArea().getSize(),
         RT::Window::FullscreenWindowed
     };
 #endif

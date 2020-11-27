@@ -25,7 +25,7 @@ packages = [ ("assimp-5.0.0.rc1.7z",    "13T0WsgNH8Kl8eEiGeYMzv2yawFCJQZli", Non
              ("gli-0.8.2.0.7z",         "1eqmp5Er6H0RHfUtWUsi87-qQOdWhCHE4", None,                                    None),
              ("glm-0.9.8.5.7z",         "1ThZEnM5KlpSfts_OOp8slHiKLpLjy5hN", None,                                    None),
              ("googletest-1.10.0.7z",   "1I8tvgpFE03YUChGELMtFTpqfmuzo0g-Q", None,                                    (None, "gtest.dll", "gtestd.dll")),
-             ("imgui-1.74.7z",          "1p3aiF4KZ7CjPev9_yJyVjZr3t4r0L6aH", None,                                    None),
+             ("imgui-1.79.7z",          "1TXhxPLP7cfOn1oji8zFDY5wJTH6JM52v", None,                                    None),
              ("KTX-Software-2.0.2.7z",  "14BMn8iaKB2k2t0_5yAnECPxruXCQjWyl", None,                                    None),
              ("openvr-1.11.11.7z",      "1rptiPRPQNDEJ8Et_K8q3T4kTvkv8A92O", None,                                    (os.path.join("bin", "win64"), "openvr_api.dll", "openvr_api.dll")),
              ("sqlite-3.33.7z",         "15Zv4Iy_l1mCext05ZuvPHaPXv7X37LJb", None,                                    None),
