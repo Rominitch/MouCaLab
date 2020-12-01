@@ -1,5 +1,7 @@
 #pragma once
 
+#include <MouCaCore/include/Core.h>
+
 #include <LibCore/include/CoreThread.h>
 
 namespace Core
@@ -11,50 +13,6 @@ namespace Core
 namespace MouCaCore
 {
     class LoaderManager;
-
-    struct LoadingItem
-    {
-        enum State
-        {
-            Direct,         ///< Need to load data now.
-            Deferred        ///< Need to load data soon.
-        };
-
-        enum Order
-        {
-            Urgent,
-            Priority,
-            Normal,
-            Low,
-            VeryLow,
-            NbOrders
-        };
-
-        //------------------------------------------------------------------------
-        /// \brief  Constructor
-        /// 
-        /// \param[in,out] resource:
-        /// \param[in] state:
-        /// \param[in] order:
-        LoadingItem(Core::ResourceSPtr resource = Core::ResourceSPtr(), const State state = Direct, const Order order = Normal) :
-            _resource(resource),
-            _state(state),
-            _order(order)
-        {}
-
-        /// Destructor
-        ~LoadingItem() = default;
-
-        Core::ResourceSPtr  _resource;      ///< Data pointer.
-        State               _state;         ///< State of loading.
-        Order               _order;         ///< Priority of loading.
-
-        bool operator<(const LoadingItem& item) const
-        {
-            return _state < item._state || (_state == item._state && _order < item._order);
-        }
-    };
-    using LoadingItems = std::deque<LoadingItem>;
 
     //----------------------------------------------------------------------------
     /// \brief Manage a queue to load resource (multi-threading)
@@ -126,7 +84,7 @@ namespace MouCaCore
     /// \brief Manage how to load resources (multi-threading)
     ///
     /// \see   LoadingQueue
-    class LoaderManager final
+    class LoaderManager final : public ILoaderManager
     {
         MOUCA_NOCOPY_NOMOVE(LoaderManager);
 
@@ -158,15 +116,15 @@ namespace MouCaCore
             /// Constructor
             LoaderManager() = default;
             /// Destructor
-            ~LoaderManager() = default;
+            ~LoaderManager() override = default;
 
-            void initialize(const uint32_t nbQueue = 5);
+            void initialize(const uint32_t nbQueue = 5) override;
 
-            void release();
+            void release() override;
 
-            void loadResources(LoadingItems& queue);
+            void loadResources(LoadingItems& queue) override;
 
-            void synchronize();
+            void synchronize() override;
 
             SynchonizeData& getSynchronizeDirect()
             {

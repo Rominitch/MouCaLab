@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include <LibCore/include/CoreByteBuffer.h>
 #include <LibCore/include/CoreDefine.h>
@@ -20,7 +20,7 @@ void File::open(const StringOS& mode)
     const errno_t eError = _wfopen_s(&_file, _filename.c_str(), mode.c_str());
     if(eError!=0)
     {
-        BT_THROW_ERROR_1(u8"BasicError", u8"InvalidPathError", convertToU8(_filename));
+        MOUCA_THROW_ERROR_1(u8"BasicError", u8"InvalidPathError", convertToU8(_filename));
     }
     else
     {
@@ -107,7 +107,7 @@ size_t File::read(Core::ByteBuffer& buffer)
     }
     else
     {
-        BT_THROW_ERROR_1(u8"BasicError", u8"InvalidFileRead", convertToU8(_filename));
+        MOUCA_THROW_ERROR_1(u8"BasicError", u8"InvalidFileRead", convertToU8(_filename));
     }
     return mem;
 }
@@ -162,7 +162,7 @@ void File::setFilePosition(const size_t positionInFile) const
 
     if(fsetpos(_file, &pPosition) != 0)
     {
-        BT_THROW_ERROR(u8"BasicError", u8"InvalidReadingPositionError");
+        MOUCA_THROW_ERROR(u8"BasicError", u8"InvalidReadingPositionError");
     }
 }
 
@@ -172,7 +172,7 @@ size_t File::getFilePosition() const
     fpos_t pPosition = 0;
     if(fgetpos(_file, &pPosition) != 0)
     {
-        BT_THROW_ERROR(u8"BasicError", u8"InvalidReadingPositionError");
+        MOUCA_THROW_ERROR(u8"BasicError", u8"InvalidReadingPositionError");
     }
     return (size_t)pPosition;
 }

@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "MouCaGraphicEngine/include/ImGUIManager.h"
 

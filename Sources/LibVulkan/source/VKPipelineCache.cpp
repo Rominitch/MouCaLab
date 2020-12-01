@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibVulkan/include/VKDevice.h"
 #include "LibVulkan/include/VKPipelineCache.h"
@@ -34,7 +34,7 @@ void PipelineCache::initialize(const Device& device)
     
     if(vkCreatePipelineCache(device.getInstance(), &pipelineCacheCreateInfo, nullptr, &_pipelineCache))
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"PipelineCacheCreationError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"PipelineCacheCreationError");
     }
 }
 

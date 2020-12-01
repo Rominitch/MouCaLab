@@ -74,8 +74,6 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>Dependancies.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -92,8 +90,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Dependancies.h" />
+    <ClInclude Include="Dependencies.h" />
     <ClInclude Include="include\CoreByteBuffer.h" />
+    <ClInclude Include="include\CoreDLLImport.h" />
     <ClInclude Include="include\CoreElapser.h" />
     <ClInclude Include="include\CoreError.h" />
     <ClInclude Include="include\CoreException.h" />
@@ -116,7 +115,7 @@
     <ClInclude Include="include\CoreThreadPools.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Dependancies.cpp">
+    <ClCompile Include="Dependencies.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Create</PrecompiledHeader>

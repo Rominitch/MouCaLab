@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibVulkan/include/VKSubmitInfo.h"
 

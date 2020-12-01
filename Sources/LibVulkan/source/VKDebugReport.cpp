@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 #include <LibVulkan/include/VKDebugReport.h>
 
 namespace Vulkan
@@ -36,12 +36,12 @@ void DebugReport::initialize(const VkInstance& vulkanInstance)
     auto func = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(vulkanInstance, "vkCreateDebugReportCallbackEXT");
     if(func == nullptr)
     {
-        BT_THROW_ERROR("Vulkan", "DebugReportError");
+        MOUCA_THROW_ERROR("Vulkan", "DebugReportError");
     }
 
     if(func(vulkanInstance, &callbackCreateInfo, nullptr, &_callback) != VK_SUCCESS)
     {
-        BT_THROW_ERROR("Vulkan", "DebugReportError");
+        MOUCA_THROW_ERROR("Vulkan", "DebugReportError");
     }
 }
 
@@ -51,7 +51,7 @@ void DebugReport::release(const VkInstance& vulkanInstance)
     auto func = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(vulkanInstance, "vkDestroyDebugReportCallbackEXT");
     if(func == nullptr)
     {
-        BT_THROW_ERROR("Vulkan", "DebugReportError");
+        MOUCA_THROW_ERROR("Vulkan", "DebugReportError");
     }
 
     func(vulkanInstance, _callback, nullptr);

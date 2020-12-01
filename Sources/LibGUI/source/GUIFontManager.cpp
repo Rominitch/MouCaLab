@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include <LibGUI/include/GUIFontAtlas.h>
 #include <LibGUI/include/GUIFontGlyph.h>

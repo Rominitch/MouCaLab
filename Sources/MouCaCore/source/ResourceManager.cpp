@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibCore/include/CoreFile.h"
 
@@ -38,6 +38,28 @@ void ResourceManager::releaseResources()
     }
 
     _resources.clear();
+}
+
+void ResourceManager::releaseResource(Core::ResourceSPtr resource)
+{
+    const auto instance = resource.use_count();
+    MOUCA_ASSERT(instance >= 2); // DEV Issue: Need this instance + manager !
+
+    // Keep pointer
+    Core::Resource* data = resource.get(); // If error here: Do you forget include ?
+    resource.reset(); // Release current shared
+
+    // Latest resource is own by manager
+    if (instance == 2)
+    {
+        // Release data inside resource
+        if (!data->isNull())
+        {
+            data->release();
+        }
+        // Final unregister and delete
+        unregisterResource(data);
+    }
 }
 
 Core::FileSPtr ResourceManager::createFile(const Core::Path& filename)

@@ -18,15 +18,15 @@
     <ClInclude Include="include\PlugInMain.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="Dependancies.h">
+    <ClInclude Include="Dependencies.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Dependancies.cpp">
+    <ClCompile Include="source\PlugInMain.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="source\PlugInMain.cpp">
+    <ClCompile Include="Dependencies.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

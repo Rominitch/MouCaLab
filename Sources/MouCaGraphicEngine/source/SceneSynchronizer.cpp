@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 /*
 #include <LibRT/include/RTGeometry.h>
 #include <LibRT/include/RTLight.h>
@@ -131,7 +131,7 @@ void SceneSynchronizer::synchronize( const RT::ObjectSPtr& object )
     }
     else
     {
-       BT_THROW_ERROR(u8"BasicError", u8"UnknownEnumError")
+       MOUCA_THROW_ERROR(u8"BasicError", u8"UnknownEnumError")
     }
 }
 

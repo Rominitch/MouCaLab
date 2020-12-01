@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibVulkan/include/VKCommandPool.h"
 #include "LibVulkan/include/VKDevice.h"
@@ -36,7 +36,7 @@ void CommandPool::initialize(const Device& device, const uint32_t queueFamilyID,
     // Build command pool
     if(vkCreateCommandPool(device.getInstance(), &createInfo, nullptr, &_commandPool) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"CommandPoolCreationError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"CommandPoolCreationError");
     }
 
     MOUCA_POST_CONDITION(!isNull());

@@ -93,7 +93,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Dependancies.h" />
+    <ClInclude Include="Dependencies.h" />
     <ClInclude Include="include\RTAnimationBones.h" />
     <ClInclude Include="include\RTBBoxes.h" />
     <ClInclude Include="include\RTBoundingBox.h" />
@@ -131,10 +131,10 @@
     <ClInclude Include="include\RTViewport.h" />
     <ClInclude Include="include\RTVirtualMouse.h" />
     <ClInclude Include="include\RTWindow.h" />
-    <ClInclude Include="RTGlobalDependancies.h" />
+    <ClInclude Include="RTGlobalDependencies.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Dependancies.cpp">
+    <ClCompile Include="Dependencies.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Create</PrecompiledHeader>

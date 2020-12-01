@@ -120,7 +120,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\VulkanEnum.cpp" />
-    <ClInclude Include="Dependancies.h" />
+    <ClInclude Include="Dependencies.h" />
     <ClInclude Include="include\GraphicConfiguration.h" />
     <ClInclude Include="include\GraphicEngine.h" />
     <ClInclude Include="include\VulkanManager.h" />
@@ -135,7 +135,7 @@
     <ClInclude Include="include\VulkanEnum.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Dependancies.cpp">
+    <ClCompile Include="Dependencies.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Create</PrecompiledHeader>

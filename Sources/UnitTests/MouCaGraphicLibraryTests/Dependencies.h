@@ -17,7 +17,7 @@
 #include <FreetypePackage.h>
 
 //MouCa Common
-#include <LibRT/RTGlobalDependancies.h>
+#include <LibRT/RTGlobalDependencies.h>
 
 #define RT_AVAILABLE
 #include "../include/gMouCaTest.h"

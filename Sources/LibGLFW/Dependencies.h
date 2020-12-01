@@ -7,4 +7,4 @@
 #include <GLFW.h>
 
 //Cross dependencies
-#include <LibRT/RTGlobalDependancies.h>
+#include <LibRT/RTGlobalDependencies.h>

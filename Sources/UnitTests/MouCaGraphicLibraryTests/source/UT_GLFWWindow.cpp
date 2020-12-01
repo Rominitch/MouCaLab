@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "include/EventManagerEmpty.h"
 

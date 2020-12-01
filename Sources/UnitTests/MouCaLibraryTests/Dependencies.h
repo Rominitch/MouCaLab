@@ -14,7 +14,7 @@
 #include <Xerces.h>
 
 //MouCa Common 
-#include <LibRT/RTGlobalDependancies.h>
+#include <LibRT/RTGlobalDependencies.h>
 
 #define RT_AVAILABLE
 #define BOOST_AVAILABLE

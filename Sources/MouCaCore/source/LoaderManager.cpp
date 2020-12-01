@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibCore/include/CoreFile.h"
 
@@ -175,7 +175,7 @@ void LoadingQueue::doAction( LoadingItem& item )
         return;
     }
     
-    BT_THROW_ERROR( "MouCaCore", "InvalidLoader" );
+    MOUCA_THROW_ERROR( "MouCaCore", "InvalidLoader" );
 }
 
 void LoadingQueue::run()

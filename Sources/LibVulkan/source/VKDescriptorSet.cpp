@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibVulkan/include/VKDescriptorSet.h"
 #include "LibVulkan/include/VKDevice.h"
@@ -33,7 +33,7 @@ void DescriptorPool::initialize(const Device& device, const std::vector<VkDescri
 
     if(vkCreateDescriptorPool(device.getInstance(), &info, nullptr, &_pool) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"DescriptorPoolCreationError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"DescriptorPoolCreationError");
     }
     MOUCA_POST_CONDITION(!isNull());
 }
@@ -118,7 +118,7 @@ void DescriptorSetLayout::initialize(const Device& device)
 
     if(vkCreateDescriptorSetLayout(device.getInstance(), &info, nullptr, &_layout) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"DescriptorLayoutCreationError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"DescriptorLayoutCreationError");
     }
     MOUCA_ASSERT(!isNull());
 }
@@ -227,11 +227,11 @@ void DescriptorSet::initialize(const Device& device, const DescriptorPoolWPtr& d
         _descriptors.clear();
         if (result == VK_ERROR_OUT_OF_POOL_MEMORY)
         {
-            BT_THROW_ERROR(u8"Vulkan", u8"PoolDescriptorSetAllocateError");
+            MOUCA_THROW_ERROR(u8"Vulkan", u8"PoolDescriptorSetAllocateError");
         }   
         else
         {
-            BT_THROW_ERROR(u8"Vulkan", u8"DescriptorSetAllocateError");
+            MOUCA_THROW_ERROR(u8"Vulkan", u8"DescriptorSetAllocateError");
         }
     }
 
@@ -287,7 +287,7 @@ void DescriptorSet::release(const Device& device)
 
     if(vkFreeDescriptorSets(device.getInstance(), _pool.lock()->getInstance(), static_cast<uint32_t>(_descriptors.size()), _descriptors.data()) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"DescriptorCreationError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"DescriptorCreationError");
     }
     _descriptors.clear();
     _pool.reset();

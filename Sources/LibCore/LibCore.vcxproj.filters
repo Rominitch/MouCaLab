@@ -62,9 +62,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Dependancies.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="include\CorePluginManager.h">
       <Filter>Fichiers d%27en-tête\PlugIn</Filter>
     </ClInclude>
@@ -128,11 +125,14 @@
     <ClInclude Include="include\CoreFileWrapper.h">
       <Filter>Fichiers d%27en-tête\File</Filter>
     </ClInclude>
+    <ClInclude Include="Dependencies.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreDLLImport.h">
+      <Filter>Fichiers d%27en-tête\Tools</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Dependancies.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="source\CorePluginManager.cpp">
       <Filter>Fichiers sources\PlugIn</Filter>
     </ClCompile>
@@ -162,6 +162,9 @@
     </ClCompile>
     <ClCompile Include="source\CoreLocale.cpp">
       <Filter>Fichiers sources\Language</Filter>
+    </ClCompile>
+    <ClCompile Include="Dependencies.cpp">
+      <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

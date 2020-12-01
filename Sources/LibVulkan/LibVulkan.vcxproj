@@ -102,7 +102,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Dependancies.h" />
+    <ClInclude Include="Dependencies.h" />
     <ClInclude Include="include\VKCommandBufferSurface.h" />
     <ClInclude Include="include\VKContextDevice.h" />
     <ClInclude Include="include\VKContextWindow.h" />
@@ -137,7 +137,7 @@
     <ClInclude Include="interface\VKDefines.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Dependancies.cpp">
+    <ClCompile Include="Dependencies.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Create</PrecompiledHeader>

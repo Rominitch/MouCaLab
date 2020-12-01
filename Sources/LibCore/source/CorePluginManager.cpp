@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibCore/include/CoreException.h"
 #include "LibCore/include/CorePluginEntry.h"
@@ -51,20 +51,20 @@ PlugInEntrySPtr PlugInManager::loadDynamicLibrary(const Path& dynamicLibraryPath
         DYNLIB_HANDLE hGetProcIDDLL = DYNLIB_LOAD(dynamicLibraryPath.c_str());
         if(!hGetProcIDDLL)
         {
-            BT_THROW_ERROR_1(u8"BasicError", u8"DLLLoadingMissingFile", dynamicLibraryPath.u8string());
+            MOUCA_THROW_ERROR_1(u8"BasicError", u8"DLLLoadingMissingFile", dynamicLibraryPath.u8string());
         }
 
         //Try to load entry point
         auto pLauncher = reinterpret_cast<PlugInLoadingEntryPoint>(DYNLIB_GETSYM(hGetProcIDDLL, "PlugInLoadingEntryPoint"));
         if(pLauncher==nullptr)
         {
-            BT_THROW_ERROR_1(u8"BasicError", u8"DLLMissingEntryPointFile", std::to_string(GetLastError()));
+            MOUCA_THROW_ERROR_1(u8"BasicError", u8"DLLMissingEntryPointFile", std::to_string(GetLastError()));
         }
 
         auto pPlugInInstance = pLauncher();
         if(pPlugInInstance==nullptr)
         {
-            BT_THROW_ERROR(u8"BasicError", u8"DLLCorruptionFile");
+            MOUCA_THROW_ERROR(u8"BasicError", u8"DLLCorruptionFile");
         }
 
         pPlugInInformation = PluginEntrySPtr(pPlugInInstance);
@@ -91,7 +91,7 @@ void PlugInManager::release()
         // Remove DLL handle
         if(DYNLIB_UNLOAD((DYNLIB_HANDLE)plugIn->_hHandle))
         {
-            BT_THROW_ERROR_1(u8"BasicError", u8"InvalidPathError", Core::convertToU8(plugIn->_name));
+            MOUCA_THROW_ERROR_1(u8"BasicError", u8"InvalidPathError", Core::convertToU8(plugIn->_name));
         }
     }
     _loadedPlugins.clear();

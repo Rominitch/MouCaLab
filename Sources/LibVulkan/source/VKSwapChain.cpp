@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibVulkan/include/VKDevice.h"
 #include "LibVulkan/include/VKSequence.h"
@@ -60,7 +60,7 @@ void SwapChain::initialize(const Device& device, const Surface& surface, const S
     VkResult result = vkCreateSwapchainKHR(device.getInstance(), &swapChainCreateInfo, nullptr, &_swapChain);
     if(result != VK_SUCCESS)
     {
-        BT_THROW_ERROR("Vulkan", "SwapChainError");
+        MOUCA_THROW_ERROR("Vulkan", "SwapChainError");
     }
 
     MOUCA_POST_CONDITION(!isNull());
@@ -79,14 +79,14 @@ void SwapChain::generateImages(const Device& device, const SurfaceFormat& format
     uint32_t imageCount = 0;
     if(vkGetSwapchainImagesKHR(device.getInstance(), _swapChain, &imageCount, nullptr) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"LinkCommandBufferToSwapChainError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"LinkCommandBufferToSwapChainError");
     }
 
     std::vector<VkImage> swapChainImages;
     swapChainImages.resize(static_cast<size_t>(imageCount));
     if(vkGetSwapchainImagesKHR(device.getInstance(), _swapChain, &imageCount, swapChainImages.data()) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"LinkCommandBufferToSwapChainError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"LinkCommandBufferToSwapChainError");
     }
 
     _images.resize(swapChainImages.size());
@@ -208,7 +208,7 @@ void SwapChainImage::initialize(const Device& device, const VkFormat& format, co
 
     if(vkCreateImageView(device.getInstance(), &imageViewCreateInfo, nullptr, &_view) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"ImageViewCreationError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"ImageViewCreationError");
     }
     
     MOUCA_POST_CONDITION(!isNull());

@@ -13,4 +13,4 @@
 #include <LibCore/include/CoreDefine.h>
 #include <LibCore/include/CoreException.h>
 
-#include <LibError/include/ErrorManager.h>
+#include <LibError/include/Error.h>

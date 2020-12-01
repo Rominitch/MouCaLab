@@ -4,9 +4,6 @@
     <ClCompile Include="source\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Dependancies.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\UT_VulkanBuffer.cpp">
       <Filter>Source Files\Vulkan</Filter>
     </ClCompile>
@@ -70,6 +67,9 @@
     <ClCompile Include="source\VulkanTest.cpp">
       <Filter>Source Files\Testing</Filter>
     </ClCompile>
+    <ClCompile Include="Dependencies.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -100,9 +100,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Dependancies.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\EventManagerEmpty.h">
       <Filter>Header Files\Testing</Filter>
     </ClInclude>
@@ -111,6 +108,9 @@
     </ClInclude>
     <ClInclude Include="include\VulkanTest.h">
       <Filter>Header Files\Testing</Filter>
+    </ClInclude>
+    <ClInclude Include="Dependencies.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

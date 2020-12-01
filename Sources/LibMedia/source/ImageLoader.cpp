@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include <LibRT/include/RTBufferCPU.h>
 #include <LibRT/include/RTBufferDescriptor.h>

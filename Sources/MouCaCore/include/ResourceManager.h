@@ -1,51 +1,12 @@
 #pragma once
 
+#include <MouCaCore/include/Core.h>
+
 #include <LibCore/include/CoreFileTracker.h>
-//#include <LibCore/include/CoreResource.h>
-
-#include <LibRT/include/RTMesh.h>
-
-namespace Core
-{
-    class Resource;
-    using ResourceSPtr = std::shared_ptr<Resource>;
-
-    class File;
-    using FileSPtr = std::shared_ptr<File>;
-    using FileWPtr = std::weak_ptr<File>;
-
-    class FileTracker;
-
-    using Path = std::filesystem::path;
-}
-
-namespace XML
-{
-    class Parser;
-    using ParserSPtr = std::shared_ptr<Parser>;
-}
-
-namespace RT
-{
-    class ImageImport;
-    using ImageImportSPtr = std::shared_ptr<ImageImport>;
-    using ImageImportWPtr = std::weak_ptr<ImageImport>;
-
-    class MeshImport;
-    using MeshImportSPtr = std::shared_ptr<MeshImport>;
-
-    class ShaderFile;
-    using ShaderFileSPtr = std::shared_ptr<ShaderFile>;
-
-    class BufferDescriptor;
-
-    class AnimationImporter;
-    using AnimationImporterSPtr = std::shared_ptr<AnimationImporter>;
-}
 
 namespace MouCaCore
 {
-    class ResourceManager final : public std::enable_shared_from_this<ResourceManager>
+    class ResourceManager final : public IResourceManager, public std::enable_shared_from_this<ResourceManager>
     {
         MOUCA_NOCOPY_NOMOVE(ResourceManager);
 
@@ -75,7 +36,7 @@ namespace MouCaCore
 
             ResourceManager() = default;
 
-            ~ResourceManager() = default;
+            ~ResourceManager() override = default;
 
         //--------------------------------------------------------------------------
         //								Folder management
@@ -93,13 +54,17 @@ namespace MouCaCore
         //--------------------------------------------------------------------------
             void registerResource(Core::ResourceSPtr resource);
 
+            void releaseResource(Core::ResourceSPtr resource) override;
+
+            void releaseResources() override;
+
             void unregisterResource(Core::Resource* resource)
             {
                 auto itResource = std::find_if(_resources.begin(), _resources.cend(), [&](const Core::ResourceSPtr& item){ return resource == item.get(); });
                 MOUCA_PRE_CONDITION(itResource != _resources.cend());
                 _resources.erase(itResource);
             }
-
+            /*
             template<typename DataType>
             void releaseResource(std::shared_ptr<DataType>& resource)
             {
@@ -122,13 +87,12 @@ namespace MouCaCore
                     unregisterResource(data);
                 }
             }
+            */
 
             size_t getNbResources() const
             {
                 return _resources.size();
             }
-
-            void releaseResources();
 
             const std::set<Core::ResourceSPtr>& getResources() const
             {

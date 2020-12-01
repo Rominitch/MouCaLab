@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include <LibXML/include/XML.h>
 
@@ -45,7 +45,7 @@ void ErrorManager::addErrorLibrary(XML::Parser& parser, const String& strLibrary
 
     if(parser.getFilename().empty())
     {
-        BT_THROW_ERROR_1("BasicError", "InvalidPathError", Core::convertToU8(parser.getFilename()))
+        MOUCA_THROW_ERROR_1("BasicError", "InvalidPathError", Core::convertToU8(parser.getFilename()))
     }
 
     //Search if library already exist
@@ -54,7 +54,7 @@ void ErrorManager::addErrorLibrary(XML::Parser& parser, const String& strLibrary
         ErrorLibrary* pLibrary = new ErrorLibrary();
         if(pLibrary==nullptr)
         {
-            BT_THROW_ERROR_1("BasicError", "NULLPointerError", "pLibrary")
+            MOUCA_THROW_ERROR_1("BasicError", "NULLPointerError", "pLibrary")
         }
 
         //Try to load library
@@ -77,7 +77,7 @@ void ErrorManager::addErrorLibrary(XML::Parser& parser, const String& strLibrary
     }
     else
     {
-        BT_THROW_ERROR("BasicError", "LibraryDoubleAddError")
+        MOUCA_THROW_ERROR("BasicError", "LibraryDoubleAddError")
     }
 }
 

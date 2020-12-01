@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include <LibCore/include/CoreFile.h>
 #include <LibCore/include/CoreByteBuffer.h>

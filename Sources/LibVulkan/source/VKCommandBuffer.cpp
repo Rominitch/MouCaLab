@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibVulkan/include/VKCommand.h"
 #include "LibVulkan/include/VKCommandBuffer.h"
@@ -30,7 +30,7 @@ void ICommandBuffer::executeCommand(const ExecuteCommands& executer, const VkCom
     // Reset
     if (vkResetCommandBuffer(executer.commandBuffer, reset) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"CommandBufferResetError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"CommandBufferResetError");
     }
 
     const VkCommandBufferBeginInfo cmdBufferBeginInfo
@@ -44,7 +44,7 @@ void ICommandBuffer::executeCommand(const ExecuteCommands& executer, const VkCom
     // Begin 
     if (vkBeginCommandBuffer(executer.commandBuffer, &cmdBufferBeginInfo) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"CommandBufferBeginError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"CommandBufferBeginError");
     }
 
     // Execute all commands
@@ -56,7 +56,7 @@ void ICommandBuffer::executeCommand(const ExecuteCommands& executer, const VkCom
     // End
     if (vkEndCommandBuffer(executer.commandBuffer) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"CommandBufferEndError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"CommandBufferEndError");
     }
 }
 
@@ -94,7 +94,7 @@ void CommandBuffer::initialize(const Device& device, const CommandPoolSPtr pool,
     // Allocate
     if (vkAllocateCommandBuffers(device.getInstance(), &cmdBufferAllocateInfo, &_commandBuffer) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"CommandBufferCreationError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"CommandBufferCreationError");
     }
 
     MOUCA_POST_CONDITION(!isNull());    //DEV Issue: Not initialize ?

@@ -104,4 +104,6 @@ namespace XML
             /// Build empty parser
             Parser() = default;
     };
+
+    using ParserSPtr = std::shared_ptr<Parser>;
 }

@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibCore/include/CoreError.h"
 #include "LibCore/include/CoreException.h"
@@ -91,7 +91,7 @@ void FileTracker::TrackerThread::registerResource( Core::ResourceSPtr resource )
         const HANDLE modifyHandle = FindFirstChangeNotification( folder.c_str(), FALSE, FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_SIZE );
         if( modifyHandle == INVALID_HANDLE_VALUE )
         {
-            BT_THROW_ERROR_1( u8"Tools", u8"FileTrackingError", convertToU8( resource->getTrackedFilename() ) );
+            MOUCA_THROW_ERROR_1( u8"Tools", u8"FileTrackingError", convertToU8( resource->getTrackedFilename() ) );
         }
 
         const key newKey = {modifyHandle, folder};
@@ -173,7 +173,7 @@ void FileTracker::TrackerThread::run()
                 {
                     if( FindNextChangeNotification( handle ) == FALSE )
                     {
-                        BT_THROW_ERROR( u8"Tools", u8"FileTrackingError" );
+                        MOUCA_THROW_ERROR( u8"Tools", u8"FileTrackingError" );
                     }
 
                     // Protect Multi-threading access

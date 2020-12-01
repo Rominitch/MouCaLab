@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibVulkan/include/VKDevice.h"
 #include "LibVulkan/include/VKMemory.h"
@@ -55,7 +55,7 @@ void Memory::allocateMemory(const Device& device, const VkMemoryRequirements& me
 
     if(vkAllocateMemory(device.getInstance(), &memAllocateInfo, nullptr, &_memory) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"BufferMemoryAllocateError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"BufferMemoryAllocateError");
     }
 
     _alignment     = memRequirements.alignment;
@@ -91,7 +91,7 @@ void Memory::map(const Device& device, const VkDeviceSize size, const VkDeviceSi
     // Map a part or whole of buffer
     if(vkMapMemory(device.getInstance(), _memory, offset, size, 0, &_mapped) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"BufferMappingError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"BufferMappingError");
     }
 
     MOUCA_POST_CONDITION(_mapped != nullptr);
@@ -124,7 +124,7 @@ void Memory::flush(const Device& device, const VkDeviceSize size, const VkDevice
 
     if(vkFlushMappedMemoryRanges(device.getInstance(), 1, &mappedRange) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"FlushMappedBufferError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"FlushMappedBufferError");
     }
     MOUCA_POST_CONDITION(_mapped != nullptr);
 }
@@ -148,7 +148,7 @@ void MemoryBuffer::initialize(const Device& device, const VkBuffer& buffer, cons
     // Attach the memory to the buffer object
     if(vkBindBufferMemory(device.getInstance(), buffer, _memory, 0) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"BufferBindingError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"BufferBindingError");
     }
 }
 
@@ -171,7 +171,7 @@ void MemoryImage::initialize(const Device& device, const VkImage& image, const V
     // Attach the memory to the image object
     if(vkBindImageMemory(device.getInstance(), image, _memory, 0) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"ImageBindingError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"ImageBindingError");
     }
 }
 

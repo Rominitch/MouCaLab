@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibRT/include/RTWindow.h"
 
@@ -39,7 +39,7 @@ void Surface::initialize(const Environment& environment, const RT::Window& windo
     //Allocate surface
     if(vkCreateWin32SurfaceKHR(environment.getInstance(), &surfaceCreateInfo, nullptr, &_surface) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"SurfaceError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"SurfaceError");
     }
 /*
 #elif defined(VK_USE_PLATFORM_XCB_KHR)
@@ -68,7 +68,7 @@ void Surface::initialize(const Environment& environment, const RT::Window& windo
     }
 */
 #else
-    BT_THROW_ERROR(u8"Vulkan", L"SurfaceError");
+    MOUCA_THROW_ERROR(u8"Vulkan", L"SurfaceError");
 #endif
 }
 
@@ -88,31 +88,31 @@ void Surface::computeSurfaceFormat(const Device& device, const SurfaceFormat::Co
     VkSurfaceCapabilitiesKHR surfaceCapabilities;
     if(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device.getPhysicalDevice(), _surface, &surfaceCapabilities) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"ReadSurfaceCapabilityError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"ReadSurfaceCapabilityError");
     }
 
     uint32_t nbFormats=0;
     if(vkGetPhysicalDeviceSurfaceFormatsKHR(device.getPhysicalDevice(), _surface, &nbFormats, nullptr) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"ReadSurfaceFormatError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"ReadSurfaceFormatError");
     }
 
     std::vector<VkSurfaceFormatKHR> surfaceFormats(nbFormats);
     if(vkGetPhysicalDeviceSurfaceFormatsKHR(device.getPhysicalDevice(), _surface, &nbFormats, &surfaceFormats[0]) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"ReadSurfaceFormatError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"ReadSurfaceFormatError");
     }
 
     uint32_t nbPresentModes=0;
     if(vkGetPhysicalDeviceSurfacePresentModesKHR(device.getPhysicalDevice(), _surface, &nbPresentModes, nullptr) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"ReadSurfacePresentModesError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"ReadSurfacePresentModesError");
     }
 
     std::vector<VkPresentModeKHR> presentModes(nbPresentModes);
     if(vkGetPhysicalDeviceSurfacePresentModesKHR(device.getPhysicalDevice(), _surface, &nbPresentModes, &presentModes[0]) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"ReadSurfacePresentModesError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"ReadSurfacePresentModesError");
     }
 
     // Analyze and adapt to surface requirement

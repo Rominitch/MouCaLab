@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "MouCaGraphicEngine/include/Engine3DXMLLoader.h"
 
@@ -57,7 +57,7 @@ VulkanEnum readValue(XML::NodeUPtr& node, const Core::String& attribute, const s
 
     if (value.empty())
     {
-        BT_THROW_ERROR_2(u8"Engine3D", u8"XMLEmptyAttributeStringError", context.getFileName(), attribute);
+        MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLEmptyAttributeStringError", context.getFileName(), attribute);
     }
 
     auto data = static_cast<VulkanEnum>(0); // Set to 0 to make | operator
@@ -74,7 +74,7 @@ VulkanEnum readValue(XML::NodeUPtr& node, const Core::String& attribute, const s
         {
             if (context._globalData == nullptr)
             {
-                BT_THROW_ERROR_1(u8"Engine3D", u8"XMLMissingGlobalData", context.getFileName());
+                MOUCA_THROW_ERROR_1(u8"Engine3D", u8"XMLMissingGlobalData", context.getFileName());
             }
 
             // Search global data
@@ -99,7 +99,7 @@ VulkanEnum readValue(XML::NodeUPtr& node, const Core::String& attribute, const s
                 auto itLiteral = literalEnum.find(part);
                 if (itLiteral == literalEnum.cend())
                 {
-                    BT_THROW_ERROR_3(u8"Engine3D", u8"XMLUnknownAttributeStringError", context.getFileName(), attribute, part);
+                    MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLUnknownAttributeStringError", context.getFileName(), attribute, part);
                 }
                 data = static_cast<VulkanEnum>(data | itLiteral->second);
             }
@@ -118,7 +118,7 @@ void readAttribute(const XML::NodeUPtr& node, const Core::String& attribute, Dat
     {
         if (context._globalData == nullptr)
         {
-            BT_THROW_ERROR_1(u8"Engine3D", u8"XMLMissingGlobalData", context.getFileName());
+            MOUCA_THROW_ERROR_1(u8"Engine3D", u8"XMLMissingGlobalData", context.getFileName());
         }
 
         // Search global data
@@ -133,7 +133,7 @@ void readAttribute(const XML::NodeUPtr& node, const Core::String& attribute, Dat
 template<typename DataType>
 void readData(const XML::NodeUPtr& node, DataType& value)
 {
-    BT_THROW_ERROR(u8"BasicError", u8"DevImplementationMissing");
+    MOUCA_THROW_ERROR(u8"BasicError", u8"DevImplementationMissing");
 }
 
 template<>
@@ -154,7 +154,7 @@ uint32_t getIdentifiant(const XML::NodeUPtr& node, const Core::String& nodeName,
         node->getAttribute(u8"externalId", id);
         if (container.find(id) == container.cend()) //DEV Issue: Must not exist
         {
-            BT_THROW_ERROR_3(u8"Engine3D", u8"XMLUnknownIdentifiantError", context.getFileName(), nodeName + u8":externalId", std::to_string(id));
+            MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLUnknownIdentifiantError", context.getFileName(), nodeName + u8":externalId", std::to_string(id));
         }
     }
     else
@@ -163,7 +163,7 @@ uint32_t getIdentifiant(const XML::NodeUPtr& node, const Core::String& nodeName,
         node->getAttribute(u8"id", id);
         if (container.find(id) != container.cend()) //DEV Issue: Must not exist
         {
-            BT_THROW_ERROR_3(u8"Engine3D", u8"XMLAlreadyExistingIdError", context.getFileName(), std::to_string(id), u8"id");
+            MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLAlreadyExistingIdError", context.getFileName(), std::to_string(id), u8"id");
         }
     }
     return id;
@@ -176,7 +176,7 @@ uint32_t getLinkedIdentifiant(const XML::NodeUPtr& node, const Core::String& idN
     node->getAttribute(idName, id);
     if (container.find(id) == container.cend()) //DEV Issue: Must exist
     {
-        BT_THROW_ERROR_3(u8"Engine3D", u8"XMLUnknownIdentifiantError", context.getFileName(), idName, std::to_string(id));
+        MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLUnknownIdentifiantError", context.getFileName(), idName, std::to_string(id));
     }
     return id;
 }
@@ -208,7 +208,7 @@ void Engine3DXMLLoader::load(ContextLoading& context)
     auto result = context._parser.getNode(u8"Engine3D");
     if (result->getNbElements() == 0)
     {
-        BT_THROW_ERROR_2(u8"Engine3D", u8"LoadingXMLCorruptError", context.getFileName(), u8"Engine3D");
+        MOUCA_THROW_ERROR_2(u8"Engine3D", u8"LoadingXMLCorruptError", context.getFileName(), u8"Engine3D");
     }
 
     XML::NodeUPtr engineNode = result->getNode(0);
@@ -218,7 +218,7 @@ void Engine3DXMLLoader::load(ContextLoading& context)
     // Check version before continue
     if (VulkanManager::_version < version)
     {
-        BT_THROW_ERROR_2(u8"Engine3D", u8"LoadingXMLVersionError", context.getFileName(), std::to_string(version));
+        MOUCA_THROW_ERROR_2(u8"Engine3D", u8"LoadingXMLVersionError", context.getFileName(), std::to_string(version));
     }
 
     //Go to node
@@ -259,7 +259,7 @@ void Engine3DXMLLoader::loadEnvironment(ContextLoading& context)
     auto result = context._parser.getNode(u8"Environment");
     if (result->getNbElements() == 0)
     {
-        BT_THROW_ERROR_2(u8"Engine3D", u8"LoadingXMLCorruptError", context.getFileName(), u8"Environment");
+        MOUCA_THROW_ERROR_2(u8"Engine3D", u8"LoadingXMLCorruptError", context.getFileName(), u8"Environment");
     }
 
     // Go into
@@ -341,7 +341,7 @@ void Engine3DXMLLoader::loadDevices(ContextLoading& context)
 
                 if (idSurface >= _manager.getSurfaces().size())
                 {
-                    BT_THROW_ERROR_1(u8"Engine3D", u8"UnknownSurfaceError", context.getFileName());
+                    MOUCA_THROW_ERROR_1(u8"Engine3D", u8"UnknownSurfaceError", context.getFileName());
                 }
 
                 auto aPush = context._parser.autoPushNode(*device);
@@ -370,7 +370,7 @@ void Engine3DXMLLoader::loadDevices(ContextLoading& context)
             }
             else
             {
-                BT_THROW_ERROR_2(u8"Engine3D", u8"DeviceModeError", context.getFileName(), mode);
+                MOUCA_THROW_ERROR_2(u8"Engine3D", u8"DeviceModeError", context.getFileName(), mode);
             }
         }
         else
@@ -445,7 +445,7 @@ void Engine3DXMLLoader::loadWindows(ContextLoading& context)
             window->getAttribute(u8"monitor", idMonitor);
             if (idMonitor >= context._engine.getMonitors().size())
             {
-                BT_THROW_ERROR_2(u8"Engine3D", u8"WindowUnknownMonitorError", context.getFileName(), std::to_string(idMonitor));
+                MOUCA_THROW_ERROR_2(u8"Engine3D", u8"WindowUnknownMonitorError", context.getFileName(), std::to_string(idMonitor));
             }
 
             window->getAttribute(u8"fullscreen", state);
@@ -477,7 +477,7 @@ void Engine3DXMLLoader::loadWindows(ContextLoading& context)
 
             if (!valid)
             {
-                BT_THROW_ERROR_2(u8"Engine3D", u8"WindowCreationOutsideError", context.getFileName(), u8"La position de la fenêtre n'est pas dans un écran.");
+                MOUCA_THROW_ERROR_2(u8"Engine3D", u8"WindowCreationOutsideError", context.getFileName(), u8"La position de la fenêtre n'est pas dans un écran.");
             }
 
             // Mode
@@ -542,7 +542,7 @@ void Engine3DXMLLoader::loadSurfaces(ContextLoading& context, Vulkan::ContextDev
             surface->getAttribute(u8"windowId", windowId);
             if (_dialogs.find(windowId) == _dialogs.cend()) //DEV Issue: Must exist
             {
-                BT_THROW_ERROR_1(u8"Engine3D", u8"UnknownSurfaceError", context.getFileName());
+                MOUCA_THROW_ERROR_1(u8"Engine3D", u8"UnknownSurfaceError", context.getFileName());
             }
 
             // Read user preferences
@@ -726,7 +726,7 @@ void Engine3DXMLLoader::loadFrameBuffers(ContextLoading& context, Vulkan::Contex
 
             if (attachments.empty())
             {
-                BT_THROW_ERROR_1(u8"Engine3D", u8"XMLFrameBufferMissAttachmentError", context.getFileName());
+                MOUCA_THROW_ERROR_1(u8"Engine3D", u8"XMLFrameBufferMissAttachmentError", context.getFileName());
             }
 
             // Mandatory attribute
@@ -877,7 +877,7 @@ void Engine3DXMLLoader::loadRenderPassAttachment(ContextLoading& context, const 
         }
         else
         {
-            BT_THROW_ERROR_2(u8"Engine3D", u8"XMLRenderPassFormatError", context.getFileName(), std::to_string(id));
+            MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLRenderPassFormatError", context.getFileName(), std::to_string(id));
         }
         MOUCA_ASSERT(attachment.format != VK_FORMAT_UNDEFINED);
 
@@ -899,7 +899,7 @@ void Engine3DXMLLoader::loadRenderPassAttachment(ContextLoading& context, const 
     // Manage errors
     if (attachments.empty())
     {
-        BT_THROW_ERROR_2(u8"Engine3D", u8"XMLRenderPassMissAttachmentError", context.getFileName(), std::to_string(id));
+        MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLRenderPassMissAttachmentError", context.getFileName(), std::to_string(id));
     }
 }
 
@@ -963,7 +963,7 @@ void Engine3DXMLLoader::loadRenderPassSubPass(ContextLoading& context, const uin
 
         if (attachments.colorAttachmentReferences.empty())
         {
-            BT_THROW_ERROR_2(u8"Engine3D", u8"XMLRenderPassMissColorAttachmentError", context.getFileName(), std::to_string(idSubPass));
+            MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLRenderPassMissColorAttachmentError", context.getFileName(), std::to_string(idSubPass));
         }
 
         // Read color attachment
@@ -1009,7 +1009,7 @@ void Engine3DXMLLoader::loadRenderPassSubPass(ContextLoading& context, const uin
 
     if (subPasses.empty())
     {
-        BT_THROW_ERROR_2(u8"Engine3D", u8"XMLRenderPassMissSubpassError", context.getFileName(), std::to_string(id));
+        MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLRenderPassMissSubpassError", context.getFileName(), std::to_string(id));
     }
 }
 
@@ -1034,11 +1034,11 @@ void Engine3DXMLLoader::loadRenderPassDependency(ContextLoading& context, const 
 
         if(subDependency.dstSubpass != VK_SUBPASS_EXTERNAL && subDependency.dstSubpass >= subPass.size())
         {
-            BT_THROW_ERROR_4(u8"Engine3D", u8"XMLRenderPassUnknownSubpassError", context.getFileName(), std::to_string(id), u8"dstSubpass", std::to_string(subDependency.dstSubpass));
+            MOUCA_THROW_ERROR_4(u8"Engine3D", u8"XMLRenderPassUnknownSubpassError", context.getFileName(), std::to_string(id), u8"dstSubpass", std::to_string(subDependency.dstSubpass));
         }
         if(subDependency.srcSubpass != VK_SUBPASS_EXTERNAL && subDependency.srcSubpass >= subPass.size())
         {
-            BT_THROW_ERROR_4(u8"Engine3D", u8"XMLRenderPassUnknownSubpassError", context.getFileName(), std::to_string(id), u8"srcSubpass", std::to_string(subDependency.srcSubpass));
+            MOUCA_THROW_ERROR_4(u8"Engine3D", u8"XMLRenderPassUnknownSubpassError", context.getFileName(), std::to_string(id), u8"srcSubpass", std::to_string(subDependency.srcSubpass));
         }
         dependencies.emplace_back(subDependency);
     }
@@ -1455,7 +1455,7 @@ void Engine3DXMLLoader::loadCommandPools(ContextLoading& context, Vulkan::Contex
                 }
                 else
                 {
-                    BT_THROW_ERROR_2(u8"Engine3D", u8"UnknownFamiliesError", context.getFileName(), families);
+                    MOUCA_THROW_ERROR_2(u8"Engine3D", u8"UnknownFamiliesError", context.getFileName(), families);
                 }   
             }
             else if (poolNode->hasAttribute(u8"queueId"))
@@ -1695,7 +1695,7 @@ void Engine3DXMLLoader::loadCommands(ContextLoading& context, Vulkan::ContextDev
                 // Check validity
                 if(!(isColor ^ isDS))
                 {
-                    BT_THROW_ERROR_1(u8"Engine3D", u8"XMLCleanValueMixError", context.getFileName());
+                    MOUCA_THROW_ERROR_1(u8"Engine3D", u8"XMLCleanValueMixError", context.getFileName());
                 }
 
                 if(isColor)
@@ -1726,7 +1726,7 @@ void Engine3DXMLLoader::loadCommands(ContextLoading& context, Vulkan::ContextDev
                     }
                     else
                     {
-                        BT_THROW_ERROR_2(u8"Engine3D", u8"XMLCleanValueTypeError", context.getFileName(), dataType);
+                        MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLCleanValueTypeError", context.getFileName(), dataType);
                     }
                 }
                 else
@@ -1950,7 +1950,7 @@ void Engine3DXMLLoader::loadCommands(ContextLoading& context, Vulkan::ContextDev
         }
         else
         {
-            BT_THROW_ERROR_2(u8"Engine3D", u8"XMLUnknownCommandError", context.getFileName(), type);
+            MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLUnknownCommandError", context.getFileName(), type);
         }
 
         // Transfer to vector
@@ -2057,7 +2057,7 @@ void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDe
             }
             if (fences.empty())
             {
-                BT_THROW_ERROR_3(u8"Engine3D", u8"XMLMissingNodeError", context.getFileName(), u8"Sequence type=waitFence", u8"Fence");
+                MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLMissingNodeError", context.getFileName(), u8"Sequence type=waitFence", u8"Fence");
             }
 
             // Build Sequence
@@ -2077,7 +2077,7 @@ void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDe
             }
             if (fences.empty())
             {
-                BT_THROW_ERROR_3(u8"Engine3D", u8"XMLMissingNodeError", context.getFileName(), u8"Sequence type=waitFence", u8"Fence");
+                MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLMissingNodeError", context.getFileName(), u8"Sequence type=waitFence", u8"Fence");
             }
 
             // Build Sequence
@@ -2105,7 +2105,7 @@ void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDe
             auto& vrPlatform = context._engine.getVRPlatform();
             if (vrPlatform.isNull())
             {
-                BT_THROW_ERROR_1(u8"Engine3D", u8"VRNotReadyError", u8"Sequence");
+                MOUCA_THROW_ERROR_1(u8"Engine3D", u8"VRNotReadyError", u8"Sequence");
             }
             // Read parameters
             Core::String eye;
@@ -2146,7 +2146,7 @@ void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDe
 
             if( swapChains.empty() )
             {
-                BT_THROW_ERROR_3(u8"Engine3D", u8"XMLMissingNodeError", context.getFileName(), u8"Sequence type=presentKHR", u8"Swapchain");
+                MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLMissingNodeError", context.getFileName(), u8"Sequence type=presentKHR", u8"Swapchain");
             }
 
             // Parsing all Signal Semaphore
@@ -2166,7 +2166,7 @@ void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDe
         }
         else
         {
-            BT_THROW_ERROR_2(u8"Engine3D", u8"XMLUnknownSequenceError", context.getFileName(), type);
+            MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLUnknownSequenceError", context.getFileName(), type);
         }
     }
 }
@@ -2307,7 +2307,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
 
     if(info.getStages().getNbShaders() <= 0)
     {
-        BT_THROW_ERROR_3(u8"Engine3D", u8"XMLMissingNodeError", context.getFileName(), u8"GraphicsPipeline" , u8"Stages/Stage");
+        MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLMissingNodeError", context.getFileName(), u8"GraphicsPipeline" , u8"Stages/Stage");
     }
 
     // Input Assembly
@@ -2483,7 +2483,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
         const size_t nbColors = _renderPasses[renderPassId].lock()->getSubPasses()[0].colorAttachmentCount;
         if( nbColors != allBlends->getNbElements() )
         {
-            BT_THROW_ERROR_3(u8"Engine3D", u8"XMLBlendAttachmentSizeError", context.getFileName(), std::to_string(graphicsPipelineId), std::to_string(renderPassId));
+            MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLBlendAttachmentSizeError", context.getFileName(), std::to_string(graphicsPipelineId), std::to_string(renderPassId));
         }
 
         std::vector<VkPipelineColorBlendAttachmentState> attachments;
@@ -2553,7 +2553,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
         {
             if (stencilFront->getNbElements() != 1 || stencilBack->getNbElements() != 1)
             {
-                BT_THROW_ERROR_2(u8"Engine3D", u8"XMLMissingStencilFrontBackError", context.getFileName(), std::to_string(graphicsPipelineId));
+                MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLMissingStencilFrontBackError", context.getFileName(), std::to_string(graphicsPipelineId));
             }
 
             loadStencilOp(context, stencilFront->getNode(0), state.front);

@@ -39,9 +39,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Dependancies.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="include\GUIWidget.h">
       <Filter>Fichiers d%27en-tête\Widget</Filter>
     </ClInclude>
@@ -90,11 +87,11 @@
     <ClInclude Include="include\GUIBezier.h">
       <Filter>Fichiers d%27en-tête\FontSVG</Filter>
     </ClInclude>
+    <ClInclude Include="Dependencies.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Dependancies.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="source\GUIWidget.cpp">
       <Filter>Fichiers sources\Widget</Filter>
     </ClCompile>
@@ -133,6 +130,9 @@
     </ClCompile>
     <ClCompile Include="source\GUIBezier.cpp">
       <Filter>Fichiers sources\FontSVG</Filter>
+    </ClCompile>
+    <ClCompile Include="Dependencies.cpp">
+      <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

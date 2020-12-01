@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibVulkan/include/VKBuffer.h"
 #include "LibVulkan/include/VKCommand.h"
@@ -48,7 +48,7 @@ void Buffer::initialize(const Device& device, VkBufferUsageFlags usageFlags, VkM
     //Build GPU Buffer
     if(vkCreateBuffer(device.getInstance(), &bufferCreateInfo, nullptr, &_buffer) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"BufferCreationError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"BufferCreationError");
     }
 
     //Create memory

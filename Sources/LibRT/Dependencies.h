@@ -3,4 +3,4 @@
 //Common include
 #include <Cpp.h>
 
-#include <LibRT/RTGlobalDependancies.h>
+#include <LibRT/RTGlobalDependencies.h>

@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include <LibRT/include/RTBufferDescriptor.h>
 #include <LibGUI/include/GUIFontAtlas.h>

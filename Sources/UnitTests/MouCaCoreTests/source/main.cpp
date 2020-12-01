@@ -1,4 +1,4 @@
-#include <Dependancies.h>
+#include <Dependencies.h>
 
 int main(int argc, char** argv)
 {

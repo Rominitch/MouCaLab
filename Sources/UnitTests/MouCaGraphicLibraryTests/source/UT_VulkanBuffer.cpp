@@ -1,5 +1,5 @@
 
-#include <Dependancies.h>
+#include <Dependencies.h>
 
 #include "include/VulkanTest.h"
 

@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibVulkan/include/VKDevice.h"
 #include "LibVulkan/include/VKSemaphore.h"
@@ -32,7 +32,7 @@ void Semaphore::initialize(const Device& device)
 
     if (vkCreateSemaphore(device.getInstance(), &semaphore_create_info, nullptr, &_semaphore) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"SemaphoreCreationError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"SemaphoreCreationError");
     }
 }
 

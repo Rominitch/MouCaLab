@@ -9,4 +9,4 @@
 #include <GLM.h>
 
 //Main include
-#include <LibRT/RTGlobalDependancies.h>
+#include <LibRT/RTGlobalDependencies.h>

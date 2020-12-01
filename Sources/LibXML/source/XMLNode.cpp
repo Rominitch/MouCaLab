@@ -1,4 +1,4 @@
-#include "dependancies.h"
+#include "Dependencies.h"
 
 #include <LibXML/include/XMLNode.h>
 
@@ -29,7 +29,7 @@ void XercesNode::getAttribute(const Core::String& label, bool& value) const
     const xercesc::DOMAttr* attribute = _node->getAttributeNode(XercesString(label).toXMLChar());
     if (attribute == nullptr)
     {
-        BT_THROW_ERROR_1(u8"XMLError", u8"XMLMissingParameterError", label);
+        MOUCA_THROW_ERROR_1(u8"XMLError", u8"XMLMissingParameterError", label);
     }
 
     Core::String sValue = XercesString::toString(attribute->getValue());
@@ -45,7 +45,7 @@ void XercesNode::getAttribute(const Core::String& label, bool& value) const
     }
     else
     {
-        BT_THROW_ERROR_1(u8"XMLError", u8"XMLBooleanBadParameterError", label);
+        MOUCA_THROW_ERROR_1(u8"XMLError", u8"XMLBooleanBadParameterError", label);
     }
 }
 
@@ -56,7 +56,7 @@ void XercesNode::getAttribute(const Core::String& label, Core::String& value) co
     const xercesc::DOMAttr* attribute = _node->getAttributeNode(XercesString(label).toXMLChar());
     if(attribute == nullptr)
     {
-        BT_THROW_ERROR_1(u8"XMLError", u8"XMLMissingParameterError", label);
+        MOUCA_THROW_ERROR_1(u8"XMLError", u8"XMLMissingParameterError", label);
     }
     
     value = XercesString::toString(attribute->getValue());
@@ -69,7 +69,7 @@ void XercesNode::getAttribute(const Core::String& label, uint32_t& value) const
     const xercesc::DOMAttr* attribute = _node->getAttributeNode(XercesString(label).toXMLChar());
     if(attribute == nullptr)
     {
-        BT_THROW_ERROR_1(u8"XMLError", u8"XMLMissingParameterError", label);
+        MOUCA_THROW_ERROR_1(u8"XMLError", u8"XMLMissingParameterError", label);
     }
     value = std::stoul(XercesString::toString(attribute->getValue()));
 }
@@ -81,7 +81,7 @@ void XercesNode::getAttribute(const Core::String& label, int32_t& value) const
     const xercesc::DOMAttr* attribute = _node->getAttributeNode(XercesString(label).toXMLChar());
     if(attribute == nullptr)
     {
-        BT_THROW_ERROR_1(u8"XMLError", u8"XMLMissingParameterError", label);
+        MOUCA_THROW_ERROR_1(u8"XMLError", u8"XMLMissingParameterError", label);
     }
     value = std::stol(XercesString::toString(attribute->getValue()));
 }
@@ -93,7 +93,7 @@ void XercesNode::getAttribute(const Core::String& label, uint64_t& value) const
     const xercesc::DOMAttr* attribute = _node->getAttributeNode(XercesString(label).toXMLChar());
     if(attribute == nullptr)
     {
-        BT_THROW_ERROR_1(u8"XMLError", u8"XMLMissingParameterError", label);
+        MOUCA_THROW_ERROR_1(u8"XMLError", u8"XMLMissingParameterError", label);
     }
     value = std::stoull(XercesString::toString(attribute->getValue()));
 }
@@ -105,7 +105,7 @@ void XercesNode::getAttribute(const Core::String& label, int64_t&  value) const
     const xercesc::DOMAttr* attribute = _node->getAttributeNode(XercesString(label).toXMLChar());
     if(attribute == nullptr)
     {
-        BT_THROW_ERROR_1(u8"XMLError", u8"XMLMissingParameterError", label);
+        MOUCA_THROW_ERROR_1(u8"XMLError", u8"XMLMissingParameterError", label);
     }
     value = std::stoll(XercesString::toString(attribute->getValue()));
 }
@@ -117,7 +117,7 @@ void XercesNode::getAttribute(const Core::String& label, float& value) const
     const xercesc::DOMAttr* attribute = _node->getAttributeNode(XercesString(label).toXMLChar());
     if(attribute == nullptr)
     {
-        BT_THROW_ERROR_1(u8"XMLError", u8"XMLMissingParameterError", label);
+        MOUCA_THROW_ERROR_1(u8"XMLError", u8"XMLMissingParameterError", label);
     }
     value = std::stof(XercesString::toString(attribute->getValue()));
 }

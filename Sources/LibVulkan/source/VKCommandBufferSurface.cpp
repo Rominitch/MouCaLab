@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibVulkan/include/VKCommandBufferSurface.h"
 
@@ -52,7 +52,7 @@ void CommandBufferSurface::initialize(const ContextWindowWPtr weakWindow, Comman
     // Allocate
     if (vkAllocateCommandBuffers(window->getContextDevice().getDevice().getInstance(), &cmdBufferAllocateInfo, _commandBuffers.data()) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"CommandBufferCreationError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"CommandBufferCreationError");
     }
 
     MOUCA_POST_CONDITION(!isNull());    //DEV Issue: Not initialize ?

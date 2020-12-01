@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include <LibRT/include/RTBufferCPU.h>
 #include <LibRT/include/RTBufferDescriptor.h>
@@ -20,7 +20,7 @@ void ImageFI::initialize(const Core::Path& path)
         imageFormat = FreeImage_GetFIFFromFilenameU(path.c_str());
         if (imageFormat == FIF_UNKNOWN)
         {
-            BT_THROW_ERROR_1(u8"ModuleError", u8"FIUnknownFileError", path.u8string());
+            MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FIUnknownFileError", path.u8string());
         }
     }
 
@@ -34,7 +34,7 @@ void ImageFI::initialize(const Core::Path& path)
     }
     else
     {
-        BT_THROW_ERROR_1(u8"ModuleError", u8"FIReadFileError", path.u8string());
+        MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FIReadFileError", path.u8string());
     }
 
     MOUCA_PRE_CONDITION(!isNull());
@@ -54,7 +54,7 @@ void ImageFI::createFill(const RT::BufferCPUBase& imageBuffer, const uint32_t wi
     _imageData = FreeImage_Allocate(static_cast<int>(width), static_cast<int>(height), 8 * static_cast<int>(descriptor.getByteSize()));
     if (_imageData == nullptr)
     {
-        BT_THROW_ERROR_1(u8"BasicError", u8"NULLPointerError", u8"_imageData");
+        MOUCA_THROW_ERROR_1(u8"BasicError", u8"NULLPointerError", u8"_imageData");
     }
 
     const char* pSource = reinterpret_cast<const char*>(imageBuffer.getData());
@@ -106,14 +106,14 @@ void ImageFI::saveImage(const Core::Path& filename)
     //Check we have a picture
     if(_imageData == nullptr)
     {
-        BT_THROW_ERROR_1(u8"BasicError", u8"NULLPointerError", u8"m_pImageData");
+        MOUCA_THROW_ERROR_1(u8"BasicError", u8"NULLPointerError", u8"m_pImageData");
     }
 
     //Try to guess the file format from the file extension
     const FREE_IMAGE_FORMAT imageFormat = FreeImage_GetFIFFromFilenameU(filename.c_str());
     if(imageFormat == FIF_UNKNOWN)
     {
-        BT_THROW_ERROR_1(u8"ModuleError", u8"FIUnknownFileError", filename.u8string());
+        MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FIUnknownFileError", filename.u8string());
     }
 
     //Check that the plugin has sufficient writing and export capabilities ...
@@ -123,12 +123,12 @@ void ImageFI::saveImage(const Core::Path& filename)
         // ok, we can save the file
         if(FreeImage_SaveU(imageFormat, _imageData, filename.c_str(), 0) == FALSE)
         {
-            BT_THROW_ERROR_1(u8"ModuleError", u8"FISaveFileError", filename.u8string());
+            MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FISaveFileError", filename.u8string());
         }
     }
     else
     {
-        BT_THROW_ERROR_1(u8"ModuleError", u8"FISaveFileError", filename.u8string());
+        MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FISaveFileError", filename.u8string());
     }
 }
 

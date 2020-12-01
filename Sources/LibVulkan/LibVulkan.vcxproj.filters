@@ -39,9 +39,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Dependancies.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="include\VKDevice.h">
       <Filter>Fichiers d%27en-tête\Device</Filter>
     </ClInclude>
@@ -138,11 +135,11 @@
     <ClInclude Include="include\VKSubmitInfo.h">
       <Filter>Fichiers d%27en-tête\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Dependencies.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Dependancies.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="source\VKDevice.cpp">
       <Filter>Fichiers sources\Device</Filter>
     </ClCompile>
@@ -235,6 +232,9 @@
     </ClCompile>
     <ClCompile Include="source\VKWindowSurface.cpp">
       <Filter>Fichiers sources\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Dependencies.cpp">
+      <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

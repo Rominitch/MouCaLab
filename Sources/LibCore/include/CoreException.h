@@ -49,8 +49,8 @@ namespace Core
     };
 }
 
-#define BT_THROW_ERROR(strLib, strError)				        throw Core::Exception(Core::ErrorData(strLib, strError, __FILE__, __LINE__));
-#define BT_THROW_ERROR_1(strLib, strError, p0)		            throw Core::Exception(Core::ErrorData(strLib, strError, __FILE__, __LINE__) << p0);
-#define BT_THROW_ERROR_2(strLib, strError, p0, p1)		        throw Core::Exception(Core::ErrorData(strLib, strError, __FILE__, __LINE__) << p0 << p1);
-#define BT_THROW_ERROR_3(strLib, strError, p0, p1, p2)	        throw Core::Exception(Core::ErrorData(strLib, strError, __FILE__, __LINE__) << p0 << p1 << p2);
-#define BT_THROW_ERROR_4(strLib, strError, p0, p1, p2, p3)	    throw Core::Exception(Core::ErrorData(strLib, strError, __FILE__, __LINE__) << p0 << p1 << p2 << p3);
+#define MOUCA_THROW_ERROR(strLib, strError)				        throw Core::Exception(Core::ErrorData(strLib, strError, __FILE__, __LINE__));
+#define MOUCA_THROW_ERROR_1(strLib, strError, p0)		        throw Core::Exception(Core::ErrorData(strLib, strError, __FILE__, __LINE__) << p0);
+#define MOUCA_THROW_ERROR_2(strLib, strError, p0, p1)		    throw Core::Exception(Core::ErrorData(strLib, strError, __FILE__, __LINE__) << p0 << p1);
+#define MOUCA_THROW_ERROR_3(strLib, strError, p0, p1, p2)	    throw Core::Exception(Core::ErrorData(strLib, strError, __FILE__, __LINE__) << p0 << p1 << p2);
+#define MOUCA_THROW_ERROR_4(strLib, strError, p0, p1, p2, p3)	throw Core::Exception(Core::ErrorData(strLib, strError, __FILE__, __LINE__) << p0 << p1 << p2 << p3);

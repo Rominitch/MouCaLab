@@ -9,4 +9,4 @@
 #include <GLI.h>
 #include <imgui1.h>
 
-#include <LibRT/RTGlobalDependancies.h>
+#include <LibRT/RTGlobalDependencies.h>

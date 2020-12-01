@@ -23,7 +23,7 @@
 #include <Xerces.h>
 
 //MouCa Common
-#include <LibRT/RTGlobalDependancies.h>
+#include <LibRT/RTGlobalDependencies.h>
 
 #include "../UnitTests/include/gMouCaTest.h"
 

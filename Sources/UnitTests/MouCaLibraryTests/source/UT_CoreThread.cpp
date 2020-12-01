@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include <LibCore/include/CoreThread.h>
 
@@ -49,7 +49,7 @@ class CrashThread final : public Core::Thread
 
         void run()
         {
-            BT_THROW_ERROR(u8"Crash", u8"Crash");
+            MOUCA_THROW_ERROR(u8"Crash", u8"Crash");
         }
 
     public:

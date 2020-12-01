@@ -71,9 +71,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Dependancies.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="include\RTCanvas.h">
       <Filter>Fichiers d%27en-tête\Support draw</Filter>
     </ClInclude>
@@ -97,9 +94,6 @@
     </ClInclude>
     <ClInclude Include="include\RTBufferDescriptor.h">
       <Filter>Fichiers d%27en-tête\Buffer</Filter>
-    </ClInclude>
-    <ClInclude Include="RTGlobalDependancies.h">
-      <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="include\RTLight.h">
       <Filter>Fichiers d%27en-tête\Objects\Primitive</Filter>
@@ -188,11 +182,14 @@
     <ClInclude Include="include\RTOrigin.h">
       <Filter>Fichiers d%27en-tête\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Dependencies.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="RTGlobalDependencies.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Dependancies.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="source\RTCanvas.cpp">
       <Filter>Fichiers sources\Support draw</Filter>
     </ClCompile>
@@ -246,6 +243,9 @@
     </ClCompile>
     <ClCompile Include="source\RTMaths.cpp">
       <Filter>Fichiers sources\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="Dependencies.cpp">
+      <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

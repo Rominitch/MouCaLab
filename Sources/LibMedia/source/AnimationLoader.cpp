@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibRT/include/RTAnimationBones.h"
 #include "LibRT/include/RTTransform.h"

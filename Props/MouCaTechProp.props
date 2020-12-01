@@ -18,7 +18,7 @@
     <ClCompile>
       <AdditionalIncludeDirectories>.;$(SolutionDir);$(MOUCA_LAB_INCLUDE);$(MOUCA_SDK);$(MOUCA_SDK)include\;$(GTEST_PRODUCTION);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OpenMPSupport>true</OpenMPSupport>
-      <PrecompiledHeaderFile>Dependancies.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>Dependencies.h</PrecompiledHeaderFile>
       <PreprocessorDefinitions>_ENABLE_EXTENDED_ALIGNED_STORAGE;_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS;_WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <UseUnicodeForAssemblerListing>

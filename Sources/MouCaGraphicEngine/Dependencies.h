@@ -11,7 +11,7 @@
 #include <OpenVR.h>
 
 // Main include
-#include <LibRT/RTGlobalDependancies.h>
+#include <LibRT/RTGlobalDependencies.h>
 
 // Main Core interface
 #include <LibCore/include/CorePluginEntry.h>

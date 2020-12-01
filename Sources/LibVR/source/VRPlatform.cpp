@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibRT/include/RTEnvironment.h"
 
@@ -37,7 +37,7 @@ void Platform::initialize()
 
     if(eError != vr::VRInitError_None)
     {
-        BT_THROW_ERROR(u8"VRError", u8"VRInitializationError");
+        MOUCA_THROW_ERROR(u8"VRError", u8"VRInitializationError");
     }
 
     _renderModels = (vr::IVRRenderModels*)vr::VR_GetGenericInterface(vr::IVRRenderModels_Version, &eError);
@@ -46,7 +46,7 @@ void Platform::initialize()
         vr::VR_Shutdown();
         _system = nullptr;
 
-        BT_THROW_ERROR(u8"VRError", u8"VRRenderModelError");
+        MOUCA_THROW_ERROR(u8"VRError", u8"VRRenderModelError");
     }
 
     MOUCA_POST_CONDITION(!isNull());
@@ -181,7 +181,7 @@ void Platform::getTrackedProperty(const vr::TrackedDeviceIndex_t deviceID, const
     
     if(error != vr::TrackedProp_Success)
     {
-        BT_THROW_ERROR(u8"VRError", u8"VRTrackedPropertyError");
+        MOUCA_THROW_ERROR(u8"VRError", u8"VRTrackedPropertyError");
     }
 }
 

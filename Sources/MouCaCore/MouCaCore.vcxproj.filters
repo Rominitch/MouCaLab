@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Dependancies.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="source\DatabaseManager.cpp">
       <Filter>Fichiers sources\Database</Filter>
     </ClCompile>
@@ -16,17 +13,14 @@
     <ClCompile Include="source\ResourceManager.cpp">
       <Filter>Fichiers sources\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="source\CoreSystem.cpp">
+    <ClCompile Include="Dependencies.cpp">
       <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\CoreSystem.cpp">
+      <Filter>Fichiers sources\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Dependancies.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CoreSystem.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="include\DatabaseManager.h">
       <Filter>Fichiers d%27en-tête\Database</Filter>
     </ClInclude>
@@ -38,6 +32,15 @@
     </ClInclude>
     <ClInclude Include="include\ResourceManager.h">
       <Filter>Fichiers d%27en-tête\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Dependencies.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreSystem.h">
+      <Filter>Fichiers d%27en-tête\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core.h">
+      <Filter>Fichiers d%27en-tête\Interface</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +61,15 @@
     </Filter>
     <Filter Include="Fichiers sources\Database">
       <UniqueIdentifier>{76079992-f702-4fc4-a366-d994c81ff8ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Manager">
+      <UniqueIdentifier>{493c22e6-a260-443a-b0e0-597f78b786c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Manager">
+      <UniqueIdentifier>{44b78c9b-3a7e-4341-9e18-4d9278dbea66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Interface">
+      <UniqueIdentifier>{67f300a8-cfac-4554-8963-cb5ff8c846c4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

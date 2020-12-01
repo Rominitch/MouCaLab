@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 #include <LibGUI/include/GUIFontGlyph.h>
 
 #define SPECIAL_GLYPH (char)(-1)
@@ -114,7 +114,7 @@ void GUIFontPolice::LoadFace(FT_Library& pLibrary, const Core::StringOS& strFile
 	//Create And Initialize A FreeType Font Library.
 	if(FT_Init_FreeType(&pLibrary))
 	{
-		BT_THROW_ERROR(u8"ModuleError", u8"InitializeError")
+		MOUCA_THROW_ERROR(u8"ModuleError", u8"InitializeError")
 	}
 
 	try
@@ -123,19 +123,19 @@ void GUIFontPolice::LoadFace(FT_Library& pLibrary, const Core::StringOS& strFile
 		//Create And Initialize A Face.
 		if(FT_New_Face(pLibrary, u8Filename.c_str(), 0, &pFace))
 		{
-			BT_THROW_ERROR_1(u8"ModuleError", u8"FontFileMissingError", u8Filename);
+			MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FontFileMissingError", u8Filename);
 		}
 
 		//Select Charmap for unicode support
 		if(FT_Select_Charmap(pFace, FT_ENCODING_UNICODE))
 		{
-			BT_THROW_ERROR_1(u8"ModuleError", u8"FontFileMissingError", u8Filename);
+			MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FontFileMissingError", u8Filename);
 		}
 
 		// Set char size
 		if(FT_Set_Char_Size(pFace, (int)(size*szHRes), 0, 72*szHRes, 72))
 		{
-			BT_THROW_ERROR_1(u8"ModuleError", u8"FontFileMissingError", u8Filename);
+			MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FontFileMissingError", u8Filename);
 		}
 
 		// Set transform matrix

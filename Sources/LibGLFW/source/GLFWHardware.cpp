@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 #include "LibGLFW/include/GLFWHardware.h"
 
 namespace GLFW
@@ -11,7 +11,7 @@ void Hardware::readHardware()
     GLFWmonitor** monitors = glfwGetMonitors(&count);
     if(count == 0)
     {
-        BT_THROW_ERROR(u8"GLFWError", u8"NoMonitorError");
+        MOUCA_THROW_ERROR(u8"GLFWError", u8"NoMonitorError");
     }
     
     MOUCA_ASSERT(monitors !=nullptr);

@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include <LibVulkan/include/VKDevice.h>
 #include <LibVulkan/include/VKSampler.h>
@@ -55,7 +55,7 @@ void Sampler::initialize(const Device& device, VkFilter magFilter, VkFilter minF
 
     if (vkCreateSampler(device.getInstance(), &samplerInfo, nullptr, &_sampler) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"SamplerCreationError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"SamplerCreationError");
     }
 }
 
@@ -89,7 +89,7 @@ void Sampler::initialize(const Device& device, const float& maxLOD, const VkSamp
 
     if(vkCreateSampler(device.getInstance(), &samplerInfo, nullptr, &_sampler) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"SamplerCreationError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"SamplerCreationError");
     }
 }
 

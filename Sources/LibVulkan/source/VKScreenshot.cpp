@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibVulkan/include/VKScreenshot.h"
 
@@ -46,7 +46,7 @@ void GPUImageReader::initialize(const ContextWindow& context, const RT::Componen
     if (!(formatProps.optimalTilingFeatures & VK_FORMAT_FEATURE_BLIT_SRC_BIT))
     {
         _supportsBlit = false;
-        //BT_THROW_ERROR("Vulkan", "blitSourceError");
+        //MOUCA_THROW_ERROR("Vulkan", "blitSourceError");
     }
     else
     {
@@ -55,7 +55,7 @@ void GPUImageReader::initialize(const ContextWindow& context, const RT::Componen
         if (!(formatProps.linearTilingFeatures & VK_FORMAT_FEATURE_BLIT_DST_BIT))
         {
             _supportsBlit = false;
-            //BT_THROW_ERROR("Vulkan", "blitDestinationError");
+            //MOUCA_THROW_ERROR("Vulkan", "blitDestinationError");
         }
     }
 

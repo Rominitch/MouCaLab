@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibRT/include/RTMaths.h"
 
@@ -61,7 +61,7 @@ void Outline::decompose(FT_Outline& outline)
     FT_BBox outline_bbox;
     if (FT_Outline_Get_BBox(&outline, &outline_bbox))
     {
-        BT_THROW_ERROR(u8"FontError", u8"GetBBoxError");
+        MOUCA_THROW_ERROR(u8"FontError", u8"GetBBoxError");
     }
 
 	_bbox = BoundingBox2D(glm::vec2(outline_bbox.xMin, outline_bbox.yMin) * _scale, glm::vec2(outline_bbox.xMax , outline_bbox.yMax) * _scale);
@@ -81,7 +81,7 @@ void Outline::decompose(FT_Outline& outline)
 
     if (FT_Outline_Decompose(&outline, &funcs, this))
     {
-        BT_THROW_ERROR(u8"FontError", u8"OutlineDecomposeError");
+        MOUCA_THROW_ERROR(u8"FontError", u8"OutlineDecomposeError");
     }
 
     // Final loop point
@@ -229,7 +229,7 @@ void Outline::fixThinLines()
 void Outline::makeCells()
 {
     //if (_points.size() > FD_OUTLINE_MAX_POINTS)
-    //    BT_THROW_ERROR("GUI", "MaxPointsReachError");
+    //    MOUCA_THROW_ERROR("GUI", "MaxPointsReachError");
 
     float w = _bbox._max.x - _bbox._min.x;
     float h = _bbox._max.y - _bbox._min.y;

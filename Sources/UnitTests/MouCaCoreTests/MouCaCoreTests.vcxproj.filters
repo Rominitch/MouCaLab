@@ -14,9 +14,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Dependancies.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -41,12 +38,15 @@
     <ClCompile Include="source\UT_MeshLoader.cpp">
       <Filter>Source Files\MouCaCore</Filter>
     </ClCompile>
+    <ClCompile Include="Dependencies.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Dependancies.h">
+    <ClInclude Include="..\include\gMouCaTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\gMouCaTest.h">
+    <ClInclude Include="Dependencies.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

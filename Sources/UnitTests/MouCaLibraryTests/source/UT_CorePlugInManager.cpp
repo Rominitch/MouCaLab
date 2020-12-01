@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibCore/include/CorePluginEntry.h"
 #include "LibCore/include/CorePluginManager.h"

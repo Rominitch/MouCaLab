@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include <LibRT/include/RTEnum.h>
 
@@ -84,7 +84,7 @@ void Environment::initialize(const RT::ApplicationInfo& info, const std::vector<
     //Generate instance
     if(vkCreateInstance(&instance_create_info, nullptr, &_instance) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"VulkanError", u8"InstanceError");
+        MOUCA_THROW_ERROR(u8"VulkanError", u8"InstanceError");
     }
 
 #ifdef VULKAN_DEBUG
@@ -94,12 +94,12 @@ void Environment::initialize(const RT::ApplicationInfo& info, const std::vector<
     uint32_t nbLayersProperties = 0;
     if(vkEnumerateInstanceLayerProperties(&nbLayersProperties, nullptr) != VK_SUCCESS && nbLayersProperties > 0)
     {
-        BT_THROW_ERROR(u8"VulkanError", u8"NbLayersError");
+        MOUCA_THROW_ERROR(u8"VulkanError", u8"NbLayersError");
     }
     std::vector<VkLayerProperties> properties(nbLayersProperties);
     if(vkEnumerateInstanceLayerProperties(&nbLayersProperties, properties.data())  != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"VulkanError", u8"NbLayersError");
+        MOUCA_THROW_ERROR(u8"VulkanError", u8"NbLayersError");
     }
     std::cout << "Vulkan - Layers:" << std::endl;
     for(const auto& layer: properties)
@@ -112,7 +112,7 @@ void Environment::initialize(const RT::ApplicationInfo& info, const std::vector<
     uint32_t nbPhysicalDevices = 0;
     if(vkEnumeratePhysicalDevices(_instance, &nbPhysicalDevices, nullptr) != VK_SUCCESS && nbPhysicalDevices > 0)
     {
-        BT_THROW_ERROR(u8"VulkanError", u8"NbPhysicalDevicesError");
+        MOUCA_THROW_ERROR(u8"VulkanError", u8"NbPhysicalDevicesError");
     }
 
     //Resize vector to keep each device info
@@ -121,7 +121,7 @@ void Environment::initialize(const RT::ApplicationInfo& info, const std::vector<
     //Search PhysicalDevices
     if(vkEnumeratePhysicalDevices(_instance, &nbPhysicalDevices, physicalDevices.data()) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"VulkanError", u8"PhysicalDevicesError");
+        MOUCA_THROW_ERROR(u8"VulkanError", u8"PhysicalDevicesError");
     }
 
     //Parse device to sort between graphic/compute (quick classification)
@@ -206,12 +206,12 @@ void Environment::checkExtensions(const std::vector<const char*>& extensions) co
     uint32_t nbExtensions = 0;
     if(vkEnumerateInstanceExtensionProperties(nullptr, &nbExtensions, nullptr) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"VulkanError", u8"ExtensionError");
+        MOUCA_THROW_ERROR(u8"VulkanError", u8"ExtensionError");
     }
     std::vector<VkExtensionProperties> availableExtensions(nbExtensions);
     if(nbExtensions==0 || vkEnumerateInstanceExtensionProperties(nullptr, &nbExtensions, &availableExtensions[0]) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"VulkanError", u8"ExtensionError");
+        MOUCA_THROW_ERROR(u8"VulkanError", u8"ExtensionError");
     }
 
     //Define lambda
@@ -233,7 +233,7 @@ void Environment::checkExtensions(const std::vector<const char*>& extensions) co
     {
         if(!compare(extension))
         {
-            BT_THROW_ERROR_1(u8"VulkanError", u8"MissingExtensionError", extension);
+            MOUCA_THROW_ERROR_1(u8"VulkanError", u8"MissingExtensionError", extension);
         }
     }
 }

@@ -1,6 +1,6 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 
-#include <LibError/include/ErrorManager.h>
+#include <LibError/include/Error.h>
 #include <LibError/include/ErrorPrinter.h>
 
 #include <MouCaCore/include/CoreSystem.h>

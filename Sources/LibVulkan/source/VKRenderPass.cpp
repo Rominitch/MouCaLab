@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibVulkan/include/VKDevice.h"
 #include "LibVulkan/include/VKRenderPass.h"
@@ -45,7 +45,7 @@ void RenderPass::initialize(const Device& device, std::vector<VkAttachmentDescri
 
     if(vkCreateRenderPass(device.getInstance(), &renderPassCreateInfo, nullptr, &_renderPass) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"RenderPassCreationError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"RenderPassCreationError");
     }
 }
 

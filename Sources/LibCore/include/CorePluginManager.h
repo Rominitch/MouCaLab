@@ -51,6 +51,8 @@ namespace Core
                 release();
             }
 
+            bool isNull() const { return _loadedPlugins.empty(); }
+
             PluginEntrySPtr loadDynamicLibrary(const Path& strDynamicLibraryPath);
     };
 

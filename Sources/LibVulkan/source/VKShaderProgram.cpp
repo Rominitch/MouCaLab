@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibVulkan/include/VKDevice.h"
 #include "LibVulkan/include/VKShaderProgram.h"
@@ -52,7 +52,7 @@ void ShaderModule::initialize(const Device& device, const Core::String& shaderSo
     //Create shader
     if (vkCreateShaderModule(device.getInstance(), &shaderModuleCreateInfo, nullptr, &_shaderModule) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"ShaderCreationError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"ShaderCreationError");
     }
 
     MOUCA_POST_CONDITION(!isNull());
@@ -91,7 +91,7 @@ void ShaderProgram::initialize(const Device& device, const Core::File& shaderSou
     const std::string code = shaderSourceFile.extractString();
     if(code.empty())
     {
-        BT_THROW_ERROR_1(u8"Vulkan", u8"ShaderFileEmptyError", Core::convertToU8(shaderSourceFile.getFilePath()));
+        MOUCA_THROW_ERROR_1(u8"Vulkan", u8"ShaderFileEmptyError", Core::convertToU8(shaderSourceFile.getFilePath()));
     }
 
     //Build info
@@ -107,7 +107,7 @@ void ShaderProgram::initialize(const Device& device, const Core::File& shaderSou
     //Create shader
     if(vkCreateShaderModule(device.getInstance(), &shaderModuleCreateInfo, nullptr, &_shaderModule) != VK_SUCCESS)
     {
-        BT_THROW_ERROR_1(u8"Vulkan", u8"ShaderCreationError", Core::convertToU8(shaderSourceFile.getFilePath()));
+        MOUCA_THROW_ERROR_1(u8"Vulkan", u8"ShaderCreationError", Core::convertToU8(shaderSourceFile.getFilePath()));
     }
 }
 

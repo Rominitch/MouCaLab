@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include <LibRT/include/RTCamera.h>
 #include <LibRT/include/RTEventManager.h>

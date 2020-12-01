@@ -1,4 +1,4 @@
-#include <Dependancies.h>
+#include <Dependencies.h>
 
 #include <LibGLFW/include/GLFWPlatform.h>
 #include <LibGLFW/include/GLFWWindow.h>

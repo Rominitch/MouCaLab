@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibRT/include/RTBufferCPU.h"
 #include "LibRT/include/RTImage.h"
@@ -64,7 +64,7 @@ void Image::initialize(const Device& device,
     // Create image
     if(vkCreateImage(device.getInstance(), &_imageCreateInfo, nullptr, &_image) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"ViewCreationError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"ViewCreationError");
     }
 
     // Allocate memory (MANDATORY to create view)
@@ -157,7 +157,7 @@ void Image::resize(const Device& device, const VkExtent3D& newSize)
     // Create image
     if (vkCreateImage(device.getInstance(), &_imageCreateInfo, nullptr, &_image) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"ViewCreationError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"ViewCreationError");
     }
 
     // Allocate memory (MANDATORY to create view)
@@ -208,7 +208,7 @@ void ImageView::initialize(const Device& device, const Image& image,
     //Generate View
     if (vkCreateImageView(device.getInstance(), &_viewInfo, nullptr, &_view) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"ViewCreationError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"ViewCreationError");
     }
 
     _image = &image;

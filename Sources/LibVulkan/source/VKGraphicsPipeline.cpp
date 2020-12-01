@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibVulkan/include/VKGraphicsPipeline.h"
 
@@ -37,7 +37,7 @@ void GraphicsPipeline::initialize(const Device& device, const RenderPass& render
 
     if (vkCreateGraphicsPipelines(device.getInstance(), pipelineCache.getInstance(), static_cast<uint32_t>(infos.size()), infos.data(), nullptr, &_pipeline) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"PipelineGraphicCreationError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"PipelineGraphicCreationError");
     }
     MOUCA_POST_CONDITION(!isNull()); //Dev Issue: Must be initialize !
 }
@@ -60,7 +60,7 @@ void GraphicsPipeline::initialize(const Device& device, RenderPassWPtr renderPas
 
     if(vkCreateGraphicsPipelines(device.getInstance(), cache, static_cast<uint32_t>(infos.size()), infos.data(), nullptr, &_pipeline) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"PipelineGraphicCreationError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"PipelineGraphicCreationError");
     }
     MOUCA_POST_CONDITION(!isNull()); //Dev Issue: Must be initialize !
 }

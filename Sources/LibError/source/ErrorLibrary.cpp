@@ -1,17 +1,16 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
+
+#include <LibError/include/ErrorLibrary.h>
 
 #include <LibXML/include/XML.h>
-
-#include <LibError/include/ErrorManager.h>
-#include <LibError/include/ErrorLibrary.h>
 
 namespace Core
 {
 
-ErrorLibrary::~ErrorLibrary(void)
+ErrorLibrary::~ErrorLibrary()
 {
     release();
 }
@@ -28,7 +27,7 @@ void ErrorLibrary::initialize(XML::Parser& parser, const Core::String& libraryLa
     //Check data are valid
     if(parser.getFilename().empty() || libraryLabel.empty())
     {
-        BT_THROW_ERROR_1(u8"BasicError", u8"InvalidPathError", Core::convertToU8(parser.getFilename()));
+        MOUCA_THROW_ERROR_1(u8"BasicError", u8"InvalidPathError", Core::convertToU8(parser.getFilename()));
     }
 
     //Create parser and try to open error file
@@ -55,7 +54,7 @@ void ErrorLibrary::initialize(XML::Parser& parser, const Core::String& libraryLa
         XML::NodeUPtr libraryNode = parser.searchNode(u8"ErrorLibrary", u8"name", libraryLabel);
         if (libraryNode.get() == nullptr)
         {
-            BT_THROW_ERROR(u8"BasicError", u8"CorruptErrorLibrary");
+            MOUCA_THROW_ERROR(u8"BasicError", u8"CorruptErrorLibrary");
         }
 
         //Go to node
@@ -77,7 +76,7 @@ void ErrorLibrary::initialize(XML::Parser& parser, const Core::String& libraryLa
             XML::ResultUPtr messageNode = parser.getNode(u8"Message");
             if (messageNode->getNbElements() != 1)
             {
-                BT_THROW_ERROR_1(u8"XMLError", u8"XMLMissingNodeError", u8"Message");
+                MOUCA_THROW_ERROR_1(u8"XMLError", u8"XMLMissingNodeError", u8"Message");
             }
             messageNode->getNode(0)->getValue(message);
 
@@ -85,7 +84,7 @@ void ErrorLibrary::initialize(XML::Parser& parser, const Core::String& libraryLa
             XML::ResultUPtr solutionNode = parser.getNode(u8"Solution");
             if (solutionNode->getNbElements() != 1)
             {
-                BT_THROW_ERROR_1(u8"XMLError", u8"XMLMissingNodeError", u8"Solution");
+                MOUCA_THROW_ERROR_1(u8"XMLError", u8"XMLMissingNodeError", u8"Solution");
             }
             solutionNode->getNode(0)->getValue(solution);
 
@@ -129,7 +128,7 @@ ErrorDescription const * const ErrorLibrary::getDescription(const Core::String& 
     {
         return itError->second;
     }
-    BT_THROW_ERROR(u8"BasicError", u8"LibraryErrorUnknown");
+    MOUCA_THROW_ERROR(u8"BasicError", u8"LibraryErrorUnknown");
 }
 
 }

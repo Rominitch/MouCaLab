@@ -88,7 +88,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Dependancies.cpp">
+    <ClCompile Include="Dependencies.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Create</PrecompiledHeader>
@@ -97,7 +97,8 @@
     <ClCompile Include="source\ErrorManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Dependancies.h" />
+    <ClInclude Include="Dependencies.h" />
+    <ClInclude Include="include\Error.h" />
     <ClInclude Include="include\ErrorLibrary.h" />
     <ClInclude Include="include\ErrorManager.h" />
     <ClInclude Include="include\ErrorPrinter.h" />

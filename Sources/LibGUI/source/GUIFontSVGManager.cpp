@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibRT/include/RTBufferCPU.h"
 #include "LibRT/include/RTBufferDescriptor.h"
@@ -26,7 +26,7 @@ void FontSVGManager::initialize()
 
     if (FT_Init_FreeType(&_library))
     {
-        BT_THROW_ERROR(u8"GUI", u8"FreeType2InitError");
+        MOUCA_THROW_ERROR(u8"GUI", u8"FreeType2InitError");
     }
     
     MOUCA_POST_CONDITION(!isNull());
@@ -45,7 +45,7 @@ void FontSVGManager::release()
 
     if (FT_Done_FreeType(_library))
     {
-        BT_THROW_ERROR(u8"GUI", u8"FreeType2DoneError");
+        MOUCA_THROW_ERROR(u8"GUI", u8"FreeType2DoneError");
     }
     _library = nullptr;
 }
@@ -207,7 +207,7 @@ void FontFamilySVG::initialize(FT_Library library)
     {
         if (FT_New_Face(library, font._fontsPath.string().c_str(), 0, &font._face))
         {
-            BT_THROW_ERROR(u8"GUI", u8"FreeType2NewFaceError");
+            MOUCA_THROW_ERROR(u8"GUI", u8"FreeType2NewFaceError");
         }
 
         FT_Error error = FT_Select_Charmap(font._face, ft_encoding_unicode);
@@ -230,7 +230,7 @@ void FontFamilySVG::release()
     {
         if (FT_Done_Face(font._face))
         {
-            BT_THROW_ERROR(u8"GUI", u8"FreeType2DoneFaceError");
+            MOUCA_THROW_ERROR(u8"GUI", u8"FreeType2DoneFaceError");
         }
     }
     _fonts.clear();
@@ -259,7 +259,7 @@ const FontFamilySVG::GlyphSVG& FontFamilySVG::addGlyph(const GlyphCode& glyphCod
     {
         if (FT_Load_Glyph(itFont->_face, glyph_index, FT_LOAD_NO_HINTING))
         {
-            BT_THROW_ERROR(u8"GUI", u8"FreeType2LoadGlyphError");
+            MOUCA_THROW_ERROR(u8"GUI", u8"FreeType2LoadGlyphError");
         }
         Outline outline;
         if (itFont->_isOTF)

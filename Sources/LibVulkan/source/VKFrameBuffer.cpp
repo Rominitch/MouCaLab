@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibVulkan/include/VKDevice.h"
 #include "LibVulkan/include/VKFrameBuffer.h"
@@ -49,7 +49,7 @@ void FrameBuffer::initialize(const Device& device, RenderPassWPtr renderPass, co
 
     if (vkCreateFramebuffer(device.getInstance(), &frameBufferInfo, nullptr, &_frameBuffer) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"FrameBufferCreationError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"FrameBufferCreationError");
     }
 
     MOUCA_POST_CONDITION(!isNull());

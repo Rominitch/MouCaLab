@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include <LibRT/include/RTMonitor.h>
 #include <LibGLFW/include/GLFWHardware.h>

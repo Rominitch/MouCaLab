@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include <LibRT/include/RTImage.h>
 #include <LibRT/include/RTMesh.h>

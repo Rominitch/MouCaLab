@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibVulkan/include/VKDevice.h"
 #include "LibVulkan/include/VKPipelineLayout.h"
@@ -45,7 +45,7 @@ void PipelineLayout::initialize(const Device& device, const std::vector<VkDescri
 
     if(vkCreatePipelineLayout(device.getInstance(), &layoutCreateInfo, nullptr, &_layout) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"PipelineLayoutCreationError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"PipelineLayoutCreationError");
     }
 }
 

@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include <LibGLFW/include/GLFWPlatform.h>
 #include <LibGLFW/include/GLFWWindow.h>
@@ -27,7 +27,7 @@ void Platform::initialize()
     //Start GLFW
     if(glfwInit() == GLFW_FALSE)
     {
-        BT_THROW_ERROR(u8"GLFWError", u8"InitializeError");
+        MOUCA_THROW_ERROR(u8"GLFWError", u8"InitializeError");
     }
 
     //Default configuration (Vulkan config)

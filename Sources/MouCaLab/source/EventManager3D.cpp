@@ -2,7 +2,7 @@
 /// \author  Rominitch
 /// \license No license
 /// 
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "include/EventManager3D.h"
 

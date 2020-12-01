@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibVulkan/include/VKDevice.h"
 #include "LibVulkan/include/VKFence.h"
@@ -34,7 +34,7 @@ void Fence::initialize(const Device& device, const VkFenceCreateFlags flag)
 
     if(vkCreateFence(device.getInstance(), &fenceCreateInfo, nullptr, &_fence) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"Vulkan", u8"FenceCreationError");
+        MOUCA_THROW_ERROR(u8"Vulkan", u8"FenceCreationError");
     }
 
     MOUCA_POST_CONDITION(!isNull());

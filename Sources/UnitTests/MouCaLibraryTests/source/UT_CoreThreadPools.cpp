@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include <LibCore/include/CoreThread.h>
 #include <LibCore/include/CoreThreadPools.h>

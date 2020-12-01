@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibCore/include/CoreProcess.h"
 #include "LibCore/include/CoreStandardOS.h"
@@ -51,12 +51,12 @@ void ShaderFile::compile()
     // Check timeout
     if (!done)
     {
-        BT_THROW_ERROR_1(u8"Vulkan", u8"ShaderCompilationError", message);
+        MOUCA_THROW_ERROR_1(u8"Vulkan", u8"ShaderCompilationError", message);
     }
     // Check rc code
     if (processCompile.getReturnCode() != 0)
     {
-        BT_THROW_ERROR_1(u8"Vulkan", u8"ShaderCompilationError", message);
+        MOUCA_THROW_ERROR_1(u8"Vulkan", u8"ShaderCompilationError", message);
     }
 }
 

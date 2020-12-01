@@ -1,4 +1,4 @@
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include <LibMedia/include/ImageKTX.h>
 
@@ -18,7 +18,7 @@ void ImageKTX::initialize(const Core::Path& path)
 
 void ImageKTX::createFill(const RT::BufferCPUBase& imageBuffer, const uint32_t width, const uint32_t height)
 {
-    BT_THROW_ERROR(u8"BasicError", u8"ImageNoneImplemented");
+    MOUCA_THROW_ERROR(u8"BasicError", u8"ImageNoneImplemented");
 }
 
 void ImageKTX::release()
@@ -80,14 +80,14 @@ void ImageKTX::saveImage(const Core::Path& filename)
 
     if( !gli::save(*_glImage, filename.string()) )
     {
-        BT_THROW_ERROR_1(u8"BasicError", u8"ImageKTXSave", filename.u8string());
+        MOUCA_THROW_ERROR_1(u8"BasicError", u8"ImageKTXSave", filename.u8string());
     }
 }
 
 bool ImageKTX::compare(const RT::Image& reference, const size_t nbMaxDefectPixels, const double maxDistance4D,
                        size_t* nbDefectPixels, double* distance4D) const
 {
-    BT_THROW_ERROR(u8"BasicError", u8"ImageNoneImplemented");
+    MOUCA_THROW_ERROR(u8"BasicError", u8"ImageNoneImplemented");
 }
 
 ImageKTX::Target ImageKTX::getTarget() const

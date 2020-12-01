@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibVulkan/include/VKCommandBuffer.h"
 #include "LibVulkan/include/VKEnvironment.h"
@@ -123,7 +123,7 @@ void Device::initialize(const VkPhysicalDevice physicalDevice, const uint32_t qu
     VkDevice deviceID;
     if(vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &deviceID) != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"VulkanError", u8"DeviceError");
+        MOUCA_THROW_ERROR(u8"VulkanError", u8"DeviceError");
     }
 
     configureDevice(physicalDevice, deviceID, queueFamilyID);
@@ -133,12 +133,12 @@ void Device::initialize(const VkPhysicalDevice physicalDevice, const uint32_t qu
     uint32_t nbLayersProperties = 0;
     if(vkEnumerateDeviceLayerProperties(physicalDevice, &nbLayersProperties, nullptr) != VK_SUCCESS && nbLayersProperties > 0)
     {
-        BT_THROW_ERROR(u8"VulkanError", u8"NbLayersError");
+        MOUCA_THROW_ERROR(u8"VulkanError", u8"NbLayersError");
     }
     std::vector<VkLayerProperties> properties(nbLayersProperties);
     if(vkEnumerateDeviceLayerProperties(physicalDevice, &nbLayersProperties, properties.data())  != VK_SUCCESS)
     {
-        BT_THROW_ERROR(u8"VulkanError", u8"NbLayersError");
+        MOUCA_THROW_ERROR(u8"VulkanError", u8"NbLayersError");
     }
     std::cout << "Vulkan - Physical Layers:" << std::endl;
     for(const auto& layer: properties)
@@ -242,7 +242,7 @@ void Device::initializeBestGPU(const Environment& environment, const std::vector
                 // Check if feature is mandatory and can be use on physical device
                 if(*wanted && *wanted != *current)
                 {
-                    BT_THROW_ERROR_1("VulkanError", "UnsupportedPhysicalDeviceFeatures", std::to_string(id));
+                    MOUCA_THROW_ERROR_1("VulkanError", "UnsupportedPhysicalDeviceFeatures", std::to_string(id));
                 }
                 ++wanted;
                 ++current;
@@ -290,7 +290,7 @@ void Device::initializeBestGPU(const Environment& environment, const std::vector
     //Finish
     if(canditates.empty())
     {
-        BT_THROW_ERROR(u8"VulkanError", u8"BestDeviceError");
+        MOUCA_THROW_ERROR(u8"VulkanError", u8"BestDeviceError");
     }
 
     // Initialize device
@@ -322,7 +322,7 @@ void Device::waitIdle() const
     if( vkDeviceWaitIdle(_device) != VK_SUCCESS)
     {
 // DisableCodeCoverage
-        BT_THROW_ERROR(u8"VulkanError", u8"LockedDevice");
+        MOUCA_THROW_ERROR(u8"VulkanError", u8"LockedDevice");
 // EnableCodeCoverage
     }
 }
@@ -338,7 +338,7 @@ void Device::checkExtensions(const VkPhysicalDevice& physicalDevice, const std::
     {
 // DisableCodeCoverage
         // Impossible to reach ? vkEnumerateDeviceExtensionProperties launch exception before !?
-        BT_THROW_ERROR(u8"VulkanError", u8"PhysicalDeviceExtensionError");
+        MOUCA_THROW_ERROR(u8"VulkanError", u8"PhysicalDeviceExtensionError");
 // EnableCodeCoverage
     }
     std::vector<VkExtensionProperties> availableExtensions(nbExtensions);
@@ -346,7 +346,7 @@ void Device::checkExtensions(const VkPhysicalDevice& physicalDevice, const std::
     {
 // DisableCodeCoverage
         // Impossible to reach ?
-        BT_THROW_ERROR(u8"VulkanError", u8"PhysicalDeviceExtensionError");
+        MOUCA_THROW_ERROR(u8"VulkanError", u8"PhysicalDeviceExtensionError");
 // EnableCodeCoverage
     }
 
@@ -368,7 +368,7 @@ void Device::checkExtensions(const VkPhysicalDevice& physicalDevice, const std::
     {
         if(!compare(extension))
         {
-            BT_THROW_ERROR_1(u8"VulkanError", u8"MissingPhysicalDeviceExtensionError", extension);
+            MOUCA_THROW_ERROR_1(u8"VulkanError", u8"MissingPhysicalDeviceExtensionError", extension);
         }
     }
 }
@@ -427,7 +427,7 @@ uint32_t Device::getQueueFamiliyIndex(VkQueueFlagBits queueFlags) const
         }
     }
 
-    BT_THROW_ERROR(u8"Vulkan", u8"FamilyQueueInvalidError");
+    MOUCA_THROW_ERROR(u8"Vulkan", u8"FamilyQueueInvalidError");
 }
 
 void Device::readFormatProperties(const VkFormat format, VkFormatProperties& formatProps) const

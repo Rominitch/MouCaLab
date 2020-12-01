@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include <LibRT/include/RTImage.h>
 
@@ -35,18 +35,18 @@ void ImageLinkedCPU::release()
 
 void ImageLinkedCPU::createFill(const RT::BufferCPUBase& imageBuffer, const uint32_t width, const uint32_t height)
 {
-    BT_THROW_ERROR(u8"BasicError", u8"ImageNoneImplemented");
+    MOUCA_THROW_ERROR(u8"BasicError", u8"ImageNoneImplemented");
 }
 
 void ImageLinkedCPU::saveImage(const Core::Path& filename)
 {
-    BT_THROW_ERROR(u8"BasicError", u8"ImageNoneImplemented");
+    MOUCA_THROW_ERROR(u8"BasicError", u8"ImageNoneImplemented");
 }
 
 bool ImageLinkedCPU::compare(const Image & reference, const size_t nbMaxDefectPixels, const double maxDistance4D,
                              size_t * nbDefectPixels, double* distance4D) const
 {
-    BT_THROW_ERROR(u8"BasicError", u8"ImageNoneImplemented");
+    MOUCA_THROW_ERROR(u8"BasicError", u8"ImageNoneImplemented");
 }
 
 void const* const ImageLinkedCPU::getRAWData(const uint32_t layer, const uint32_t level) const

@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include "LibCore/include/CoreException.h"
 #include "LibCore/include/CoreProcess.h"
@@ -23,11 +23,11 @@ _handleRead(INVALID_HANDLE_VALUE), _handleWrite(INVALID_HANDLE_VALUE)
     // Build Pipe
     if(!CreatePipe(&_handleRead, &_handleWrite, &security_attributes, 0))
     {
-        BT_THROW_ERROR(u8"Basic", u8"ProcessError");
+        MOUCA_THROW_ERROR(u8"Basic", u8"ProcessError");
     }
     if(!SetHandleInformation(_handleRead, HANDLE_FLAG_INHERIT, 0))
     {
-        BT_THROW_ERROR(u8"Basic", u8"ProcessError");
+        MOUCA_THROW_ERROR(u8"Basic", u8"ProcessError");
     }
 
     MOUCA_POST_CONDITION(_handleRead  != INVALID_HANDLE_VALUE);
@@ -112,7 +112,7 @@ void Process::execute(const std::vector<Core::StringOS>& arguments)
         &_pi                            // lpProcessInformation
     ) == 0)
     {
-        BT_THROW_ERROR(u8"Basic", u8"ProcessError");
+        MOUCA_THROW_ERROR(u8"Basic", u8"ProcessError");
     }
 
     _stdOut.readyToRead();

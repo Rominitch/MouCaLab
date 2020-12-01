@@ -1,7 +1,7 @@
 /// https://github.com/Rominitch/MouCaLab
 /// \author  Rominitch
 /// \license No license
-#include "Dependancies.h"
+#include "Dependencies.h"
 
 #include <LibGLFW/include/GLFWHardware.h>
 #include <LibGLFW/include/GLFWWindow.h>
