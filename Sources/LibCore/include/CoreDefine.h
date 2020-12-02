@@ -24,13 +24,13 @@
 
 #   define MOUCA_ASSERT(condition) MOUCA_ASSERT_HEADER(condition, u8"Application assert")
 
-#   define BT_LAST_REFERENCED(iterable)                                                                                         \
+#   define MOUCA_LAST_REFERENCED(iterable)                                                                                         \
     for(const auto& iter : iterable)                                                                                            \
     {                                                                                                                           \
         MOUCA_ASSERT(iter.use_count() == 1);                                                                                       \
     }
 
-#   define BT_NOT_LAST_REFERENCED(iterable)                                                                                     \
+#   define MOUCA_NOT_LAST_REFERENCED(iterable)                                                                                     \
     for(const auto& iter : iterable)                                                                                            \
     {                                                                                                                           \
         MOUCA_ASSERT(iter.use_count() != 1);                                                                                       \
@@ -128,15 +128,15 @@ void assertBetween(const uint8_t ref, const uint8_t lowEd, const uint8_t HighTh,
         OutputDebugString(Core::convertToOS(message).c_str());                                                                  \
     }
 
-#   define BT__STR(x)   #x
-#   define BT_STR(x)    BT__STR(x)
+#   define MOUCA__STR(x)   #x
+#   define MOUCA_STR(x)    MOUCA__STR(x)
     /// Allow to define all TODO into code and retrieve quickly
-#   define BT_TODO(msg)                                                  \
-    {                                                                    \
-        __pragma(message(__FILE__ "(" BT_STR(__LINE__) "): TODO: " msg)) \
+#   define MOUCA_TODO(msg)                                                  \
+    {                                                                       \
+        __pragma(message(__FILE__ "(" MOUCA_STR(__LINE__) "): TODO: " msg)) \
     }
 
-#   define BT_DEBUG(msg) std::cout << msg << std::endl
+#   define MOUCA_DEBUG(msg) std::cout << msg << std::endl
 
 #else
 #   define MOUCA_PRE_CONDITION(condition)      void(0)
@@ -147,11 +147,11 @@ void assertBetween(const uint8_t ref, const uint8_t lowEd, const uint8_t HighTh,
 #   define MOUCA_ASSERT_EQ(ref, cmp)            void(0)
 #   define MOUCA_ASSERT_BETWEEN(ref, le, ht)    void(0)
 #   define MOUCA_ASSERT_BETWEEN_EQ(ref, le, he) void(0)
-#   define BT_LAST_REFERENCED(iterable)      void(0)
-#   define BT_NOT_LAST_REFERENCED(iterable)  void(0)
+#   define MOUCA_LAST_REFERENCED(iterable)      void(0)
+#   define MOUCA_NOT_LAST_REFERENCED(iterable)  void(0)
 
-#   define BT_TODO(msg)                      void(0)    /// Allow to define all TODO into code and retrieve quickly
-#   define BT_DEBUG(msg)                     void(0) 
+#   define MOUCA_TODO(msg)                      void(0)    /// Allow to define all TODO into code and retrieve quickly
+#   define MOUCA_DEBUG(msg)                     void(0) 
 #endif
 
 #define BT_UNUSED(variable) variable;

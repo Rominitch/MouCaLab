@@ -55,6 +55,9 @@ namespace RT
 
 namespace MouCaCore
 {
+    class Database;
+    using DatabaseSPtr = std::shared_ptr<Database>;
+
     struct LoadingItem
     {
         enum State
@@ -157,7 +160,7 @@ namespace MouCaCore
         //--------------------------------------------------------------------------
         //							   Resources management
         //--------------------------------------------------------------------------
-            virtual void releaseResource(Core::ResourceSPtr resource) = 0;
+            virtual void releaseResource(Core::ResourceSPtr&& resource) = 0;
 
             virtual void releaseResources() = 0;
 
@@ -169,6 +172,8 @@ namespace MouCaCore
             virtual XML::ParserSPtr createXML(const Core::Path& filename = Core::Path()) = 0;
 
             virtual RT::ImageImportSPtr createImage(const Core::Path& filename = Core::Path()) = 0;
+
+            virtual DatabaseSPtr createDatabase() = 0;
 
         //--------------------------------------------------------------------------
         //						    Readable only resources

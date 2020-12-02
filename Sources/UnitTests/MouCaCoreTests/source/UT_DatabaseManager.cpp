@@ -3,7 +3,8 @@
 #include <LibCore/include/CoreByteBuffer.h>
 #include <LibCore/include/CoreFile.h>
 
-#include <MouCaCore/include/DatabaseManager.h>
+#include <MouCaCore/include/CoreSystem.h>
+#include <MouCaCore/include/Database.h>
 
 void clean(const std::filesystem::path& file)
 {
@@ -13,13 +14,31 @@ void clean(const std::filesystem::path& file)
     }
 }
 
-TEST(DatabaseManager, createManager)
+class DatabaseTest : public ::testing::Test
 {
-    MouCaCore::DatabaseManagerSPtr db = MouCaCore::DatabaseManager::createManager();
+    public:
+        MouCaCore::DatabaseSPtr createDatabase()
+        {
+            return _core.getResourceManager().createDatabase();
+        }
+
+        void releaseDatabase(MouCaCore::DatabaseSPtr& db)
+        {
+            _core.getResourceManager().releaseResource(std::move(db));
+        }
+
+    protected:
+        MouCaCore::CoreSystem _core;
+};
+
+TEST_F(DatabaseTest, createManager)
+{
+    MouCaCore::DatabaseSPtr db = createDatabase();
     ASSERT_TRUE(db != nullptr);
+    releaseDatabase(db);
 }
 
-TEST(DatabaseManager, create)
+TEST_F(DatabaseTest, create)
 {
     // Test block
     const Core::StringOS invalidDB(MouCaEnvironment::getOutputPath() / L"InvalidFolder" / L"invalid.db");
@@ -34,7 +53,7 @@ TEST(DatabaseManager, create)
     Core::File sqlFile(MouCaEnvironment::getInputPath() / L"libraries" / L"myRequest.sql");
     // Create
     {
-        MouCaCore::DatabaseManagerSPtr db = MouCaCore::DatabaseManager::createManager();
+        MouCaCore::DatabaseSPtr db = createDatabase();
         ASSERT_TRUE(db->isNull());
         
         ASSERT_NO_THROW(sqlFile.open());
@@ -48,24 +67,21 @@ TEST(DatabaseManager, create)
 
         ASSERT_NO_THROW(sqlFile.close());
 
-        ASSERT_NO_THROW(db->release());
-
-        db.reset();
+        ASSERT_NO_THROW(releaseDatabase(db));
     }
 
     // Open
     {
-        MouCaCore::DatabaseManagerSPtr db = MouCaCore::DatabaseManager::createManager();
+        MouCaCore::DatabaseSPtr db = createDatabase();
 
         ASSERT_NO_THROW(db->open(databaseFile));
 
-        ASSERT_NO_THROW(db->release());
-        db.reset();
+        ASSERT_NO_THROW(releaseDatabase(db));
     }
 
     // Create a already open
     {
-        MouCaCore::DatabaseManagerSPtr db = MouCaCore::DatabaseManager::createManager();
+        MouCaCore::DatabaseSPtr db = createDatabase();
 
         ASSERT_NO_THROW(sqlFile.open());
 
@@ -73,14 +89,14 @@ TEST(DatabaseManager, create)
 
         ASSERT_NO_THROW(sqlFile.close());
 
-        db.reset();
+        ASSERT_NO_THROW(releaseDatabase(db));
     }
     
     // Clean files
     clean(fileInfo);
 }
 
-TEST(DatabaseManager, openMultiDB)
+TEST_F(DatabaseTest, openMultiDB)
 {
     const std::filesystem::path fileData(MouCaEnvironment::getOutputPath() / L"Data.db");
     const std::filesystem::path fileLabel(MouCaEnvironment::getOutputPath() / L"Internationnal.db");
@@ -89,8 +105,8 @@ TEST(DatabaseManager, openMultiDB)
     clean(fileData);
     clean(fileLabel);
 
-    MouCaCore::DatabaseManagerSPtr dbMouca = MouCaCore::DatabaseManager::createManager();
-    MouCaCore::DatabaseManagerSPtr dbLabel = MouCaCore::DatabaseManager::createManager();
+    MouCaCore::DatabaseSPtr dbMouca = createDatabase();
+    MouCaCore::DatabaseSPtr dbLabel = createDatabase();
 
     //fileMouca.normalize();
     //fileLabel.normalize();
@@ -101,8 +117,7 @@ TEST(DatabaseManager, openMultiDB)
     {
         // Allocate label
         EXPECT_NO_THROW(dbLabel->createDB(databaseLabel));
-        EXPECT_NO_THROW(dbLabel->release());
-        dbLabel.reset();
+        EXPECT_NO_THROW(releaseDatabase(dbLabel));
 
         EXPECT_NO_THROW(dbMouca->createDB(databaseMouca));
 
@@ -117,40 +132,40 @@ TEST(DatabaseManager, openMultiDB)
         // Launch creation on both db
         EXPECT_NO_THROW(dbMouca->quickQuery(query));
 
-        EXPECT_NO_THROW(dbMouca->release());
+        EXPECT_NO_THROW(releaseDatabase(dbMouca));
     }
     
-    dbMouca.reset();
-
     // Clean files
     clean(fileData);
     clean(fileLabel);
 }
 
-TEST(DatabaseManager, openError)
+TEST_F(DatabaseTest, openError)
 {
-    MouCaCore::DatabaseManagerSPtr dbMouca = MouCaCore::DatabaseManager::createManager();
+    MouCaCore::DatabaseSPtr dbMouca = createDatabase();
 
     ASSERT_ANY_THROW( dbMouca->open(MouCaEnvironment::getInputPath() / "invalid.db") );
+
+    EXPECT_NO_THROW(releaseDatabase(dbMouca));
 }
 
-TEST(DatabaseManager, queryError)
+TEST_F(DatabaseTest, queryError)
 {
     Core::Path fileData(MouCaEnvironment::getOutputPath() / "DataQuery.db");
     clean(fileData);
 
-    MouCaCore::DatabaseManagerSPtr dbMouca = MouCaCore::DatabaseManager::createManager();
+    MouCaCore::DatabaseSPtr dbMouca = createDatabase();
     EXPECT_NO_THROW(dbMouca->createDB(fileData));
 
     const Core::String query = u8"SELECT something but request is dummy;";
     EXPECT_ANY_THROW(dbMouca->quickQuery(query));
 
-    EXPECT_NO_THROW(dbMouca->release());
+    EXPECT_NO_THROW(releaseDatabase(dbMouca));
 
     clean(fileData);
 }
 
-TEST(DatabaseManager, query)
+TEST_F(DatabaseTest, query)
 {
     std::filesystem::path fileData(MouCaEnvironment::getOutputPath() / "MouCaDungeonQuery.db");
 
@@ -158,7 +173,7 @@ TEST(DatabaseManager, query)
     clean(fileData);
 
     
-    MouCaCore::DatabaseManagerSPtr dbMouca = MouCaCore::DatabaseManager::createManager();
+    MouCaCore::DatabaseSPtr dbMouca = createDatabase();
     // Read file and extract query data
     {
         const Core::StringOS databaseMouca = fileData.wstring();
@@ -240,7 +255,7 @@ TEST(DatabaseManager, query)
         EXPECT_TRUE(statement.get() == nullptr);
     }
 
-    EXPECT_NO_THROW(dbMouca->release());
+    EXPECT_NO_THROW(releaseDatabase(dbMouca));
 
     clean(fileData);
 }

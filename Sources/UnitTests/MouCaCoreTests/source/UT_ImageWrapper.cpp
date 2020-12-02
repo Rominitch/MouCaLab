@@ -45,9 +45,9 @@ TEST(Image, compare)
     EXPECT_TRUE(imageRef->getImage().lock()->compare(*imageDefault->getImage().lock(),  0, 114.0));
     EXPECT_TRUE(imageRef->getImage().lock()->compare(*imageDefault->getImage().lock(), 474, 0.0));
 
-    ASSERT_NO_THROW(resources.releaseResource(image));
-    ASSERT_NO_THROW(resources.releaseResource(imageRef));
-    ASSERT_NO_THROW(resources.releaseResource(imageDefault));
+    ASSERT_NO_THROW(resources.releaseResource(std::move(image)));
+    ASSERT_NO_THROW(resources.releaseResource(std::move(imageRef)));
+    ASSERT_NO_THROW(resources.releaseResource(std::move(imageDefault)));
 }
 
 // cppcheck-suppress syntaxError
@@ -73,7 +73,7 @@ TEST(Image, open)
         ASSERT_NO_THROW(loader.loadResources(items));
 
         EXPECT_TRUE(image->getImage().expired()); // No data loaded
-        ASSERT_NO_THROW(resources->releaseResource(image));
+        ASSERT_NO_THROW(resources->releaseResource(std::move(image)));
     }
 
     // Mode libImage: PNG
@@ -89,7 +89,7 @@ TEST(Image, open)
 
         EXPECT_NO_THROW(image->release());
         EXPECT_TRUE(image->isNull());
-        ASSERT_NO_THROW(resources->releaseResource(image));
+        ASSERT_NO_THROW(resources->releaseResource(std::move(image)));
     }
 
     // Mode OpenGL: KTX
@@ -105,7 +105,7 @@ TEST(Image, open)
 
         EXPECT_NO_THROW(image->release());
         EXPECT_TRUE(image->isNull());
-        ASSERT_NO_THROW(resources->releaseResource(image));
+        ASSERT_NO_THROW(resources->releaseResource(std::move(image)));
     }
 
     ASSERT_NO_THROW(loader.release());

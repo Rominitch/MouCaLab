@@ -218,13 +218,13 @@ class DeferredTest : public MouCaLabTest
         {
             auto& resources = _core.getResourceManager();
 
-            resources.releaseResource(_models._armorColor);
-            resources.releaseResource(_models._armorNormal);
-            resources.releaseResource(_models._armor);
+            resources.releaseResource(std::move(_models._armorColor));
+            resources.releaseResource(std::move(_models._armorNormal));
+            resources.releaseResource(std::move(_models._armor));
 
-            resources.releaseResource(_models._groundColor);
-            resources.releaseResource(_models._groundNormal);
-            resources.releaseResource(_models._ground);
+            resources.releaseResource(std::move(_models._groundColor));
+            resources.releaseResource(std::move(_models._groundNormal));
+            resources.releaseResource(std::move(_models._ground));
 
             _models._uboVS->release();
             _models._uboVS.reset();

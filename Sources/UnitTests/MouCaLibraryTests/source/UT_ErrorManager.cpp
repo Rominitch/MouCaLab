@@ -9,9 +9,9 @@
 class ErrorManager : public ::testing::Test
 {
     public:
-        XML::Platform     platform;
-        XML::XercesParser invalid;
-        XML::XercesParser demoLib;
+        XML::XercesPlatform platform;
+        XML::XercesParser   invalid;
+        XML::XercesParser   demoLib;
 
         void SetUp() override
         {

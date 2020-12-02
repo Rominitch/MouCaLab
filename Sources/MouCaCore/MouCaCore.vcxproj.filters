@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="source\DatabaseManager.cpp">
-      <Filter>Fichiers sources\Database</Filter>
-    </ClCompile>
     <ClCompile Include="source\DatabaseManagerSqlite.cpp">
       <Filter>Fichiers sources\Database</Filter>
     </ClCompile>
@@ -21,9 +18,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\DatabaseManager.h">
-      <Filter>Fichiers d%27en-tête\Database</Filter>
-    </ClInclude>
     <ClInclude Include="include\DatabaseManagerSqlite.h">
       <Filter>Fichiers d%27en-tête\Database</Filter>
     </ClInclude>
@@ -40,6 +34,9 @@
       <Filter>Fichiers d%27en-tête\Manager</Filter>
     </ClInclude>
     <ClInclude Include="include\Core.h">
+      <Filter>Fichiers d%27en-tête\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Database.h">
       <Filter>Fichiers d%27en-tête\Interface</Filter>
     </ClInclude>
   </ItemGroup>

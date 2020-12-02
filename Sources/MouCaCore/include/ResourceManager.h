@@ -54,7 +54,7 @@ namespace MouCaCore
         //--------------------------------------------------------------------------
             void registerResource(Core::ResourceSPtr resource);
 
-            void releaseResource(Core::ResourceSPtr resource) override;
+            void releaseResource(Core::ResourceSPtr&& resource) override;
 
             void releaseResources() override;
 
@@ -64,30 +64,6 @@ namespace MouCaCore
                 MOUCA_PRE_CONDITION(itResource != _resources.cend());
                 _resources.erase(itResource);
             }
-            /*
-            template<typename DataType>
-            void releaseResource(std::shared_ptr<DataType>& resource)
-            {
-                const auto instance = resource.use_count();
-                MOUCA_ASSERT(instance >= 2); // DEV Issue: Need this instance + manager !
-
-                // Keep pointer
-                Core::Resource* data = resource.get(); // If error here: Do you forget include ?
-                resource.reset(); // Release current shared
-
-                // Latest resource is own by manager
-                if (instance == 2)
-                {
-                    // Release data inside resource
-                    if (!data->isNull())
-                    {
-                        data->release();
-                    }
-                    // Final unregister and delete
-                    unregisterResource(data);
-                }
-            }
-            */
 
             size_t getNbResources() const
             {
@@ -112,6 +88,8 @@ namespace MouCaCore
             XML::ParserSPtr createXML(const Core::Path& filename = Core::Path());
 
             RT::ImageImportSPtr createImage(const Core::Path& filename = Core::Path());
+
+            DatabaseSPtr createDatabase();
 
         //--------------------------------------------------------------------------
         //						    Readable only resources

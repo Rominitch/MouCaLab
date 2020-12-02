@@ -1179,7 +1179,7 @@ void Engine3DXMLLoader::loadImagesAndView(ContextLoading& context, Vulkan::Conte
             // Register + ownership
             device->insertImage(image);
             _images[id] = image;
-            BT_DEBUG("Image: id=" << id << ", handle=" << image->getImage());
+            MOUCA_DEBUG("Image: id=" << id << ", handle=" << image->getImage());
 
             // Build view
             auto aPush = context._parser.autoPushNode(*imageNode);
@@ -1214,7 +1214,7 @@ void Engine3DXMLLoader::loadImagesAndView(ContextLoading& context, Vulkan::Conte
                 auto view = image->createView(device->getDevice(), typeV, formatV, mapping, subRessourceRange);
                 _view[idV] = view;
 
-                BT_DEBUG("View: id=" << idV << ", handle=" << view.lock()->getInstance());
+                MOUCA_DEBUG("View: id=" << idV << ", handle=" << view.lock()->getInstance());
             }
         }
     }
@@ -2608,7 +2608,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
     auto allViewports = context._parser.getNode(u8"Viewport");
     if (allViewports->getNbElements() > 0)
     {
-        BT_TODO("Find best way to make Dynamic<->Viewport/Scissor and manage all cases");
+        MOUCA_TODO("Find best way to make Dynamic<->Viewport/Scissor and manage all cases");
         if (dynamicViewport && dynamicScissor)
         {
             info.getViewport().addDynamicViewport();

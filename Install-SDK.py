@@ -18,7 +18,6 @@ zipProgram = os.path.join("C:\Program Files", "7-Zip", "7z.exe")
 packages = [ ("assimp-5.0.0.rc1.7z",    "13T0WsgNH8Kl8eEiGeYMzv2yawFCJQZli", None,                                   (None, "assimp5.0.0rc1.dll", "assimp5.0.0rc1D.dll")),
              ("Boost-1.72.0.7z",        "1pl9Umsn_Durfc42msqnPCmWo6hHot2En", None,                                   (None)),
              ("Boost-1.72.0-stage.7z",  "1slDcGzU8qyTbnNapK5OJi7Mo69ye8EUV", os.path.join("Boost-1.72.0", "lib64"),   None),
-             #("CGAL-4.13-b2.7z",        None, None),                                                                 
              ("FreeImage-3.180.7z",     "1x8QCnw4X6xegu8OwLF6CqjB-H5G2_xT0", None,                                    (os.path.join("Dist", "x64"), "FreeImage.dll", "FreeImaged.dll")),
              ("Freetype-2.10.2.7z",     "1zF5L61Fo4m3alCdq1xHk_l0C_tJDsMYL", None,                                    None),
              ("glfw-3.3.2.7z",          "1AhjRGokc5o3BavC8kNUmS7Vd9q7pU18_", None,                                    None),

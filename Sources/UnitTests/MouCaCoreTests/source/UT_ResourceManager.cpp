@@ -69,9 +69,9 @@ TEST(ResourceManager, create)
     EXPECT_EQ(3, resources->getNbResources());
 
     // Release
-    ASSERT_NO_THROW(resources->releaseResource(image));
-    ASSERT_NO_THROW(resources->releaseResource(xml));
-    ASSERT_NO_THROW(resources->releaseResource(file));
+    ASSERT_NO_THROW(resources->releaseResource(std::move(image)));
+    ASSERT_NO_THROW(resources->releaseResource(std::move(xml)));
+    ASSERT_NO_THROW(resources->releaseResource(std::move(file)));
     EXPECT_EQ(0, resources->getNbResources());
 }
 
@@ -137,33 +137,33 @@ TEST(ResourceManager, readExisting)
         // Invalid format but possible in API.
         XML::ParserSPtr parserInv;
         ASSERT_NO_THROW(parserInv = resources->openXML(MouCaEnvironment::getInputPath() / imageFile));
-        ASSERT_NO_THROW(resources->releaseResource(parserInv));
+        ASSERT_NO_THROW(resources->releaseResource(std::move(parserInv)));
 
         RT::MeshImportSPtr meshInv;
         ASSERT_NO_THROW(meshInv = resources->openMeshImport(MouCaEnvironment::getInputPath() / xmlFile));
-        ASSERT_NO_THROW(resources->releaseResource(meshInv));
+        ASSERT_NO_THROW(resources->releaseResource(std::move(meshInv)));
 
         RT::ShaderFileSPtr shaderInv;
         ASSERT_NO_THROW(shaderInv = resources->openShader(MouCaEnvironment::getInputPath() / imageFile, RT::ShaderKind::Fragment));
-        ASSERT_NO_THROW(resources->releaseResource(shaderInv));
+        ASSERT_NO_THROW(resources->releaseResource(std::move(shaderInv)));
 
         RT::ImageImportSPtr imageInv;
         ASSERT_NO_THROW(imageInv = resources->openImage(MouCaEnvironment::getInputPath() / xmlFile));
-        ASSERT_NO_THROW(resources->releaseResource(imageInv));
+        ASSERT_NO_THROW(resources->releaseResource(std::move(imageInv)));
 
         RT::AnimationImporterSPtr animationInv;
         ASSERT_NO_THROW(animationInv = resources->openAnimation(MouCaEnvironment::getInputPath() / xmlFile));
-        ASSERT_NO_THROW(resources->releaseResource(animationInv));
+        ASSERT_NO_THROW(resources->releaseResource(std::move(animationInv)));
         
         EXPECT_EQ(maxResources, resources->getNbResources());
     }
 
     // Release
-    ASSERT_NO_THROW(resources->releaseResource(image));
-    ASSERT_NO_THROW(resources->releaseResource(mesh));
-    ASSERT_NO_THROW(resources->releaseResource(xml));
-    ASSERT_NO_THROW(resources->releaseResource(file));
-    ASSERT_NO_THROW(resources->releaseResource(shader));
-    ASSERT_NO_THROW(resources->releaseResource(animation));
+    ASSERT_NO_THROW(resources->releaseResource(std::move(image)));
+    ASSERT_NO_THROW(resources->releaseResource(std::move(mesh)));
+    ASSERT_NO_THROW(resources->releaseResource(std::move(xml)));
+    ASSERT_NO_THROW(resources->releaseResource(std::move(file)));
+    ASSERT_NO_THROW(resources->releaseResource(std::move(shader)));
+    ASSERT_NO_THROW(resources->releaseResource(std::move(animation)));
     EXPECT_EQ(0, resources->getNbResources());
 }

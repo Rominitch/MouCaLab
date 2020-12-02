@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MouCaCore/include/DatabaseManager.h>
+#include <MouCaCore/include/Database.h>
 
 namespace MouCaCore
 {
@@ -43,7 +43,7 @@ namespace MouCaCore
             sqlite3_stmt*   _stmt;          ///< Local statement (NEVER delete pointer -> use API !)
     };
 
-    class DatabaseManagerSqlite : public DatabaseManager
+    class DatabaseManagerSqlite : public Database
     {
         private:
             sqlite3*        _database;		///< Local database (NEVER delete pointer -> use API !)

@@ -10,8 +10,10 @@ namespace XML
     class Platform
     {
         public:
-            Platform() = default;
             virtual ~Platform() = default;
+
+        protected:
+            Platform() = default;
     };
 
     using PlatformUPtr = std::unique_ptr<Platform>;

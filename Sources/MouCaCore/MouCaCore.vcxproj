@@ -124,7 +124,7 @@
     <ClInclude Include="Dependencies.h" />
     <ClInclude Include="include\Core.h" />
     <ClInclude Include="include\CoreSystem.h" />
-    <ClInclude Include="include\DatabaseManager.h" />
+    <ClInclude Include="include\Database.h" />
     <ClInclude Include="include\DatabaseManagerSqlite.h" />
     <ClInclude Include="include\LoaderManager.h" />
     <ClInclude Include="include\ResourceManager.h" />
@@ -136,7 +136,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="source\CoreSystem.cpp" />
-    <ClCompile Include="source\DatabaseManager.cpp" />
     <ClCompile Include="source\DatabaseManagerSqlite.cpp" />
     <ClCompile Include="source\LoaderManager.cpp" />
     <ClCompile Include="source\ResourceManager.cpp" />

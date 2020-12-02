@@ -70,7 +70,7 @@ void MouCaLabTest::loadEngine(MouCaGraphic::VulkanManager& manager, const Core::
     ASSERT_NO_THROW(loader.load(context));
 
     // Release resource (no needed anymore)
-    _core.getResourceManager().releaseResource(xmlFile);
+    _core.getResourceManager().releaseResource(std::move(xmlFile));
 }
 
 void MouCaLabTest::loadEngine(MouCaGraphic::Engine3DXMLLoader& loader, const Core::String& fileName)
@@ -90,7 +90,7 @@ void MouCaLabTest::loadEngine(MouCaGraphic::Engine3DXMLLoader& loader, const Cor
     {
         loader.load(context);
         // Release resource (no needed anymore)
-        _core.getResourceManager().releaseResource(xmlFile);
+        _core.getResourceManager().releaseResource(std::move(xmlFile));
     }
     catch (const Core::Exception& exception)
     {
@@ -104,14 +104,14 @@ void MouCaLabTest::loadEngine(MouCaGraphic::Engine3DXMLLoader& loader, const Cor
         }
 
         // Release resource (no needed anymore)
-        _core.getResourceManager().releaseResource(xmlFile);
+        _core.getResourceManager().releaseResource(std::move(xmlFile));
 
         FAIL() << u8"XML loading error:\n" << message << u8"\nXML file: " << pathFile;
     }
     catch (...)
     {
         // Release resource (no needed anymore)
-        _core.getResourceManager().releaseResource(xmlFile);
+        _core.getResourceManager().releaseResource(std::move(xmlFile));
         FAIL() << u8"XML loading error - Unknown error - XML file: " << pathFile;
     }
 }
@@ -220,8 +220,8 @@ void MouCaLabTest::takeScreenshot(MouCaGraphic::VulkanManager& manager, const Co
             << u8"With tolerance of " << maxDistance4D << u8"(max found: " << maxFoundDistance << u8")";
     }
 
-    _core.getResourceManager().releaseResource(diskImage);
-    _core.getResourceManager().releaseResource(refImage);
+    _core.getResourceManager().releaseResource(std::move(diskImage));
+    _core.getResourceManager().releaseResource(std::move(refImage));
 }
 
 void MouCaLabTest::enableFileTracking(MouCaGraphic::VulkanManager& manager)

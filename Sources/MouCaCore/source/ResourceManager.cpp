@@ -1,16 +1,16 @@
 #include "Dependencies.h"
 
-#include "LibCore/include/CoreFile.h"
-
-#include "LibRT/include/RTAnimationBones.h"
-#include "LibRT/include/RTMesh.h"
-#include "LibRT/include/RTShaderFile.h"
-
-#include "LibMedia/include/ImageFI.h"
-
-#include "LibXML/include/XMLParser.h"
-
 #include "MouCaCore/include/ResourceManager.h"
+
+#include "MouCaCore/include/DatabaseManagerSqlite.h"
+
+#include <LibRT/include/RTAnimationBones.h>
+#include <LibRT/include/RTMesh.h>
+#include <LibRT/include/RTShaderFile.h>
+
+#include <LibMedia/include/ImageFI.h>
+
+#include <LibXML/include/XMLParser.h>
 
 namespace MouCaCore
 {
@@ -40,7 +40,7 @@ void ResourceManager::releaseResources()
     _resources.clear();
 }
 
-void ResourceManager::releaseResource(Core::ResourceSPtr resource)
+void ResourceManager::releaseResource(Core::ResourceSPtr&& resource)
 {
     const auto instance = resource.use_count();
     MOUCA_ASSERT(instance >= 2); // DEV Issue: Need this instance + manager !
@@ -96,6 +96,13 @@ RT::ImageImportSPtr ResourceManager::createImage(const Core::Path& filename)
     imageImport->setImage(std::make_shared<Media::ImageFI>());
 
     return imageImport;
+}
+
+DatabaseSPtr ResourceManager::createDatabase()
+{
+	auto db = std::make_shared<DatabaseManagerSqlite>();
+    _resources.insert(db);
+    return db;
 }
 
 template<typename BuildClass>

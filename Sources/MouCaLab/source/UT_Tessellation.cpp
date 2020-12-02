@@ -374,8 +374,8 @@ public:
 
         // Release resources
         auto& resources = _core.getResourceManager();
-        ASSERT_NO_THROW(resources.releaseResource(_models._imageHeight));
-        ASSERT_NO_THROW(resources.releaseResource(_models._imageTerrain));
+        ASSERT_NO_THROW(resources.releaseResource(std::move(_models._imageHeight)));
+        ASSERT_NO_THROW(resources.releaseResource(std::move(_models._imageTerrain)));
 
         // Clean buffers
         _models._uboScreenVS->release();

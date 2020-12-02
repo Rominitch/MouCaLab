@@ -19,7 +19,7 @@ namespace MouCaCore
             virtual bool isNull(const int columnID) const = 0;
 
             virtual Core::String readString(const int columnID) const = 0;
-            virtual bool       readBool(const int columnID) const = 0;
+            virtual bool     readBool(const int columnID) const = 0;
             virtual int16_t  readI16(const int columnID) const = 0;
             virtual int32_t  readI32(const int columnID) const = 0;
             virtual int64_t  readI64(const int columnID) const = 0;
@@ -39,17 +39,13 @@ namespace MouCaCore
 
 #pragma warning(push)
 #pragma warning(disable: 4275)
-    class DatabaseManager : public Core::Resource
+    class Database : public Core::Resource
     {
-        MOUCA_NOCOPY_NOMOVE(DatabaseManager);
+        MOUCA_NOCOPY_NOMOVE(Database);
 
         public:
-            ///	Create standard database player (sqlite).
-            ///	\return	Implemented DatabaseManager.
-            static std::shared_ptr<DatabaseManager> createManager();
-
             /// Destructor
-            virtual ~DatabaseManager() = default;
+            virtual ~Database() = default;
 
             ///	Open existing database.
             ///	\param	filePath: path where read DB.
@@ -76,9 +72,9 @@ namespace MouCaCore
             virtual DatabaseStatementSPtr query(const Core::String& query) = 0;
 
         protected:
-            DatabaseManager() = default;
+            Database() = default;
     };
 #pragma warning(pop)
 
-    using DatabaseManagerSPtr = std::shared_ptr<DatabaseManager>;
+    using DatabaseSPtr = std::shared_ptr<Database>;
 }

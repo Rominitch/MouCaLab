@@ -107,7 +107,7 @@ TEST_F( GLFWVirtualMouseTest, cursor )
         loader.loadResources( items );
 
         id = _platform.getEditMouse().createNewCursor(*mouseCursor->getImage().lock(), RT::Point2i(0, 0));
-        resources.releaseResource( mouseCursor );
+        resources.releaseResource( std::move(mouseCursor) );
     }
 
     // Create window
@@ -226,7 +226,7 @@ TEST_F( GLFWVirtualMouseTest, DEMO_test_mouse_mode )
         loader.loadResources( items );
 
         id = _platform.getEditMouse().createNewCursor(*mouseCursor->getImage().lock(), RT::Point2i(0, 0));
-        resources.releaseResource( mouseCursor );
+        resources.releaseResource( std::move(mouseCursor) );
     }
 
     // Create window

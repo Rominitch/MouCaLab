@@ -4,11 +4,11 @@
 
 TEST(XMLParser, platform)
 {
-    XML::Platform platform;
+    XML::XercesPlatform platform;
 
     // Try to create both parser.
     {
-        XML::Platform platform2;
+        XML::XercesPlatform platform2;
     }
 }
 
@@ -22,7 +22,7 @@ TEST(XMLParser, noPlatform)
 
 TEST(XMLParser, OpenError)
 {
-    XML::Platform platform;
+    XML::XercesPlatform platform;
     {
         XML::XercesParser parser;
 
@@ -33,7 +33,7 @@ TEST(XMLParser, OpenError)
 
 TEST(XMLParser, multiOpen)
 {
-    XML::Platform platform;
+    XML::XercesPlatform platform;
 
     {
         XML::XercesParser parser;
@@ -55,7 +55,7 @@ TEST(XMLParser, multiOpen)
 
 TEST(XMLParser, searchNode)
 {
-    XML::Platform platform;
+    XML::XercesPlatform platform;
 
     {
         XML::XercesParser parser;
@@ -74,7 +74,7 @@ TEST(XMLParser, searchNode)
 
 TEST(XMLParser, readNode)
 {
-    XML::Platform platform;
+    XML::XercesPlatform platform;
 
     {
         XML::XercesParser parser;
@@ -138,7 +138,7 @@ TEST(XMLParser, readNode)
 
 TEST(XMLParser, autoParser)
 {
-    XML::Platform platform;
+    XML::XercesPlatform platform;
 
     {
         XML::XercesParser parser;
@@ -164,7 +164,7 @@ TEST(XMLParser, autoParser)
 
 TEST(XMLParser, searchNodeFrom)
 {
-    XML::Platform platform;
+    XML::XercesPlatform platform;
 
     {
         XML::XercesParser parser;
