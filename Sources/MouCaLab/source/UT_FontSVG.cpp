@@ -183,7 +183,7 @@ class FontSVGTest : public MouCaLabTest
             }
         }
 
-        bool append_text(GUI::FontFamilySVG& font, glm::vec2 offset, float scale, const char* text, const RT::Array2ui& resolution)
+        bool append_text(GUI::FontFamilySVG& font, glm::vec2 offset, float scale, const char* text)
         {
             bool update = false;
             _charAppends.start();
@@ -288,7 +288,7 @@ class FontSVGTest : public MouCaLabTest
                 update |= append_text(*text._font->lock(),
                     text._offset + glm::vec2(0.0f, i * text._interline),
                     text._scale,
-                    text._text[i], _resolution);
+                    text._text[i]);
             }
             return update;
         }

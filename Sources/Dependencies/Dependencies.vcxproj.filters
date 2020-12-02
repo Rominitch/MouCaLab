@@ -64,9 +64,6 @@
     <ClInclude Include="..\..\..\SDK\include\CGAL.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\SDK\include\KTX.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\SDK\include\OS.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>

@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <KTX_PATH>$(SolutionDir)..\SDK\KTX-Software\</KTX_PATH>
+    <KTX_PATH>$(SolutionDir)..\SDK\KTX-Software-2.0.2\</KTX_PATH>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>

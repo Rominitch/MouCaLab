@@ -39,9 +39,9 @@ RT::CameraComportement* EventManager3D::getComportement() const
     return (*_current)->getComportement();
 }
 
-void EventManager3D::onSize(RT::Canvas* pCanvas, const RT::Array2ui& size)
+void EventManager3D::onSize(RT::Canvas*, const RT::Array2ui&)
 {
-    MOUCA_PRE_CONDITION(pCanvas != nullptr);
+    //MOUCA_PRE_CONDITION(pCanvas != nullptr);
     /*
     RT::ViewportInt32 viewport;
     viewport.setSize(size.x, size.y);

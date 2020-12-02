@@ -6,13 +6,13 @@
 //SDK
 #include <GLI.h>
 #include <GLM.h>
-
 #include <Boost.h>
 
-#include <Xerces.h>
-#include <sqlite.h>
-#include <FreeImage3.h>
 #include <Assimp.h>
+#include <FreeImage3.h>
+#include <ktx.h>
+#include <sqlite.h>
+#include <Xerces.h>
 
 //MouCa Common 
 #include <LibCore/include/CoreOperatingSystem.h>
