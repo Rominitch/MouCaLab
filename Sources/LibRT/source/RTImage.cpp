@@ -35,23 +35,35 @@ void ImageLinkedCPU::release()
 
 void ImageLinkedCPU::createFill(const RT::BufferCPUBase& imageBuffer, const uint32_t width, const uint32_t height)
 {
+    MOUCA_UNUSED(imageBuffer);
+    MOUCA_UNUSED(width);
+    MOUCA_UNUSED(height);
     MOUCA_THROW_ERROR(u8"BasicError", u8"ImageNoneImplemented");
 }
 
 void ImageLinkedCPU::saveImage(const Core::Path& filename)
 {
+    MOUCA_UNUSED(filename);
     MOUCA_THROW_ERROR(u8"BasicError", u8"ImageNoneImplemented");
 }
 
 bool ImageLinkedCPU::compare(const Image & reference, const size_t nbMaxDefectPixels, const double maxDistance4D,
                              size_t * nbDefectPixels, double* distance4D) const
 {
+    MOUCA_UNUSED(reference);
+    MOUCA_UNUSED(nbMaxDefectPixels);
+    MOUCA_UNUSED(maxDistance4D);
+    MOUCA_UNUSED(nbDefectPixels);
+    MOUCA_UNUSED(distance4D);
     MOUCA_THROW_ERROR(u8"BasicError", u8"ImageNoneImplemented");
 }
 
 void const* const ImageLinkedCPU::getRAWData(const uint32_t layer, const uint32_t level) const
 {
     MOUCA_PRE_CONDITION(!isNull()); //DEV Issue: Ready to work.
+
+    MOUCA_UNUSED(layer);
+    MOUCA_UNUSED(level);
 
     return _linkedBuffer.lock()->getData();
 }
@@ -62,6 +74,8 @@ size_t ImageLinkedCPU::getMemoryOffset(const uint32_t layer, const uint32_t leve
     MOUCA_PRE_CONDITION(layer < getLayers());
     MOUCA_PRE_CONDITION(level < getLevels());
 
+    MOUCA_UNUSED(layer);
+    MOUCA_UNUSED(level);
     return 0;
 }
 

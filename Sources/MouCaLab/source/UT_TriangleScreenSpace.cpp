@@ -13,8 +13,6 @@
 #include "LibVulkan/include/VKSubmitInfo.h"
 #include "LibVulkan/include/VKWindowSurface.h"
 
-//#define VULKAN_DEMO
-
 namespace MouCa3DEngine
 {
 
@@ -29,24 +27,27 @@ TEST_F(TriangleScreenSpaceTest, run)
     ASSERT_NO_FATAL_FAILURE(loadEngine(loader, u8"TriangleScreenSpace.xml"));
 
     // Execute rendering
-#ifdef VULKAN_DEMO
-    mainLoop(manager, u8"Triangle ScreenSpace Demo ");
-#else
-    // Get allocated item
-    auto context = manager.getDevices().at(0);
-    context->getDevice().waitIdle();
-
-    auto queueSequences = context->getQueueSequences();
-    ASSERT_EQ(1, queueSequences.size());
-
-    // Run one frame
-    for (const auto& sequence : *queueSequences.at(0))
+    if (MouCaEnvironment::isDemonstrator())
     {
-        ASSERT_EQ(VK_SUCCESS, sequence->execute(context->getDevice()));
+        mainLoop(manager, u8"Triangle ScreenSpace Demo ");
     }
+    else
+    {
+        // Get allocated item
+        auto context = manager.getDevices().at(0);
+        context->getDevice().waitIdle();
 
-    takeScreenshot(manager, L"triangleScreenSpace.png");
-#endif
+        auto queueSequences = context->getQueueSequences();
+        ASSERT_EQ(1, queueSequences.size());
+
+        // Run one frame
+        for (const auto& sequence : *queueSequences.at(0))
+        {
+            ASSERT_EQ(VK_SUCCESS, sequence->execute(context->getDevice()));
+        }
+
+        takeScreenshot(manager, L"triangleScreenSpace.png");
+    }
 
     // Clean
     ASSERT_NO_THROW(manager.release());

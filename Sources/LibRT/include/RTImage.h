@@ -170,7 +170,7 @@ namespace RT
             RT::Array3ui getExtents(const uint32_t level) const override
             {
                 MOUCA_PRE_CONDITION(level < getLevels());
-                BT_UNUSED(level);
+                MOUCA_UNUSED(level);
                 return _extents;
             }
 

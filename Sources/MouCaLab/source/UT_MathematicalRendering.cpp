@@ -37,35 +37,38 @@ TEST_F(MathematicalRenderingTest, run)
     updateUBO(loader, *context, 0.121f);
 
     // Execute rendering
-#ifdef VULKAN_DEMO
-    std::thread thread([&]()
-        {
-            float fTime = 0.0;
-            while(_environment.get3DEngine().getRTPlatform().isWindowsActive())
-            {
-                updateUBO(loader, *context, fTime);
-                fTime += 0.00001f;
-            }
-        });
-
-    mainLoop(manager, u8"Triangle ScreenSpace Demo ");
-
-    thread.join();
-#else
-    // Get allocated item
-    context->getDevice().waitIdle();
-
-    auto queueSequences = context->getQueueSequences();
-    ASSERT_EQ(1, queueSequences.size());
-
-    // Run one frame
-    for (const auto& sequence : *queueSequences.at(0))
+    if (MouCaEnvironment::isDemonstrator())
     {
-        ASSERT_EQ(VK_SUCCESS, sequence->execute(context->getDevice()));
-    }
+        std::thread thread([&]()
+            {
+                float fTime = 0.0;
+                while(_graphic.getRTPlatform().isWindowsActive())
+                {
+                    updateUBO(loader, *context, fTime);
+                    fTime += 0.00001f;
+                }
+            });
 
-    takeScreenshot(manager, L"MathematicalRendering.png");
-#endif
+        mainLoop(manager, u8"Triangle ScreenSpace Demo ");
+
+        thread.join();
+    }
+    else
+    {
+        // Get allocated item
+        context->getDevice().waitIdle();
+
+        auto queueSequences = context->getQueueSequences();
+        ASSERT_EQ(1, queueSequences.size());
+
+        // Run one frame
+        for (const auto& sequence : *queueSequences.at(0))
+        {
+            ASSERT_EQ(VK_SUCCESS, sequence->execute(context->getDevice()));
+        }
+
+        takeScreenshot(manager, L"MathematicalRendering.png");
+    }
 
     // Clean
     ASSERT_NO_THROW(manager.release());

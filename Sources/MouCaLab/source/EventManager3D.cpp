@@ -28,7 +28,7 @@ void EventManager3D::addManipulator(RT::CameraManipulatorSPtr& cameraManipulator
 void EventManager3D::onClose(RT::Canvas* pCanvas)
 {
     MOUCA_PRE_CONDITION(pCanvas != nullptr);
-    BT_UNUSED(pCanvas);
+    MOUCA_UNUSED(pCanvas);
 }
 
 RT::CameraComportement* EventManager3D::getComportement() const
@@ -61,8 +61,8 @@ void EventManager3D::onMouseWheel(RT::Canvas* pCanvas, const RT::VirtualMouse& m
 {
     MOUCA_PRE_CONDITION(!_manipulators.empty());
     MOUCA_PRE_CONDITION(pCanvas != nullptr);
-    BT_UNUSED(pCanvas);
-    BT_UNUSED(mouse);
+    MOUCA_UNUSED(pCanvas);
+    MOUCA_UNUSED(mouse);
 
     RT::CameraTrackBall* pTrackBall = dynamic_cast<RT::CameraTrackBall*>(getComportement());
     if (pTrackBall != nullptr)
@@ -77,7 +77,7 @@ void EventManager3D::onMouseMove(RT::Canvas* pCanvas, const RT::VirtualMouse& mo
 {
     MOUCA_PRE_CONDITION(!_manipulators.empty());
     MOUCA_PRE_CONDITION(pCanvas != nullptr);
-    BT_UNUSED(pCanvas);
+    MOUCA_UNUSED(pCanvas);
 
     _mouseState._mousePositionSN = mouse.getNormScreenPosition();
 
@@ -120,7 +120,7 @@ void EventManager3D::onMouseMove(RT::Canvas* pCanvas, const RT::VirtualMouse& mo
 void EventManager3D::onMousePress(RT::Canvas* pCanvas, const RT::VirtualMouse& mouse, const RT::VirtualMouse::Buttons eButton)
 {
     MOUCA_PRE_CONDITION(pCanvas != nullptr);
-    BT_UNUSED(pCanvas);
+    MOUCA_UNUSED(pCanvas);
 
     if (RT::VirtualMouse::isPressed(eButton, RT::VirtualMouse::Buttons::Left))
     {
@@ -131,18 +131,18 @@ void EventManager3D::onMousePress(RT::Canvas* pCanvas, const RT::VirtualMouse& m
 void EventManager3D::onMouseRelease(RT::Canvas* pCanvas, const RT::VirtualMouse& mouse, const RT::VirtualMouse::Buttons eButton)
 {
     MOUCA_PRE_CONDITION(pCanvas != nullptr);
-    BT_UNUSED(pCanvas);
-    BT_UNUSED(mouse);
-    BT_UNUSED(eButton);
+    MOUCA_UNUSED(pCanvas);
+    MOUCA_UNUSED(mouse);
+    MOUCA_UNUSED(eButton);
 }
 
 void EventManager3D::onKeyPress(RT::Canvas* pCanvas, int key, int scancode, int action, int mods)
 {
     MOUCA_PRE_CONDITION(pCanvas != nullptr);
-    BT_UNUSED(pCanvas);
-    BT_UNUSED(scancode);
-    BT_UNUSED(action);
-    BT_UNUSED(mods);
+    MOUCA_UNUSED(pCanvas);
+    MOUCA_UNUSED(scancode);
+    MOUCA_UNUSED(action);
+    MOUCA_UNUSED(mods);
 
     RT::CameraFlying* flying = dynamic_cast<RT::CameraFlying*>(getComportement());
 

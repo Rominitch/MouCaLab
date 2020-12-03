@@ -154,7 +154,7 @@ void assertBetween(const uint8_t ref, const uint8_t lowEd, const uint8_t HighTh,
 #   define MOUCA_DEBUG(msg)                     void(0) 
 #endif
 
-#define BT_UNUSED(variable) variable;
+#define MOUCA_UNUSED(variable) variable;
 
 namespace Core
 {

@@ -168,21 +168,24 @@ TEST_F(TriangleTest, run)
     updateUBO(manager.getSurfaces().at(0)->_linkWindow, context, loader._buffers[0]);
 
     // Execute rendering
-#ifdef VULKAN_DEMO
-    mainLoop(manager, u8"Triangle Demo ");
-#else
-    context->getDevice().waitIdle();
-    auto queueSequences = context->getQueueSequences();
-    ASSERT_EQ(1, queueSequences.size());
-
-    // Run one frame
-    for (const auto& sequence : *queueSequences.at(0))
+    if (MouCaEnvironment::isDemonstrator())
     {
-        ASSERT_EQ(VK_SUCCESS, sequence->execute(context->getDevice()));
+        mainLoop(manager, u8"Triangle Demo ");
     }
+    else
+    {
+        context->getDevice().waitIdle();
+        auto queueSequences = context->getQueueSequences();
+        ASSERT_EQ(1, queueSequences.size());
+
+        // Run one frame
+        for (const auto& sequence : *queueSequences.at(0))
+        {
+            ASSERT_EQ(VK_SUCCESS, sequence->execute(context->getDevice()));
+        }
     
-    takeScreenshot(manager, L"triangle.png");
-#endif
+        takeScreenshot(manager, L"triangle.png");
+    }
 
     // Clean
     ASSERT_NO_THROW(manager.release());

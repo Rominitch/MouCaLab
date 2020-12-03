@@ -12,7 +12,10 @@ class PlugInTest : public Core::PlugInEntry
         ~PlugInTest() override = default;
 
         void setApplicationArguments(const int argc, const char** argv) override
-        {}
+        {
+            MOUCA_UNUSED(argc);
+            MOUCA_UNUSED(argv);
+        }
 
         void initialize() override;
         void release() override;

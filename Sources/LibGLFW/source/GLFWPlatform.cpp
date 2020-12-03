@@ -150,6 +150,8 @@ void Platform::runMainLoop()
 
 void Platform::minimizedWindow(Window*& window, const bool minimized)
 {
+    MOUCA_UNUSED(window);
+    MOUCA_UNUSED(minimized);
     // Minimized / restore all ?
 }
 

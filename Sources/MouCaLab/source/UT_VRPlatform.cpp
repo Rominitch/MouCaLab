@@ -76,49 +76,52 @@ TEST_F(VRTest, run)
     auto context = manager.getDevices().at(0);
 
     // Execute rendering
-#ifdef VULKAN_DEMO
-    context->getDevice().waitIdle();
-
-    auto& vrEngine = _environment.get3DEngine().getVRPlatform();
-
-    //std::thread thread([&]()
-    //    {
-    //        //float fTime = 0.0;
-    //        while(_environment.get3DEngine().getRTPlatform().isWindowsActive())
-    //        {
-    //            //updateUBO(loader, *context, fTime);
-    //            //fTime += 0.00001f;
-    //
-                ASSERT_NO_THROW(vrEngine.pollEvents());
-                ASSERT_NO_THROW(vrEngine.pollControllerEvents());
-                ASSERT_NO_THROW(vrEngine.updateTracked());
-    //        }
-    //    });
-    auto demo = [&] (const double timer)
+    if (MouCaEnvironment::isDemonstrator())
     {
+        context->getDevice().waitIdle();
+
+        auto& vrEngine = _graphic.getVRPlatform();
+
+        //std::thread thread([&]()
+        //    {
+        //        //float fTime = 0.0;
+        //        while(_environment.get3DEngine().getRTPlatform().isWindowsActive())
+        //        {
+        //            //updateUBO(loader, *context, fTime);
+        //            //fTime += 0.00001f;
+        //
         ASSERT_NO_THROW(vrEngine.pollEvents());
         ASSERT_NO_THROW(vrEngine.pollControllerEvents());
         ASSERT_NO_THROW(vrEngine.updateTracked());
-    };
+        //        }
+        //    });
+        auto demo = [&](const double)
+        {
+            ASSERT_NO_THROW(vrEngine.pollEvents());
+            ASSERT_NO_THROW(vrEngine.pollControllerEvents());
+            ASSERT_NO_THROW(vrEngine.updateTracked());
+        };
 
-    mainLoop(manager, u8"Triangle ScreenSpace Demo ", demo);
+        mainLoop(manager, u8"Triangle ScreenSpace Demo ", demo);
 
-    //thread.join();
-#else
-    // Get allocated item
-    context->getDevice().waitIdle();
-
-    auto queueSequences = context->getQueueSequences();
-    ASSERT_EQ(2, queueSequences.size());
-
-    // Run one frame
-    for (const auto& sequence : *queueSequences.at(0))
-    {
-        ASSERT_EQ(VK_SUCCESS, sequence->execute(context->getDevice()));
+        //thread.join();
     }
+    else
+    {
+        // Get allocated item
+        context->getDevice().waitIdle();
 
-    takeScreenshot(manager, L"VRCompanionTriangle.png");
-#endif
+        auto queueSequences = context->getQueueSequences();
+        ASSERT_EQ(2, queueSequences.size());
+
+        // Run one frame
+        for (const auto& sequence : *queueSequences.at(0))
+        {
+            ASSERT_EQ(VK_SUCCESS, sequence->execute(context->getDevice()));
+        }
+
+        takeScreenshot(manager, L"VRCompanionTriangle.png");
+    }
 
     // Clean
     ASSERT_NO_THROW(manager.release());

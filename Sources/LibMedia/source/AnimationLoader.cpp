@@ -39,6 +39,8 @@ RT::Transform toTransform(const aiMatrix4x4& matrix)
 
 void loadAnimation(RT::AnimationBones::Animation& currentAnimation, RT::AnimationBones& animationBones, RT::BonesHierarchy* node, aiAnimation* animation, const aiNode* pNode, RT::Transform parentTransform)
 {
+    MOUCA_UNUSED(parentTransform);
+
     std::string NodeName(pNode->mName.data);
 
     RT::Transform nodeTransform;// = parentTransform * toTransform(pNode->mTransformation);

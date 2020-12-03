@@ -49,8 +49,8 @@ namespace Media
             void const* const getRAWData(const uint32_t layer, const uint32_t level) const override
             {
                 MOUCA_PRE_CONDITION(level < getLevels());
-                BT_UNUSED(layer);
-                BT_UNUSED(level);
+                MOUCA_UNUSED(layer);
+                MOUCA_UNUSED(level);
                 return FreeImage_GetBits(_imageData);
             }
 
