@@ -14,20 +14,23 @@
 class VRTest : public MouCaLabTest
 {
 public:
-    static bool _vrEnabled;
-    static void SetUpTestSuite()
+    bool _vrEnabled=false;
+    void SetUp() override
     {
-        try
+        MouCaLabTest::SetUp();
+
+        ASSERT_NO_THROW(_graphic.getVRPlatform().initialize()) << "VR is not supported";
+        _vrEnabled = true;
+    }
+
+    void TearDown() override
+    {
+        if(_vrEnabled)
         {
-            MouCaVR::Platform vrEngine;
-            vrEngine.initialize();
-            vrEngine.release();
-            _vrEnabled = true;
+            ASSERT_NO_THROW(_graphic.getVRPlatform().release());
         }
-        catch(...)
-        {
-            _vrEnabled = false;
-        }
+
+        MouCaLabTest::TearDown();
     }
 
     void updateUBO(MouCaGraphic::Engine3DXMLLoader& loader, const Vulkan::ContextDevice& context, float time)
@@ -42,16 +45,10 @@ public:
     }
 };
 
-bool VRTest::_vrEnabled = false;
-
 TEST_F(VRTest, platform)
 {
-    if (!_vrEnabled)
-        FAIL() << "VR is not supported";
-
-    MouCaVR::Platform vrEngine;
-    ASSERT_NO_THROW(vrEngine.initialize());
-
+    auto& vrEngine = _graphic.getVRPlatform();
+    
     ASSERT_NO_THROW(vrEngine.pollEvents());
     ASSERT_NO_THROW(vrEngine.pollControllerEvents());
     ASSERT_NO_THROW(vrEngine.updateTracked());
@@ -59,15 +56,11 @@ TEST_F(VRTest, platform)
     // Check best size
     EXPECT_LT(0ull, vrEngine.getRenderSize().x);
     EXPECT_LT(0ull, vrEngine.getRenderSize().y);
-
-    ASSERT_NO_THROW(vrEngine.release());
 }
 
 TEST_F(VRTest, run)
 {
-    if (!_vrEnabled)
-        FAIL() << "VR is not supported";
-
+    auto& vrEngine = _graphic.getVRPlatform();
     MouCaGraphic::VulkanManager manager;
 
     MouCaGraphic::Engine3DXMLLoader loader(manager);
@@ -79,8 +72,6 @@ TEST_F(VRTest, run)
     if (MouCaEnvironment::isDemonstrator())
     {
         context->getDevice().waitIdle();
-
-        auto& vrEngine = _graphic.getVRPlatform();
 
         //std::thread thread([&]()
         //    {
