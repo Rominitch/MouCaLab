@@ -45,7 +45,7 @@ public:
     }
 };
 
-TEST_F(VRTest, platform)
+TEST_F(VRTest, DISABLED_platform)
 {
     auto& vrEngine = _graphic.getVRPlatform();
     
@@ -58,7 +58,7 @@ TEST_F(VRTest, platform)
     EXPECT_LT(0ull, vrEngine.getRenderSize().y);
 }
 
-TEST_F(VRTest, run)
+TEST_F(VRTest, DISABLED_run)
 {
     auto& vrEngine = _graphic.getVRPlatform();
     MouCaGraphic::VulkanManager manager;

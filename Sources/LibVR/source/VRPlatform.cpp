@@ -148,6 +148,14 @@ void Platform::pollEvents()
                 auto& trackedDevice = _trackedDevices[event.trackedDeviceIndex];
             }
             break;
+
+            case vr::VREvent_Quit:
+            {
+                _system->AcknowledgeQuit_Exiting();
+
+                return;
+            }
+            break;
         }
     }
 }
