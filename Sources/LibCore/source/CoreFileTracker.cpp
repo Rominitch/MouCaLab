@@ -165,6 +165,9 @@ void FileTracker::TrackerThread::run()
         {}
         else
         {
+            // Protect Multi-threading access
+            std::lock_guard<std::mutex> guard( _lockTracked );
+
             // Analyze tracked resources
             DWORD count = 0;
             for( const auto& handle : _waitHandle )
@@ -176,8 +179,6 @@ void FileTracker::TrackerThread::run()
                         MOUCA_THROW_ERROR( u8"Tools", u8"FileTrackingError" );
                     }
 
-                    // Protect Multi-threading access
-                    std::lock_guard<std::mutex> guard( _lockTracked );
                     if( !_tracked.empty() )
                     {
                         auto itTracked = std::find_if( _tracked.begin(), _tracked.end(), [&]( const std::pair<key, std::vector<FileInfo>>& data ) { return data.first._handle == handle; } );
@@ -186,9 +187,11 @@ void FileTracker::TrackerThread::run()
                             MOUCA_ASSERT( fileInfo._data.lock() );
                             ResourceSPtr resource = fileInfo._data.lock();
                             // Check if this file has same edited time than before
-                            auto newTime = std::filesystem::last_write_time( std::filesystem::path( resource->getTrackedFilename() ) );
+                            const auto newTime = std::filesystem::last_write_time( resource->getTrackedFilename() );
                             if( newTime != fileInfo._lastEdited )
                             {
+                                MOUCA_DEBUG(u8"FileTracker: " << resource->getTrackedFilename() << u8" has changed.");
+
                                 // Update time
                                 fileInfo._lastEdited = newTime;
 

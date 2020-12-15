@@ -103,7 +103,6 @@
     <ClInclude Include="include\CoreLocale.h" />
     <ClInclude Include="include\CoreMaths.h" />
     <ClInclude Include="include\CoreOperatingSystem.h" />
-    <ClInclude Include="include\CoreProcess.h" />
     <ClInclude Include="include\CoreResource.h" />
     <ClInclude Include="include\CoreSignal.h" />
     <ClInclude Include="include\CoreString.h" />
@@ -127,7 +126,6 @@
     <ClCompile Include="source\CoreFileTracker.cpp" />
     <ClCompile Include="source\CoreIdentifier.cpp" />
     <ClCompile Include="source\CoreLocale.cpp" />
-    <ClCompile Include="source\CoreProcess.cpp" />
     <ClCompile Include="source\CoreStandardOS.cpp" />
     <ClCompile Include="source\CorePluginManager.cpp" />
   </ItemGroup>
