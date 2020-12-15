@@ -849,7 +849,9 @@ TEST_F(FontSVGTest, run)
             }
         };
         mainLoop(manager, u8"FontSVG Demo ", demo);
-    } // EnableCodeCoverage
+
+        // EnableCodeCoverage
+    }
     else
     {
         updateUIOverlay(manager, refreshCommand);

@@ -351,15 +351,13 @@ void VulkanManager::afterShaderEdition(Core::Resource& resource)
                                  [&](auto& current) {return current.first.lock().get() == &resource; });
     if (itShader != _shaders.cend())
     {
-        _locked.lock();
-
         try
         {
-            MOUCA_DEBUG(u8"Vulkan: Reload shader " << itShader->first.lock()->getTrackedFilename());
-
             // Compile new version
             auto shaderFile = itShader->first.lock();
             shaderFile->compile();
+
+            _locked.lock();
 
             // ------ Brutal algo ------------------
             // Step1 : disable all
@@ -392,21 +390,22 @@ void VulkanManager::afterShaderEdition(Core::Resource& resource)
             for (auto& window : _windows)
             {
                 window->getCommandBuffer().execute(VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+//                 for (auto& commandBuffer : window->getCommandBuffers())
+//                 {
+//                     commandBuffer->execute();
+//                 }
+
                 window->setReady(true);
             }
 
             context->getDevice().waitIdle();
-        }
-        catch (const Core::Exception& e)
-        {
-            MOUCA_UNUSED(e);
-            // Keep old shader
-            MOUCA_DEBUG("Vulkan: Reload shader failure with "<< e.read(0).getErrorLabel() << " " << (e.read(0).getParameters().empty() ? "" : e.read(0).getParameters().front()));
-        }
-        catch(...)
-        {}
 
-        _locked.unlock();
+            _locked.unlock();
+        }
+        catch (const Core::Exception&)
+        {
+            // Keep old shader
+        }
 
         // Send event
         _afterShaderChanged.emit();

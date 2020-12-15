@@ -216,7 +216,6 @@
     <Xml Include="..\..\UnitTests\Renderer\Environment.xml" />
     <Xml Include="..\..\UnitTests\Renderer\EnvironmentError.xml" />
     <Xml Include="..\..\UnitTests\Renderer\FenceError.xml" />
-    <Xml Include="..\..\UnitTests\Renderer\FontSVG.xml" />
     <Xml Include="..\..\UnitTests\Renderer\FormatError.xml" />
     <Xml Include="..\..\UnitTests\Renderer\FrameBufferError.xml" />
     <Xml Include="..\..\UnitTests\Renderer\FrameBufferError1.xml" />

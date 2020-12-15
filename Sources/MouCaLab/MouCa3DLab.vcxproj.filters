@@ -299,8 +299,5 @@
     <Xml Include="..\..\UnitTests\Renderer\FullDescriptor.xml">
       <Filter>Renderer\Error</Filter>
     </Xml>
-    <Xml Include="..\..\UnitTests\Renderer\FontSVG.xml">
-      <Filter>Renderer</Filter>
-    </Xml>
   </ItemGroup>
 </Project>

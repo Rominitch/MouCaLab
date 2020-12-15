@@ -27,26 +27,36 @@ ShaderFile::~ShaderFile()
 
 void ShaderFile::compile()
 {
-    MOUCA_PRE_CONDITION(!_sourceFilepath.empty()); // DEV Issue: Need valid source file: API is consider like disabled.
-    MOUCA_PRE_CONDITION(std::filesystem::exists(_sourceFilepath));
-    MOUCA_PRE_CONDITION((std::filesystem::status(_sourceFilepath).permissions() & std::filesystem::perms::owner_read) != std::filesystem::perms::none);
+    MOUCA_PRE_CONDITION( !_sourceFilepath.empty() ); // DEV Issue: Need valid source file: API is consider like disabled.
 
-    const Core::Path executable = Core::Path(Core::getEnvironmentVariable("VULKAN_SDK")) / u8"Bin" / u8"glslangValidator.exe";
-    MOUCA_PRE_CONDITION(std::filesystem::exists(executable)); // DEV Issue: Not a valid path to glslangValidator, check VULKAN_SDK env.
+    const Core::Path executable = Core::Path(Core::getEnvironmentVariable("VULKAN_SDK")) / u8"bin" / u8"glslangValidator.exe";
 
-    // Use basic command system: May be standard Process will be implemented soon (avoid boost::process to be light).
-    const Core::String cmd = executable.string() + " -V -o " + _filename.string() + " " + _sourceFilepath.string();
-    //const Core::String cmd = std::format("{} -V -o {} {}", executable, _filename, _sourceFilepath);
-    const int rc = system(cmd.c_str());
+    // Prepare task
+    Core::Process processCompile(executable);
+    Core::Process::Arguments arguments;
+    arguments.emplace_back(L"-H");
+    arguments.emplace_back(L"-V");
+    arguments.emplace_back(L"-o");
+    arguments.emplace_back(_filename);
+    arguments.emplace_back(_sourceFilepath);
 
-    // Check rc code
-    if (rc != 0)
+    // Execute
+    processCompile.execute(arguments);
+
+    // Wait task is done
+    bool done = processCompile.waitForFinish(30000);
+
+    const Core::String message = processCompile.readStdOutput() + u8" " + processCompile.readStdError();
+    
+    // Check timeout
+    if (!done)
     {
-        MOUCA_THROW_ERROR_1(u8"Vulkan", u8"ShaderCompilationError", "Error code: " + std::to_string(rc));
+        MOUCA_THROW_ERROR_1(u8"Vulkan", u8"ShaderCompilationError", message);
     }
-    else
+    // Check rc code
+    if (processCompile.getReturnCode() != 0)
     {
-        MOUCA_DEBUG(u8"GLSL compilation Success: " << _sourceFilepath.filename());
+        MOUCA_THROW_ERROR_1(u8"Vulkan", u8"ShaderCompilationError", message);
     }
 }
 
