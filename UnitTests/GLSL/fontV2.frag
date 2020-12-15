@@ -18,8 +18,6 @@ struct GlyphInfo
     uvec2 index;
 };
 
-
-
 layout (set = 0, binding = 0) buffer GlyphBuffer
 {
     GlyphInfo glyphs[];
@@ -246,6 +244,22 @@ float bezier2Coverage(in vec2 p1, in vec2 p2, in vec2 p3, in vec2 pixelsPerEm)
          + bezier2CoverageY(p1, p2, p3, pixelsPerEm);
 }
 
+float bezier3CoverageX(in vec2 p1, in vec2 p2, in vec2 p3, in vec2 p4, in vec2 pixelsPerEm)
+{
+    float coverage = 0.0;
+    if (max(max(max(p1.x, p2.x), p3.x), p4.x) * pixelsPerEm.x < -0.5)
+        return coverage;
+        
+    coverage = 1.0;
+        
+    return coverage;
+}
+
+float bezier3Coverage(in vec2 p1, in vec2 p2, in vec2 p3, in vec2 p4, in vec2 pixelsPerEm)
+{
+    return bezier3CoverageX(p1, p2, p3, p4, pixelsPerEm);
+}
+
 void showPoints()
 {
     vec4 color[] = 
@@ -300,8 +314,8 @@ void main()
     float coverage = 0.0;
 
     out_color = vec4(0, 0, 0, 0);
-    //uint aa = in_IndexPts.x+0;
-    //for (uint i = aa; i < min(in_IndexPts.y-1, aa+3); i += 1)
+    //uint aa = in_IndexPts.x+4;
+    //for (uint i = aa; i < min(in_IndexPts.y-1, aa+1); i += 1)
     for (uint i = in_IndexPts.x; i < in_IndexPts.y-1; i += 1)
     {
         // Search outline loop
@@ -334,9 +348,19 @@ void main()
                         
             coverage += bezier2Coverage(p1, p2, p3, pixelsPerEm);
         }
+        else if( type == 2 ) // Bezier cubic
+        {
+            uint indexPC = pointBuffer.points[i+1].code >> shiftCode;
+            
+            vec2 p1 = s - in_TexCoord;
+            vec2 p2 = controlBuffer.points[indexPC] - in_TexCoord;
+            vec2 p3 = controlBuffer.points[indexPC+1] - in_TexCoord;
+            vec2 p4 = e - in_TexCoord;
+            coverage += bezier3Coverage(p1, p2, p3, p4, pixelsPerEm);
+        }
     }
     
     out_color = vec4(0, 0, 0, coverage);
     
-    //showPoints();
+    showPoints();
 }

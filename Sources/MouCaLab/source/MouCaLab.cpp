@@ -18,16 +18,16 @@ MouCaLabTest::MouCaLabTest()
     _mandatoryFeatures.multiDrawIndirect    = VK_TRUE;
     _mandatoryFeatures.samplerAnisotropy    = VK_TRUE;
 
-    _core.getResourceManager().addResourceFolder(MouCaEnvironment::getWorkingPath(), MouCaCore::ResourceManager::Executable);
-    _core.getResourceManager().addResourceFolder(MouCaEnvironment::getWorkingPath() / ".." / ".." / "MouCaLab" / "UnitTests" / "GLSL",      MouCaCore::ResourceManager::ShadersSource);
-    _core.getResourceManager().addResourceFolder(MouCaEnvironment::getWorkingPath() / ".." / ".." / "MouCaLab" / "UnitTests" / "Renderer",  MouCaCore::ResourceManager::Renderer);
+    _core.getResourceManager().addResourceFolder(std::filesystem::canonical(MouCaEnvironment::getWorkingPath()), MouCaCore::ResourceManager::Executable);
+    _core.getResourceManager().addResourceFolder(std::filesystem::canonical(MouCaEnvironment::getWorkingPath() / ".." / ".." / "MouCaLab" / "UnitTests" / "GLSL"),      MouCaCore::ResourceManager::ShadersSource);
+    _core.getResourceManager().addResourceFolder(std::filesystem::canonical(MouCaEnvironment::getWorkingPath() / ".." / ".." / "MouCaLab" / "UnitTests" / "Renderer"),  MouCaCore::ResourceManager::Renderer);
 
-    _core.getResourceManager().addResourceFolder(MouCaEnvironment::getInputPath() / "Configuration", MouCaCore::ResourceManager::Configuration);
-    _core.getResourceManager().addResourceFolder(MouCaEnvironment::getInputPath() / "fonts",         MouCaCore::ResourceManager::Fonts);
-    _core.getResourceManager().addResourceFolder(MouCaEnvironment::getInputPath() / "mesh",          MouCaCore::ResourceManager::Meshes);
-    _core.getResourceManager().addResourceFolder(MouCaEnvironment::getInputPath() / "textures",      MouCaCore::ResourceManager::Textures);
-    _core.getResourceManager().addResourceFolder(MouCaEnvironment::getInputPath() / ".." / "SpirV",  MouCaCore::ResourceManager::Shaders);
-    _core.getResourceManager().addResourceFolder(MouCaEnvironment::getInputPath() / "references",    MouCaCore::ResourceManager::References);
+    _core.getResourceManager().addResourceFolder(std::filesystem::canonical(MouCaEnvironment::getInputPath() / "Configuration"), MouCaCore::ResourceManager::Configuration);
+    _core.getResourceManager().addResourceFolder(std::filesystem::canonical(MouCaEnvironment::getInputPath() / "fonts"),         MouCaCore::ResourceManager::Fonts);
+    _core.getResourceManager().addResourceFolder(std::filesystem::canonical(MouCaEnvironment::getInputPath() / "mesh"),          MouCaCore::ResourceManager::Meshes);
+    _core.getResourceManager().addResourceFolder(std::filesystem::canonical(MouCaEnvironment::getInputPath() / "textures"),      MouCaCore::ResourceManager::Textures);
+    _core.getResourceManager().addResourceFolder(std::filesystem::canonical(MouCaEnvironment::getInputPath() / ".." / "SpirV"),  MouCaCore::ResourceManager::Shaders);
+    _core.getResourceManager().addResourceFolder(std::filesystem::canonical(MouCaEnvironment::getInputPath() / "references"),    MouCaCore::ResourceManager::References);
 }
 
 void MouCaLabTest::SetUp()

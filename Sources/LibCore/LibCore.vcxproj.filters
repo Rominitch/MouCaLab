@@ -89,9 +89,6 @@
     <ClInclude Include="include\CoreOperatingSystem.h">
       <Filter>Fichiers d%27en-tête\OS</Filter>
     </ClInclude>
-    <ClInclude Include="include\CoreProcess.h">
-      <Filter>Fichiers d%27en-tête\OS</Filter>
-    </ClInclude>
     <ClInclude Include="include\CoreStandardOS.h">
       <Filter>Fichiers d%27en-tête\OS</Filter>
     </ClInclude>
@@ -144,9 +141,6 @@
     </ClCompile>
     <ClCompile Include="source\CoreFile.cpp">
       <Filter>Fichiers sources\File</Filter>
-    </ClCompile>
-    <ClCompile Include="source\CoreProcess.cpp">
-      <Filter>Fichiers sources\OS</Filter>
     </ClCompile>
     <ClCompile Include="source\CoreStandardOS.cpp">
       <Filter>Fichiers sources\OS</Filter>
