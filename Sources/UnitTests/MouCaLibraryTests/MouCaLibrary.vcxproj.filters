@@ -148,5 +148,8 @@
     <ClCompile Include="Dependencies.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="source\UT_CoreElapser.cpp">
+      <Filter>Fichiers sources\Core</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -15,6 +15,7 @@ namespace Core
     class Elapser
     {
         MOUCA_NOCOPY_NOMOVE(Elapser);
+
         public:
             /// Constructor
             Elapser() :
@@ -36,10 +37,11 @@ namespace Core
             //------------------------------------------------------------------------
             /// \brief  Tick allows to catch current time and compute elapsed time between now and latest tick.
             /// 
+            template<typename Precision>
             int64_t tick()
             {
                 _afterFrameTimer = ChronoClock::now();
-                int64_t elapse = std::chrono::duration_cast<ChronoPrecision>(_afterFrameTimer - _beforeFrameTimer).count();
+                int64_t elapse = std::chrono::duration_cast<Precision>(_afterFrameTimer - _beforeFrameTimer).count();
                 _beforeFrameTimer = _afterFrameTimer;
 
                 return elapse;

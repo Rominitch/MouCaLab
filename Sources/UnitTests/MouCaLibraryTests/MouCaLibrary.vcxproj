@@ -151,6 +151,7 @@
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\SteamTest.cpp" />
     <ClCompile Include="source\UT_CoreByteBuffer.cpp" />
+    <ClCompile Include="source\UT_CoreElapser.cpp" />
     <ClCompile Include="source\UT_CoreError.cpp" />
     <ClCompile Include="source\UT_CoreException.cpp" />
     <ClCompile Include="source\UT_CoreFile.cpp" />

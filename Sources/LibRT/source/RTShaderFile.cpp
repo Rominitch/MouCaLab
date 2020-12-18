@@ -3,8 +3,7 @@
 /// \license No license
 #include "Dependencies.h"
 
-#include "LibCore/include/CoreProcess.h"
-#include "LibCore/include/CoreStandardOS.h"
+#include <LibCore/include/CoreStandardOS.h>
 
 #include "LibRT/include/RTShaderFile.h"
 
