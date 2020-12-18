@@ -84,7 +84,7 @@ namespace RT
         class Bezier3
         {
             public:
-            static std::array<float, 3> cubicRoots(const std::array<float, 4>& P, uint32_t& nbSolutions)
+            static std::array<float, 3> cubicRoots(const glm::vec4& P, uint32_t& nbSolutions)
             {
                 float a=P[0];
                 float b=P[1];
@@ -153,25 +153,30 @@ namespace RT
                 };
             }
 
-            static std::array<float, 6> computeIntersections(std::array<float, 4> px, std::array<float, 4>py, std::array<float, 2>lx, std::array<float, 2>ly, uint32_t& nbSolutions, const float epsilon = 1e-5f)
+            static std::array<glm::vec2, 4> bezierCoeffs(const std::array<glm::vec2, 4>& P)
             {
-                std::array<float, 6> X = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
- 
-                float A=ly[1]-ly[0];	    //A=y2-y1
-                float B=lx[0]-lx[1];	    //B=x1-x2
-                float C=lx[0]*(ly[0]-ly[1]) + 
-                      ly[0]*(lx[1]-lx[0]);	//C=x1*(y1-y2)+y1*(x2-x1)
- 
-                std::array<float, 4> bx = bezierCoeffs(px);
-                std::array<float, 4> by = bezierCoeffs(py);
- 
-                std::array<float, 4> P
-                {
-                    A * bx[0] + B * by[0],		/*t^3*/
-                    A * bx[1] + B * by[1],		/*t^2*/
-                    A * bx[2] + B * by[2],		/*t*/
-                    A * bx[3] + B * by[3] + C 	/*1*/
+                return {
+                -P[0] + 3.0f * (P[1] - P[2]) + P[3],
+                3.0f * (P[0] - 2.0f * P[1] + P[2]),
+                3.0f * (-P[0] + P[1]),
+                P[0]
                 };
+            }
+
+            static std::array<glm::vec2, 3> computeIntersections(const std::array<glm::vec2, 4>& bezierPts, const std::array<glm::vec2, 2>& line, uint32_t& nbSolutions, const float epsilon = 1e-5f)
+            {
+                std::array<glm::vec2, 3> X;
+ 
+                const glm::vec2 displacement(
+                    line[1].y - line[0].y,                            //A=y2-y1
+                    line[0].x - line[1].x);                           //B=x1-x2
+                float C = glm::dot(line[0], -displacement);	          //C=x1*(y1-y2)+y1*(x2-x1)
+ 
+                const auto coeffs = bezierCoeffs(bezierPts);
+                const glm::vec4 P(glm::dot(displacement, coeffs[0]),       // t^3
+                                  glm::dot(displacement, coeffs[1]),       // t^2
+                                  glm::dot(displacement, coeffs[2]),       // t
+                                  glm::dot(displacement, coeffs[3]) + C);  // 1
                 
                 // No solution
                 if (abs(P[0]) < epsilon)
@@ -188,9 +193,7 @@ namespace RT
                     float t = r[i];
                     if(t <= -1.0f)
                         continue;
-
-                    X[i*2]  = bx[0]*t*t*t+bx[1]*t*t+bx[2]*t+bx[3];
-                    X[i*2+1]= by[0]*t*t*t+by[1]*t*t+by[2]*t+by[3];            
+                    X[i] = ((coeffs[0]*t+coeffs[1])*t+coeffs[2])*t+coeffs[3];
                 }
                 return X;
             }

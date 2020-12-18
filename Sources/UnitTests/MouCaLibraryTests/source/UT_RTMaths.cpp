@@ -78,94 +78,77 @@ TEST(RTMaths, upperPowOfTwo)
 
 TEST(Bezier3, intersectionX)
 {
-    std::array<float, 4> x{0.0f, 1.0f, 2.0f, 3.0f};
-    std::array<float, 6> i;
+    const std::array<glm::vec2, 2> line { glm::vec2(-1.0f, 0.0f), glm::vec2(4.0f, 0.0f) };
     uint32_t nbSolutions;
     
-    i = RT::Maths::Bezier3::computeIntersections(x, { 0.5f, 2.0f, 2.0f, 0.5f }, { -1.0f, 4.0f }, { 0.0f, 0.0f }, nbSolutions);
+    std::array<glm::vec2, 4> bezierPts{ glm::vec2(0.0f, 0.5f), glm::vec2(1.0f, 2.0f), glm::vec2(2.0f, 2.0f), glm::vec2(3.0f, 0.5f) };
+    auto i = RT::Maths::Bezier3::computeIntersections(bezierPts, line, nbSolutions);
     EXPECT_EQ(0ul, nbSolutions);
-    EXPECT_NEAR(0.0f, i[0], 1e-5f);
-    EXPECT_NEAR(0.0f, i[1], 1e-5f);
-    EXPECT_NEAR(0.0f, i[2], 1e-5f);
-    EXPECT_NEAR(0.0f, i[3], 1e-5f);
-    EXPECT_NEAR(0.0f, i[4], 1e-5f);
-    EXPECT_NEAR(0.0f, i[5], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(), i[0], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(), i[1], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(), i[2], 1e-5f);
 
     // 1 sol
-    i = RT::Maths::Bezier3::computeIntersections(x, {0.5f, -2.0f, -2.0f, -0.5f}, { -1.0f, 4.0f }, {0.0f, 0.0f}, nbSolutions);
+    bezierPts[1].y = -2.0f; bezierPts[2].y = -2.0f; bezierPts[3].y = -0.5f;
+    i = RT::Maths::Bezier3::computeIntersections(bezierPts, line, nbSolutions);
     EXPECT_EQ(1ul, nbSolutions);
-    EXPECT_NEAR(0.0f,      i[0], 1e-5f);
-    EXPECT_NEAR(0.0f,      i[1], 1e-5f);
-    EXPECT_NEAR(0.215302f, i[2], 1e-5f);
-    EXPECT_NEAR(0.0f,      i[3], 1e-5f);
-    EXPECT_NEAR(0.0f,      i[4], 1e-5f);
-    EXPECT_NEAR(0.0f,      i[5], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(),                i[0], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(0.215302f, 0.0f), i[1], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(),                i[2], 1e-5f);
 
     // 2 sol
-    i = RT::Maths::Bezier3::computeIntersections(x, {0.5f, -2.0f, 2.0f, 0.5f}, { -1.0f, 4.0f }, {0.0f, 0.0f}, nbSolutions);
+    bezierPts[1].y = -2.0f; bezierPts[2].y = 2.0f; bezierPts[3].y = 0.5f;
+    i = RT::Maths::Bezier3::computeIntersections(bezierPts, line, nbSolutions);
     EXPECT_EQ(2ul, nbSolutions);
-    EXPECT_NEAR(0.0f,      i[0], 1e-5f);
-    EXPECT_NEAR(0.0f,      i[1], 1e-5f);
-    EXPECT_NEAR(0.252321f, i[2], 1e-5f);
-    EXPECT_NEAR(0.0f,      i[3], 1e-5f);
-    EXPECT_NEAR(1.371291f, i[4], 1e-5f);
-    EXPECT_NEAR(0.0f,      i[5], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(),                i[0], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(0.252321f, 0.0f), i[1], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(1.371291f, 0.0f), i[2], 1e-5f);
 
     // 3 sol
-    i = RT::Maths::Bezier3::computeIntersections(x, {0.5f, -2.0f, 2.0f, -0.5f}, { -1.0f, 4.0f }, {0.0f, 0.0f}, nbSolutions);
+    bezierPts[3].y = -0.5f;
+    i = RT::Maths::Bezier3::computeIntersections(bezierPts, line, nbSolutions);
     EXPECT_EQ(3ul, nbSolutions);
-    EXPECT_NEAR(2.748075f, i[0], 1e-5f);
-    EXPECT_NEAR(0.0f,      i[1], 1e-5f);
-    EXPECT_NEAR(0.251924f, i[2], 1e-5f);
-    EXPECT_NEAR(0.0f,      i[3], 1e-5f);
-    EXPECT_NEAR(1.5f,      i[4], 1e-5f);
-    EXPECT_NEAR(0.0f,      i[5], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(2.748075f, 0.0f), i[0], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(0.251924f, 0.0f), i[1], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(1.5f,      0.0f), i[2], 1e-5f);
 }
 
 TEST(Bezier3, intersectionY)
 {
+    const std::array<glm::vec2, 2> line { glm::vec2(0.0f, -1.0f), glm::vec2(0.0f, 4.0f) };
     std::array<float, 4> y{0.0f, 1.0f, 2.0f, 3.0f};
-    std::array<float, 6> i;
     uint32_t nbSolutions;
     
-    i = RT::Maths::Bezier3::computeIntersections({ 0.5f, 2.0f, 2.0f, 0.5f }, y, { 0.0f, 0.0f }, { -1.0f, 4.0f }, nbSolutions);
+    std::array<glm::vec2, 4> bezierPts{ glm::vec2(0.5f, 0.0f), glm::vec2(2.0f, 1.0f), glm::vec2(2.0f, 2.0f), glm::vec2(0.5f, 3.0f) };
+    auto i = RT::Maths::Bezier3::computeIntersections(bezierPts, line, nbSolutions);
     EXPECT_EQ(0ul, nbSolutions);
-    EXPECT_NEAR(0.0f, i[0], 1e-5f);
-    EXPECT_NEAR(0.0f, i[1], 1e-5f);
-    EXPECT_NEAR(0.0f, i[2], 1e-5f);
-    EXPECT_NEAR(0.0f, i[3], 1e-5f);
-    EXPECT_NEAR(0.0f, i[4], 1e-5f);
-    EXPECT_NEAR(0.0f, i[5], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(), i[0], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(), i[1], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(), i[2], 1e-5f);
 
     // 1 sol
-    i = RT::Maths::Bezier3::computeIntersections({0.5f, -2.0f, -2.0f, -0.5f}, y, { 0.0f, 0.0f }, { -1.0f, 4.0f }, nbSolutions);
+    bezierPts[1].x = -2.0f; bezierPts[2].x = -2.0f; bezierPts[3].x = -0.5f;
+    i = RT::Maths::Bezier3::computeIntersections(bezierPts, line, nbSolutions);
     EXPECT_EQ(1ul, nbSolutions);
-    EXPECT_NEAR(0.0f,      i[0], 1e-5f);
-    EXPECT_NEAR(0.0f,      i[1], 1e-5f);
-    EXPECT_NEAR(0.0f,      i[2], 1e-5f);
-    EXPECT_NEAR(0.215302f, i[3], 1e-5f);
-    EXPECT_NEAR(0.0f,      i[4], 1e-5f);
-    EXPECT_NEAR(0.0f,      i[5], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(),                i[0], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(0.0f, 0.215302f), i[1], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(),                i[2], 1e-5f);
 
     // 2 sol
-    i = RT::Maths::Bezier3::computeIntersections({0.5f, -2.0f, 2.0f, 0.5f}, y, { 0.0f, 0.0f }, { -1.0f, 4.0f }, nbSolutions);
+    bezierPts[1].x = -2.0f; bezierPts[2].x = 2.0f; bezierPts[3].x = 0.5f;
+    i = RT::Maths::Bezier3::computeIntersections(bezierPts, line, nbSolutions);
     EXPECT_EQ(2ul, nbSolutions);
-    EXPECT_NEAR(0.0f,      i[0], 1e-5f);
-    EXPECT_NEAR(0.0f,      i[1], 1e-5f);
-    EXPECT_NEAR(0.0f,      i[2], 1e-5f);
-    EXPECT_NEAR(0.252321f, i[3], 1e-5f);
-    EXPECT_NEAR(0.0f,      i[4], 1e-5f);
-    EXPECT_NEAR(1.371291f, i[5], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(),                i[0], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(0.0f, 0.252321f), i[1], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(0.0f, 1.371291f), i[2], 1e-5f);
 
     // 3 sol
-    i = RT::Maths::Bezier3::computeIntersections({0.5f, -2.0f, 2.0f, -0.5f}, y, { 0.0f, 0.0f }, { -1.0f, 4.0f }, nbSolutions);
+    bezierPts[3].x = -0.5f;
+    i = RT::Maths::Bezier3::computeIntersections(bezierPts, line, nbSolutions);
     EXPECT_EQ(3ul, nbSolutions);
-    EXPECT_NEAR(0.0f,      i[0], 1e-5f);
-    EXPECT_NEAR(2.748075f, i[1], 1e-5f);
-    EXPECT_NEAR(0.0f,      i[2], 1e-5f);
-    EXPECT_NEAR(0.251924f, i[3], 1e-5f);
-    EXPECT_NEAR(0.0f,      i[4], 1e-5f);
-    EXPECT_NEAR(1.5f,      i[5], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(0.0f, 2.748075f), i[0], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(0.0f, 0.251924f), i[1], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(0.0f, 1.5f),      i[2], 1e-5f);
 }
 
 TEST(Bezier3, PERFORMANCE_1000)
@@ -173,6 +156,7 @@ TEST(Bezier3, PERFORMANCE_1000)
     const uint32_t nbLoop  = 1000;
     const uint32_t nbCases = 16;
 
+    const std::array<glm::vec2, 2> line { glm::vec2(0.0f, -1.0f), glm::vec2(0.0f, 4.0f) };
     const std::array<float, 4> y{0.0f, 1.0f, 2.0f, 3.0f};
     std::array<int64_t, 4> timeCumulate{ 0,0,0,0 };
     std::array<int64_t, 4> count{ 0,0,0,0 };
@@ -181,24 +165,25 @@ TEST(Bezier3, PERFORMANCE_1000)
     {
         for (uint32_t cases=0; cases < nbCases; ++cases)
         {
-            std::array<float, 4> x = { -0.5f, -2.0f, -2.0f, -0.5f };
-            x[0] *= cases & 0x1 ? 1.0f : -1.0f;
-            x[1] *= cases & 0x2 ? 1.0f : -1.0f;
-            x[2] *= cases & 0x4 ? 1.0f : -1.0f;
-            x[3] *= cases & 0x8 ? 1.0f : -1.0f;
+            std::array<glm::vec2, 4> bezierPts{ glm::vec2(-0.5f, 0.0f), glm::vec2(-2.0f, 1.0f), glm::vec2(-2.0f, 2.0f), glm::vec2(-0.5f, 3.0f) };
+            bezierPts[0].x *= cases & 0x1 ? 1.0f : -1.0f;
+            bezierPts[1].x *= cases & 0x2 ? 1.0f : -1.0f;
+            bezierPts[2].x *= cases & 0x4 ? 1.0f : -1.0f;
+            bezierPts[3].x *= cases & 0x8 ? 1.0f : -1.0f;
             
             uint32_t sol;        
             Core::Elapser t;
-            RT::Maths::Bezier3::computeIntersections(x, y, { 0.0f, 0.0f }, { -1.0f, 4.0f }, sol);
+            RT::Maths::Bezier3::computeIntersections(bezierPts, line, sol);
             timeCumulate[sol] += t.tick<std::chrono::microseconds>();
             ++count[sol];
         }
     }
-
+    const std::array<uint32_t, 4> verif{ 4000, 6000, 4000, 2000 };
     const int64_t total = std::accumulate(timeCumulate.begin(), timeCumulate.end(), 0ull);
     std::cout << "Performance mean: " << static_cast<double>(total) / static_cast<double>(nbLoop * nbCases) << " \xE6s" << std::endl;
     for(uint32_t sol = 0; sol < timeCumulate.size(); ++sol)
     {
+        EXPECT_EQ(verif[sol], count[sol]);
         const double time = static_cast<double>(timeCumulate[sol]) / static_cast<double>(count[sol]);
         std::cout << "   "<<sol<<" Solution: "<< count[sol] << " cases, mean time:" << time << " \xE6s" << std::endl;
     }    
