@@ -132,7 +132,7 @@ void VulkanManager::buildSurface(Vulkan::WindowSurface& surface) const
     MOUCA_POST_CONDITION(!surface._surface->isNull());     //DEV Issue: Bad initialization ?
 }
 
-Vulkan::ContextDeviceWPtr VulkanManager::createRenderingDevice(const std::vector<const char*>& deviceExtensions, const VkPhysicalDeviceFeatures& mandatoryFeatures, Vulkan::WindowSurface& surface)
+Vulkan::ContextDeviceWPtr VulkanManager::createRenderingDevice(const std::vector<const char*>& deviceExtensions, const Vulkan::PhysicalDeviceFeatures& mandatoryFeatures, Vulkan::WindowSurface& surface)
 {
     MOUCA_PRE_CONDITION(!_environment.isNull());           //DEV Issue: Need to call initialize()
     MOUCA_PRE_CONDITION(!surface._linkWindow.expired());   //DEV Issue: Need to give a valid dialog.

@@ -3,8 +3,10 @@
 /// \license No license
 #include "Dependencies.h"
 
-#include "LibVulkan/include/VKBuffer.h"
 #include "LibVulkan/include/VKCommand.h"
+
+#include "LibVulkan/include/VKBuffer.h"
+#include "LibVulkan/include/VKDevice.h"
 #include "LibVulkan/include/VKDescriptorSet.h"
 #include "LibVulkan/include/VKFrameBuffer.h"
 #include "LibVulkan/include/VKImage.h"
@@ -221,7 +223,7 @@ void CommandBindIndexBuffer::execute(const ExecuteCommands& executer)
 
     vkCmdBindIndexBuffer(executer.commandBuffer, _bufferId, _offset, _indexType);
 }
-
+/*
 CommandBindMesh::CommandBindMesh(const Mesh& mesh, const uint32_t bindID, const VkIndexType index):
 _index(index),
 _indices(mesh.getIndices().getBuffer()),
@@ -322,7 +324,7 @@ void CommandDrawLines::execute(const ExecuteCommands& executer)
     }
     vkCmdDrawIndexed(executer.commandBuffer, _indicesCount, _instanceCount, 0, 0, 0);
 }
-
+*/
 CommandBindDescriptorSets::CommandBindDescriptorSets(const PipelineLayout& pipelineLayout, const VkPipelineBindPoint bindPoint, const uint32_t firstSet, const std::vector<VkDescriptorSet>& descriptors, std::vector<uint32_t>&& dynamicOffsets):
 _pipelineLayoutID(pipelineLayout.getInstance()), _bindPoint(bindPoint), _firstSet(firstSet), _descriptorsID(std::move(descriptors)), _dynamicOffsets(std::move(dynamicOffsets))
 {
@@ -517,6 +519,31 @@ void CommandSwitch::execute(const ExecuteCommands& executer)
     MOUCA_PRE_CONDITION(_idNode < _commands.size());
 
     _commands[_idNode]->execute(executer);
+}
+
+CommandBuildAccelerationStructures::CommandBuildAccelerationStructures(const Device& device, std::vector<VkAccelerationStructureBuildGeometryInfoKHR>&& buildGeometries,
+                                                                       std::vector<const VkAccelerationStructureBuildRangeInfoKHR*>&& accelerationBuildStructureRangeInfos):
+_device(device), _buildGeometries(std::move(buildGeometries)), _accelerationBuildStructureRangeInfos(std::move(accelerationBuildStructureRangeInfos))
+{
+    MOUCA_PRE_CONDITION(!_buildGeometries.empty());
+    MOUCA_PRE_CONDITION(!_accelerationBuildStructureRangeInfos.empty());
+}
+
+void CommandBuildAccelerationStructures::execute(const VkCommandBuffer& commandBuffer)
+{
+    //WARNING: if crash check scratch buffer into _buildGeometries is always existing
+    _device.vkCmdBuildAccelerationStructuresKHR(
+        commandBuffer,
+        static_cast<uint32_t>(_buildGeometries.size()), _buildGeometries.data(),
+        _accelerationBuildStructureRangeInfos.data());
+}
+
+void CommandBuildAccelerationStructures::execute(const ExecuteCommands& executer)
+{
+    //WARNING: if crash check scratch buffer into _buildGeometries is always existing
+    _device.vkCmdBuildAccelerationStructuresKHR(executer.commandBuffer,
+        static_cast<uint32_t>(_buildGeometries.size()), _buildGeometries.data(),
+        _accelerationBuildStructureRangeInfos.data());
 }
 
 }

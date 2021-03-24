@@ -5,10 +5,30 @@
 
 namespace Vulkan
 {
+    class ICommandBuffer;
+    using ICommandBufferWPtr = std::weak_ptr<ICommandBuffer>;
+
     class CommandBufferOld;
     class Environment;
     class Fence;    
     class Surface;
+
+    struct PhysicalDeviceFeatures
+    {
+        VkPhysicalDeviceFeatures                         _features                     {};
+        VkPhysicalDeviceBufferDeviceAddressFeatures		 _bufferDeviceAddresFeatures   {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES};
+        VkPhysicalDeviceRayTracingPipelineFeaturesKHR	 _rayTracingPipelineFeatures   {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR};
+        VkPhysicalDeviceAccelerationStructureFeaturesKHR _accelerationStructureFeatures{VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR};
+
+        void* getNext()
+        {
+            // Link each other
+            _rayTracingPipelineFeatures.pNext    = &_bufferDeviceAddresFeatures;
+            _accelerationStructureFeatures.pNext = &_rayTracingPipelineFeatures;
+
+            return &_accelerationStructureFeatures;
+        }
+    };
 
     //----------------------------------------------------------------------------
     /// \brief Allow to sort device candidate inside Device::initializeBestGPU.
@@ -59,10 +79,13 @@ namespace Vulkan
             FRIEND_TEST(VulkanDevice, getQueueFamiliyIndex);
             FRIEND_TEST(VulkanDevice, checkExtensions);
 
-            VkPhysicalDevice                        _physicalDevice;        ///< Physical device ID.
-            VkPhysicalDeviceFeatures                _enabledFeatures;       ///< Enabled features on physical device.
-            VkPhysicalDeviceMemoryProperties        _memoryProperties;      ///< Memory properties of physical device.
-            VkPhysicalDeviceProperties              _properties;            ///< Properties of physical device.
+            VkPhysicalDevice                                 _physicalDevice;        ///< Physical device ID.
+            VkPhysicalDeviceMemoryProperties                 _memoryProperties;      ///< Memory properties of physical device.
+            VkPhysicalDeviceProperties                       _properties;            ///< Properties of physical device.
+            VkPhysicalDeviceRayTracingPipelinePropertiesKHR  _rayTracingPipelineProperties;
+            VkPhysicalDeviceAccelerationStructureFeaturesKHR _accelerationStructureFeatures;
+
+            PhysicalDeviceFeatures                           _enabled;
 
             std::vector<VkQueueFamilyProperties>    _queueFamilyProperties; ///< Queue family properties of physical device.
 
@@ -97,7 +120,7 @@ namespace Vulkan
 
             void initialize(const VkPhysicalDevice physicalDevice, const uint32_t queueFamilyID, const std::vector<const char*>& extensions = std::vector<const char*>());
 
-            void initializeBestGPU(const Environment& environment, const std::vector<const char*>& extensions = std::vector<const char*>(), const Surface* surface=nullptr, const VkPhysicalDeviceFeatures& enabled = VkPhysicalDeviceFeatures());
+            void initializeBestGPU(const Environment& environment, const std::vector<const char*>& extensions = std::vector<const char*>(), const Surface* surface=nullptr, const PhysicalDeviceFeatures& enabled = PhysicalDeviceFeatures());
             
             void release();
 
@@ -120,6 +143,18 @@ namespace Vulkan
             {
                 MOUCA_PRE_CONDITION(!isNull());
                 return _properties;
+            }
+
+            const VkPhysicalDeviceRayTracingPipelinePropertiesKHR& getPhysicalDeviceRayTracingPipelineProperties() const
+            {
+                MOUCA_PRE_CONDITION(!isNull());
+                return _rayTracingPipelineProperties;
+            }
+
+            const VkPhysicalDeviceAccelerationStructureFeaturesKHR& getPhysicalDeviceAccelerationStructureFeatures() const
+            {
+                MOUCA_PRE_CONDITION(!isNull());
+                return _accelerationStructureFeatures;
             }
 
             //------------------------------------------------------------------------
@@ -164,7 +199,7 @@ namespace Vulkan
 
             const VkPhysicalDeviceFeatures& getEnabledFeatures() const
             {
-                return _enabledFeatures;
+                return _enabled._features;
             }
 
             uint32_t getMemoryType(const VkMemoryRequirements& memoryRequiered, const VkMemoryPropertyFlags properties) const;
@@ -177,5 +212,18 @@ namespace Vulkan
             /// \param[in]  format: format to check.
             /// \param[out] formatProps: format properties read for specific format.
             void readFormatProperties(const VkFormat format, VkFormatProperties& formatProps) const;
+
+            PFN_vkGetBufferDeviceAddressKHR                 vkGetBufferDeviceAddressKHR;
+            PFN_vkCreateAccelerationStructureKHR            vkCreateAccelerationStructureKHR;
+            PFN_vkDestroyAccelerationStructureKHR           vkDestroyAccelerationStructureKHR;
+            PFN_vkGetAccelerationStructureBuildSizesKHR     vkGetAccelerationStructureBuildSizesKHR;
+            PFN_vkGetAccelerationStructureDeviceAddressKHR  vkGetAccelerationStructureDeviceAddressKHR;
+            PFN_vkBuildAccelerationStructuresKHR            vkBuildAccelerationStructuresKHR;
+            PFN_vkCmdBuildAccelerationStructuresKHR         vkCmdBuildAccelerationStructuresKHR;
+            PFN_vkCmdTraceRaysKHR                           vkCmdTraceRaysKHR;
+            PFN_vkGetRayTracingShaderGroupHandlesKHR        vkGetRayTracingShaderGroupHandlesKHR;
+            PFN_vkCreateRayTracingPipelinesKHR              vkCreateRayTracingPipelinesKHR;
+
+            void executeCommandSync(std::vector<ICommandBufferWPtr>&& commands) const;
     };
 }

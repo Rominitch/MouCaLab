@@ -76,9 +76,19 @@ namespace Vulkan
     class ImageView;
     using ImageViewWPtr = std::weak_ptr<ImageView>;
 
+    class MemoryBuffer;
+    using MemoryBufferUPtr = std::unique_ptr<MemoryBuffer>;
+    
+    struct PhysicalDeviceFeatures;
+
     class PipelineStateCreateInfo;
+    class PipelineStageShaders;
     class PipelineLayout;
     using PipelineLayoutWPtr = std::weak_ptr<PipelineLayout>;
+
+    class RayTracingPipeline;
+    class RayTracingPipelines;
+    using RayTracingPipelinesWPtr = std::weak_ptr<RayTracingPipelines>;
 
     class RenderPass;
     using RenderPassWPtr = std::weak_ptr<RenderPass>;
@@ -224,6 +234,7 @@ namespace MouCaGraphic
         //-----------------------------------------------------------------------------------------
             void loadEnvironment(ContextLoading& context);
             void loadDevices(ContextLoading& context);
+            void loadPhysicalDeviceFeatures(ContextLoading& context, Vulkan::PhysicalDeviceFeatures& mandatory);
 
         //-----------------------------------------------------------------------------------------
         //                                  Devices Objects
@@ -259,7 +270,13 @@ namespace MouCaGraphic
             void loadPipelineLayouts(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak);
             void loadGraphicsPipelines(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak);
             void loadPipelineStateCreate(ContextLoading& context, Vulkan::PipelineStateCreateInfo& info, const uint32_t graphicsPipelineId, const uint32_t renderPassId);
+            void loadPipelineStages(ContextLoading& context, Vulkan::PipelineStageShaders& stageShader);
 
             void loadShaderModules(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak);
+
+            void loadMemoryBuffer(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak, Vulkan::MemoryBufferUPtr& memoryBuffer);
+
+            void loadRayTracingPipelines(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak);
+            void loadRayTracingShaderGroup(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak, Vulkan::RayTracingPipeline& pipeline);
     };
 }

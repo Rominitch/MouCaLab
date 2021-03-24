@@ -58,10 +58,17 @@ namespace Vulkan
     using GraphicsPipelineWPtr = std::weak_ptr<GraphicsPipeline>;
     using GraphicsPipelines    = std::vector<GraphicsPipelineSPtr>;
 
+    struct PhysicalDeviceFeatures;
+
     class PipelineLayout;
     using PipelineLayoutSPtr = std::shared_ptr<PipelineLayout>;
     using PipelineLayoutWPtr = std::weak_ptr<PipelineLayout>;
     using PipelineLayouts    = std::vector<PipelineLayoutSPtr>;
+
+    class RayTracingPipelines;
+    using RayTracingPipelinesSPtr = std::shared_ptr<RayTracingPipelines>;
+    using RayTracingPipelinesWPtr = std::weak_ptr<RayTracingPipelines>;
+    using AllRayTracingPipelines  = std::vector<RayTracingPipelinesSPtr>;
 
     class RenderPass;
     using RenderPassSPtr = std::shared_ptr<RenderPass>;
@@ -103,7 +110,7 @@ namespace Vulkan
             /// Destructor
             ~ContextDevice();
 
-            void initialize(const Environment& environment, const std::vector<const char*>& extensions, const VkPhysicalDeviceFeatures& enabled, const Surface* surface = nullptr);
+            void initialize(const Environment& environment, const std::vector<const char*>& extensions, const PhysicalDeviceFeatures& enabled, const Surface* surface = nullptr);
             
             void release();
 
@@ -227,6 +234,12 @@ namespace Vulkan
                 _commandPools.emplace_back(commandPool);
             }
 
+            void insertRayTracingPipelines(RayTracingPipelinesSPtr rayTracingPipelines)
+            {
+                MOUCA_PRE_CONDITION(rayTracingPipelines); //DEV Issue: Need valid data
+                _rayTracingPipelines.emplace_back(rayTracingPipelines);
+            }
+
             GraphicsPipelines& getGraphicsPipelines() { return _graphicsPipelines; }
 
         private:
@@ -247,11 +260,12 @@ namespace Vulkan
             RenderPasses        _renderPasses;          ///< [OWNERSHIP]            
 
         // Pipeline
-            DescriptorPools      _descriptorPools;       ///< [OWNERSHIP]
-            DescriptorSetLayouts _descriptorSetLayouts;  ///< [OWNERSHIP]
-            DescriptorSets       _descriptorSets;        ///< [OWNERSHIP]
-            PipelineLayouts      _pipelineLayouts;       ///< [OWNERSHIP]
-            GraphicsPipelines    _graphicsPipelines;     ///< [OWNERSHIP]
+            DescriptorPools        _descriptorPools;       ///< [OWNERSHIP]
+            DescriptorSetLayouts   _descriptorSetLayouts;  ///< [OWNERSHIP]
+            DescriptorSets         _descriptorSets;        ///< [OWNERSHIP]
+            PipelineLayouts        _pipelineLayouts;       ///< [OWNERSHIP]
+            GraphicsPipelines      _graphicsPipelines;     ///< [OWNERSHIP]
+            AllRayTracingPipelines _rayTracingPipelines;   ///< [OWNERSHIP]
 
         // Sequence
             CommandPools         _commandPools;          ///< [OWNERSHIP]

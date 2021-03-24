@@ -3,6 +3,8 @@
 /// \license No license
 #include "Dependencies.h"
 
+#include "LibVulkan/include/VKImage.h"
+
 #include "LibRT/include/RTBufferCPU.h"
 #include "LibRT/include/RTImage.h"
 
@@ -11,7 +13,6 @@
 #include "LibVulkan/include/VKCommandBuffer.h"
 #include "LibVulkan/include/VKContextDevice.h"
 #include "LibVulkan/include/VKFence.h"
-#include "LibVulkan/include/VKImage.h"
 #include <LibVulkan/include/VKSampler.h>
 
 namespace Vulkan

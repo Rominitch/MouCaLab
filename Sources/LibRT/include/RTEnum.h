@@ -190,14 +190,22 @@ namespace RT
         TessellationControl,
         TessellationEvaluation,
 
+        Compute,
+
+        Raytracing_Gen,
+        Raytracing_AnyHit,
+        Raytracing_ClosestHit,
+        Raytracing_Miss,
+        Raytracing_Intersection,
+
         NbShaders
     };
 
     struct ApplicationInfo
     {
         Core::String  _applicationName;
-        uint32_t  _applicationVersion;
+        uint32_t      _applicationVersion = 0;
         Core::String  _engineName;
-        uint32_t  _engineVersion;
+        uint32_t      _engineVersion = 0;
     };
 };

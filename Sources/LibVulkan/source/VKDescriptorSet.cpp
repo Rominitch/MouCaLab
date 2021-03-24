@@ -3,6 +3,7 @@
 /// \license No license
 #include "Dependencies.h"
 
+#include "LibVulkan/include/VKAccelerationStructure.h"
 #include "LibVulkan/include/VKDescriptorSet.h"
 #include "LibVulkan/include/VKDevice.h"
 #include "LibVulkan/include/VKImage.h"
@@ -155,48 +156,86 @@ WriteDescriptorSet::WriteDescriptorSet(const uint32_t dstBinding, const VkDescri
 _dstBinding(dstBinding), _type(type), _vkBufferView(std::move(bufferView))
 {}
 
+WriteDescriptorSet::WriteDescriptorSet(const uint32_t dstBinding, DescriptorAcceleration&& acceleration):
+_dstBinding(dstBinding), _type(VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR), _acceleration(std::move(acceleration))
+{}
+
 VkWriteDescriptorSet WriteDescriptorSet::compute(const DescriptorSet& set, const uint32_t setId)
 {
     MOUCA_PRE_CONDITION(!set.isNull());
     MOUCA_PRE_CONDITION(setId < set.getDescriptorSets().size());
 
-    // Compute local vulkan array
-    if(!_imageInfo.empty())
+    if(_type != VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR)
     {
-        _vkImageInfo.resize(_imageInfo.size());
-        std::transform(_imageInfo.cbegin(), _imageInfo.cend(), _vkImageInfo.begin(),
-                       [&](const auto& info) -> VkDescriptorImageInfo
-                       {
-                           return { info._sampler.lock()->getInstance(),
-                                    info._imageView.lock()->getInstance(),
-                                    info._imageLayout };
-                       });
-    }
-    if(!_bufferInfo.empty())
-    {
-        _vkBufferInfo.resize(_bufferInfo.size());
-        std::transform(_bufferInfo.cbegin(), _bufferInfo.cend(), _vkBufferInfo.begin(),
-                       [&](const auto& info) -> VkDescriptorBufferInfo
-                       {
-                           return { info._buffer.lock()->getBuffer(),
-                                    info._offset,
-                                    info._range };
-                       });
-    }
+        // Compute local vulkan array
+        if(!_imageInfo.empty())
+        {
+            _vkImageInfo.resize(_imageInfo.size());
+            std::transform(_imageInfo.cbegin(), _imageInfo.cend(), _vkImageInfo.begin(),
+                           [&](const auto& info) -> VkDescriptorImageInfo
+                           {
+                               return { info._sampler.lock()->getInstance(),
+                                        info._imageView.lock()->getInstance(),
+                                        info._imageLayout };
+                           });
+        }
+        if(!_bufferInfo.empty())
+        {
+            _vkBufferInfo.resize(_bufferInfo.size());
+            std::transform(_bufferInfo.cbegin(), _bufferInfo.cend(), _vkBufferInfo.begin(),
+                           [&](const auto& info) -> VkDescriptorBufferInfo
+                           {
+                               return { info._buffer.lock()->getBuffer(),
+                                        info._offset,
+                                        info._range };
+                           });
+        }
 
-    return
+        return
+        {
+            VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,   // VkStructureType                  sType;
+            nullptr,                                  // const void*                      pNext;
+            set.getDescriptorSets()[setId],           // VkDescriptorSet                  dstSet;
+            _dstBinding,                              // uint32_t                         dstBinding;
+            0,                                        // uint32_t                         dstArrayElement;
+            static_cast<uint32_t>(_vkImageInfo.size() + _vkBufferInfo.size() + _vkBufferView.size()),    // uint32_t                         descriptorCount;
+            _type,                                                          // VkDescriptorType                 descriptorType;
+            _vkImageInfo.empty() ? nullptr : _vkImageInfo.data(),             // const VkDescriptorImageInfo*     pImageInfo;
+            _vkBufferInfo.empty() ? nullptr : _vkBufferInfo.data(),            // const VkDescriptorBufferInfo*    pBufferInfo;
+            _vkBufferView.empty() ? nullptr : _vkBufferView.data()             // const VkBufferView*              pTexelBufferView;
+        };
+    }
+    else
     {
-        VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,   // VkStructureType                  sType;
-        nullptr,                                  // const void*                      pNext;
-        set.getDescriptorSets()[setId],           // VkDescriptorSet                  dstSet;
-        _dstBinding,                              // uint32_t                         dstBinding;
-        0,                                        // uint32_t                         dstArrayElement;
-        static_cast<uint32_t>(_vkImageInfo.size() + _vkBufferInfo.size() + _vkBufferView.size()),    // uint32_t                         descriptorCount;
-        _type,                                                          // VkDescriptorType                 descriptorType;
-        _vkImageInfo.empty()  ?  nullptr : _vkImageInfo.data(),             // const VkDescriptorImageInfo*     pImageInfo;
-        _vkBufferInfo.empty() ?  nullptr : _vkBufferInfo.data(),            // const VkDescriptorBufferInfo*    pBufferInfo;
-        _vkBufferView.empty() ?  nullptr : _vkBufferView.data()             // const VkBufferView*              pTexelBufferView;
-    };
+        _vkAccelerationStruct.resize(_acceleration._structures.size());
+        std::transform(_acceleration._structures.cbegin(), _acceleration._structures.cend(), _vkAccelerationStruct.begin(),
+                       [&](const auto& info) -> VkAccelerationStructureKHR
+                       {
+                           return info.lock()->getHandle();
+                       });
+
+        _accelerationStructure =
+        {
+            VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR,
+            nullptr,
+            static_cast<uint32_t>(_vkAccelerationStruct.size()),
+            _vkAccelerationStruct.data(),
+        };
+
+        return
+        {
+            VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,   // VkStructureType                  sType;
+            &_accelerationStructure,                  // const void*                      pNext;
+            set.getDescriptorSets()[setId],           // VkDescriptorSet                  dstSet;
+            _dstBinding,                              // uint32_t                         dstBinding;
+            0,                                        // uint32_t                         dstArrayElement;
+            static_cast<uint32_t>(_vkAccelerationStruct.size()),    // uint32_t                         descriptorCount;
+            _type,                                    // VkDescriptorType                 descriptorType;
+            nullptr,                                  // const VkDescriptorImageInfo*     pImageInfo;
+            nullptr,                                  // const VkDescriptorBufferInfo*    pBufferInfo;
+            nullptr                                   // const VkBufferView*              pTexelBufferView;
+        };
+    }
 }
 
 void DescriptorSet::initialize(const Device& device, const DescriptorPoolWPtr& descriptorPool, const std::vector<VkDescriptorSetLayout>& layouts)

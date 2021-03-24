@@ -9,10 +9,10 @@
 namespace Vulkan
 {
 
-Memory::Memory():
+Memory::Memory(const VkMemoryPropertyFlags memoryPropertyFlags):
 _memory(VK_NULL_HANDLE),
 _mapped(nullptr),
-_memoryPropertyFlags(0),
+_memoryPropertyFlags(memoryPropertyFlags),
 _allocatedSize(0),
 _alignment(0)
 {
@@ -33,7 +33,7 @@ void Memory::release(const Device& device)
     vkFreeMemory(device.getInstance(), _memory, nullptr);
     _memory = VK_NULL_HANDLE;
 
-    _memoryPropertyFlags = 0;
+    //_memoryPropertyFlags = 0;
     _allocatedSize = 0;
     _alignment = 0;
 
@@ -48,7 +48,7 @@ void Memory::allocateMemory(const Device& device, const VkMemoryRequirements& me
     VkMemoryAllocateInfo memAllocateInfo =
     {
         VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,                     // VkStructureType    sType;
-        nullptr,                                                    // const void*        pNext;
+        getNext(),                                                  // const void*        pNext;
         memRequirements.size,                                       // VkDeviceSize       allocationSize;
         device.getMemoryType(memRequirements, _memoryPropertyFlags) // uint32_t           memoryTypeIndex;
     };
@@ -129,14 +129,12 @@ void Memory::flush(const Device& device, const VkDeviceSize size, const VkDevice
     MOUCA_POST_CONDITION(_mapped != nullptr);
 }
 
-void MemoryBuffer::initialize(const Device& device, const VkBuffer& buffer, const VkMemoryPropertyFlags memoryPropertyFlags)
+void MemoryBuffer::initialize(const Device& device, const VkBuffer& buffer)
 {
     MOUCA_ASSERT(isNull());
     MOUCA_ASSERT(!device.isNull());
     MOUCA_ASSERT(buffer != VK_NULL_HANDLE);
     MOUCA_ASSERT(_mapped == nullptr);
-
-    _memoryPropertyFlags = memoryPropertyFlags;
 
     //Create the memory backing up the buffer handle
     VkMemoryRequirements memRequirements;

@@ -191,6 +191,7 @@
     <ClCompile Include="source\UT_Deferred.cpp" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\UT_MathematicalRendering.cpp" />
+    <ClCompile Include="source\UT_Raytracing.cpp" />
     <ClCompile Include="source\UT_Triangle.cpp" />
     <ClCompile Include="source\UT_TriangleScreenSpace.cpp" />
     <ClCompile Include="source\UT_VRPlatform.cpp" />
@@ -229,6 +230,7 @@
     <Xml Include="..\..\UnitTests\Renderer\LiteralEnumError.xml" />
     <Xml Include="..\..\UnitTests\Renderer\MathematicalRendering.xml" />
     <Xml Include="..\..\UnitTests\Renderer\NumberOrLiteral.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\Raytracing.xml" />
     <Xml Include="..\..\UnitTests\Renderer\RenderPassError.xml" />
     <Xml Include="..\..\UnitTests\Renderer\RenderPassError1.xml" />
     <Xml Include="..\..\UnitTests\Renderer\RenderPassError2.xml" />
@@ -316,7 +318,27 @@
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
     </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\triangle.frag">
+    <GLSLShader Include="..\..\UnitTests\GLSL\raytracing-miss.rmiss">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\raytracing-shadow.rmiss">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\raytracing.rchit">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\raytracing.rgen">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\triangle.frag">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -336,8 +358,8 @@
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\triangleSS.frag">
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\triangleSS.frag">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -357,8 +379,8 @@
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\Warping-Procedural.frag">
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\Warping-Procedural.frag">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -378,7 +400,7 @@
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
-    </CustomBuild>
+    </GLSLShader>
     <CustomBuild Include="..\..\UnitTests\GLSL\debug.vert">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
@@ -442,7 +464,7 @@
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
     </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\triangle.vert">
+    <GLSLShader Include="..\..\UnitTests\GLSL\triangle.vert">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -462,8 +484,8 @@
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\triangleSS.vert">
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\triangleSS.vert">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -483,8 +505,8 @@
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\Warping-Procedural.vert">
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\Warping-Procedural.vert">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -504,7 +526,7 @@
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
-    </CustomBuild>
+    </GLSLShader>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\UnitTests\GLSL\uioverlay.frag">
@@ -551,7 +573,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\UnitTests\GLSL\deferred_tesselation.frag">
+    <GLSLShader Include="..\..\UnitTests\GLSL\deferred_tesselation.frag">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
@@ -571,8 +593,8 @@
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\deferred_tesselation.tesc">
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\deferred_tesselation.tesc">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
@@ -592,8 +614,8 @@
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\deferred_tesselation.tese">
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\deferred_tesselation.tese">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
@@ -613,8 +635,8 @@
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\deferred_tesselation.vert">
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\deferred_tesselation.vert">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SPIRV_COMPILATION) $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath)</Command>
@@ -634,10 +656,10 @@
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</ExcludedFromBuild>
-    </CustomBuild>
+    </GLSLShader>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\UnitTests\GLSL\font.frag">
+    <GLSLShader Include="..\..\UnitTests\GLSL\font.frag">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -657,8 +679,8 @@
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\font.vert">
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\font.vert">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -678,10 +700,10 @@
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
-    </CustomBuild>
+    </GLSLShader>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\UnitTests\GLSL\font_screen.frag">
+    <GLSLShader Include="..\..\UnitTests\GLSL\font_screen.frag">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -701,8 +723,8 @@
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\font_screen.vert">
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\font_screen.vert">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -722,10 +744,10 @@
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
-    </CustomBuild>
+    </GLSLShader>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\UnitTests\GLSL\fontV2.frag">
+    <GLSLShader Include="..\..\UnitTests\GLSL\fontV2.frag">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -745,8 +767,8 @@
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\fontV2.vert">
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\fontV2.vert">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -766,9 +788,12 @@
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
-    </CustomBuild>
+    </GLSLShader>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-  </ImportGroup>
+  <Import Project="..\..\BuildShader\glslBuild.targets" />
+  <PropertyGroup Label="Globals">
+    <!-- Other Global Property Settings -->
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+  </PropertyGroup>
 </Project>

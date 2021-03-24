@@ -83,8 +83,8 @@ void ImGUIManager::initialize( const RT::Array2ui& resolution )
     _font = font;
 
     // Vulkan buffer
-    _vertexBuffer = std::make_shared<Vulkan::Buffer>();
-    _indexBuffer  = std::make_shared<Vulkan::Buffer>();
+    _vertexBuffer = std::make_shared<Vulkan::Buffer>(std::make_unique<Vulkan::MemoryBuffer>(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+    _indexBuffer  = std::make_shared<Vulkan::Buffer>(std::make_unique<Vulkan::MemoryBuffer>(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
 
     _pushConstBuffer = std::make_shared<RT::BufferLinkedCPU>();
     _pushConstBuffer->create(RT::BufferDescriptor(sizeof(PushConstBlock)), 1, &_pushConstBlock);
@@ -157,7 +157,7 @@ bool ImGUIManager::prepareBuffer(const Vulkan::ContextDevice& context)
         }
 
         // Allocate new buffer more bigger
-        _vertexBuffer->initialize(device, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, vertexBufferSize);
+        _vertexBuffer->initialize(device, 0, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, vertexBufferSize);
         _vertexBuffer->getMemory().map(device);
         updateCmdBuffers = true;
     }
@@ -171,7 +171,7 @@ bool ImGUIManager::prepareBuffer(const Vulkan::ContextDevice& context)
             _indexBuffer->release(device);
         }
 
-        _indexBuffer->initialize(context.getDevice(), VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, indexBufferSize);
+        _indexBuffer->initialize(context.getDevice(), 0, VK_BUFFER_USAGE_INDEX_BUFFER_BIT, indexBufferSize);
         _indexBuffer->getMemory().map(device);
         updateCmdBuffers = true;
     }

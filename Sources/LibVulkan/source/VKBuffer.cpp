@@ -11,12 +11,13 @@
 namespace Vulkan
 {
 
-Buffer::Buffer():
+Buffer::Buffer(MemoryBufferUPtr memory):
 _buffer(VK_NULL_HANDLE),
 _descriptor({VK_NULL_HANDLE, 0, 0}),
 _usageFlags(0),
+_createFlags(0),
 _currentSize(0),
-_memoryProperty(VK_NULL_HANDLE)
+_memory(std::move(memory))
 {
     MOUCA_ASSERT(isNull());
 }
@@ -26,7 +27,7 @@ Buffer::~Buffer()
     MOUCA_ASSERT(isNull());
 }
 
-void Buffer::initialize(const Device& device, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize size, const void *data)
+void Buffer::initialize(const Device& device, const VkBufferCreateFlags createFlag, const VkBufferUsageFlags usageFlags, VkDeviceSize size, const void *data)
 {
     MOUCA_ASSERT(isNull());
     MOUCA_ASSERT(!device.isNull());
@@ -37,7 +38,7 @@ void Buffer::initialize(const Device& device, VkBufferUsageFlags usageFlags, VkM
     {
         VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,   // VkStructureType        sType;
         nullptr,                                // const void*            pNext;
-        0,                                      // VkBufferCreateFlags    flags;
+        createFlag,                             // VkBufferCreateFlags    flags;
         size,                                   // VkDeviceSize           size;
         usageFlags,                             // VkBufferUsageFlags     usage;
         VK_SHARING_MODE_EXCLUSIVE,              // VkSharingMode          sharingMode;
@@ -52,17 +53,17 @@ void Buffer::initialize(const Device& device, VkBufferUsageFlags usageFlags, VkM
     }
 
     //Create memory
-    _memory.initialize(device, _buffer, memoryPropertyFlags);
+    _memory->initialize(device, _buffer);
 
     // Copy control variable
+    _createFlags    = createFlag;
     _usageFlags     = usageFlags;
     _currentSize    = size;
-    _memoryProperty = memoryPropertyFlags;
 
     // Copy memory if existing
     if(data != nullptr)
     {
-        _memory.copy(device, size, data);
+        _memory->copy(device, size, data);
     }
 
     // Initialize a default descriptor that covers the whole buffer size
@@ -73,12 +74,12 @@ void Buffer::release(const Device& device)
 {
     MOUCA_PRE_CONDITION(!isNull());
     MOUCA_PRE_CONDITION(!device.isNull()); 
-    MOUCA_PRE_CONDITION(!_memory.isNull());
+    MOUCA_PRE_CONDITION(!_memory->isNull());
 
     vkDestroyBuffer(device.getInstance(), _buffer, nullptr);
     _buffer = VK_NULL_HANDLE;
 
-    _memory.release(device);
+    _memory->release(device);
 }
 
 void Buffer::resize(const Device& device, VkDeviceSize size)
@@ -88,7 +89,7 @@ void Buffer::resize(const Device& device, VkDeviceSize size)
     MOUCA_PRE_CONDITION(size > 0);
 
     release(device);
-    initialize(device, _usageFlags, _memoryProperty, size);
+    initialize(device, _createFlags, _usageFlags, size);
 
     MOUCA_POST_CONDITION(!isNull());
 }
@@ -96,6 +97,18 @@ void Buffer::resize(const Device& device, VkDeviceSize size)
 const VkDescriptorBufferInfo& Buffer::getDescriptor() const
 {
     return _descriptor;
+}
+
+const VkDeviceAddress Buffer::getDeviceAddress(const Device& device) const
+{
+    const VkBufferDeviceAddressInfoKHR bufferDeviceAI
+    {
+        VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
+        nullptr,
+        _buffer
+    };
+    //return vkGetBufferDeviceAddress(device.getInstance(), &bufferDeviceAI);
+    return device.vkGetBufferDeviceAddressKHR(device.getInstance(), &bufferDeviceAI);
 }
 
 }

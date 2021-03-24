@@ -57,7 +57,7 @@ namespace Vulkan
             VkPipeline              _pipeline;
 
             RenderPassWPtr          _renderPass;
-            PipelineLayoutWPtr      _layout;            
+            PipelineLayoutWPtr      _layout;
             PipelineCacheWPtr       _pipelineCache;
             PipelineStateCreateInfo _infos;
     };

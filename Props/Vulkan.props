@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <VULKAN_PATH>$(SolutionDir)..\SDK\VulkanSDK\1.2.154.1\</VULKAN_PATH>
+    <VULKAN_PATH>$(SolutionDir)..\SDK\VulkanSDK\1.2.162.1\</VULKAN_PATH>
     <COMPILER_SPIRV>$(VULKAN_PATH)bin\glslangValidator.exe</COMPILER_SPIRV>
     <SPIRV_COMPILATION>$(COMPILER_SPIRV) -H -V -o</SPIRV_COMPILATION>
   </PropertyGroup>

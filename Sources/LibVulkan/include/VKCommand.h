@@ -9,6 +9,8 @@ namespace Vulkan
     class Buffer;
     using BufferWPtr = std::weak_ptr<Buffer>;
 
+    class Device;
+
     class DescriptorSet;
     class FrameBuffer;
     using FrameBufferWPtr = std::weak_ptr<FrameBuffer>;
@@ -194,7 +196,7 @@ namespace Vulkan
             VkDeviceSize    _offset;
             VkIndexType     _indexType;
     };
-
+/*
     class CommandBindMesh : public Command
     {
         private:
@@ -249,7 +251,7 @@ namespace Vulkan
             void execute(const VkCommandBuffer& commandBuffer) override;
             void execute(const ExecuteCommands& executer) override;
     };
-
+*/
     class CommandBindDescriptorSets final : public Command
     {
         private:
@@ -422,5 +424,22 @@ namespace Vulkan
 
         private:
             size_t  _idNode = 0;
+    };
+
+    class CommandBuildAccelerationStructures final : public Command
+    {
+        public:
+            CommandBuildAccelerationStructures(const Device& device, std::vector<VkAccelerationStructureBuildGeometryInfoKHR>&& buildGeometries,
+                std::vector<const VkAccelerationStructureBuildRangeInfoKHR*>&& accelerationBuildStructureRangeInfos);
+            ~CommandBuildAccelerationStructures() override = default;
+
+
+            void execute(const VkCommandBuffer& commandBuffer) override;
+            void execute(const ExecuteCommands& executer) override;
+
+        private:
+            const Device& _device;
+            const std::vector<VkAccelerationStructureBuildGeometryInfoKHR>     _buildGeometries;
+            const std::vector<const VkAccelerationStructureBuildRangeInfoKHR*> _accelerationBuildStructureRangeInfos;
     };
 }

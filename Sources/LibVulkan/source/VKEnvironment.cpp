@@ -82,9 +82,10 @@ void Environment::initialize(const RT::ApplicationInfo& info, const std::vector<
 #endif
 
     //Generate instance
-    if(vkCreateInstance(&instance_create_info, nullptr, &_instance) != VK_SUCCESS)
+    const VkResult error = vkCreateInstance(&instance_create_info, nullptr, &_instance);
+    if( error != VK_SUCCESS )
     {
-        MOUCA_THROW_ERROR(u8"VulkanError", u8"InstanceError");
+        MOUCA_THROW_ERROR(u8"VulkanError", error == VK_ERROR_LAYER_NOT_PRESENT ? u8"InstanceLayoutError" : u8"InstanceError");
     }
 
 #ifdef VULKAN_DEBUG

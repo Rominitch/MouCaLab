@@ -29,7 +29,7 @@ packages = [ ("assimp-5.0.0.rc1.7z",    "13T0WsgNH8Kl8eEiGeYMzv2yawFCJQZli", Non
              ("openvr-1.11.11.7z",      "1rptiPRPQNDEJ8Et_K8q3T4kTvkv8A92O", None,                                    (os.path.join("bin", "win64"), "openvr_api.dll", "openvr_api.dll")),
              ("sqlite-3.33.7z",         "15Zv4Iy_l1mCext05ZuvPHaPXv7X37LJb", None,                                    None),
              ("SteamWorksSDK-146.7z",   "1fmSY_sBH7SKa9r1eZDInCejV_nxbrFEN", None,                                    (os.path.join("redistributable_bin", "win64"), "steam_api64.dll", "steam_api64.dll")),
-             ("Vulkan-1.2.154.1.7z",    "1RG-7t141h1rK2FlKrMrohkdCvyEeK_4s", os.path.join("VulkanSDK", "1.2.154.1"),  None),
+             ("Vulkan-1.2.162.1.7z",    "1ChbuCNmqv0YxNlDcS_lTS4oL-Jklkm-u", os.path.join("VulkanSDK", "1.2.162.1"),  None),
              ("xerces-c-3.2.2.7z",      "1heXsPWp28zHR8NFNThqaio8MMhLeoC-J", None,                                   (None, "xerces-c_3_2.dll", "xerces-c_3_2D.dll")),
              ("include-0.01.7z",        "1NjNgJaoMr30gxn62C5nETMZFt9Z3_sdN", os.path.join("include", "INCLUDE-0.01"), None),
            ]

@@ -24,6 +24,8 @@
 #include <LibVulkan/include/VKImage.h>
 #include <LibVulkan/include/VKPipelineLayout.h>
 #include <LibVulkan/include/VKPipelineStates.h>
+#include <LibVulkan/include/VKRayTracingPipeline.h>
+#include <LibVulkan/include/VKRayTracingShaderGroup.h>
 #include <LibVulkan/include/VKRenderPass.h>
 #include <LibVulkan/include/VKSampler.h>
 #include <LibVulkan/include/VKSemaphore.h>
@@ -80,7 +82,7 @@ VulkanEnum readValue(XML::NodeUPtr& node, const Core::String& attribute, const s
             // Search global data
             auto result = context._parser.searchNodeFrom(*context._globalData, u8"Data", u8"name", value.substr(1));
             // Make same job on another node
-            return readValue(result, attribute, literalEnum, bitMode, context);
+            data = readValue(result, attribute, literalEnum, bitMode, context);
         }
         else
         {
@@ -124,7 +126,7 @@ void readAttribute(const XML::NodeUPtr& node, const Core::String& attribute, Dat
         // Search global data
         auto result = context._parser.searchNodeFrom(*context._globalData, u8"Data", u8"name", data.substr(1));
         // Make same job on another node
-        return result->getAttribute(attribute, value);
+        result->getAttribute(attribute, value);
     }
     else
         node->getAttribute(attribute, value);
@@ -264,6 +266,11 @@ void Engine3DXMLLoader::loadEnvironment(ContextLoading& context)
 
     // Go into
     XML::NodeUPtr environmentNode = result->getNode(0);
+    
+    // Read App info
+    environmentNode->getAttribute(u8"application", context._info._applicationName);
+    environmentNode->getAttribute(u8"engine", context._info._engineName);
+
     // cppcheck-suppress unreadVariable // false positive
     auto aPush = context._parser.autoPushNode(*environmentNode);
 
@@ -318,6 +325,39 @@ void Engine3DXMLLoader::loadExtensions(ContextLoading& context, std::vector<Core
     }
 }
 
+void Engine3DXMLLoader::loadPhysicalDeviceFeatures(ContextLoading& context, Vulkan::PhysicalDeviceFeatures& mandatory)
+{
+    const auto toVKBool = [](bool e) {return e ? VK_TRUE : VK_FALSE; };
+    bool enable;
+    // Read extensions
+    auto result = context._parser.getNode(u8"FeatureBufferDeviceAddress");
+    if(result->getNbElements() == 1)
+    {
+        auto featureNode = result->getNode(0);
+        featureNode->getAttribute(u8"bufferDeviceAddress", enable);
+
+        mandatory._bufferDeviceAddresFeatures.bufferDeviceAddress = toVKBool(enable);
+    }
+
+    result = context._parser.getNode(u8"FeatureRayTracingPipeline");
+    if (result->getNbElements() == 1)
+    {
+        auto featureNode = result->getNode(0);
+        featureNode->getAttribute(u8"rayTracingPipeline", enable);
+
+        mandatory._rayTracingPipelineFeatures.rayTracingPipeline = toVKBool(enable);
+    }
+
+    result = context._parser.getNode(u8"FeatureAccelerationStructure");
+    if (result->getNbElements() == 1)
+    {
+        auto featureNode = result->getNode(0);
+        featureNode->getAttribute(u8"accelerationStructure", enable);
+
+        mandatory._accelerationStructureFeatures.accelerationStructure = toVKBool(enable);
+    }
+}
+
 void Engine3DXMLLoader::loadDevices(ContextLoading& context)
 {
     MOUCA_PRE_CONDITION(context._parser.isLoaded()); //DEV Issue: Need a valid xml.
@@ -358,7 +398,8 @@ void Engine3DXMLLoader::loadDevices(ContextLoading& context)
                 createCharExtensions(extensions, cExtensions);
 
                 // Check mandatory features
-                VkPhysicalDeviceFeatures mandatory = {};
+                Vulkan::PhysicalDeviceFeatures mandatory;
+                loadPhysicalDeviceFeatures(context, mandatory);
 
                 // Build device
                 ctxDevice = _manager.createRenderingDevice(cExtensions, mandatory, *_manager.getSurfaces().at(idSurface));
@@ -1334,6 +1375,7 @@ void Engine3DXMLLoader::loadBuffers(ContextLoading& context, Vulkan::ContextDevi
         for (size_t idBuffer = 0; idBuffer < allBuffers->getNbElements(); ++idBuffer)
         {
             auto bufferNode = allBuffers->getNode(idBuffer);
+            auto aPushM = context._parser.autoPushNode(*bufferNode);
 
             // Mandatory attribute
             bool existing;
@@ -1344,7 +1386,6 @@ void Engine3DXMLLoader::loadBuffers(ContextLoading& context, Vulkan::ContextDevi
             }
 
             const auto usage          = readValue(bufferNode, u8"usage", bufferUsages, true, context);
-            const auto memoryProperty = readValue(bufferNode, u8"memoryProperty", memoryProperties, true, context);
             VkDeviceSize size=0;
             if(bufferNode->hasAttribute(u8"size"))
             {
@@ -1357,8 +1398,17 @@ void Engine3DXMLLoader::loadBuffers(ContextLoading& context, Vulkan::ContextDevi
             }
             MOUCA_ASSERT(size > 0);
 
-            auto buffer = std::make_shared<Vulkan::Buffer>();
-            buffer->initialize(device->getDevice(), usage, memoryProperty, size);
+            VkBufferCreateFlags createFlags = 0;
+            if (bufferNode->hasAttribute(u8"create"))
+            {
+                createFlags = readValue(bufferNode, u8"create", bufferCreates, true, context);
+            }
+
+            Vulkan::MemoryBufferUPtr memoryBuffer;
+            loadMemoryBuffer(context, deviceWeak, memoryBuffer);
+
+            auto buffer = std::make_shared<Vulkan::Buffer>(std::move(memoryBuffer));
+            buffer->initialize(device->getDevice(), createFlags, usage, size);
             // Register
             device->insertBuffer(buffer);
             _buffers[id] = buffer;
@@ -1368,6 +1418,33 @@ void Engine3DXMLLoader::loadBuffers(ContextLoading& context, Vulkan::ContextDevi
 // <Buffers>
 // <Buffer id = "0" usage = "VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT" size = "192" / >
 // < / Buffers>
+
+void Engine3DXMLLoader::loadMemoryBuffer(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak, Vulkan::MemoryBufferUPtr& memoryBuffer)
+{
+    auto result = context._parser.getNode(u8"MemoryBuffer");
+    if (result->getNbElements() > 0)
+    {
+        auto memoryNode = result->getNode(0);
+        const auto memoryProperty = readValue(memoryNode, u8"property", memoryProperties, true, context);
+        memoryBuffer = std::make_unique<Vulkan::MemoryBuffer>(memoryProperty);
+    }
+    else
+    {
+        auto resultAllo = context._parser.getNode(u8"MemoryBufferAllocate");
+        if (resultAllo->getNbElements() > 0)
+        {
+            auto memoryNode = resultAllo->getNode(0);
+            const auto memoryProperty = readValue(memoryNode, u8"property", memoryProperties, true, context);
+            const auto memoryAllocate = readValue(memoryNode, u8"allocate", memoryAllocates, true, context);
+            memoryBuffer = std::make_unique<Vulkan::MemoryBufferAllocate>(memoryProperty, memoryAllocate);
+        }
+        else
+        {
+            MOUCA_THROW_ERROR(u8"Engine3D", u8"UnknownMemoryError");
+        }
+    }
+}
+
 
 void Engine3DXMLLoader::loadGraphicsPipelines(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
@@ -1513,7 +1590,7 @@ void Engine3DXMLLoader::loadCommandsGroup(ContextLoading& context, Vulkan::Conte
                 auto aPushC = context._parser.autoPushNode(*groupNode);
 
                 // Build command for specific framebuffer
-                loadCommands(context, deviceWeak, VkExtent2D(), *allCommands.get());
+                loadCommands(context, deviceWeak, VkExtent2D(), *allCommands);
             }
 
             // Register
@@ -1948,6 +2025,10 @@ void Engine3DXMLLoader::loadCommands(ContextLoading& context, Vulkan::ContextDev
 
             command = std::move(commandSwitch);
         }
+        else if (type == u8"traceRays")
+        {
+            MOUCA_ASSERT(false);
+        }
         else
         {
             MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLUnknownCommandError", context.getFileName(), type);
@@ -2251,59 +2332,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
     uint32_t states = Vulkan::PipelineStateCreateInfo::Uninitialized;
     
     // Stages
-    auto stages = context._parser.getNode(u8"Stages");
-    if (stages->getNbElements() > 0)
-    {
-        MOUCA_ASSERT(stages->getNbElements() == 1); //DEV Issue: Need to clean xml !
-        
-        // cppcheck-suppress unreadVariable // false positive
-        auto aPush = context._parser.autoPushNode(*stages->getNode(0));
-
-        // Parsing all Graphics pipeline
-        auto allStages = context._parser.getNode(u8"Stage");
-        for (size_t idStage = 0; idStage < allStages->getNbElements(); ++idStage)
-        {
-            auto stageNode = allStages->getNode(idStage);
-
-            const uint32_t idS = getLinkedIdentifiant(stageNode, u8"shaderModuleId", _shaderModules, context);
-
-            auto aPushShader = context._parser.autoPushNode(*stageNode);
-
-            Vulkan::ShaderSpecialization specialization;
-            auto specializations = context._parser.getNode(u8"Specialization");
-            if (specializations->getNbElements() > 0)
-            {
-                auto specializationNode = specializations->getNode(0);
-                // Read buffer
-                const uint32_t idB = getLinkedIdentifiant(specializationNode, u8"external", _cpuBuffers, context);
-                const auto& buffer   = _cpuBuffers[idB].lock();
-                MOUCA_ASSERT(buffer != nullptr && !buffer->isNull());
-                specialization.addDataInfo(buffer->getData(), buffer->getByteSize());
-
-                auto aPushS = context._parser.autoPushNode(*specializationNode);
-
-                // Add map entry
-                auto allEntries = context._parser.getNode(u8"Entry");
-
-                std::vector<VkSpecializationMapEntry> entries;
-                entries.resize(allEntries->getNbElements());
-                auto itEntry = entries.begin();
-                for (size_t idEntry = 0; idEntry < allEntries->getNbElements(); ++idEntry)
-                {
-                    auto entryNode = allEntries->getNode(idEntry);
-
-                    entryNode->getAttribute(u8"constantID", itEntry->constantID);
-                    entryNode->getAttribute(u8"offset",     itEntry->offset);
-                    entryNode->getAttribute(u8"size",       itEntry->size);
-                    ++itEntry;
-                }
-
-                specialization.setMapEntries(std::move(entries));
-            }
-
-            info.getStages().addShaderModule(_shaderModules[idS], std::move(specialization));
-        }
-    }
+    loadPipelineStages(context, info.getStages());
 
     if(info.getStages().getNbShaders() <= 0)
     {
@@ -3092,6 +3121,159 @@ void Engine3DXMLLoader::loadShaderModules(ContextLoading& context, Vulkan::Conte
             {
                 _manager.registerShader(shaderFile, { device, shaderModule });
             }
+        }
+    }
+}
+
+void Engine3DXMLLoader::loadPipelineStages(ContextLoading& context, Vulkan::PipelineStageShaders& stageShader)
+{
+    auto stages = context._parser.getNode(u8"Stages");
+    if (stages->getNbElements() > 0)
+    {
+        MOUCA_ASSERT(stages->getNbElements() == 1); //DEV Issue: Need to clean xml !
+
+        // cppcheck-suppress unreadVariable // false positive
+        auto aPush = context._parser.autoPushNode(*stages->getNode(0));
+
+        // Parsing all Graphics pipeline
+        auto allStages = context._parser.getNode(u8"Stage");
+        for (size_t idStage = 0; idStage < allStages->getNbElements(); ++idStage)
+        {
+            auto stageNode = allStages->getNode(idStage);
+
+            const uint32_t idS = getLinkedIdentifiant(stageNode, u8"shaderModuleId", _shaderModules, context);
+
+            auto aPushShader = context._parser.autoPushNode(*stageNode);
+
+            Vulkan::ShaderSpecialization specialization;
+            auto specializations = context._parser.getNode(u8"Specialization");
+            if (specializations->getNbElements() > 0)
+            {
+                auto specializationNode = specializations->getNode(0);
+                // Read buffer
+                const uint32_t idB = getLinkedIdentifiant(specializationNode, u8"external", _cpuBuffers, context);
+                const auto& buffer = _cpuBuffers[idB].lock();
+                MOUCA_ASSERT(buffer != nullptr && !buffer->isNull());
+                specialization.addDataInfo(buffer->getData(), buffer->getByteSize());
+
+                auto aPushS = context._parser.autoPushNode(*specializationNode);
+
+                // Add map entry
+                auto allEntries = context._parser.getNode(u8"Entry");
+
+                std::vector<VkSpecializationMapEntry> entries;
+                entries.resize(allEntries->getNbElements());
+                auto itEntry = entries.begin();
+                for (size_t idEntry = 0; idEntry < allEntries->getNbElements(); ++idEntry)
+                {
+                    auto entryNode = allEntries->getNode(idEntry);
+
+                    entryNode->getAttribute(u8"constantID", itEntry->constantID);
+                    entryNode->getAttribute(u8"offset", itEntry->offset);
+                    entryNode->getAttribute(u8"size", itEntry->size);
+                    ++itEntry;
+                }
+
+                specialization.setMapEntries(std::move(entries));
+            }
+
+            stageShader.addShaderModule(_shaderModules[idS], std::move(specialization));
+        }
+    }
+}
+
+void Engine3DXMLLoader::loadRayTracingPipelines(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
+{
+    // Search DescriptorSetLayouts
+    auto result = context._parser.getNode(u8"RayTracingPipelines");
+    if (result->getNbElements() > 0)
+    {
+        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        auto device = deviceWeak.lock();
+
+        // cppcheck-suppress unreadVariable // false positive
+        auto aPush = context._parser.autoPushNode(*result->getNode(0));
+
+        auto pipelines = std::make_shared<Vulkan::RayTracingPipelines>();
+
+        // Parsing all ShaderModule
+        auto allRayPipelines = context._parser.getNode(u8"RayTracingPipeline");
+        for (size_t idPipeline = 0; idPipeline < allRayPipelines->getNbElements(); ++idPipeline)
+        {
+            auto pipelineNode = allRayPipelines->getNode(idPipeline);
+
+            Vulkan::RayTracingPipeline pipeline;
+
+            auto aPushP = context._parser.autoPushNode(*pipelineNode);            
+            // Stages
+            loadPipelineStages(context, pipeline.getShadersStage());
+            if (pipeline.getShadersStage().getNbShaders() == 0)
+            {
+                MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLMissingNodeError", context.getFileName(), u8"RayTracingPipeline", u8"Stages/Stage");
+            }
+
+            // Groups
+            loadRayTracingShaderGroup(context, deviceWeak, pipeline);
+
+            const uint32_t idL = getLinkedIdentifiant(pipelineNode, u8"pipelineId", _pipelineLayouts, context);
+            uint32_t maxRecursive = 0;
+            pipelineNode->getAttribute(u8"maxPipelineRayRecursionDepth", maxRecursive);
+            
+            pipeline.initialize(_pipelineLayouts[idL], maxRecursive);
+
+            pipelines->addPipeline(std::move(pipeline));
+        }
+    }
+}
+
+void Engine3DXMLLoader::loadRayTracingShaderGroup(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak, Vulkan::RayTracingPipeline& pipeline)
+{
+    auto groups = context._parser.getNode(u8"Groups");
+    if (groups->getNbElements() > 0)
+    {
+        MOUCA_ASSERT(groups->getNbElements() == 1); //DEV Issue: Need to clean xml !
+
+        // cppcheck-suppress unreadVariable // false positive
+        auto aPush = context._parser.autoPushNode(*groups->getNode(0));
+
+        // Parsing all Graphics pipeline
+        auto allGroups = context._parser.getNode(u8"Group");
+        for (size_t idGroup = 0; idGroup < allGroups->getNbElements(); ++idGroup)
+        {
+            auto groupNode = allGroups->getNode(idGroup);
+
+            VkRayTracingShaderGroupCreateInfoKHR group
+            {
+                VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR ,    //VkStructureType                   sType;
+                nullptr,                                                        //const void* pNext;
+                VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR,                   //VkRayTracingShaderGroupTypeKHR    type;
+                VK_SHADER_UNUSED_KHR,                                           //uint32_t                          generalShader;
+                VK_SHADER_UNUSED_KHR,                                           //uint32_t                          closestHitShader;
+                VK_SHADER_UNUSED_KHR,                                           //uint32_t                          anyHitShader;
+                VK_SHADER_UNUSED_KHR,                                           //uint32_t                          intersectionShader;
+                nullptr,                                                        //const void* pShaderGroupCaptureReplayHandle;
+            };
+
+            group.type = readValue(groupNode, u8"type", rayTracingGroupTypes, false, context);
+
+            if(groupNode->hasAttribute(u8"generalShader"))
+            {
+                groupNode->getAttribute(u8"generalShader", group.generalShader);
+            }
+            if (groupNode->hasAttribute(u8"closestHitShader"))
+            {
+                groupNode->getAttribute(u8"closestHitShader", group.closestHitShader);
+            }
+            if (groupNode->hasAttribute(u8"anyHitShader"))
+            {
+                groupNode->getAttribute(u8"anyHitShader", group.anyHitShader);
+            }
+            if (groupNode->hasAttribute(u8"intersectionShader"))
+            {
+                groupNode->getAttribute(u8"intersectionShader", group.intersectionShader);
+            }
+
+            pipeline.addGroup(std::move(group));
         }
     }
 }

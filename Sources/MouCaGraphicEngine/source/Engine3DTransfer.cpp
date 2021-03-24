@@ -42,10 +42,9 @@ void Engine3DTransfer::immediatCopyCPUToGPU(const RT::BufferCPUBase& from, Vulka
 
 void Engine3DTransfer::indirectCopyCPUToGPU(Vulkan::CommandBufferWPtr commandBuffer, const RT::BufferCPUBase& from, Vulkan::Buffer& to)
 {
-    auto transferCPUGPU =  std::make_unique<Vulkan::Buffer>();
-    transferCPUGPU->initialize(_context.getDevice(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-                              VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                              from.getByteSize(), from.getData());
+    auto transferCPUGPU = std::make_unique<Vulkan::Buffer>(std::make_unique<Vulkan::MemoryBuffer>(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
+    transferCPUGPU->initialize(_context.getDevice(), 0, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                               from.getByteSize(), from.getData());
 
     const VkBufferCopy copyInfo
     {
@@ -120,8 +119,8 @@ void Engine3DTransfer::image2DArrayCPUToGPU(Vulkan::CommandBuffer& commandBuffer
     MOUCA_PRE_CONDITION(to.getArraySize() == static_cast<uint32_t>(from.getLayers()));
 
     //Create a buffer with data
-    auto stagingBuffer = std::make_unique<Vulkan::Buffer>();
-    stagingBuffer->initialize(device, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, from.getMemorySize(), from.getRAWData(0, 0));
+    auto stagingBuffer = std::make_unique<Vulkan::Buffer>(std::make_unique<Vulkan::MemoryBuffer>(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
+    stagingBuffer->initialize(device, 0, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, from.getMemorySize(), from.getRAWData(0, 0));
 
     // Setup buffer copy regions for each mip level
     std::vector<VkBufferImageCopy> bufferCopyRegions;
@@ -208,8 +207,8 @@ void Engine3DTransfer::image2DCPUToGPU(Vulkan::CommandBuffer& commandBuffer, con
     MOUCA_PRE_CONDITION(to.getExtent().height == from.getExtents(0).y);
 
     //Create a buffer with data
-    auto stagingBuffer = std::make_unique<Vulkan::Buffer>();
-    stagingBuffer->initialize(device, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, from.getMemorySize(), from.getRAWData(0, 0));
+    auto stagingBuffer = std::make_unique<Vulkan::Buffer>(std::make_unique<Vulkan::MemoryBuffer>(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
+    stagingBuffer->initialize(device, 0, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, from.getMemorySize(), from.getRAWData(0, 0));
 
     // Setup buffer copy regions for each mip level
     std::vector<VkBufferImageCopy> bufferCopyRegions;

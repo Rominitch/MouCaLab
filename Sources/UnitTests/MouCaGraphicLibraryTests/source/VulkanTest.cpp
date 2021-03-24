@@ -85,7 +85,7 @@ void VulkanDeviceTest::SetUp()
     {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
-    VkPhysicalDeviceFeatures features = {};
+    Vulkan::PhysicalDeviceFeatures features;
     ASSERT_NO_THROW(_contextDevice.initialize(_environment, deviceExtensions, features, _surface.get()));
 }
 

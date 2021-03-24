@@ -3,20 +3,27 @@
 /// \license No license
 #include "Dependencies.h"
 
+#include "LibVulkan/include/VKDevice.h"
+
 #include "LibVulkan/include/VKCommandBuffer.h"
 #include "LibVulkan/include/VKEnvironment.h"
 #include "LibVulkan/include/VKFence.h"
-#include "LibVulkan/include/VKDevice.h"
+#include "LibVulkan/include/VKSequence.h"
+#include "LibVulkan/include/VKSubmitInfo.h"
 #include "LibVulkan/include/VKSurface.h"
 
 namespace Vulkan
 {
 
+
+
 Device::Device() :
     _device(VK_NULL_HANDLE),
     _queueGraphic(VK_NULL_HANDLE),
     _colorFormat(VK_FORMAT_UNDEFINED),
-    _depthFormat(VK_FORMAT_UNDEFINED)
+    _depthFormat(VK_FORMAT_UNDEFINED),
+    _rayTracingPipelineProperties({VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR}),
+    _accelerationStructureFeatures({VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR})
 {
     MOUCA_PRE_CONDITION(isNull());			                //Dev Issue: Bad constructor !
 }
@@ -42,6 +49,21 @@ void Device::initialize(const VkPhysicalDevice physicalDevice, const uint32_t qu
 
     // Get physical device properties
     vkGetPhysicalDeviceProperties(physicalDevice, &_properties);
+
+    VkPhysicalDeviceProperties2 properties
+    {
+        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2,
+         &_rayTracingPipelineProperties,
+        {}
+    };
+    vkGetPhysicalDeviceProperties2(physicalDevice, &properties);
+    VkPhysicalDeviceFeatures2 features2
+    {
+        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
+        &_accelerationStructureFeatures,
+        {}
+    };
+    vkGetPhysicalDeviceFeatures2(physicalDevice, &features2);
 
     //Search physical feature
     VkPhysicalDeviceFeatures features;
@@ -103,12 +125,18 @@ void Device::initialize(const VkPhysicalDevice physicalDevice, const uint32_t qu
         ptrExtensions = extensions.data();
     }
     
-    _enabledFeatures = features;
+    //Build feature v2 (support of raytracing)
+    const VkPhysicalDeviceFeatures2 physicalDeviceFeatures2
+    {
+        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
+        _enabled.getNext(),
+        _enabled._features,
+    };
 
-    VkDeviceCreateInfo deviceCreateInfo =
+    const VkDeviceCreateInfo deviceCreateInfo =
     {
         VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,           // VkStructureType                    sType
-        nullptr,                                        // const void                        *pNext
+        &physicalDeviceFeatures2,                       // const void                        *pNext
         0,                                              // VkDeviceCreateFlags                flags
         static_cast<uint32_t>(queueCreateInfos.size()), // uint32_t                           queueCreateInfoCount
         queueCreateInfos.data(),                        // const VkDeviceQueueCreateInfo     *pQueueCreateInfos
@@ -116,7 +144,7 @@ void Device::initialize(const VkPhysicalDevice physicalDevice, const uint32_t qu
         nullptr,                                        // const char * const                *ppEnabledLayerNames
         static_cast<uint32_t>(extensions.size()),       // uint32_t                           enabledExtensionCount
         ptrExtensions,									// const char * const                *ppEnabledExtensionNames
-        &_enabledFeatures                               // const VkPhysicalDeviceFeatures    *pEnabledFeatures
+        nullptr                                         // const VkPhysicalDeviceFeatures    *pEnabledFeatures
     };
 
     // Build Device
@@ -135,17 +163,29 @@ void Device::initialize(const VkPhysicalDevice physicalDevice, const uint32_t qu
     {
         MOUCA_THROW_ERROR(u8"VulkanError", u8"NbLayersError");
     }
-    std::vector<VkLayerProperties> properties(nbLayersProperties);
-    if(vkEnumerateDeviceLayerProperties(physicalDevice, &nbLayersProperties, properties.data())  != VK_SUCCESS)
+    std::vector<VkLayerProperties> layerProperties(nbLayersProperties);
+    if(vkEnumerateDeviceLayerProperties(physicalDevice, &nbLayersProperties, layerProperties.data())  != VK_SUCCESS)
     {
         MOUCA_THROW_ERROR(u8"VulkanError", u8"NbLayersError");
     }
     std::cout << "Vulkan - Physical Layers:" << std::endl;
-    for(const auto& layer: properties)
+    for(const auto& layer: layerProperties)
     {
         std::cout << "\t" << layer.layerName << ": " << layer.description << std::endl;
     }
 #endif
+
+    // Load Extensions
+    vkGetBufferDeviceAddressKHR                 = reinterpret_cast<PFN_vkGetBufferDeviceAddressKHR>(vkGetDeviceProcAddr(deviceID, "vkGetBufferDeviceAddressKHR"));
+    vkCmdBuildAccelerationStructuresKHR         = reinterpret_cast<PFN_vkCmdBuildAccelerationStructuresKHR>(vkGetDeviceProcAddr(deviceID, "vkCmdBuildAccelerationStructuresKHR"));
+    vkBuildAccelerationStructuresKHR            = reinterpret_cast<PFN_vkBuildAccelerationStructuresKHR>(vkGetDeviceProcAddr(deviceID, "vkBuildAccelerationStructuresKHR"));
+    vkCreateAccelerationStructureKHR            = reinterpret_cast<PFN_vkCreateAccelerationStructureKHR>(vkGetDeviceProcAddr(deviceID, "vkCreateAccelerationStructureKHR"));
+    vkDestroyAccelerationStructureKHR           = reinterpret_cast<PFN_vkDestroyAccelerationStructureKHR>(vkGetDeviceProcAddr(deviceID, "vkDestroyAccelerationStructureKHR"));
+    vkGetAccelerationStructureBuildSizesKHR     = reinterpret_cast<PFN_vkGetAccelerationStructureBuildSizesKHR>(vkGetDeviceProcAddr(deviceID, "vkGetAccelerationStructureBuildSizesKHR"));
+    vkGetAccelerationStructureDeviceAddressKHR  = reinterpret_cast<PFN_vkGetAccelerationStructureDeviceAddressKHR>(vkGetDeviceProcAddr(deviceID, "vkGetAccelerationStructureDeviceAddressKHR"));
+    vkCmdTraceRaysKHR                           = reinterpret_cast<PFN_vkCmdTraceRaysKHR>(vkGetDeviceProcAddr(deviceID, "vkCmdTraceRaysKHR"));
+    vkGetRayTracingShaderGroupHandlesKHR        = reinterpret_cast<PFN_vkGetRayTracingShaderGroupHandlesKHR>(vkGetDeviceProcAddr(deviceID, "vkGetRayTracingShaderGroupHandlesKHR"));
+    vkCreateRayTracingPipelinesKHR              = reinterpret_cast<PFN_vkCreateRayTracingPipelinesKHR>(vkGetDeviceProcAddr(deviceID, "vkCreateRayTracingPipelinesKHR"));
 
     MOUCA_POST_CONDITION(!isNull());
 }
@@ -193,11 +233,13 @@ void Device::configureDevice(const VkPhysicalDevice physicalDevice, const VkDevi
     MOUCA_POST_CONDITION(!isNull());
 }
 
-void Device::initializeBestGPU(const Environment& environment, const std::vector<const char*>& extensions, const Surface* surface, const VkPhysicalDeviceFeatures& enabled)
+void Device::initializeBestGPU(const Environment& environment, const std::vector<const char*>& extensions, const Surface* surface, const PhysicalDeviceFeatures& enabled)
 {
     MOUCA_PRE_CONDITION(!environment.isNull());
     MOUCA_PRE_CONDITION(isNull());
     MOUCA_PRE_CONDITION(surface == nullptr || !surface->isNull());
+
+    _enabled = enabled;
 
     std::set<DeviceCandidate, DeviceCandidate::Less> canditates;
 
@@ -434,6 +476,38 @@ void Device::readFormatProperties(const VkFormat format, VkFormatProperties& for
 {
     MOUCA_ASSERT(_physicalDevice != VK_NULL_HANDLE);        //DEV Issue: Missing initialize ?
     vkGetPhysicalDeviceFormatProperties(_physicalDevice, format, &formatProps);
+}
+
+
+
+void Device::executeCommandSync(std::vector<ICommandBufferWPtr>&& commandBuffers) const
+{
+    // Build submit data
+    SubmitInfos infos;
+    infos.resize(1);
+    infos[0] = std::make_unique<SubmitInfo>();
+    infos[0]->initialize(std::move(commandBuffers));
+
+    // Build Fence
+    auto fence = std::make_shared<Fence>();
+    fence->initialize(*this, Fence::infinityTimeout, 0);
+
+    // Execute sequence
+    {
+        // Submit
+        SequenceSubmit submit(std::move(infos), fence);
+        submit.execute(*this);
+
+        // Wait fence
+        const std::vector<Vulkan::FenceWPtr> fences{ fence };
+        SequenceWaitFence waitFence(fences, Fence::infinityTimeout, VK_TRUE);
+        waitFence.execute(*this);
+
+        // Sync device
+        //device.waitIdle();
+    }
+
+    fence->release(*this);
 }
 
 }

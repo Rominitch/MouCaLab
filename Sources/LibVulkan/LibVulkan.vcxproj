@@ -103,6 +103,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies.h" />
+    <ClInclude Include="include\VKAccelerationStructureGeometry.h" />
+    <ClInclude Include="include\VKRayTracingPipeline.h" />
+    <ClInclude Include="include\VKAccelerationStructure.h" />
     <ClInclude Include="include\VKCommandBufferSurface.h" />
     <ClInclude Include="include\VKContextDevice.h" />
     <ClInclude Include="include\VKContextWindow.h" />
@@ -122,11 +125,13 @@
     <ClInclude Include="include\VKGraphicsPipeline.h" />
     <ClInclude Include="include\VKPipelineLayout.h" />
     <ClInclude Include="include\VKPipelineStates.h" />
+    <ClInclude Include="include\VKRayTracingShaderGroup.h" />
     <ClInclude Include="include\VKSequence.h" />
     <ClInclude Include="include\VKRenderPass.h" />
     <ClInclude Include="include\VKSampler.h" />
     <ClInclude Include="include\VKScreenshot.h" />
     <ClInclude Include="include\VKSemaphore.h" />
+    <ClInclude Include="include\VKBufferStrided.h" />
     <ClInclude Include="include\VKShaderProgram.h" />
     <ClInclude Include="include\VKSubmitInfo.h" />
     <ClInclude Include="include\VKSurface.h" />
@@ -142,6 +147,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="source\VKAccelerationStructure.cpp" />
+    <ClCompile Include="source\VKAccelerationStructureGeometry.cpp" />
     <ClCompile Include="source\VKCommandBufferSurface.cpp" />
     <ClCompile Include="source\VKContextDevice.cpp" />
     <ClCompile Include="source\VKContextWindow.cpp" />
@@ -161,6 +168,8 @@
     <ClCompile Include="source\VKGraphicsPipeline.cpp" />
     <ClCompile Include="source\VKPipelineLayout.cpp" />
     <ClCompile Include="source\VKPipelineStates.cpp" />
+    <ClCompile Include="source\VKRayTracingPipeline.cpp" />
+    <ClCompile Include="source\VKRayTracingShaderGroup.cpp" />
     <ClCompile Include="source\VKSequence.cpp" />
     <ClCompile Include="source\VKRenderPass.cpp" />
     <ClCompile Include="source\VKSampler.cpp" />

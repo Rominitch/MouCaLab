@@ -37,6 +37,9 @@
     <ClCompile Include="Dependencies.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\UT_Raytracing.cpp">
+      <Filter>Source Files\Demo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -84,36 +87,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\UnitTests\GLSL\deferred_tesselation.frag">
-      <Filter>Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\deferred_tesselation.tesc">
-      <Filter>Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\deferred_tesselation.tese">
-      <Filter>Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\deferred_tesselation.vert">
-      <Filter>Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\font.frag">
-      <Filter>Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\font.vert">
-      <Filter>Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\font_screen.frag">
-      <Filter>Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\font_screen.vert">
-      <Filter>Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\fontV2.frag">
-      <Filter>Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\fontV2.vert">
-      <Filter>Shaders</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\UnitTests\GLSL\debug.frag">
       <Filter>Shaders\Common</Filter>
     </CustomBuild>
@@ -131,24 +104,6 @@
     </CustomBuild>
     <CustomBuild Include="..\..\UnitTests\GLSL\mrt.vert">
       <Filter>Shaders\Common</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\triangleSS.vert">
-      <Filter>Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\triangle.vert">
-      <Filter>Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\Warping-Procedural.vert">
-      <Filter>Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\triangle.frag">
-      <Filter>Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\triangleSS.frag">
-      <Filter>Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\UnitTests\GLSL\Warping-Procedural.frag">
-      <Filter>Shaders</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\UnitTests\GLSL\uioverlay.frag">
       <Filter>Shaders\Common</Filter>
@@ -299,5 +254,70 @@
     <Xml Include="..\..\UnitTests\Renderer\FullDescriptor.xml">
       <Filter>Renderer\Error</Filter>
     </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\Raytracing.xml">
+      <Filter>Renderer</Filter>
+    </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <GLSLShader Include="..\..\UnitTests\GLSL\deferred_tesselation.frag">
+      <Filter>Shaders</Filter>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\deferred_tesselation.vert">
+      <Filter>Shaders</Filter>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\deferred_tesselation.tesc">
+      <Filter>Shaders</Filter>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\deferred_tesselation.tese">
+      <Filter>Shaders</Filter>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\font.frag">
+      <Filter>Shaders</Filter>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\font.vert">
+      <Filter>Shaders</Filter>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\font_screen.frag">
+      <Filter>Shaders</Filter>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\font_screen.vert">
+      <Filter>Shaders</Filter>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\fontV2.frag">
+      <Filter>Shaders</Filter>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\fontV2.vert">
+      <Filter>Shaders</Filter>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\triangle.frag">
+      <Filter>Shaders</Filter>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\triangle.vert">
+      <Filter>Shaders</Filter>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\triangleSS.frag">
+      <Filter>Shaders</Filter>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\triangleSS.vert">
+      <Filter>Shaders</Filter>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\Warping-Procedural.frag">
+      <Filter>Shaders</Filter>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\Warping-Procedural.vert">
+      <Filter>Shaders</Filter>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\raytracing-shadow.rmiss">
+      <Filter>Shaders</Filter>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\raytracing.rchit">
+      <Filter>Shaders</Filter>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\raytracing.rgen">
+      <Filter>Shaders</Filter>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\raytracing-miss.rmiss">
+      <Filter>Shaders</Filter>
+    </GLSLShader>
   </ItemGroup>
 </Project>

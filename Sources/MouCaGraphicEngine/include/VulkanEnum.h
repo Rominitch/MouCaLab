@@ -25,6 +25,8 @@ namespace MouCaGraphic
 
     extern std::map<Core::String, VkSurfaceTransformFlagBitsKHR> surfaceTransforms;
 
+    extern std::map<Core::String, VkBufferCreateFlags> bufferCreates;
+
     extern std::map<Core::String, VkBufferUsageFlags> bufferUsages;
 
     extern std::map<Core::String, VkImageUsageFlags> imageUsages;
@@ -42,6 +44,8 @@ namespace MouCaGraphic
     extern std::map<Core::String, VkComponentSwizzle> componentSwizzles;
 
     extern std::map<Core::String, VkImageViewType> viewTypes;
+
+    extern std::map<Core::String, VkMemoryAllocateFlags> memoryAllocates;
 
     extern std::map<Core::String, VkMemoryPropertyFlags> memoryProperties;
 
@@ -106,4 +110,6 @@ namespace MouCaGraphic
     extern std::map<Core::String, VkCommandBufferUsageFlags> commandBufferUsages;
 
     extern std::map<VkShaderStageFlags, RT::ShaderKind> shaderKinds;
+
+    extern std::map<Core::String, VkRayTracingShaderGroupTypeKHR> rayTracingGroupTypes;
 }

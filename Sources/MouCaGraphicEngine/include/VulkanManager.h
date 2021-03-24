@@ -45,6 +45,8 @@ namespace Vulkan
     using ContextWindowWPtr = std::weak_ptr<ContextWindow>;
     using ContextWindows    = std::vector<ContextWindowSPtr>;
 
+    struct PhysicalDeviceFeatures;
+
     class ShaderModule;
     using ShaderModuleSPtr = std::shared_ptr<ShaderModule>;
     using ShaderModuleWPtr = std::weak_ptr<ShaderModule>;
@@ -145,7 +147,7 @@ namespace MouCaGraphic
         //-----------------------------------------------------------------------------------------
         //                                      Build item
         //-----------------------------------------------------------------------------------------
-            Vulkan::ContextDeviceWPtr createRenderingDevice(const std::vector<const char*>& deviceExtensions, const VkPhysicalDeviceFeatures& mandatoryFeatures, Vulkan::WindowSurface& surface);
+            Vulkan::ContextDeviceWPtr createRenderingDevice(const std::vector<const char*>& deviceExtensions, const Vulkan::PhysicalDeviceFeatures& mandatoryFeatures, Vulkan::WindowSurface& surface);
 
             Vulkan::ContextWindowWPtr createWindowSurface(Vulkan::ContextDeviceWPtr context, const uint32_t surfaceID, const Vulkan::SurfaceFormat::Configuration& configuration);
 

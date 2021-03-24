@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<MouCaLab>
+  <Engine3D version="0.2">
+    <Environment application="Raytracing" engine="MouCaLab">
+      <Extension>VK_KHR_surface</Extension>
+      <Extension>VK_KHR_get_physical_device_properties2</Extension>
+      <Extension os="windows">VK_KHR_win32_surface</Extension>
+      <Extension os="linux">VK_KHR_xlib_surface</Extension>
+      <Extension os="apple">VK_KHR_xcb_surface</Extension>
+    </Environment>
+    <GlobalData>
+      <Data name="resolution" width="1280" height="720" depth="1" />
+    </GlobalData>
+    <Window id="0" title="Raytracing" positionX="30" positionY="30" width="400" height="400" visible="false" resizable="false" border="true" />
+    <Device id="0" mode="render" compatibleWindowId="0">
+      <Extension>VK_KHR_swapchain</Extension>
+      <Extension>VK_KHR_maintenance1</Extension>
+      <!-- Ray tracing related extensions required by this sample -->
+      <Extension>VK_KHR_acceleration_structure</Extension>
+      <Extension>VK_KHR_ray_tracing_pipeline</Extension>
+      <!-- Required by VK_KHR_acceleration_structure -->
+      <Extension>VK_KHR_buffer_device_address</Extension>
+      <Extension>VK_KHR_deferred_host_operations</Extension>
+      <Extension>VK_EXT_descriptor_indexing</Extension>
+      <!-- Required by VK_KHR_ray_tracing_pipeline -->
+      <Extension>VK_KHR_spirv_1_4</Extension>
+      <!-- Required by VK_KHR_spirv_1_4 -->
+      <Extension>VK_KHR_shader_float_controls</Extension>
+      <FeatureBufferDeviceAddress bufferDeviceAddress="true"/>
+      <FeatureRayTracingPipeline rayTracingPipeline="true"/>
+      <FeatureAccelerationStructure accelerationStructure="true"/>
+      <!--  Synchronization -->
+      <Semaphores>
+        <Semaphore id="0" /> <!-- Present complete -->
+        <Semaphore id="1" /> <!-- Offscreen        -->
+        <Semaphore id="2" /> <!-- Render complete  -->
+      </Semaphores>
+      <Fences>
+        <Fence id="0" flag="VK_FENCE_CREATE_SIGNALED_BIT"/>
+      </Fences>
+      <!--  Surfaces -->
+      <Surfaces>
+        <Surface id="0" windowId="0" >
+          <UserPreferences presentationMode="VK_PRESENT_MODE_MAILBOX_KHR" />
+        </Surface>
+      </Surfaces>
+      <!--  Buffer / Image / Uniform -->
+      <Images>
+        <!-- Final Raytracer image -->
+        <Image id="0" fromSurfaceId="0" extent="$resolution" imageType="VK_IMAGE_TYPE_2D" usage="VK_IMAGE_USAGE_TRANSFER_SRC_BIT|VK_IMAGE_USAGE_STORAGE_BIT" samples="VK_SAMPLE_COUNT_1_BIT" tiling="VK_IMAGE_TILING_OPTIMAL" sharingMode="VK_SHARING_MODE_EXCLUSIVE" initialLayout="VK_IMAGE_LAYOUT_UNDEFINED" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT">
+          <View id="0" viewType="VK_IMAGE_VIEW_TYPE_2D" format="VK_FORMAT_UNDEFINED" componentSwizzleRed="VK_COMPONENT_SWIZZLE_R" componentSwizzleGreen="VK_COMPONENT_SWIZZLE_G" componentSwizzleBlue="VK_COMPONENT_SWIZZLE_B" componentSwizzleAlpha="VK_COMPONENT_SWIZZLE_A" aspectMask="VK_IMAGE_ASPECT_COLOR_BIT" baseMipLevel="0" levelCount="1" baseArrayLayer="0" layerCount="1" />
+        </Image>
+      </Images>
+      <Samplers>
+        <!-- Final Raytracer sampler -->
+        <Sampler id="0" magFilter="VK_FILTER_NEAREST" minFilter="VK_FILTER_NEAREST" mipmapMode="VK_SAMPLER_MIPMAP_MODE_LINEAR" addressModeU="VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE" addressModeV="VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE" addressModeW="VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE" mipLodBias="0.0" minLod="0.0" maxLod="1.0" borderColor="VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE" unnormalizedCoordinates="false"/>
+      </Samplers>
+      <Buffers>
+        <!-- Mesh -->
+        <!-- Armor -->
+        <Buffer id="0" external="0" usage="VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR|VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT|VK_BUFFER_USAGE_STORAGE_BUFFER_BIT|VK_BUFFER_USAGE_INDEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT">
+          <MemoryBufferAllocate allocate="VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT" property="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        </Buffer>
+        <Buffer id="1" external="1" usage="VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR|VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT|VK_BUFFER_USAGE_STORAGE_BUFFER_BIT|VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT">
+          <MemoryBufferAllocate allocate="VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT" property="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        </Buffer>
+        <!-- Ground -->
+        <Buffer id="2" external="2" usage="VK_BUFFER_USAGE_INDEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT">
+          <MemoryBufferAllocate allocate="VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT" property="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        </Buffer>
+        <Buffer id="3" external="3" usage="VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT">
+          <MemoryBufferAllocate allocate="VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT" property="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        </Buffer>
+        <!-- UBO -->
+        <Buffer id="4" external="4" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+        </Buffer>
+      
+    </Buffers>
+      <!--  Shaders -->
+      <ShaderModules>
+        <ShaderModule id="0" stage="VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR" spirv="raytracing.rchit.spv"        code="raytracing.rchit"/>
+        <ShaderModule id="1" stage="VK_SHADER_STAGE_RAYGEN_BIT_KHR"      spirv="raytracing.rgen.spv"         code="raytracing.rgen"/>
+        <ShaderModule id="2" stage="VK_SHADER_STAGE_MISS_BIT_KHR"        spirv="raytracing-miss.rmiss.spv"   code="raytracing-miss.rmiss"/>
+        <ShaderModule id="3" stage="VK_SHADER_STAGE_MISS_BIT_KHR"        spirv="raytracing-shadow.rmiss.spv" code="raytracing-shadow.rmiss"/>
+      </ShaderModules>
+      <!--  RenderPass / FrameBuffer -->
+      <RenderPasses>
+        <RenderPass id="0">
+           <Attachment surfaceId="0" samples="VK_SAMPLE_COUNT_1_BIT" loadOp="VK_ATTACHMENT_LOAD_OP_CLEAR" storeOp="VK_ATTACHMENT_STORE_OP_STORE" stencilLoadOp="VK_ATTACHMENT_LOAD_OP_DONT_CARE" stencilSaveOp="VK_ATTACHMENT_STORE_OP_DONT_CARE" initialLayout="VK_IMAGE_LAYOUT_UNDEFINED" finalLayout="VK_IMAGE_LAYOUT_PRESENT_SRC_KHR" />
+           <SubPass bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS">
+             <ColorAttachment colorAttachment="0" colorLayout="VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL"/>
+           </SubPass>
+           <Dependency srcSubpass="VK_SUBPASS_EXTERNAL" dstSubpass="0" srcStageMask="VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT" dstStageMask="VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT" srcAccessMask="0" dstAccessMask="VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT" dependencyFlags="VK_DEPENDENCY_BY_REGION_BIT"/>
+        </RenderPass>
+      </RenderPasses>
+      <FrameBuffers>
+        <FrameBuffer surfaceId="0" renderPassId="0">
+          <Attachment/>
+        </FrameBuffer>
+      </FrameBuffers>
+      <AccelerationStructures>
+        <AccelerationStructure id="0"/>
+      </AccelerationStructures>
+      <!--  Descriptor / Layout -->
+      <DescriptorPools>
+        <DescriptorPool id="0" maxSets="1">
+          <Size type="VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR" descriptorCount="1" />
+          <Size type="VK_DESCRIPTOR_TYPE_STORAGE_IMAGE"              descriptorCount="1" />
+          <Size type="VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER"             descriptorCount="1" />
+          <Size type="VK_DESCRIPTOR_TYPE_STORAGE_BUFFER"             descriptorCount="2" />
+        </DescriptorPool>
+      </DescriptorPools>
+      <DescriptorSetLayouts>
+        <DescriptorSetLayout id="0">
+          <Binding type="VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR" count="1" shaderStageFlags="VK_SHADER_STAGE_RAYGEN_BIT_KHR|VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR" />
+          <Binding type="VK_DESCRIPTOR_TYPE_STORAGE_IMAGE"  count="1" shaderStageFlags="VK_SHADER_STAGE_RAYGEN_BIT_KHR" />
+          <Binding type="VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER" count="1" shaderStageFlags="VK_SHADER_STAGE_RAYGEN_BIT_KHR|VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR|VK_SHADER_STAGE_MISS_BIT_KHR" />
+          <Binding type="VK_DESCRIPTOR_TYPE_STORAGE_BUFFER" count="1" shaderStageFlags="VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR" />
+          <Binding type="VK_DESCRIPTOR_TYPE_STORAGE_BUFFER" count="1" shaderStageFlags="VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR" />
+        </DescriptorSetLayout>
+      </DescriptorSetLayouts>
+      <PipelineLayouts>
+          <PipelineLayout id="0">
+            <DescriptorSetLayout descriptorSetId="0"/>
+          </PipelineLayout>
+      </PipelineLayouts>
+      <DescriptorSets>
+        <DescriptorSet id="0" descriptorPoolId="0">
+          <SetLayout descriptorSetLayoutId="0">
+            <WriteDescriptor descriptorType="VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR" binding="0">
+              <AccelerationInfo accelerationId="0" />
+            </WriteDescriptor>
+            <WriteDescriptor descriptorType="VK_DESCRIPTOR_TYPE_STORAGE_IMAGE" binding="1">
+              <ImageInfo viewId="0" samplerId="0" layout="VK_IMAGE_LAYOUT_GENERAL" />
+            </WriteDescriptor>
+            <WriteDescriptor descriptorType="VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER" binding="2">
+              <BufferInfo bufferId="4" />
+            </WriteDescriptor>
+            <WriteDescriptor descriptorType="VK_DESCRIPTOR_TYPE_STORAGE_BUFFER" binding="3">
+              <BufferInfo bufferId="1" />
+            </WriteDescriptor>
+            <WriteDescriptor descriptorType="VK_DESCRIPTOR_TYPE_STORAGE_BUFFER" binding="4">
+              <BufferInfo bufferId="0" />
+            </WriteDescriptor>
+          </SetLayout>
+        </DescriptorSet>
+      </DescriptorSets>
+      <!--  Pipelines -->
+      <GraphicsPipelines>
+        <GraphicsPipeline id="0" renderPassId="0" pipelineLayoutId="0">
+          <Stages>
+            <Stage shaderModuleId="0" />
+            <Stage shaderModuleId="1" />
+          </Stages>
+          <VertexInput />
+          <InputAssembly topology="VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST" primitiveRestartEnable="false" />
+          <Rasterization depthClampEnable="false" rasterizerDiscardEnable="false" polygonMode="VK_POLYGON_MODE_FILL" cullMode="VK_CULL_MODE_NONE" frontFace="VK_FRONT_FACE_CLOCKWISE" depthBiasEnable="false" />
+          <BlendState logicOpEnable="false" blendConstantsR="0" blendConstantsG="0" blendConstantsB="0" blendConstantsA="0">
+            <BlendAttachment blendEnable="false" colorWriteMask="VK_COLOR_COMPONENT_R_BIT|VK_COLOR_COMPONENT_G_BIT|VK_COLOR_COMPONENT_B_BIT|VK_COLOR_COMPONENT_A_BIT" />
+          </BlendState>
+          <Multisample rasterizationSamples="VK_SAMPLE_COUNT_1_BIT" alphaToCoverageEnable="false" alphaToOneEnable="false"/>
+          <DynamicState state="VK_DYNAMIC_STATE_VIEWPORT" />
+          <DynamicState state="VK_DYNAMIC_STATE_SCISSOR" />
+          <Viewport />
+        </GraphicsPipeline>
+      </GraphicsPipelines>
+      <RayTracingPipelines>
+        <RayTracingPipeline id="0" maxPipelineRayRecursionDepth="2" pipelineLayoutId="0">
+          <Stages>
+            <Stage shaderModuleId="0" />
+            <Stage shaderModuleId="1" />
+            <Stage shaderModuleId="2" />
+            <Stage shaderModuleId="3" />
+          </Stages>
+          <Groups>
+            <Group type="VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR" generalShader="0" closestHitShader="VK_SHADER_UNUSED_KHR" anyHitShader="VK_SHADER_UNUSED_KHR" intersectionShader="VK_SHADER_UNUSED_KHR" />
+            <Group type="VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR" generalShader="VK_SHADER_UNUSED_KHR" closestHitShader="VK_SHADER_UNUSED_KHR" anyHitShader="VK_SHADER_UNUSED_KHR" intersectionShader="VK_SHADER_UNUSED_KHR" />
+            <Group type="VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR" generalShader="VK_SHADER_UNUSED_KHR" closestHitShader="VK_SHADER_UNUSED_KHR" anyHitShader="VK_SHADER_UNUSED_KHR" intersectionShader="VK_SHADER_UNUSED_KHR" />
+            <Group type="VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR" generalShader="VK_SHADER_UNUSED_KHR" closestHitShader="VK_SHADER_UNUSED_KHR" anyHitShader="VK_SHADER_UNUSED_KHR" intersectionShader="VK_SHADER_UNUSED_KHR" />
+          </Groups>
+        </RayTracingPipeline>
+      </RayTracingPipelines>
+      <CommandPools>
+        <CommandPool id="0" commandPoolId="0" families="graphic" flags="VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT" />
+      </CommandPools>
+      <CommandBuffers>
+        <!-- Offscreen -->
+        <CommandBuffer id="0" commandPoolId="0" level="VK_COMMAND_BUFFER_LEVEL_PRIMARY">
+          <Command type="beginRenderPass" renderPassId="1" frameBufferId="1" subpassContent="VK_SUBPASS_CONTENTS_INLINE">
+            <CleanValue colorR="0.0" colorG="0.0" colorB="0.0" colorA="0.0" type="float"/>
+            <CleanValue colorR="0.0" colorG="0.0" colorB="0.0" colorA="0.0" type="float"/>
+            <CleanValue colorR="0.0" colorG="0.0" colorB="0.0" colorA="0.0" type="float"/>
+            <CleanValue depth="1.0" stencil="0"/>
+          </Command>
+          <Command type="viewport" y="720" width="1280" height="-720"/>
+          <Command type="scissor"  width="$resolution" height="$resolution"/>
+          <Command type="endRenderPass"/>
+        </CommandBuffer>
+        <!-- Raytracing -->
+        <CommandBuffer surfaceId="0" commandPoolId="0" level="VK_COMMAND_BUFFER_LEVEL_PRIMARY">
+          <Command type="beginRenderPass" renderPassId="0" surfaceId="0" subpassContent="VK_SUBPASS_CONTENTS_INLINE">
+            <CleanValue colorR="0.5" colorG="0.1" colorB="0.3" colorA="1.0" type="float"/>
+          </Command>
+          <Command type="bindDescriptorSets" pipelineLayoutId="0" bindPoint="VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR" firstSet="0" descriptorSetId="0" />
+          <!-- <Command type="traceRays" graphicsPipelineId="0" />-->
+          <Command type="endRenderPass"/>
+        </CommandBuffer>
+      </CommandBuffers>
+      <!--  QueueSequence -->
+      <QueueSequences>
+        <QueueSequence id="0">
+          <Sequence type="acquire" surfaceId="0" semaphoreId="0"/>
+          <Sequence type="waitFence" waitAll="true">
+            <Fence fenceId="0"/>
+          </Sequence>
+          <Sequence type="resetFence">
+            <Fence fenceId="0"/>
+          </Sequence>
+          <!-- Raytracing Computation -->
+          <Sequence type="submit">
+            <WaitSync semaphoreId="0" pipelineFlag="VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT"/>
+            <CommandBuffer id="0"/>
+            <SignalSync semaphoreId="1"/>
+          </Sequence>
+          <!-- Merge on screen -->
+          <Sequence type="submit" fenceId="0">
+            <WaitSync semaphoreId="1" pipelineFlag="VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT"/>
+            <CommandBuffer surfaceId="0"/>
+            <SignalSync semaphoreId="2"/>
+          </Sequence>
+          <Sequence type="presentKHR">
+            <Swapchain surfaceId="0"/>
+            <Semaphore semaphoreId="2" />
+          </Sequence>
+          <Sequence type="waitFence" waitAll="true">
+            <Fence fenceId="0"/>
+          </Sequence>
+        </QueueSequence>
+      </QueueSequences>
+    </Device>
+  </Engine3D>
+</MouCaLab>

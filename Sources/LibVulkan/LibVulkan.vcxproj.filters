@@ -37,6 +37,12 @@
     <Filter Include="Fichiers sources\Buffer">
       <UniqueIdentifier>{e743c135-9b07-430c-a7c1-26c6dcb65a67}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fichiers d%27en-tête\Raytracing">
+      <UniqueIdentifier>{87791fb9-a80a-4963-9d57-d2ca834bf9c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Raytracing">
+      <UniqueIdentifier>{9232716c-e660-4834-b730-e34701c58eca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\VKDevice.h">
@@ -138,6 +144,21 @@
     <ClInclude Include="Dependencies.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="include\VKAccelerationStructure.h">
+      <Filter>Fichiers d%27en-tête\Raytracing</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKBufferStrided.h">
+      <Filter>Fichiers d%27en-tête\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKRayTracingShaderGroup.h">
+      <Filter>Fichiers d%27en-tête\Raytracing</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKRayTracingPipeline.h">
+      <Filter>Fichiers d%27en-tête\Raytracing</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKAccelerationStructureGeometry.h">
+      <Filter>Fichiers d%27en-tête\Raytracing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\VKDevice.cpp">
@@ -235,6 +256,18 @@
     </ClCompile>
     <ClCompile Include="Dependencies.cpp">
       <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKAccelerationStructure.cpp">
+      <Filter>Fichiers sources\Raytracing</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKRayTracingShaderGroup.cpp">
+      <Filter>Fichiers sources\Raytracing</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKRayTracingPipeline.cpp">
+      <Filter>Fichiers sources\Raytracing</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VKAccelerationStructureGeometry.cpp">
+      <Filter>Fichiers sources\Raytracing</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
