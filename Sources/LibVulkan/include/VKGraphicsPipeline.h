@@ -3,6 +3,7 @@
 /// \license No license
 #pragma once
 
+#include <LibVulkan/include/VKPipeline.h>
 #include <LibVulkan/include/VKPipelineCache.h>
 #include <LibVulkan/include/VKPipelineStates.h>
 
@@ -23,13 +24,13 @@ namespace Vulkan
     //----------------------------------------------------------------------------
     /// \brief 
     ///
-    class GraphicsPipeline final
+    class GraphicsPipeline final : public Pipeline
     {
         MOUCA_NOCOPY(GraphicsPipeline);
 
         public:
             GraphicsPipeline();
-            ~GraphicsPipeline();
+            ~GraphicsPipeline() override;
 
             [[deprecated]] void initialize(const Device& device, const RenderPass& renderPass, const PipelineLayout& layout, const PipelineCache& pipelineCache = PipelineCache());
 
@@ -39,23 +40,11 @@ namespace Vulkan
             PipelineStateCreateInfo&        getInfo()       { return _infos; }
             const PipelineStateCreateInfo&  getInfo() const { return _infos; }
 
-            bool isNull() const
-            {
-                return _pipeline == VK_NULL_HANDLE;
-            }
-
-            const VkPipeline& getInstance() const
-            {
-                return _pipeline;
-            }
-
             RenderPassWPtr       getRenderPass() const      { return _renderPass; }
             PipelineLayoutWPtr   getPipelineLayout() const  { return _layout; }
             PipelineCacheWPtr    getPipelineCache() const   { return _pipelineCache; }
 
         private:
-            VkPipeline              _pipeline;
-
             RenderPassWPtr          _renderPass;
             PipelineLayoutWPtr      _layout;
             PipelineCacheWPtr       _pipelineCache;

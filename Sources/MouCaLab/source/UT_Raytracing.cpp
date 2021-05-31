@@ -26,10 +26,11 @@
 
 #include "include/EventManager3D.h"
 
-
 // TMP
 #include <LibVulkan/include/VKAccelerationStructure.h>
 #include <LibVulkan/include/VKAccelerationStructureGeometry.h>
+#include <LibVulkan/include/VKBufferStrided.h>
+#include <LibVulkan/include/VKTracingRay.h>
 // TMP
 
 class RaytracingTest : public MouCaLabTest
@@ -286,6 +287,8 @@ TEST_F(RaytracingTest, run)
     loader._cpuBuffers[3] = _models._ground->getMesh().getVBOBuffer();
     loader._cpuBuffers[4] = _models._ubo;
 
+    loader._cpuMesh[0] = _models._armor->getWeakMesh();
+
     ASSERT_NO_FATAL_FAILURE(loadEngine(loader, u8"Raytracing.xml"));
 
     MouCaGraphic::Engine3DXMLLoader loaderGUI(manager);
@@ -311,8 +314,8 @@ TEST_F(RaytracingTest, run)
         // Buffers
         transfer.indirectCopyCPUToGPU(commandBuffer, *loader._cpuBuffers[0].lock(), *loader._buffers[0].lock());
         transfer.indirectCopyCPUToGPU(commandBuffer, *loader._cpuBuffers[1].lock(), *loader._buffers[1].lock());
-        transfer.indirectCopyCPUToGPU(commandBuffer, *loader._cpuBuffers[2].lock(), *loader._buffers[2].lock());
-        transfer.indirectCopyCPUToGPU(commandBuffer, *loader._cpuBuffers[3].lock(), *loader._buffers[3].lock());
+        //transfer.indirectCopyCPUToGPU(commandBuffer, *loader._cpuBuffers[2].lock(), *loader._buffers[2].lock());
+        //transfer.indirectCopyCPUToGPU(commandBuffer, *loader._cpuBuffers[3].lock(), *loader._buffers[3].lock());
         
         // Go
         transfer.transfer(commandBuffer);
@@ -338,7 +341,7 @@ TEST_F(RaytracingTest, run)
     */
 
     // Build Acceleration structure
-
+    /*
     Vulkan::AccelerationStructureSPtr asBottom = std::make_shared<Vulkan::AccelerationStructure>();
     {
         std::vector<Vulkan::AccelerationBuildGeometry> bgs(1);
@@ -372,16 +375,30 @@ TEST_F(RaytracingTest, run)
         bgs[0].addGeometry(std::move(geomInstance));
         bgs[0].initialize(*context);
 
-        asTop->initialize(*context, 0, VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR, bgs[0].getBuildInfo());
+        asTop->initialize(*context, 0, VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR, bgs[0].getBuildInfo());
         asTop->build(*context, bgs);
     }
-    
-//     Vulkan::AccelerationStructureTop asTop;
-//     asTop.addInstance(std::move(instance));
-//     asTop.initialize( *context );
+    */
+    //-------------------------------------------------------------------------------------------------
+    //                                       Step 4: Build / Execute
+    //-------------------------------------------------------------------------------------------------
+
+    // Build AS
+    ASSERT_NO_FATAL_FAILURE(loader._accelerationStructures[0].lock()->initialize(context->getDevice()));
+    ASSERT_NO_FATAL_FAILURE(loader._accelerationStructures[1].lock()->initialize(context->getDevice()));
+
+    // Transfer AS data
+    std::vector<Vulkan::AccelerationStructureWPtr> accelerationStructs{ loader._accelerationStructures[0], loader._accelerationStructures[1] };
+    Vulkan::AccelerationStructure::createAccelerationStructure(context->getDevice(), accelerationStructs);
+
+    // Execute commands
+    loader._surfaces[0].lock()->updateCommandBuffer(VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+    //loader._commandBuffers[0].lock()->execute();
+
+    context->getDevice().waitIdle();
 
     //-------------------------------------------------------------------------------------------------
-    //                                             Step 4: Play
+    //                                            Step 5: Play
     //-------------------------------------------------------------------------------------------------
 
     // Set value
@@ -421,8 +438,8 @@ TEST_F(RaytracingTest, run)
         takeScreenshot(manager, L"Raytracing.png");
     }
 
-    asTop->release(*context);
-    asBottom->release(*context);
+//     asTop->release(*context);
+//     asBottom->release(*context);
     
     // Clean
     ASSERT_NO_THROW(manager.release());

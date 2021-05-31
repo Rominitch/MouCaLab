@@ -319,5 +319,11 @@
     <GLSLShader Include="..\..\UnitTests\GLSL\raytracing-miss.rmiss">
       <Filter>Shaders</Filter>
     </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\raytracing-deferred.vert">
+      <Filter>Shaders</Filter>
+    </GLSLShader>
+    <GLSLShader Include="..\..\UnitTests\GLSL\raytracing-deferred.frag">
+      <Filter>Shaders</Filter>
+    </GLSLShader>
   </ItemGroup>
 </Project>

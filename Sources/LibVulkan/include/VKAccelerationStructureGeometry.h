@@ -13,11 +13,15 @@ namespace Vulkan
     // Forward declaration
     class AccelerationStructure;
     using AccelerationStructureWPtr = std::weak_ptr<AccelerationStructure>;
-    class ContextDevice;
+
+    class Device;
 
     class AccelerationStructureGeometry
     {
+        MOUCA_NOCOPY_NOMOVE(AccelerationStructureGeometry);
         public:
+            virtual ~AccelerationStructureGeometry() = default;
+
             void initialize(const VkGeometryFlagsKHR geometryFlags);
 
             const VkAccelerationStructureGeometryKHR& getGeometry() const { return _geometry; }
@@ -25,6 +29,8 @@ namespace Vulkan
             uint32_t getCount() const { return _count; }
 
             const std::vector<VkAccelerationStructureBuildRangeInfoKHR>& getRangeInfo() const { return _rangeInfos; }
+
+            virtual void create(const Device& device) = 0;
 
         protected:
             AccelerationStructureGeometry(const VkGeometryTypeKHR type);
@@ -35,8 +41,11 @@ namespace Vulkan
             std::vector<VkAccelerationStructureBuildRangeInfoKHR> _rangeInfos;
     };
 
+    using AccelerationStructureGeometryUPtr = std::unique_ptr<AccelerationStructureGeometry>;
+
     class AccelerationStructureGeometryInstance : public AccelerationStructureGeometry
     {
+        MOUCA_NOCOPY_NOMOVE(AccelerationStructureGeometryInstance);
         public:
             struct Instance
             {
@@ -50,13 +59,14 @@ namespace Vulkan
             };
 
             AccelerationStructureGeometryInstance();
+            ~AccelerationStructureGeometryInstance() override = default;
 
             void addInstance(Instance&& instance)
             {
                 _instances.emplace_back(std::move(instance));
             }
 
-            void create(const ContextDevice& context);
+            void create(const Device& device) override;
        
 
         private:
@@ -66,16 +76,18 @@ namespace Vulkan
 
     class AccelerationStructureGeometryTriangles : public AccelerationStructureGeometry
     {
+        MOUCA_NOCOPY_NOMOVE(AccelerationStructureGeometryTriangles);
         public:
             AccelerationStructureGeometryTriangles();
+            ~AccelerationStructureGeometryTriangles() override = default;
 
-            void initialize(const RT::Mesh& mesh, const BufferWPtr vbo, const BufferWPtr ibo,
+            void initialize(const RT::MeshWPtr mesh, const BufferWPtr vbo, const BufferWPtr ibo,
                             const VkGeometryFlagsKHR geometryFlags);
 
-            void create(const ContextDevice& context);
+            void create(const Device& device) override;
 
         private:
-            const RT::Mesh*  _mesh;
+            RT::MeshWPtr _mesh;
             BufferWPtr _vbo;
             BufferWPtr _ibo;
     };

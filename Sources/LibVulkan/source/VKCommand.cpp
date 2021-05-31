@@ -14,6 +14,7 @@
 #include "LibVulkan/include/VKGraphicsPipeline.h"
 #include "LibVulkan/include/VKPipelineLayout.h"
 #include "LibVulkan/include/VKRenderPass.h"
+#include "LibVulkan/include/VKTracingRay.h"
 
 namespace Vulkan
 {
@@ -140,6 +141,22 @@ void CommandPipeline::execute(const VkCommandBuffer& commandBuffer)
 void CommandPipeline::execute(const ExecuteCommands& executer)
 {
     vkCmdBindPipeline(executer.commandBuffer, _bindPoint, _pipeline.getInstance());
+}
+
+CommandBindPipeline::CommandBindPipeline(const PipelineWPtr pipeline, const VkPipelineBindPoint bindPoint) :
+_pipeline(pipeline), _bindPoint(bindPoint)
+{
+    MOUCA_POST_CONDITION(!_pipeline.lock()->isNull());
+}
+
+void CommandBindPipeline::execute(const VkCommandBuffer& commandBuffer)
+{
+    vkCmdBindPipeline(commandBuffer, _bindPoint, _pipeline.lock()->getInstance());
+}
+
+void CommandBindPipeline::execute(const ExecuteCommands& executer)
+{
+    vkCmdBindPipeline(executer.commandBuffer, _bindPoint, _pipeline.lock()->getInstance());
 }
 
 CommandDraw::CommandDraw(const uint32_t vertexCount, const uint32_t instanceCount, const uint32_t firstVertex, const uint32_t firstInstance):
@@ -527,6 +544,7 @@ _device(device), _buildGeometries(std::move(buildGeometries)), _accelerationBuil
 {
     MOUCA_PRE_CONDITION(!_buildGeometries.empty());
     MOUCA_PRE_CONDITION(!_accelerationBuildStructureRangeInfos.empty());
+    MOUCA_PRE_CONDITION(std::find_if(_accelerationBuildStructureRangeInfos.cbegin(), _accelerationBuildStructureRangeInfos.cend(), [](const auto info) -> bool { return info == nullptr; }) == _accelerationBuildStructureRangeInfos.cend());
 }
 
 void CommandBuildAccelerationStructures::execute(const VkCommandBuffer& commandBuffer)
@@ -544,6 +562,40 @@ void CommandBuildAccelerationStructures::execute(const ExecuteCommands& executer
     _device.vkCmdBuildAccelerationStructuresKHR(executer.commandBuffer,
         static_cast<uint32_t>(_buildGeometries.size()), _buildGeometries.data(),
         _accelerationBuildStructureRangeInfos.data());
+}
+
+CommandTraceRay::CommandTraceRay(const Device& device, const TracingRayWPtr tracingRay, const uint32_t width, const uint32_t height, const uint32_t depth):
+_device(device), _tracingRay(tracingRay), _width(width), _height(height), _depth(depth)
+{
+    MOUCA_PRE_CONDITION(!_device.isNull());
+    MOUCA_PRE_CONDITION(!_tracingRay.expired() && !_tracingRay.lock()->isNull());
+    MOUCA_PRE_CONDITION(_width > 0);
+    MOUCA_PRE_CONDITION(_height > 0);
+    MOUCA_PRE_CONDITION(_depth > 0);
+}
+
+void CommandTraceRay::execute(const VkCommandBuffer& commandBuffer)
+{
+    const auto tracingRay = _tracingRay.lock();
+    
+    _device.vkCmdTraceRaysKHR(commandBuffer,
+        &tracingRay->getBufferStrided(0).getStrided(),
+        &tracingRay->getBufferStrided(1).getStrided(),
+        &tracingRay->getBufferStrided(2).getStrided(),
+        &tracingRay->getBufferStrided(3).getStrided(),
+        _width, _height, _depth);
+}
+
+void CommandTraceRay::execute(const ExecuteCommands& executer)
+{
+    const auto tracingRay = _tracingRay.lock();
+
+    _device.vkCmdTraceRaysKHR(executer.commandBuffer,
+        &tracingRay->getBufferStrided(0).getStrided(),
+        &tracingRay->getBufferStrided(1).getStrided(),
+        &tracingRay->getBufferStrided(2).getStrided(),
+        &tracingRay->getBufferStrided(3).getStrided(),
+        _width, _height, _depth);
 }
 
 }

@@ -32,9 +32,9 @@ namespace Vulkan
 
             void resize(const Device& device, VkDeviceSize size);
 
-            void release(const Device& device);
+            virtual void release(const Device& device);
 
-            bool isNull() const
+            virtual bool isNull() const
             {
                 MOUCA_PRE_CONDITION(_memory != nullptr);
                 return _memory->isNull() && _buffer == VK_NULL_HANDLE;

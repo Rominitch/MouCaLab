@@ -318,6 +318,8 @@
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
     </CustomBuild>
+    <GLSLShader Include="..\..\UnitTests\GLSL\raytracing-deferred.frag" />
+    <GLSLShader Include="..\..\UnitTests\GLSL\raytracing-deferred.vert" />
     <GLSLShader Include="..\..\UnitTests\GLSL\raytracing-miss.rmiss">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>

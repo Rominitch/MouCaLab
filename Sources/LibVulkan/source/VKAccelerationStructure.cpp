@@ -7,7 +7,6 @@
 
 #include "LibRT/include/RTMesh.h"
 
-#include "LibVulkan/include/VKAccelerationStructureGeometry.h"
 #include "LibVulkan/include/VKCommand.h"
 #include "LibVulkan/include/VKCommandBuffer.h"
 #include "LibVulkan/include/VKCommandPool.h"
@@ -17,38 +16,48 @@
 namespace Vulkan
 {
 
-// TODO("TMP declaration - Clean")
-
 AccelerationStructure::AccelerationStructure():
 _data(std::make_unique<MemoryBufferAllocate>(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT))
 {}
 
-void AccelerationStructure::initialize(const ContextDevice& context, const VkAccelerationStructureCreateFlagsKHR createFlags, const VkAccelerationStructureTypeKHR type, VkAccelerationStructureBuildSizesInfoKHR buildSizeInfo)
+void AccelerationStructure::addGeometry(AccelerationStructureGeometryUPtr&& geometry)
 {
-    MOUCA_PRE_CONDITION(!context.isNull());
-    MOUCA_PRE_CONDITION(_data.isNull());
-    MOUCA_PRE_CONDITION(_buildSizeInfo.accelerationStructureSize > 0);  //Dev Issue: Nothing to allocate ?
-    MOUCA_PRE_CONDITION(isNull());
+    _geometries.emplace_back(std::move(geometry));
+}
 
-    const Device& device = context.getDevice();
-    
+void AccelerationStructure::setCreateInfo(const VkAccelerationStructureCreateFlagsKHR createFlags, const VkAccelerationStructureTypeKHR type)
+{
     // Copy info
-    _buildSizeInfo = buildSizeInfo;
-    _type          = type;
+    _type = type;
+    _createFlags = createFlags;
 
+    MOUCA_POST_CONDITION(_type != VK_ACCELERATION_STRUCTURE_TYPE_MAX_ENUM_KHR);
+}
+
+void AccelerationStructure::initialize(const Device& device)
+{
+    MOUCA_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(_data.isNull());
+    MOUCA_PRE_CONDITION(isNull());
+    MOUCA_PRE_CONDITION(_type != VK_ACCELERATION_STRUCTURE_TYPE_MAX_ENUM_KHR); // DEV Issue: Missing call setCreateInfo
+
+    // Prepare Build Geometry: need valid buffer with data
+    buildGeometry(device);
+
+    VkAccelerationStructureBuildSizesInfoKHR buildSizeInfo = _buildGeometry._buildInfo;
     // Buffer and memory
     _data.initialize(device, 0, VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
-                     _buildSizeInfo.accelerationStructureSize);
+                     buildSizeInfo.accelerationStructureSize);
 
     // Acceleration structure
     const VkAccelerationStructureCreateInfoKHR accelerationStructureCreate_info
     {
         VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR,   // VkStructureType                          sType;
         nullptr,                                                    // const void* pNext;
-        createFlags,                                                // VkAccelerationStructureCreateFlagsKHR    createFlags;
+        _createFlags,                                               // VkAccelerationStructureCreateFlagsKHR    createFlags;
         _data.getBuffer(),                                          // VkBuffer                                 buffer;
         0,                                                          // VkDeviceSize                             offset;
-        _buildSizeInfo.accelerationStructureSize,                   // VkDeviceSize                             size;
+        buildSizeInfo.accelerationStructureSize,                    // VkDeviceSize                             size;
         _type,                                                      // VkAccelerationStructureTypeKHR           type;
         0,                                                          // VkDeviceAddress                          deviceAddress;
     };
@@ -70,42 +79,113 @@ void AccelerationStructure::initialize(const ContextDevice& context, const VkAcc
     MOUCA_POST_CONDITION(!isNull());
 }
 
-void AccelerationStructure::build(const ContextDevice& context, std::vector<AccelerationBuildGeometry>& builds)
+void AccelerationStructure::release(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!context.isNull());
     MOUCA_PRE_CONDITION(!isNull());
 
+    _data.release(device);
+
+    device.vkDestroyAccelerationStructureKHR(device.getInstance(), _handle, nullptr);
+    _handle        = VK_NULL_HANDLE;
+    _deviceAddress = 0;
+    
+    MOUCA_POST_CONDITION(isNull());
+}
+
+AccelerationStructure::BuildGeometry::BuildGeometry() :
+_geometryInfo({}), _buildInfo({})
+{}
+
+void AccelerationStructure::buildGeometry(const Device& device)
+{
+    MOUCA_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(!_geometries.empty());
+
+    // Compute latest info
+    uint32_t count = 0;
+    _buildGeometry._geometriesVK.reserve(_geometries.size());
+    for(const auto& geometry : _geometries)
+    {
+        geometry->create(device);
+
+        _buildGeometry._geometriesVK.emplace_back(geometry->getGeometry());
+        count += geometry->getCount();
+
+        // Not nice : duplication
+        for (const auto range : geometry->getRangeInfo())
+        {
+            _buildGeometry._ranges.emplace_back(range);
+        }
+    }
+    MOUCA_ASSERT(count > 0); // DEV Issue: Check your buffer are properly configured !
+
+    _buildGeometry._geometryInfo =
+    {
+        VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR,   // sType
+        nullptr,                                                            // pNext
+        _type,                                                              // type
+        VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR,          // flag
+        VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR,                     // mode
+        nullptr,                                                            // srcAccelerationStructure
+        nullptr,                                                            // dstAccelerationStructure
+        static_cast<uint32_t>(_buildGeometry._geometriesVK.size()),         // geometryCount
+        _buildGeometry._geometriesVK.data(),                                // pGeometries
+        nullptr,                                                            // ppGeometries
+        { 0 }                                                               // scratchData
+    };
+
+    _buildGeometry._buildInfo =
+    {
+        VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR
+    };
+    
+    device.vkGetAccelerationStructureBuildSizesKHR(device.getInstance(), VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
+                                                   &_buildGeometry._geometryInfo, &count, &_buildGeometry._buildInfo);
+
+    
+
+    MOUCA_POST_CONDITION(_buildGeometry._buildInfo.accelerationStructureSize > 0);
+}
+
+void AccelerationStructure::createAccelerationStructure(const Device& device, std::vector<AccelerationStructureWPtr>& accelerationStructures)
+{
+    MOUCA_PRE_CONDITION(!device.isNull());
+    MOUCA_PRE_CONDITION(!accelerationStructures.empty());
+
     // Create a small scratch buffer used during build of the bottom level acceleration structure
-    const Device& device = context.getDevice();
     const bool hostCommand = device.getPhysicalDeviceAccelerationStructureFeatures().accelerationStructureHostCommands;
 
     std::vector<BufferUPtr> scratchBuffers;
     std::vector<VkAccelerationStructureBuildGeometryInfoKHR> buildGeometries;
     std::vector<const VkAccelerationStructureBuildRangeInfoKHR*> accelerationBuildStructureRangeInfos;
-    
-    scratchBuffers.reserve(builds.size());
-    buildGeometries.reserve(builds.size());
-    accelerationBuildStructureRangeInfos.reserve(builds.size());
-    
-    for(const auto& info : builds)
+
+    scratchBuffers.reserve(accelerationStructures.size());
+    buildGeometries.reserve(accelerationStructures.size());
+    accelerationBuildStructureRangeInfos.reserve(accelerationStructures.size());
+
+    for (const auto& weakAS : accelerationStructures)
     {
+        auto as = weakAS.lock();
+        MOUCA_ASSERT(!as->isNull());
+        MOUCA_ASSERT(!as->_buildGeometry._ranges.empty()); //DEV Issue: no data range
+
         BufferUPtr scratchBuffer = std::make_unique<Buffer>(std::make_unique<MemoryBufferAllocate>(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT_KHR));
-        scratchBuffer->initialize(device, 0, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT, info.getBuildInfo().buildScratchSize);
-
-        auto buildInfo = info.getGeometryInfo();
+        scratchBuffer->initialize(device, 0, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT, as->_buildGeometry._buildInfo.buildScratchSize);
+        
         // Complete build info
-        buildInfo.dstAccelerationStructure = _handle;
-        buildInfo.scratchData.deviceAddress = scratchBuffer->getDeviceAddress(device);
+        auto geometryInfo = as->_buildGeometry._geometryInfo;
+        geometryInfo.dstAccelerationStructure  = as->getHandle();
+        geometryInfo.scratchData.deviceAddress = scratchBuffer->getDeviceAddress(device);
 
-        buildGeometries.emplace_back(std::move(buildInfo));
-        accelerationBuildStructureRangeInfos.emplace_back(info.getRanges().data());
+        buildGeometries.emplace_back(std::move(geometryInfo));
+        accelerationBuildStructureRangeInfos.emplace_back(as->_buildGeometry._ranges.data());
         scratchBuffers.emplace_back(std::move(scratchBuffer));
     }
 
     if (hostCommand)
     {
         // Implementation supports building acceleration structure building on host
-        if(device.vkBuildAccelerationStructuresKHR( device.getInstance(), VK_NULL_HANDLE, 
+        if (device.vkBuildAccelerationStructuresKHR(device.getInstance(), VK_NULL_HANDLE,
             static_cast<uint32_t>(buildGeometries.size()), buildGeometries.data(),
             accelerationBuildStructureRangeInfos.data()) != VK_SUCCESS)
         {
@@ -118,7 +198,7 @@ void AccelerationStructure::build(const ContextDevice& context, std::vector<Acce
         auto pool = std::make_shared<CommandPool>();
         pool->initialize(device, device.getQueueFamilyGraphicId());
         commandBuffer->initialize(device, pool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 0);
-        
+
         commandBuffer->addCommand(std::make_unique<CommandBuildAccelerationStructures>(device, std::move(buildGeometries), std::move(accelerationBuildStructureRangeInfos)));
 
         commandBuffer->execute();
@@ -133,74 +213,10 @@ void AccelerationStructure::build(const ContextDevice& context, std::vector<Acce
         pool->release(device);
     }
 
-    for(auto& scratchBuffer : scratchBuffers)
+    for (auto& scratchBuffer : scratchBuffers)
     {
         scratchBuffer->release(device);
     }
-
-    MOUCA_POST_CONDITION(!isNull());
-}
-
-void AccelerationStructure::release(const ContextDevice& context)
-{
-    MOUCA_PRE_CONDITION(!isNull());
-
-    const Device& device = context.getDevice();
-    
-    _data.release(device);
-
-    device.vkDestroyAccelerationStructureKHR(device.getInstance(), _handle, nullptr);
-    _handle        = VK_NULL_HANDLE;
-    _deviceAddress = 0;
-    
-    MOUCA_POST_CONDITION(isNull());
-}
-
-void AccelerationBuildGeometry::initialize(const ContextDevice& context)
-{
-    MOUCA_PRE_CONDITION(!context.isNull());
-    MOUCA_PRE_CONDITION(isNull());
-    MOUCA_PRE_CONDITION(!_geometries.empty());
-
-    // Compute latest info
-    uint32_t count = 0;
-    std::vector<VkAccelerationStructureGeometryKHR> geometriesVK;
-    geometriesVK.reserve(_geometries.size());
-    for(const auto& geometry : _geometries)
-    {
-        geometriesVK.emplace_back(geometry->getGeometry());
-        count += geometry->getCount();
-    }
-
-    _geometryInfo =
-    {
-        VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR,   // sType
-        nullptr,                                                            // pNext
-        VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR,                    // type
-        VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR,          // flag
-        VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR,                     // mode
-        nullptr,                                                            // srcAccelerationStructure
-        nullptr,                                                            // dstAccelerationStructure
-        static_cast<uint32_t>(geometriesVK.size()),                         // geometryCount
-        geometriesVK.data(),                                                // pGeometries
-        nullptr,                                                            // ppGeometries
-        { 0 }                                                               // scratchData
-    };
-
-    _buildInfo =
-    {
-        VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR
-    };
-    
-    context.getDevice().vkGetAccelerationStructureBuildSizesKHR(context.getDevice().getInstance(), VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
-                                                                &_geometryInfo, &count, &_buildInfo);
-
-    MOUCA_POST_CONDITION(!isNull());
-}
-
-void AccelerationBuildGeometry::addGeometry(AccelerationStructureGeometryUPtr&& geometry)
-{
-    _geometries.emplace_back(std::move(geometry));
 }
 
 }

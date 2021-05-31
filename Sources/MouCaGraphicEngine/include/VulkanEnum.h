@@ -109,7 +109,13 @@ namespace MouCaGraphic
 
     extern std::map<Core::String, VkCommandBufferUsageFlags> commandBufferUsages;
 
+    extern std::map<Core::String, VkAccelerationStructureTypeKHR> accelerationStructureTypes;
+
     extern std::map<VkShaderStageFlags, RT::ShaderKind> shaderKinds;
 
     extern std::map<Core::String, VkRayTracingShaderGroupTypeKHR> rayTracingGroupTypes;
+
+    extern std::map<Core::String, VkGeometryFlagsKHR> geometryFlags;
+
+    extern std::map<Core::String, VkGeometryInstanceFlagsKHR> geometryInstanceFlags;
 }

@@ -13,6 +13,8 @@
 
 #include <LibVR/include/VRPlatform.h>
 
+#include <LibVulkan/include/VKAccelerationStructure.h>
+#include <LibVulkan/include/VKAccelerationStructureGeometry.h>
 #include <LibVulkan/include/VKCommand.h>
 #include <LibVulkan/include/VKCommandBufferSurface.h>
 #include <LibVulkan/include/VKContextDevice.h>
@@ -25,13 +27,13 @@
 #include <LibVulkan/include/VKPipelineLayout.h>
 #include <LibVulkan/include/VKPipelineStates.h>
 #include <LibVulkan/include/VKRayTracingPipeline.h>
-#include <LibVulkan/include/VKRayTracingShaderGroup.h>
 #include <LibVulkan/include/VKRenderPass.h>
 #include <LibVulkan/include/VKSampler.h>
 #include <LibVulkan/include/VKSemaphore.h>
 #include <LibVulkan/include/VKSequence.h>
 #include <LibVulkan/include/VKSubmitInfo.h>
 #include <LibVulkan/include/VKSwapChain.h>
+#include <LibVulkan/include/VKTracingRay.h>
 
 #include <LibXML/include/XML.h>
 
@@ -41,7 +43,7 @@
 
 namespace MouCaGraphic
 {
-
+    
 Engine3DXMLLoader::ContextLoading::ContextLoading(GraphicEngine& engine, XML::Parser& parser, MouCaCore::ResourceManager& resources):
 _engine(engine), _parser(parser), _resources(resources), _xmlFileName(Core::convertToU8(parser.getFilename()))
 {}
@@ -437,6 +439,8 @@ void Engine3DXMLLoader::loadDevices(ContextLoading& context)
 
         loadFrameBuffers(context, ctxDevice);
 
+        loadAccelerationStructures(context, ctxDevice);
+
         loadDescriptorSetPools(context, ctxDevice);
 
         loadDescriptorSetLayouts(context, ctxDevice);
@@ -446,6 +450,10 @@ void Engine3DXMLLoader::loadDevices(ContextLoading& context)
         loadPipelineLayouts(context, ctxDevice);
 
         loadGraphicsPipelines(context, ctxDevice);
+
+        loadRayTracingPipelines(context, ctxDevice);
+
+        loadTracingRay(context, ctxDevice);
 
         loadCommandPools(context, ctxDevice);
 
@@ -1668,7 +1676,6 @@ void Engine3DXMLLoader::loadCommandBuffers(ContextLoading& context, Vulkan::Cont
                 auto commandBuffer = std::make_shared<Vulkan::CommandBuffer>();
                 commandBuffer->initialize(device->getDevice(), _commandPools[poolId].lock(), level, usage);
                 commandBuffer->registerCommands(std::move(allCommands));
-                commandBuffer->execute();
 
                 deviceWeak.lock()->insertCommandBuffer(commandBuffer);
                 _commandBuffers[id] = commandBuffer;
@@ -1830,11 +1837,24 @@ void Engine3DXMLLoader::loadCommands(ContextLoading& context, Vulkan::ContextDev
             // Build command
             command = std::make_unique<Vulkan::CommandEndRenderPass>();
         }
-        else if(type == u8"graphicsPipeline")
+        else if(type == u8"bindPipeline")
         {
-            const uint32_t graphicsPipelineId = getLinkedIdentifiant(commandNode, u8"graphicsPipelineId", _graphicsPipelines, context);
             const auto       bindPoint          = readValue(commandNode, u8"bindPoint", bindPoints, false, context);
-            command = std::make_unique<Vulkan::CommandPipeline>(*_graphicsPipelines[graphicsPipelineId].lock(), bindPoint);
+
+            if(commandNode->hasAttribute(u8"graphicsPipelineId"))
+            {
+                const uint32_t pipelineId = getLinkedIdentifiant(commandNode, u8"graphicsPipelineId", _graphicsPipelines, context);
+                command = std::make_unique<Vulkan::CommandBindPipeline>(_graphicsPipelines[pipelineId], bindPoint);
+            }
+            else if (commandNode->hasAttribute(u8"rayTracingPipelineId"))
+            {
+                const uint32_t pipelineId = getLinkedIdentifiant(commandNode, u8"rayTracingPipelineId", _rayTracingPipelines, context);
+                command = std::make_unique<Vulkan::CommandBindPipeline>(_rayTracingPipelines[pipelineId], bindPoint);
+            }
+            else
+            {
+                MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLUnknownBindPipelineError", context.getFileName(), type);
+            }
         }
         else if (type == u8"draw")
         {
@@ -2027,7 +2047,17 @@ void Engine3DXMLLoader::loadCommands(ContextLoading& context, Vulkan::ContextDev
         }
         else if (type == u8"traceRays")
         {
-            MOUCA_ASSERT(false);
+            uint32_t width;
+            uint32_t height;
+            uint32_t depth;
+            readAttribute(commandNode, u8"width",  width,  context);
+            readAttribute(commandNode, u8"height", height, context);
+            readAttribute(commandNode, u8"depth",  depth,  context);
+
+            const uint32_t idT = getLinkedIdentifiant(commandNode, u8"tracingRayId", _tracingRays, context);
+           
+            auto commandTraceRay = std::make_unique<Vulkan::CommandTraceRay>(deviceWeak.lock()->getDevice(), _tracingRays[idT], width, height, depth);
+            command = std::move(commandTraceRay);
         }
         else
         {
@@ -3194,34 +3224,40 @@ void Engine3DXMLLoader::loadRayTracingPipelines(ContextLoading& context, Vulkan:
         // cppcheck-suppress unreadVariable // false positive
         auto aPush = context._parser.autoPushNode(*result->getNode(0));
 
-        auto pipelines = std::make_shared<Vulkan::RayTracingPipelines>();
-
         // Parsing all ShaderModule
         auto allRayPipelines = context._parser.getNode(u8"RayTracingPipeline");
         for (size_t idPipeline = 0; idPipeline < allRayPipelines->getNbElements(); ++idPipeline)
         {
             auto pipelineNode = allRayPipelines->getNode(idPipeline);
 
-            Vulkan::RayTracingPipeline pipeline;
+            bool existing;
+            const uint32_t id = getIdentifiant(pipelineNode, u8"RayTracingPipeline", _rayTracingPipelines, context, existing);
+            if(existing)
+            {
+                continue;
+            }
+
+            auto pipeline = std::make_shared<Vulkan::RayTracingPipeline>();
 
             auto aPushP = context._parser.autoPushNode(*pipelineNode);            
             // Stages
-            loadPipelineStages(context, pipeline.getShadersStage());
-            if (pipeline.getShadersStage().getNbShaders() == 0)
+            loadPipelineStages(context, pipeline->getShadersStage());
+            if (pipeline->getShadersStage().getNbShaders() == 0)
             {
                 MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLMissingNodeError", context.getFileName(), u8"RayTracingPipeline", u8"Stages/Stage");
             }
 
             // Groups
-            loadRayTracingShaderGroup(context, deviceWeak, pipeline);
+            loadRayTracingShaderGroup(context, deviceWeak, *pipeline);
 
-            const uint32_t idL = getLinkedIdentifiant(pipelineNode, u8"pipelineId", _pipelineLayouts, context);
+            const uint32_t idL = getLinkedIdentifiant(pipelineNode, u8"pipelineLayoutId", _pipelineLayouts, context);
             uint32_t maxRecursive = 0;
             pipelineNode->getAttribute(u8"maxPipelineRayRecursionDepth", maxRecursive);
             
-            pipeline.initialize(_pipelineLayouts[idL], maxRecursive);
+            pipeline->initialize(device->getDevice(), _pipelineLayouts[idL], maxRecursive);
 
-            pipelines->addPipeline(std::move(pipeline));
+            device->insertRayTracingPipeline(pipeline);
+            _rayTracingPipelines[id] = pipeline;
         }
     }
 }
@@ -3274,6 +3310,148 @@ void Engine3DXMLLoader::loadRayTracingShaderGroup(ContextLoading& context, Vulka
             }
 
             pipeline.addGroup(std::move(group));
+        }
+    }
+}
+
+void Engine3DXMLLoader::loadTracingRay(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
+{
+    auto tracingRays = context._parser.getNode(u8"TracingRays");
+    if (tracingRays->getNbElements() > 0)
+    {
+        MOUCA_ASSERT(tracingRays->getNbElements() == 1); //DEV Issue: Need to clean xml !
+        auto device = deviceWeak.lock();
+
+        // cppcheck-suppress unreadVariable // false positive
+        auto aPush = context._parser.autoPushNode(*tracingRays->getNode(0));
+
+        // Parsing all Graphics pipeline
+        auto allTracingRays = context._parser.getNode(u8"TracingRay");
+        for (size_t idTracingRay = 0; idTracingRay < allTracingRays->getNbElements(); ++idTracingRay)
+        {
+            auto tracingRayNode = allTracingRays->getNode(idTracingRay);
+
+            bool existing;
+            const uint32_t id = getIdentifiant(tracingRayNode, u8"RayTracingPipeline", _tracingRays, context, existing);
+            if (existing)
+            {
+                continue;
+            }
+
+            const uint32_t idPipeline = getLinkedIdentifiant(tracingRayNode, u8"rayTracingPipelines", _rayTracingPipelines, context);
+            Vulkan::TracingRay::BufferSizes sizes{ 0, 0, 0, 0 };
+            
+            tracingRayNode->getAttribute(u8"raygenSize",   sizes[0]);
+            tracingRayNode->getAttribute(u8"missSize",     sizes[1]);
+            tracingRayNode->getAttribute(u8"hitSize",      sizes[2]);
+            tracingRayNode->getAttribute(u8"callableSize", sizes[3]);
+
+            auto tracingRay = std::make_shared<Vulkan::TracingRay>();
+            tracingRay->initialize(device->getDevice(), _rayTracingPipelines[idPipeline], 0, sizes);
+
+            device->insertTracingRay(tracingRay);
+            _tracingRays[id] = tracingRay;
+        }
+    }
+}
+
+void Engine3DXMLLoader::loadAccelerationStructures(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
+{
+    auto accelerationStructures = context._parser.getNode(u8"AccelerationStructures");
+    if (accelerationStructures->getNbElements() > 0)
+    {
+        MOUCA_ASSERT(accelerationStructures->getNbElements() == 1); //DEV Issue: Need to clean xml !
+        auto device = deviceWeak.lock();
+
+        // cppcheck-suppress unreadVariable // false positive
+        auto aPush = context._parser.autoPushNode(*accelerationStructures->getNode(0));
+
+        // Parsing all Graphics pipeline
+        auto allAccelerationStructures = context._parser.getNode(u8"AccelerationStructure");
+        for (size_t idAccelerationStructure = 0; idAccelerationStructure < allAccelerationStructures->getNbElements(); ++idAccelerationStructure)
+        {
+            auto accelerationStructureNode = allAccelerationStructures->getNode(idAccelerationStructure);
+
+            bool existing;
+            const uint32_t id = getIdentifiant(accelerationStructureNode, u8"AccelerationStructure", _accelerationStructures, context, existing);
+            if (existing)
+            {
+                continue;
+            }
+
+            auto as = std::make_shared<Vulkan::AccelerationStructure>();
+
+            const auto type = readValue(accelerationStructureNode, u8"type", accelerationStructureTypes, false, context);
+
+            auto aPushA = context._parser.autoPushNode(*accelerationStructureNode);
+
+            {
+                auto allGeometries = context._parser.getNode(u8"Geometry");
+                for (size_t idGeometry = 0; idGeometry < allGeometries->getNbElements(); ++idGeometry)
+                {
+                    auto geometryNode = allGeometries->getNode(idGeometry);
+
+                    const auto flag = readValue(geometryNode, u8"flag", geometryFlags, true, context );
+                    Core::String typeG;
+                    geometryNode->getAttribute("type", typeG);
+                    if(typeG == u8"triangle")
+                    {
+                        const uint32_t idMesh = getLinkedIdentifiant(geometryNode, u8"meshId", _cpuMesh, context);
+
+                        const uint32_t idVBO = getLinkedIdentifiant(geometryNode, u8"vboBufferId", _buffers, context);
+                        const uint32_t idIBO = getLinkedIdentifiant(geometryNode, u8"iboBufferId", _buffers, context);
+                        
+                        auto triangle = std::make_unique<Vulkan::AccelerationStructureGeometryTriangles>();
+                        triangle->initialize(_cpuMesh[idMesh], _buffers[idIBO], _buffers[idVBO], flag);
+
+                        as->addGeometry(std::move(triangle));
+                    }
+                    else if (typeG == u8"instance")
+                    {
+                        auto aPushGI = context._parser.autoPushNode(*geometryNode);
+
+                        auto allInstances = std::make_unique<Vulkan::AccelerationStructureGeometryInstance>();
+
+                        auto allInstancesNode = context._parser.getNode(u8"Instance");
+                        for (size_t idInstance = 0; idInstance < allInstancesNode->getNbElements(); ++idInstance)
+                        {
+                            auto instanceNode = allInstancesNode->getNode(idInstance);
+                            const uint32_t idAS = getLinkedIdentifiant(instanceNode, u8"accelerationStructureId", _accelerationStructures, context);
+
+                            const auto flagI = readValue(instanceNode, u8"flag", geometryInstanceFlags, true, context );
+
+                            VkTransformMatrixKHR transformMatrix =
+                            {
+                                1.0f, 0.0f, 0.0f, 0.0f,
+                                0.0f, 1.0f, 0.0f, 0.0f,
+                                0.0f, 0.0f, 1.0f, 0.0f
+                            };
+
+                            auto instance = Vulkan::AccelerationStructureGeometryInstance::Instance();
+                            instance.initialize(_accelerationStructures[idAS], flagI, std::move(transformMatrix));
+
+                            allInstances->addInstance(std::move(instance));
+                        }
+                        
+                        allInstances->initialize(flag);
+
+                        as->addGeometry(std::move(allInstances));
+                    }
+                    else
+                    {
+                        MOUCA_THROW_ERROR_3(u8"Engine3D", u8"UnknownASGeometryError", context.getFileName(), u8"Geometry", typeG);
+                    }
+                }
+                //bgs[0]->initialize(*device);
+            }
+
+            // Prepare AS
+            as->setCreateInfo(0, type);
+
+            // Need to update as when data ready: not here !
+            
+            device->insertAccelerationStructure(as);
+            _accelerationStructures[id] = as;
         }
     }
 }

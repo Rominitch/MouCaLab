@@ -349,8 +349,8 @@
           <Command type="viewport" y="720" width="1280" height="-720"/>
           <Command type="scissor"  width="$resolution" height="$resolution"/>
           <Command id="2" type="switch">
-            <SubCommand type="graphicsPipeline" graphicsPipelineId="1" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
-            <SubCommand type="graphicsPipeline" graphicsPipelineId="2" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
+            <SubCommand type="bindPipeline" graphicsPipelineId="1" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
+            <SubCommand type="bindPipeline" graphicsPipelineId="2" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
           </Command>
           <!-- ground -->
           <Command type="bindDescriptorSets" pipelineLayoutId="1" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS" firstSet="0" descriptorSetId="2" />
@@ -378,9 +378,9 @@
           <Command type="scissor"/>
           <Command type="bindDescriptorSets" pipelineLayoutId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS" firstSet="0" descriptorSetId="0" />
           <Command id="1" type="switch">
-            <SubCommand type="graphicsPipeline" graphicsPipelineId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
-            <SubCommand type="graphicsPipeline" graphicsPipelineId="3" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
-            <SubCommand type="graphicsPipeline" graphicsPipelineId="4" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
+            <SubCommand type="bindPipeline" graphicsPipelineId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
+            <SubCommand type="bindPipeline" graphicsPipelineId="3" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
+            <SubCommand type="bindPipeline" graphicsPipelineId="4" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
           </Command>
           <Command type="draw" vertexCount="3" instanceCount="1" firstVertex="0" firstInstance="0"/>
           <Command id="0" type="container" />

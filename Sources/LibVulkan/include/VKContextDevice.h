@@ -10,6 +10,11 @@
 
 namespace Vulkan
 {
+    class AccelerationStructure;
+    using AccelerationStructureSPtr = std::shared_ptr<AccelerationStructure>;
+    using AccelerationStructureWPtr = std::weak_ptr<AccelerationStructure>;
+    using AccelerationStructures    = std::vector<AccelerationStructureSPtr>;
+
     class Buffer;
     using BufferSPtr = std::shared_ptr<Buffer>;
     using BufferWPtr = std::weak_ptr<Buffer>;
@@ -65,10 +70,10 @@ namespace Vulkan
     using PipelineLayoutWPtr = std::weak_ptr<PipelineLayout>;
     using PipelineLayouts    = std::vector<PipelineLayoutSPtr>;
 
-    class RayTracingPipelines;
-    using RayTracingPipelinesSPtr = std::shared_ptr<RayTracingPipelines>;
-    using RayTracingPipelinesWPtr = std::weak_ptr<RayTracingPipelines>;
-    using AllRayTracingPipelines  = std::vector<RayTracingPipelinesSPtr>;
+    class RayTracingPipeline;
+    using RayTracingPipelineSPtr = std::shared_ptr<RayTracingPipeline>;
+    using RayTracingPipelineWPtr = std::weak_ptr<RayTracingPipeline>;
+    using RayTracingPipelines    = std::vector<RayTracingPipelineSPtr>;
 
     class RenderPass;
     using RenderPassSPtr = std::shared_ptr<RenderPass>;
@@ -96,6 +101,12 @@ namespace Vulkan
     using ShaderModuleSPtr = std::shared_ptr<ShaderModule>;
     using ShaderModuleWPtr = std::weak_ptr<ShaderModule>;
     using ShaderModules    = std::vector<ShaderModuleSPtr>;
+
+    class TracingRay;
+    using TracingRaySPtr = std::shared_ptr<TracingRay>;
+    using TracingRayWPtr = std::weak_ptr<TracingRay>;
+    using TracingRays    = std::vector<TracingRaySPtr>;
+    
 
     //----------------------------------------------------------------------------
     /// \brief Manage a Vulkan device: create all objects which need a device to live.
@@ -234,11 +245,25 @@ namespace Vulkan
                 _commandPools.emplace_back(commandPool);
             }
 
-            void insertRayTracingPipelines(RayTracingPipelinesSPtr rayTracingPipelines)
+            void insertRayTracingPipeline(RayTracingPipelineSPtr rayTracingPipeline)
             {
-                MOUCA_PRE_CONDITION(rayTracingPipelines); //DEV Issue: Need valid data
-                _rayTracingPipelines.emplace_back(rayTracingPipelines);
+                MOUCA_PRE_CONDITION(rayTracingPipeline); //DEV Issue: Need valid data
+                _rayTracingPipelines.emplace_back(rayTracingPipeline);
             }
+
+            void insertAccelerationStructure(AccelerationStructureSPtr as)
+            {
+                MOUCA_PRE_CONDITION(as); //DEV Issue: Need valid data
+                _accelerationStructures.emplace_back(as);
+            }
+
+            void insertTracingRay(TracingRaySPtr tracingRay)
+            {
+                MOUCA_PRE_CONDITION(tracingRay); //DEV Issue: Need valid data
+                _tracingRays.emplace_back(tracingRay);
+            }
+
+            RayTracingPipelines& getRayTracingPipelines() { return _rayTracingPipelines; }
 
             GraphicsPipelines& getGraphicsPipelines() { return _graphicsPipelines; }
 
@@ -265,7 +290,11 @@ namespace Vulkan
             DescriptorSets         _descriptorSets;        ///< [OWNERSHIP]
             PipelineLayouts        _pipelineLayouts;       ///< [OWNERSHIP]
             GraphicsPipelines      _graphicsPipelines;     ///< [OWNERSHIP]
-            AllRayTracingPipelines _rayTracingPipelines;   ///< [OWNERSHIP]
+            RayTracingPipelines    _rayTracingPipelines;   ///< [OWNERSHIP]
+        
+        // RayTracing
+            AccelerationStructures _accelerationStructures;///< [OWNERSHIP]
+            TracingRays            _tracingRays;           ///< [OWNERSHIP]
 
         // Sequence
             CommandPools         _commandPools;          ///< [OWNERSHIP]
