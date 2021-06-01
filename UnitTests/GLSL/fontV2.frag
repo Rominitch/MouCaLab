@@ -6,6 +6,9 @@
 
 #define UDIST_BIAS 0.001
 
+// Pi, the ratio of a circle's circumference to its diameter.
+const float PI = 3.14159265358979323846264338327950288;
+
 struct Points
 {
     vec2  pts;
@@ -249,9 +252,95 @@ float bezier3CoverageX(in vec2 p1, in vec2 p2, in vec2 p3, in vec2 p4, in vec2 p
     float coverage = 0.0;
     if (max(max(max(p1.x, p2.x), p3.x), p4.x) * pixelsPerEm.x < -0.5)
         return coverage;
+
+    // Split code into 
+    uint code = 0;
+    if(p1.x > 0.0)
+        code = (0x97D348U >> (((p4.x > 0.0) ? 3U : 0U) +
+                              ((p3.x > 0.0) ? 6U : 0U) + 
+                              ((p2.x > 0.0) ? 12U : 0U)) ) & 7U;
+    else
+        code = (0x06CBECU >> (((p4.x > 0.0) ? 3U  : 0U) +
+                              ((p3.x > 0.0) ? 6U  : 0U) + 
+                              ((p2.x > 0.0) ? 12U : 0U)) ) & 7U;
+
+    if (code != 0U)
+    {
+        // Equation: C(t) = p1(1-t)^3 + p2 3t(1-t)^2 + p3 t^2(1-t) + p4 t^3
+
+        // Simplify a t^3 + b t^2 + c t + p1
+        //         with a = p4 + 3 (p2 - p3) - p1
+        //              b = 3 (p1 - 2 p2 + p3)
+        //              c = 3 (p2 - p1)
+        // But to complicate to solve: change form of equation (https://trans4mind.com/personal_development/mathematics/polynomials/cubicAlgebra.htm)
+        // Change T = (t - A / 3),  and remove a using A = b / a, B = c / a, C = p1 / a
+        // So C(t) = T^3 + AT^2 + BT + C
+        //  T^3  = t^3 - A t^2 + A^2 / 3 t - A^3 / 27
+        //  AT^2 = A t^2 - 2 A^2 t /9 + A^2 / 9
+        //  BT   = B t - AB /3
+        // Finally C(t) = t^3 + t (3B-A^2)/3 + (2A^3 - 9 AB + 27 C) / 27
+        //              = t^3 + t p + q with p = (3B-A^2)/3, q = (2A^3 - 9 AB + 27 C) / 27
+
+        vec2 a = vec2(-p1 + 3*p2 - 3*p3 + p4);
+        vec2 b = 3.0 * vec2(p1 - 2 * p2 + p3);
+        vec2 c = 3.0 * vec2(-p1 + p2);
+        vec2 d = p1;
         
-    coverage = 1.0;
+        vec2 A = b / a;
+        vec2 B = c / a;
+        vec2 C = d / a;
         
+        vec2 p   = (3 * B - A * A) / 3;
+        vec2 p_3 = p / 3;
+        vec2 q   = (2 * A * A * A - 9 * A * B + 27 * C) / 27;
+        vec2 q_2 = q / 2;
+        vec2 discriminant = q_2*q_2 + p_3*p_3*p_3;
+
+        float root1, root2, root3;
+
+  // three possible real roots:
+        if( discriminant.y < 0 )
+        {
+            float r = sqrt(-p_3.y * p_3.y * p_3.y);
+            float t = -q.y / (2 * r);
+            float cosphi = clamp(-1.0, t, 1.0);
+            float phi  = acos(cosphi),
+            float crtr = pow(r, 1.0/3.0),
+            float t1   = 2.0*crtr;
+            root1 = t1 * cos(phi/3.0) - A/3.0;
+            root2 = t1 * cos((phi+2*PI)/3.0) - A/3.0;
+            root3 = t1 * cos((phi+4*PI)/3.0) - A/3.0;
+
+            float x1 = (a.y * t1 - b.y * 2.0) * t1 + p1.y;
+            float x2 = (a.y * t2 - b.y * 2.0) * t2 + p1.y;
+            x1 = clamp(x1 * pixelsPerEm.y + 0.5, 0.0, 1.0);
+            x2 = clamp(x2 * pixelsPerEm.y + 0.5, 0.0, 1.0);
+
+            if ((code & 1U) != 0U) coverage -= x1;
+            if (code > 1U)         coverage += x2;
+        }
+        else if (discriminant.y == 0)
+        {
+
+        }
+
+  // three real roots, but two of them are equal:
+  if(discriminant === 0) {
+    u1 = q2 < 0 ? cuberoot(-q2) : -cuberoot(q2);
+    root1 = 2*u1 - a/3;
+    root2 = -u1 - a/3;
+    return [root1, root2].filter(accept);
+  }
+
+  // one real root, two complex roots
+  var sd = sqrt(discriminant);
+  u1 = cuberoot(sd - q2);
+  v1 = cuberoot(sd + q2);
+  root1 = u1 - v1 - a/3;
+  return [root1].filter(accept);
+  */
+    }
+
     return coverage;
 }
 

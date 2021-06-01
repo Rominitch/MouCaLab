@@ -86,32 +86,33 @@ namespace RT
             public:
             static std::array<float, 3> cubicRoots(const glm::vec4& P, uint32_t& nbSolutions)
             {
-                float a=P[0];
-                float b=P[1];
-                float c=P[2];
-                float d=P[3];
- 
-                float A=b/a;
-                float B=c/a;
-                float C=d/a;
+                float A=P[1]/P[0];
+                float B=P[2]/P[0];
+                float C=P[3]/P[0];
  
                 float Im;
  
-                float Q = (3.0f*B - std::pow(A, 2.0f))/9.0f;
-                float R = (9.0f*A*B - 27.0f*C - 2.0f*std::pow(A, 3.0f))/54.0f;
+                float Q = B - std::pow(A, 2.0f)/9.0f;
+                float R = 0.5f*(A*B - C) - std::pow(A, 3.0f)/27.0f;
                 float D = std::pow(Q, 3.0f) + std::pow(R, 2.0f);    // polynomial discriminant
  
+                const float A_3 = A / 3.0f;
+
                 std::array<float, 3> t;
                 nbSolutions = 3;
                 if (D >= 0)                                 // complex or duplicate roots
                 {
-                    float S = sgn(R + std::sqrt(D)) * std::pow( std::abs(R + std::sqrt(D)),(1.0f/3.0f));
-                    float T = sgn(R - std::sqrt(D)) * std::pow( std::abs(R - std::sqrt(D)),(1.0f/3.0f));
+                    const float sD = std::sqrt(D);
+                    const float pRD = R + sD;
+                    const float mRD = R - sD;
+
+                    float S = sgn(pRD) * std::pow( std::abs(pRD), 1.0f/3.0f );
+                    float T = sgn(mRD) * std::pow( std::abs(mRD), 1.0f/3.0f );
  
-                    t[0] = -A/3 + (S + T);                    // real root
-                    t[1] = -A/3 - (S + T)/2;                  // real part of complex root
-                    t[2] = -A/3 - (S + T)/2;                  // real part of complex root
-                    Im = std::abs(std::sqrt(3.0f)*(S - T)/2.0f);    // complex part of root pair   
+                    t[0] = -A_3 + (S + T);                        // real root
+                    t[1] = -A_3 - (S + T) * 0.5f;                 // real part of complex root
+                    t[2] = -A_3 - (S + T) * 0.5f;                 // real part of complex root
+                    Im = std::abs(std::sqrt(3.0f)*(S - T)* 0.5f); // complex part of root pair   
  
                     /*discard complex roots*/
                     if (Im!=0.0f)
@@ -123,11 +124,14 @@ namespace RT
                 }
                 else                                          // distinct real roots
                 {
-                    float th = std::acos(R/std::sqrt(-std::pow(Q, 3.0f)));
+                    const float PI2_3 = 2.0f * Core::Maths::PI<float> / 3.0f;
+                    const float PI4_3 = 4.0f * Core::Maths::PI<float> / 3.0f;
+                    const float sQ2 = 2.0f * std::sqrt(-Q);
+                    const float th = std::acos(R/std::sqrt(-std::pow(Q, 3.0f)))/3.0f;
  
-                    t[0] = 2.0f * std::sqrt(-Q)*std::cos(th/3.0f) - A/3.0f;
-                    t[1] = 2.0f * std::sqrt(-Q)*std::cos((th + 2.0f * Core::Maths::PI<float>)/3.0f) - A/3.0f;
-                    t[2] = 2.0f * std::sqrt(-Q)*std::cos((th + 4.0f * Core::Maths::PI<float>)/3.0f) - A/3.0f;
+                    t[0] = sQ2 * std::cos(th) - A_3;
+                    t[1] = sQ2 * std::cos(th + PI2_3) - A_3;
+                    t[2] = sQ2 * std::cos(th + PI4_3) - A_3;
                     Im = 0.0f;
                 }
  
@@ -143,22 +147,12 @@ namespace RT
                 return t;
             }
 
-            static std::array<float, 4> bezierCoeffs(std::array<float, 4> P)
-            {
-                return {
-                -P[0] + 3 * P[1] + -3 * P[2] + P[3],
-                3 * P[0] - 6 * P[1] + 3 * P[2],
-                -3 * P[0] + 3 * P[1],
-                P[0]
-                };
-            }
-
             static std::array<glm::vec2, 4> bezierCoeffs(const std::array<glm::vec2, 4>& P)
             {
                 return {
                 -P[0] + 3.0f * (P[1] - P[2]) + P[3],
                 3.0f * (P[0] - 2.0f * P[1] + P[2]),
-                3.0f * (-P[0] + P[1]),
+                (-P[0] + P[1]),
                 P[0]
                 };
             }
@@ -193,7 +187,7 @@ namespace RT
                     float t = r[i];
                     if(t <= -1.0f)
                         continue;
-                    X[i] = ((coeffs[0]*t+coeffs[1])*t+coeffs[2])*t+coeffs[3];
+                    X[i] = ((coeffs[0]*t+coeffs[1])*t+3.0f *coeffs[2])*t+coeffs[3];
                 }
                 return X;
             }
