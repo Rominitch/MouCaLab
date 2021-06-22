@@ -7,7 +7,6 @@
 #include <gtest/gtest_prod.h>
 
 #include <GLM.h>
-#include <GLI.h>
 
 //Very used file
 #include <LibCore/include/CoreOperatingSystem.h>

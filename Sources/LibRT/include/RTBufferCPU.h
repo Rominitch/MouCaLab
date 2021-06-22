@@ -52,7 +52,7 @@ namespace RT
 
         ~BufferLinkedCPU() override = default;
 
-        void create(const RT::BufferDescriptor& descriptor, const size_t szNbElementBuffer, HandleBuffer linkedPointer, const size_t pitch = 0)
+        void create(const RT::BufferDescriptor& descriptor, const size_t szNbElementBuffer, const HandleBuffer linkedPointer, const size_t pitch = 0)
         {
             MOUCA_PRE_CONDITION(_handle == nullptr);
             MOUCA_PRE_CONDITION(szNbElementBuffer > 0);

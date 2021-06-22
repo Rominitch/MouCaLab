@@ -52,7 +52,6 @@
     <Import Project="..\..\Props\MouCaDebug.props" />
     <Import Project="..\..\Props\Vulkan.props" />
     <Import Project="..\..\Props\GLM.props" />
-    <Import Project="..\..\Props\GLI.props" />
     <Import Project="..\..\Props\ImGUI.props" />
     <Import Project="..\..\Props\GLFW.props" />
     <Import Project="..\..\Props\Boost.props" />
@@ -64,7 +63,6 @@
     <Import Project="..\..\Props\MouCaRelease.props" />
     <Import Project="..\..\Props\Vulkan.props" />
     <Import Project="..\..\Props\GLM.props" />
-    <Import Project="..\..\Props\GLI.props" />
     <Import Project="..\..\Props\ImGUI.props" />
     <Import Project="..\..\Props\GLFW.props" />
     <Import Project="..\..\Props\Boost.props" />
@@ -76,7 +74,6 @@
     <Import Project="..\..\Props\MouCaProfile.props" />
     <Import Project="..\..\Props\Vulkan.props" />
     <Import Project="..\..\Props\GLM.props" />
-    <Import Project="..\..\Props\GLI.props" />
     <Import Project="..\..\Props\ImGUI.props" />
     <Import Project="..\..\Props\GLFW.props" />
     <Import Project="..\..\Props\Boost.props" />

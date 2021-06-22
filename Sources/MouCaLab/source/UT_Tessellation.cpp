@@ -410,15 +410,15 @@ public:
             {
                 update = true;
             }
-            if (ImGui::InputFloat(u8"Factor", &_tessellationFactor, 0.01f, 0.05f, 2))
+            if (ImGui::InputFloat(u8"Factor", &_tessellationFactor, 0.01f, 0.05f, "%.2f"))
             {
                 update = true;
             }
-            if (ImGui::InputFloat(u8"Displacement", &_models._tessellationParameters.displacementFactor, 0.01f, 0.05f, 2))
+            if (ImGui::InputFloat(u8"Displacement", &_models._tessellationParameters.displacementFactor, 0.01f, 0.05f, "%.2f"))
             {
                 update = true;
             }
-            if (ImGui::InputFloat(u8"Edge size", &_models._tessellationParameters.tessellatedEdgeSize, 0.01f, 0.05f, 2))
+            if (ImGui::InputFloat(u8"Edge size", &_models._tessellationParameters.tessellatedEdgeSize, 0.01f, 0.05f, "%.2f"))
             {
                 update = true;
             }

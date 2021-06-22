@@ -23,11 +23,13 @@ namespace Media
 
             void saveImage(const Core::Path& filename) override;
 
+            void export2D(const Core::Path& filename) override;
+
             Target getTarget() const override;
 
             bool isNull() const override
             {
-                return _glImage == nullptr;
+                return _images == nullptr;
             }
 
             void release() override;
@@ -38,7 +40,7 @@ namespace Media
 
             RT::Array3ui getExtents(const uint32_t level) const override;
 
-            void const* const getRAWData(const uint32_t layer, const uint32_t level) const override;
+            const HandlerMemory getRAWData(const uint32_t layer, const uint32_t level) const override;
 
             size_t getMemoryOffset(const uint32_t layer, const uint32_t level) const override;
 
@@ -48,6 +50,6 @@ namespace Media
                          size_t* nbDefectPixels = nullptr, double* distance4D = nullptr) const override;
 
         protected:
-            std::unique_ptr<gli::texture> _glImage;
+            ktxTexture* _images = nullptr;
     };
 }

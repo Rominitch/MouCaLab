@@ -130,7 +130,7 @@ namespace RT
                     {3, Type::UnsignedInt, ComponentUsage::Index}
                 };
 
-                MOUCA_ASSERT(sizeof(Mesh::SIndex) == descriptors[0].getSizeInByte());
+                MOUCA_ASSERT_EQ(sizeof(Mesh::SIndex), descriptors[0].getSizeInByte());
 
                 BufferDescriptor BufferDescriptorIBO;
                 BufferDescriptorIBO.initialize(descriptors);
@@ -219,7 +219,7 @@ namespace RT
             /// \returns True if loaded, otherwise false.
             bool isLoaded() const override
             {
-                return !_mesh->isNull();
+                return _mesh && !_mesh->isNull();
             }
 
             MeshWPtr getWeakMesh() const

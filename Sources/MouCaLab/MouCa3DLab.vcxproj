@@ -50,7 +50,6 @@
     <Import Project="..\..\Props\GoogleTest.props" />
     <Import Project="..\..\Props\Boost.props" />
     <Import Project="..\..\Props\GLM.props" />
-    <Import Project="..\..\Props\GLI.props" />
     <Import Project="..\..\Props\Vulkan.props" />
     <Import Project="..\..\Props\GLFW.props" />
     <Import Project="..\..\Props\ImGUI.props" />
@@ -59,8 +58,8 @@
     <Import Project="..\..\Props\Xerces3.props" />
     <Import Project="..\..\Props\sqlite.props" />
     <Import Project="..\..\Props\FreeImage.props" />
-    <Import Project="..\..\Props\KTX.props" />
     <Import Project="..\..\Props\Assimp.props" />
+    <Import Project="..\..\Props\LibKTX.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -69,7 +68,6 @@
     <Import Project="..\..\Props\GoogleTest.props" />
     <Import Project="..\..\Props\Boost.props" />
     <Import Project="..\..\Props\GLM.props" />
-    <Import Project="..\..\Props\GLI.props" />
     <Import Project="..\..\Props\Vulkan.props" />
     <Import Project="..\..\Props\GLFW.props" />
     <Import Project="..\..\Props\ImGUI.props" />
@@ -78,8 +76,8 @@
     <Import Project="..\..\Props\Xerces3.props" />
     <Import Project="..\..\Props\sqlite.props" />
     <Import Project="..\..\Props\FreeImage.props" />
-    <Import Project="..\..\Props\KTX.props" />
     <Import Project="..\..\Props\Assimp.props" />
+    <Import Project="..\..\Props\LibKTX.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -88,7 +86,6 @@
     <Import Project="..\..\Props\GoogleTest.props" />
     <Import Project="..\..\Props\Boost.props" />
     <Import Project="..\..\Props\GLM.props" />
-    <Import Project="..\..\Props\GLI.props" />
     <Import Project="..\..\Props\Vulkan.props" />
     <Import Project="..\..\Props\GLFW.props" />
     <Import Project="..\..\Props\ImGUI.props" />
@@ -97,8 +94,8 @@
     <Import Project="..\..\Props\Xerces3.props" />
     <Import Project="..\..\Props\sqlite.props" />
     <Import Project="..\..\Props\FreeImage.props" />
-    <Import Project="..\..\Props\KTX.props" />
     <Import Project="..\..\Props\Assimp.props" />
+    <Import Project="..\..\Props\LibKTX.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />

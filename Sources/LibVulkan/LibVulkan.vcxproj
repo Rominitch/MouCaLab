@@ -51,7 +51,6 @@
     <Import Project="..\..\Props\MouCaDebug.props" />
     <Import Project="..\..\Props\GLM.props" />
     <Import Project="..\..\Props\Vulkan.props" />
-    <Import Project="..\..\Props\GLI.props" />
     <Import Project="..\..\Props\ImGUI.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -60,7 +59,6 @@
     <Import Project="..\..\Props\MouCaRelease.props" />
     <Import Project="..\..\Props\GLM.props" />
     <Import Project="..\..\Props\Vulkan.props" />
-    <Import Project="..\..\Props\GLI.props" />
     <Import Project="..\..\Props\ImGUI.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="PropertySheets">
@@ -69,7 +67,6 @@
     <Import Project="..\..\Props\MouCaProfile.props" />
     <Import Project="..\..\Props\GLM.props" />
     <Import Project="..\..\Props\Vulkan.props" />
-    <Import Project="..\..\Props\GLI.props" />
     <Import Project="..\..\Props\ImGUI.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />

@@ -6,6 +6,7 @@
 //SDK
 #include <FreeImage3.h>
 #include <Assimp.h>
+#include <LibKTX.h>
 
 //Main include
 #include <LibRT/RTGlobalDependencies.h>
