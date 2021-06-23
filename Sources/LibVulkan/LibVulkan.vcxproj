@@ -51,7 +51,6 @@
     <Import Project="..\..\Props\MouCaDebug.props" />
     <Import Project="..\..\Props\GLM.props" />
     <Import Project="..\..\Props\Vulkan.props" />
-    <Import Project="..\..\Props\GLI.props" />
     <Import Project="..\..\Props\ImGUI.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -60,7 +59,6 @@
     <Import Project="..\..\Props\MouCaRelease.props" />
     <Import Project="..\..\Props\GLM.props" />
     <Import Project="..\..\Props\Vulkan.props" />
-    <Import Project="..\..\Props\GLI.props" />
     <Import Project="..\..\Props\ImGUI.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="PropertySheets">
@@ -69,7 +67,6 @@
     <Import Project="..\..\Props\MouCaProfile.props" />
     <Import Project="..\..\Props\GLM.props" />
     <Import Project="..\..\Props\Vulkan.props" />
-    <Import Project="..\..\Props\GLI.props" />
     <Import Project="..\..\Props\ImGUI.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -104,6 +101,7 @@
   <ItemGroup>
     <ClInclude Include="Dependencies.h" />
     <ClInclude Include="include\VKAccelerationStructureGeometry.h" />
+    <ClInclude Include="include\VKPipeline.h" />
     <ClInclude Include="include\VKRayTracingPipeline.h" />
     <ClInclude Include="include\VKAccelerationStructure.h" />
     <ClInclude Include="include\VKCommandBufferSurface.h" />
@@ -125,7 +123,7 @@
     <ClInclude Include="include\VKGraphicsPipeline.h" />
     <ClInclude Include="include\VKPipelineLayout.h" />
     <ClInclude Include="include\VKPipelineStates.h" />
-    <ClInclude Include="include\VKRayTracingShaderGroup.h" />
+    <ClInclude Include="include\VKTracingRay.h" />
     <ClInclude Include="include\VKSequence.h" />
     <ClInclude Include="include\VKRenderPass.h" />
     <ClInclude Include="include\VKSampler.h" />
@@ -169,7 +167,7 @@
     <ClCompile Include="source\VKPipelineLayout.cpp" />
     <ClCompile Include="source\VKPipelineStates.cpp" />
     <ClCompile Include="source\VKRayTracingPipeline.cpp" />
-    <ClCompile Include="source\VKRayTracingShaderGroup.cpp" />
+    <ClCompile Include="source\VKTracingRay.cpp" />
     <ClCompile Include="source\VKSequence.cpp" />
     <ClCompile Include="source\VKRenderPass.cpp" />
     <ClCompile Include="source\VKSampler.cpp" />

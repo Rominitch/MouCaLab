@@ -57,9 +57,10 @@ TEST_F(VulkanImage, mapping)
 {
     Vulkan::Image texture;
     ASSERT_TRUE(texture.isNull());
-
+    /*
     const Core::Path outputPath = MouCaEnvironment::getInputPath() / "textures" / "Demo.ktx";
 
+    Media
     // Read texture data from file
     gli::texture2d texture2D(gli::load(outputPath.u8string()));
     ASSERT_FALSE(texture2D.empty());
@@ -105,6 +106,6 @@ TEST_F(VulkanImage, mapping)
     //ASSERT_NO_THROW(command.release(device, commandPool));
 
     //ASSERT_NO_THROW(commandPool.release(device));
-
+    */
     ASSERT_TRUE(texture.isNull());
 }

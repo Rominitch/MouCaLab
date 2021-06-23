@@ -40,9 +40,6 @@
     <ClInclude Include="..\..\..\SDK\include\GLFW.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\SDK\include\GLI.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\SDK\include\GLM.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
@@ -71,6 +68,9 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\SDK\include\OpenVR.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\SDK\include\LibKTX.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>

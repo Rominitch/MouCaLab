@@ -40,4 +40,34 @@ RT::ImageSPtr ImageLoader::createImageFI(const RT::BufferCPUBase& imageBuffer, c
     return image;
 }
 
+void ImageLoader::export2D(RT::Image& image, const Core::Path& fileName)
+{
+    const Core::String ext = fileName.extension().u8string();
+    if (ext == u8".dds" || ext == u8".ktx" || ext == u8".kmg")
+    {
+        MOUCA_ASSERT_HEADER(false, "Not implemented");
+    }
+    else
+    {
+        auto ktxImage = dynamic_cast<Media::ImageKTX*>(&image);
+        if(ktxImage != nullptr)
+        {
+            const auto layer = 0;
+            const auto level = 0;
+            
+            const auto extents = ktxImage->getExtents(level);
+            RT::BufferLinkedCPU buffer;
+            buffer.create(RT::BufferDescriptor(ktxImage->getMemorySize()), static_cast<size_t>(extents.x*extents.y), ktxImage->getRAWData(layer, level));
+
+            ImageFI fiImage;
+            fiImage.createFill(buffer, extents.x, extents.y);
+            fiImage.saveImage(fileName);
+        }
+        else
+        {
+            image.saveImage(fileName);
+        }
+    }
+}
+
 }

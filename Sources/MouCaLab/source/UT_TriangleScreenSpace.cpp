@@ -26,6 +26,9 @@ TEST_F(TriangleScreenSpaceTest, run)
     MouCaGraphic::Engine3DXMLLoader loader(manager);
     ASSERT_NO_FATAL_FAILURE(loadEngine(loader, u8"TriangleScreenSpace.xml"));
 
+    // Execute commands
+    updateCommandBuffersSurface(loader);
+
     // Execute rendering
     if (MouCaEnvironment::isDemonstrator())
     {

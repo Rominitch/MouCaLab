@@ -99,10 +99,10 @@
     <ClInclude Include="..\..\..\SDK\include\FreetypePackage.h" />
     <ClInclude Include="..\..\..\SDK\include\Glew.h" />
     <ClInclude Include="..\..\..\SDK\include\GLFW.h" />
-    <ClInclude Include="..\..\..\SDK\include\GLI.h" />
     <ClInclude Include="..\..\..\SDK\include\GLM.h" />
     <ClInclude Include="..\..\..\SDK\include\gTest.h" />
     <ClInclude Include="..\..\..\SDK\include\imgui1.h" />
+    <ClInclude Include="..\..\..\SDK\include\LibKTX.h" />
     <ClInclude Include="..\..\..\SDK\include\OpenCL.h" />
     <ClInclude Include="..\..\..\SDK\include\OpenGL.h" />
     <ClInclude Include="..\..\..\SDK\include\OpenVR.h" />

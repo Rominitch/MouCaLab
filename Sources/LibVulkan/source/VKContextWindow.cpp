@@ -105,7 +105,7 @@ void ContextWindow::createCommandBuffer(Commands&& commands, CommandPoolSPtr poo
     _commandBuffer->initialize(shared_from_this(), pool, level, usage);
 
     _commandBuffer->registerCommands(std::move(commands));
-    _commandBuffer->execute(VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+    //_commandBuffer->execute(VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
 
     //Security to never access it anymore
     commands.clear();

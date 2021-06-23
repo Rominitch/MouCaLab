@@ -23,7 +23,7 @@ _geometry(
 
 AccelerationStructureGeometryInstance::AccelerationStructureGeometryInstance():
 AccelerationStructureGeometry(VK_GEOMETRY_TYPE_INSTANCES_KHR),
-_data(std::make_unique<MemoryBuffer>(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT))
+_data(std::make_unique<MemoryBufferAllocate>(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT))
 {}
 
 void AccelerationStructureGeometry::initialize(const VkGeometryFlagsKHR geometryFlags)
@@ -31,9 +31,9 @@ void AccelerationStructureGeometry::initialize(const VkGeometryFlagsKHR geometry
     _geometry.flags = geometryFlags;
 }
 
-void AccelerationStructureGeometryInstance::create(const ContextDevice& context)
+void AccelerationStructureGeometryInstance::create(const Device& device)
 {
-    const auto& device = context.getDevice();
+    MOUCA_PRE_CONDITION(!device.isNull());
 
     // Copy data to buffer
     std::vector<VkAccelerationStructureInstanceKHR> data;
@@ -55,6 +55,15 @@ void AccelerationStructureGeometryInstance::create(const ContextDevice& context)
     };
 
     _count = 1;
+
+    VkAccelerationStructureBuildRangeInfoKHR info
+    {
+        1,              //uint32_t    primitiveCount
+        0,              //uint32_t    primitiveOffset
+        0,              //uint32_t    firstVertex
+        0,              //uint32_t    transformOffset
+    };
+    _rangeInfos.emplace_back(std::move(info));
 }
 
 void AccelerationStructureGeometryInstance::Instance::initialize(AccelerationStructureWPtr reference, const VkGeometryInstanceFlagsKHR flag, VkTransformMatrixKHR&& transform4x3,
@@ -86,21 +95,22 @@ AccelerationStructureGeometryTriangles::AccelerationStructureGeometryTriangles()
 AccelerationStructureGeometry(VK_GEOMETRY_TYPE_TRIANGLES_KHR)
 {}
 
-void AccelerationStructureGeometryTriangles::initialize(const RT::Mesh& mesh, const BufferWPtr vbo, const BufferWPtr ibo,
+void AccelerationStructureGeometryTriangles::initialize(const RT::MeshWPtr mesh, const BufferWPtr vbo, const BufferWPtr ibo,
                                                         const VkGeometryFlagsKHR geometryFlags)
 {
     AccelerationStructureGeometry::initialize(geometryFlags);
 
-    _mesh = &mesh;
+    _mesh = mesh;
     _vbo  = vbo;
     _ibo  = ibo;
 }
 
-void AccelerationStructureGeometryTriangles::create(const ContextDevice& context)
+void AccelerationStructureGeometryTriangles::create(const Device& device)
 {
-    const uint64_t vertexStride = _mesh->getVBOBuffer().lock()->getDescriptor().getByteSize();
+    MOUCA_PRE_CONDITION(!device.isNull());
 
-    const Device& device = context.getDevice();
+    const auto mesh = _mesh.lock();
+    const uint64_t vertexStride = mesh->getVBOBuffer().lock()->getDescriptor().getByteSize();
 
     _geometry.geometry.triangles = 
     {
@@ -109,14 +119,14 @@ void AccelerationStructureGeometryTriangles::create(const ContextDevice& context
         VK_FORMAT_R32G32B32_SFLOAT,                                            // vertexFormat
         { _vbo.lock()->getDeviceAddress(device) },                             // vertexData
         static_cast<uint32_t>(vertexStride),                                   // vertexStride
-        static_cast<uint32_t>(_mesh->getNbVertices()),                         // maxVertex
+        static_cast<uint32_t>(mesh->getNbVertices()),                         // maxVertex
         VK_INDEX_TYPE_UINT32,                                                  // indexType
         { _ibo.lock()->getDeviceAddress(device) },                             // indexData
         { 0 },                                                                 // transformData
         
     };
 
-    _count = static_cast<uint32_t>(_mesh->getNbPolygones());
+    _count = static_cast<uint32_t>(mesh->getNbPolygones());
 
     VkAccelerationStructureBuildRangeInfoKHR info
     {

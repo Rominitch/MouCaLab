@@ -9,8 +9,10 @@ namespace Vulkan
     {
         public:
             BufferStrided(MemoryBufferUPtr memory):
-            Buffer(std::move(memory))
-            {}
+            Buffer(std::move(memory)), _strided({0,0,0})
+            {
+                MOUCA_PRE_CONDITION(isNull());
+            }
 
             ~BufferStrided() override = default;
 
@@ -29,9 +31,28 @@ namespace Vulkan
                 };
             }
 
+            void release(const Device& device) override
+            {
+                MOUCA_PRE_CONDITION(!isNull());
+
+                _strided = { 0,0,0 };
+                Buffer::release(device);
+
+                MOUCA_POST_CONDITION(isNull());
+            }
+
+            bool isNull() const override
+            {
+                return Buffer::isNull() && _strided.deviceAddress == 0 && _strided.size == 0;
+            }
+
             const VkStridedDeviceAddressRegionKHR& getStrided() const { return _strided; }
 
         private:
             VkStridedDeviceAddressRegionKHR _strided;
     };
+
+    using BufferStridedSPtr = std::shared_ptr<BufferStrided>;
+    using BufferStridedUPtr = std::unique_ptr<BufferStrided>;
+    using BufferStridedWPtr = std::weak_ptr<BufferStrided>;
 };

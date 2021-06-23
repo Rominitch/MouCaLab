@@ -139,9 +139,9 @@ void ContextDevice::release()
     }
     _shaderModules.clear();
 
-    for (auto& rayTracingPipelines : _rayTracingPipelines)
+    for (auto& rayTracingPipeline : _rayTracingPipelines)
     {
-        rayTracingPipelines->release(_device);
+        rayTracingPipeline->release(_device);
     }
     _rayTracingPipelines.clear();
 

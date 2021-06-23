@@ -641,7 +641,7 @@ Core::Path FontSVGTest::_fontNotoA(u8"NotoSansArabicUI-Regular.ttf");
 Core::Path FontSVGTest::_fontCeltic(u8"Celtic Knot.TTF");
 Core::Path FontSVGTest::_fontMevNo(u8"mevno1.ttf");
 
-TEST_F(FontSVGTest, run)
+TEST_F(FontSVGTest, DISABLED_run)
 {
     MouCaGraphic::VulkanManager manager;
     MouCaGraphic::ImGUIManager  GUI;
@@ -762,6 +762,10 @@ TEST_F(FontSVGTest, run)
 
         updateUIOverlay(manager, refreshCommand);
 
+        // Execute commands
+        updateCommandBuffers(loader);
+        updateCommandBuffersSurface(loader);
+
         bool needUpdateGUI = true;
 
         /// Update Light position / camera
@@ -840,12 +844,12 @@ TEST_F(FontSVGTest, run)
                         commands.emplace_back(std::make_unique<Vulkan::CommandDraw>(4, _glyphCount, 0, 0));
                         container->transfer(std::move(commands));
 
-                        loader._commandBuffers[0].lock()->execute();
+                        updateCommandBuffers(loader);
                     }
                 }
 
                 // Refresh Command Buffer with new command
-                loader._surfaces[0].lock()->updateCommandBuffer(0);
+                updateCommandBuffersSurface(loader, 0);
             }
         };
         mainLoop(manager, u8"FontSVG Demo ", demo);
@@ -857,6 +861,11 @@ TEST_F(FontSVGTest, run)
         updateUIOverlay(manager, refreshCommand);
         // Build GUI design
         updateUIOverlay(manager, refreshCommand);
+        
+        // Execute commands
+        updateCommandBuffers(loader);
+        updateCommandBuffersSurface(loader);
+
         ASSERT_NO_THROW(GUI.prepareBuffer(*context));
         Vulkan::CommandContainer* container = dynamic_cast<Vulkan::CommandContainer*>(loaderGUI._commandLinks[0]);
         ASSERT_TRUE(container != nullptr);

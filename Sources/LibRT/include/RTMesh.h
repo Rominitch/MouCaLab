@@ -130,7 +130,7 @@ namespace RT
                     {3, Type::UnsignedInt, ComponentUsage::Index}
                 };
 
-                MOUCA_ASSERT(sizeof(Mesh::SIndex) == descriptors[0].getSizeInByte());
+                MOUCA_ASSERT_EQ(sizeof(Mesh::SIndex), descriptors[0].getSizeInByte());
 
                 BufferDescriptor BufferDescriptorIBO;
                 BufferDescriptorIBO.initialize(descriptors);
@@ -150,6 +150,7 @@ namespace RT
             MOUCA_NOCOPY(Mesh);
     };
     using MeshSPtr = std::shared_ptr<Mesh>;
+    using MeshWPtr = std::weak_ptr<Mesh>;
 
     //----------------------------------------------------------------------------
     /// \brief Resource which can store all data to load mesh buffers.
@@ -174,7 +175,7 @@ namespace RT
             };
 
             MeshImport() :
-            _flag( DefaultImport )
+            _flag( DefaultImport ), _mesh(std::make_shared<Mesh>())
             {
                 MOUCA_PRE_CONDITION( isNull() );
             }
@@ -201,7 +202,8 @@ namespace RT
                 MOUCA_PRE_CONDITION( !isNull() );
 
                 _filename.clear();
-                _mesh.release();
+                _mesh->release();
+                _mesh.reset();
 
                 MOUCA_PRE_CONDITION( isNull() );
             }
@@ -217,17 +219,22 @@ namespace RT
             /// \returns True if loaded, otherwise false.
             bool isLoaded() const override
             {
-                return !_mesh.isNull();
+                return _mesh && !_mesh->isNull();
+            }
+
+            MeshWPtr getWeakMesh() const
+            {
+                return _mesh;
             }
 
             const Mesh& getMesh() const
             {
-                return _mesh;
+                return *_mesh;
             }
 
             Mesh& getEditMesh()
             {
-                return _mesh;
+                return *_mesh;
             }
 
             const BufferDescriptor& getDescriptor() const
@@ -244,6 +251,6 @@ namespace RT
             BufferDescriptor _descriptor;
             Flag             _flag;
 
-            Mesh             _mesh;
+            MeshSPtr         _mesh;
     };
 }

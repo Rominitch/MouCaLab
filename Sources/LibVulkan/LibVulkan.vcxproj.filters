@@ -150,7 +150,7 @@
     <ClInclude Include="include\VKBufferStrided.h">
       <Filter>Fichiers d%27en-tête\Buffer</Filter>
     </ClInclude>
-    <ClInclude Include="include\VKRayTracingShaderGroup.h">
+    <ClInclude Include="include\VKTracingRay.h">
       <Filter>Fichiers d%27en-tête\Raytracing</Filter>
     </ClInclude>
     <ClInclude Include="include\VKRayTracingPipeline.h">
@@ -158,6 +158,9 @@
     </ClInclude>
     <ClInclude Include="include\VKAccelerationStructureGeometry.h">
       <Filter>Fichiers d%27en-tête\Raytracing</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VKPipeline.h">
+      <Filter>Fichiers d%27en-tête\Pipeline</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -260,7 +263,7 @@
     <ClCompile Include="source\VKAccelerationStructure.cpp">
       <Filter>Fichiers sources\Raytracing</Filter>
     </ClCompile>
-    <ClCompile Include="source\VKRayTracingShaderGroup.cpp">
+    <ClCompile Include="source\VKTracingRay.cpp">
       <Filter>Fichiers sources\Raytracing</Filter>
     </ClCompile>
     <ClCompile Include="source\VKRayTracingPipeline.cpp">

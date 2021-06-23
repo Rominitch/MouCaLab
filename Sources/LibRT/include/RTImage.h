@@ -17,6 +17,8 @@ namespace RT
         MOUCA_NOCOPY_NOMOVE(Image);
 
         public:
+            using HandlerMemory = void*;
+
             enum class Target
             {
                 TypeUnknown,
@@ -43,10 +45,17 @@ namespace RT
             virtual void createFill(const RT::BufferCPUBase& imageBuffer, const uint32_t width, const uint32_t height) = 0;
 
             //------------------------------------------------------------------------
-            /// \brief Save image data on disk if possible (and if implemented).
+            /// \brief Save image data in current format on disk if possible (and if implemented).
             /// \param[in] filename: where save image on disk.
             /// \throw  If feature is not implemented or error.
             virtual void saveImage(const Core::Path& filename) = 0;
+
+            //------------------------------------------------------------------------
+            /// \brief Save image data in valid format on disk if possible (and if implemented).
+            /// \param[in] filename: where save image on disk.
+            /// \throw  If feature is not implemented or error.
+            virtual void export2D(const Core::Path& filename) = 0;
+
             //------------------------------------------------------------------------
             /// \brief  Check if image exists.
             /// 
@@ -61,7 +70,7 @@ namespace RT
                                  size_t* nbDefectPixels=nullptr, double* distance4D=nullptr) const = 0;
             
             //------------------------------------------------------------------------
-            /// \brief Get target of texture.
+            /// \brief Get minimal valid target of texture.
             /// \returns Returns Target enum.
             virtual Target getTarget() const = 0;
 
@@ -86,7 +95,7 @@ namespace RT
             /// \param[in] layer: id of layer.
             /// \param[in] level: mipmap level to get size.
             /// \returns Pointer to first data.
-            virtual void const*const getRAWData(const uint32_t layer, const uint32_t level) const = 0;
+            virtual const HandlerMemory getRAWData(const uint32_t layer, const uint32_t level) const = 0;
 
             //------------------------------------------------------------------------
             /// \brief Get casted pointer to first data of texture based on layer/level.
@@ -146,6 +155,8 @@ namespace RT
             /// \throw  Throw error.
             void saveImage(const Core::Path& ) override;
 
+            void export2D(const Core::Path& ) override;
+
             //------------------------------------------------------------------------
             /// \brief Get target of texture.
             /// \returns Returns Target enum.
@@ -174,7 +185,7 @@ namespace RT
                 return _extents;
             }
 
-            void const* const getRAWData(const uint32_t layer, const uint32_t level) const override;
+            const HandlerMemory getRAWData(const uint32_t layer, const uint32_t level) const override;
 
             size_t getMemoryOffset(const uint32_t layer, const uint32_t level) const override;
 

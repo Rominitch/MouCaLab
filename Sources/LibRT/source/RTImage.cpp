@@ -47,6 +47,12 @@ void ImageLinkedCPU::saveImage(const Core::Path& filename)
     MOUCA_THROW_ERROR(u8"BasicError", u8"ImageNoneImplemented");
 }
 
+void ImageLinkedCPU::export2D(const Core::Path& filename)
+{
+    MOUCA_UNUSED(filename);
+    MOUCA_THROW_ERROR(u8"BasicError", u8"ImageNoneImplemented");
+}
+
 bool ImageLinkedCPU::compare(const Image & reference, const size_t nbMaxDefectPixels, const double maxDistance4D,
                              size_t * nbDefectPixels, double* distance4D) const
 {
@@ -58,7 +64,7 @@ bool ImageLinkedCPU::compare(const Image & reference, const size_t nbMaxDefectPi
     MOUCA_THROW_ERROR(u8"BasicError", u8"ImageNoneImplemented");
 }
 
-void const* const ImageLinkedCPU::getRAWData(const uint32_t layer, const uint32_t level) const
+const RT::Image::HandlerMemory ImageLinkedCPU::getRAWData(const uint32_t layer, const uint32_t level) const
 {
     MOUCA_PRE_CONDITION(!isNull()); //DEV Issue: Ready to work.
 

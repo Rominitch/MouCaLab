@@ -49,11 +49,13 @@ class MouCaLabTest : public ::testing::Test
         void enableFileTracking(MouCaGraphic::VulkanManager& manager);
         void disableFileTracking(MouCaGraphic::VulkanManager& manager);
 
+        void updateCommandBuffers(MouCaGraphic::Engine3DXMLLoader& loader, const VkCommandBufferResetFlags reset = VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+        void updateCommandBuffersSurface(MouCaGraphic::Engine3DXMLLoader& loader, const VkCommandBufferResetFlags reset=VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+
         void clearDialog(MouCaGraphic::VulkanManager& manager);
     protected:
         MouCaCore::CoreSystem       _core;      ///< [OWNERSHIP] Core managers;
         MouCaGraphic::GraphicEngine _graphic;   ///< [OWNERSHIP] Graphic engine: Vulkan + VR + GLFW + imGui;
 
-        VkPhysicalDeviceFeatures _mandatoryFeatures;
         RT::EventManagerSPtr     _eventManager;
 };

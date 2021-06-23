@@ -268,7 +268,7 @@ void Platform::submitHeadsetLeftEye()
 {
     MOUCA_PRE_CONDITION(!isNull());
     MOUCA_PRE_CONDITION(vr::VRCompositor() != nullptr);
-    MOUCA_PRE_CONDITION(_vrLeftEye.m_nImage != VK_NULL_HANDLE);
+    MOUCA_PRE_CONDITION(_vrLeftEye.m_nImage != 0);
 
     const vr::Texture_t texture
     {
@@ -283,7 +283,7 @@ void Platform::submitHeadsetRightEye()
 {
     MOUCA_PRE_CONDITION(!isNull());
     MOUCA_PRE_CONDITION(vr::VRCompositor() != nullptr);
-    MOUCA_PRE_CONDITION(_vrRightEye.m_nImage != VK_NULL_HANDLE);
+    MOUCA_PRE_CONDITION(_vrRightEye.m_nImage != 0);
 
     const vr::Texture_t texture
     {
@@ -307,7 +307,7 @@ VkResult Platform::SequenceWaitPos::execute(const Vulkan::Device&)
 
 Platform::SequenceSubmitVR::SequenceSubmitVR(const Platform& platform, const bool isLeftEye, const RT::Environment& environment, Platform::VulkanHandle deviceHandle, Platform::VulkanHandle physicalDevice, Platform::VulkanHandle queueHandle, const uint32_t queueFamilyIndex, VulkanHandle imageHandle, const uint32_t sampleCount):
 _platform(platform), _eye(isLeftEye ? vr::Eye_Left : vr::Eye_Right),
-_vrEye({ VK_NULL_HANDLE, nullptr, nullptr, nullptr, nullptr, 0, 0, 0, 0, 0 }),
+_vrEye({ 0, nullptr, nullptr, nullptr, nullptr, 0, 0, 0, 0, 0 }),
 _vrEyeBounds({ 0.0f, 0.0f, 1.0f, 1.0f })
 {
     const auto size = _platform.getRenderSize();
@@ -327,7 +327,7 @@ _vrEyeBounds({ 0.0f, 0.0f, 1.0f, 1.0f })
 VkResult Platform::SequenceSubmitVR::execute(const Vulkan::Device&)
 {
     MOUCA_PRE_CONDITION(vr::VRCompositor() != nullptr);
-    MOUCA_PRE_CONDITION(_vrEye.m_nImage != VK_NULL_HANDLE);
+    MOUCA_PRE_CONDITION(_vrEye.m_nImage != 0);
 
     const vr::Texture_t texture
     {

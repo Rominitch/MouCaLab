@@ -54,6 +54,9 @@
     <ClInclude Include="Dependencies.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="include\Engine3DXMLHelper.h">
+      <Filter>Fichiers d%27en-tête\Loader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\SceneSynchronizer.cpp">
@@ -79,6 +82,18 @@
     </ClCompile>
     <ClCompile Include="Dependencies.cpp">
       <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Engine3DXMLLoaderPipeline.cpp">
+      <Filter>Fichiers sources\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Engine3DXMLLoaderCommand.cpp">
+      <Filter>Fichiers sources\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Engine3DXMLLoaderDevice.cpp">
+      <Filter>Fichiers sources\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Engine3DXMLLoaderRender.cpp">
+      <Filter>Fichiers sources\Loader</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

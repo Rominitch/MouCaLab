@@ -48,21 +48,18 @@
     <Import Project="..\..\Props\MouCaTechProp.props" />
     <Import Project="..\..\Props\MouCaDebug.props" />
     <Import Project="..\..\Props\GLM.props" />
-    <Import Project="..\..\Props\GLI.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\Props\MouCaTechProp.props" />
     <Import Project="..\..\Props\GLM.props" />
     <Import Project="..\..\Props\MouCaRelease.props" />
-    <Import Project="..\..\Props\GLI.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\Props\MouCaTechProp.props" />
     <Import Project="..\..\Props\MouCaProfile.props" />
     <Import Project="..\..\Props\GLM.props" />
-    <Import Project="..\..\Props\GLI.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
