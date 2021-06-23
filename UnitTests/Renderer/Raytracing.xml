@@ -2,7 +2,7 @@
 
 <MouCaLab>
   <Engine3D version="0.2">
-    <Environment application="Raytracing" engine="MouCaLab">
+    <Environment application="RaytracingTest" engine="MouCaLab">
       <Extension>VK_KHR_surface</Extension>
       <Extension>VK_KHR_get_physical_device_properties2</Extension>
       <Extension os="windows">VK_KHR_win32_surface</Extension>

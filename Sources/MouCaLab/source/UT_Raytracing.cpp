@@ -266,7 +266,7 @@ public:
     }
 };
 
-TEST_F(RaytracingTest, run)
+TEST_F(RaytracingTest, DISABLED_run)
 {
     MouCaGraphic::VulkanManager manager;
     MouCaGraphic::ImGUIManager  GUI;
@@ -392,8 +392,7 @@ TEST_F(RaytracingTest, run)
     Vulkan::AccelerationStructure::createAccelerationStructure(context->getDevice(), accelerationStructs);
 
     // Execute commands
-    loader._surfaces[0].lock()->updateCommandBuffer(VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
-    //loader._commandBuffers[0].lock()->execute();
+    updateCommandBuffersSurface(loader);
 
     context->getDevice().waitIdle();
 

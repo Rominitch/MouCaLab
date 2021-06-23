@@ -116,8 +116,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\Engine3DXMLLoaderCommand.cpp" />
+    <ClCompile Include="source\Engine3DXMLLoaderDevice.cpp" />
+    <ClCompile Include="source\Engine3DXMLLoaderRender.cpp" />
+    <ClCompile Include="source\Engine3DXMLLoaderPipeline.cpp" />
     <ClCompile Include="source\VulkanEnum.cpp" />
     <ClInclude Include="Dependencies.h" />
+    <ClInclude Include="include\Engine3DXMLHelper.h" />
     <ClInclude Include="include\GraphicConfiguration.h" />
     <ClInclude Include="include\GraphicEngine.h" />
     <ClInclude Include="include\VulkanManager.h" />

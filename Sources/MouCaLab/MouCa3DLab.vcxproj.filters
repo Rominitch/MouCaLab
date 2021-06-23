@@ -257,6 +257,18 @@
     <Xml Include="..\..\UnitTests\Renderer\Raytracing.xml">
       <Filter>Renderer</Filter>
     </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\ImGUI.xml">
+      <Filter>Renderer</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\FontSVG.xml">
+      <Filter>Renderer</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\Tessellation.xml">
+      <Filter>Renderer</Filter>
+    </Xml>
+    <Xml Include="..\..\UnitTests\Renderer\VRTriangleScreenSpace.xml">
+      <Filter>Renderer</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <GLSLShader Include="..\..\UnitTests\GLSL\deferred_tesselation.frag">

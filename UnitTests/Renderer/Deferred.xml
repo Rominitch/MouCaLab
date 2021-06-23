@@ -2,7 +2,7 @@
 
 <MouCaLab>
   <Engine3D version="0.1">
-    <Environment>
+    <Environment application="DeferredTest" engine="MouCaLab">
       <Extension>VK_KHR_surface</Extension>
       <Extension os="windows">VK_KHR_win32_surface</Extension>
       <Extension os="linux">VK_KHR_xlib_surface</Extension>
@@ -16,6 +16,7 @@
     <Device id="0" mode="render" compatibleWindowId="0">
       <Extension>VK_KHR_swapchain</Extension>
       <Extension>VK_KHR_maintenance1</Extension>
+      <Features multiDrawIndirect="true" samplerAnisotropy="true" sampleRateShading="true" textureCompressionBC="true"/>
       <!--  Synchronization -->
       <Semaphores>
         <Semaphore id="0" /> <!-- Present complete -->
@@ -76,16 +77,32 @@
       <Buffers>
         <!-- Mesh -->
           <!-- Armor -->
-        <Buffer id="0" external="0" usage="VK_BUFFER_USAGE_INDEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT"  memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
-        <Buffer id="1" external="1" usage="VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        <Buffer id="0" external="0" usage="VK_BUFFER_USAGE_INDEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        </Buffer>
+        <Buffer id="1" external="1" usage="VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        </Buffer>
           <!-- Ground -->
-        <Buffer id="2" external="2" usage="VK_BUFFER_USAGE_INDEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT"  memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
-        <Buffer id="3" external="3" usage="VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        <Buffer id="2" external="2" usage="VK_BUFFER_USAGE_INDEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        </Buffer>
+        <Buffer id="3" external="3" usage="VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        </Buffer>
         <!-- UBO -->
-        <Buffer id="6" external="6" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT" memoryProperty="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
-        <Buffer id="7" external="7" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT" memoryProperty="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
-        <Buffer id="8" external="8" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT" memoryProperty="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
-        <Buffer id="9" external="9" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT" memoryProperty="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+        <Buffer id="6" external="6" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+        </Buffer>
+        <Buffer id="7" external="7" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+        </Buffer>
+        <Buffer id="8" external="8" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+        </Buffer>
+        <Buffer id="9" external="9" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+        </Buffer>
       </Buffers>
       <!--  Shaders -->
       <ShaderModules>

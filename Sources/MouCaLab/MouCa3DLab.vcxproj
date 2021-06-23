@@ -214,6 +214,7 @@
     <Xml Include="..\..\UnitTests\Renderer\Environment.xml" />
     <Xml Include="..\..\UnitTests\Renderer\EnvironmentError.xml" />
     <Xml Include="..\..\UnitTests\Renderer\FenceError.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\FontSVG.xml" />
     <Xml Include="..\..\UnitTests\Renderer\FormatError.xml" />
     <Xml Include="..\..\UnitTests\Renderer\FrameBufferError.xml" />
     <Xml Include="..\..\UnitTests\Renderer\FrameBufferError1.xml" />
@@ -224,6 +225,7 @@
     <Xml Include="..\..\UnitTests\Renderer\ImageError.xml" />
     <Xml Include="..\..\UnitTests\Renderer\ImageError1.xml" />
     <Xml Include="..\..\UnitTests\Renderer\ImageError2.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\ImGUI.xml" />
     <Xml Include="..\..\UnitTests\Renderer\LiteralEnumError.xml" />
     <Xml Include="..\..\UnitTests\Renderer\MathematicalRendering.xml" />
     <Xml Include="..\..\UnitTests\Renderer\NumberOrLiteral.xml" />
@@ -241,9 +243,11 @@
     <Xml Include="..\..\UnitTests\Renderer\SequenceError2.xml" />
     <Xml Include="..\..\UnitTests\Renderer\SequenceError3.xml" />
     <Xml Include="..\..\UnitTests\Renderer\ShaderEdition.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\Tessellation.xml" />
     <Xml Include="..\..\UnitTests\Renderer\Triangle.xml" />
     <Xml Include="..\..\UnitTests\Renderer\TriangleScreenSpace.xml" />
     <Xml Include="..\..\UnitTests\Renderer\VersionError.xml" />
+    <Xml Include="..\..\UnitTests\Renderer\VRTriangleScreenSpace.xml" />
     <Xml Include="..\..\UnitTests\Renderer\WindowCreate.xml" />
     <Xml Include="..\..\UnitTests\Renderer\WindowCreateMonitor.xml" />
     <Xml Include="..\..\UnitTests\Renderer\WindowError1.xml" />

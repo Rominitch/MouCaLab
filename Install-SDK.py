@@ -23,7 +23,7 @@ packages = [ ("assimp-5.0.0.rc1.7z",    "13T0WsgNH8Kl8eEiGeYMzv2yawFCJQZli", Non
              ("glm-0.9.9.8.7z",         "1Ec6aQyTo7DGd79w52OhjL67jgWKlEq4g", None,                                    None),
              ("googletest-1.10.0.7z",   "1I8tvgpFE03YUChGELMtFTpqfmuzo0g-Q", None,                                    (None, "gtest.dll", "gtestd.dll")),
              ("imgui-1.83.7z",          "1-3cZlv-UfKiEFv0kOeXAm0K_zTY9WYNZ", None,                                    None),
-             ("KTX-Software-4.0.0.7z",  "14BMn8iaKB2k2t0_5yAnECPxruXCQjWyl", None,                                    (os.path.join("bin"), "ktx.dll", "ktx.dll")),
+             ("KTX-Software-4.0.0.7z",  "1hEhjq4b_ICktO7cq2f1YzPx_eNOommnF", None,                                    (os.path.join("bin"), "ktx.dll", "ktx.dll")),
              ("openvr-1.16.8.7z",       "1s9EjMLeH-5zxkG4ozqB4Mong_KD1LiWK", None,                                    (os.path.join("bin", "win64"), "openvr_api.dll", "openvr_api.dll")),
              ("sqlite-3.36.7z",         "1JAH1m3JkPvTEVz8Ok0CCjaYiuydUD5CD", None,                                    None),
              ("SteamWorksSDK-146.7z",   "1fmSY_sBH7SKa9r1eZDInCejV_nxbrFEN", None,                                    (os.path.join("redistributable_bin", "win64"), "steam_api64.dll", "steam_api64.dll")),

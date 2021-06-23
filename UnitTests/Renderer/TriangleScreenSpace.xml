@@ -2,7 +2,7 @@
 
 <MouCaLab>
   <Engine3D version="0.1">
-    <Environment>
+    <Environment application="TriangleSSTest" engine="MouCaLab">
       <Extension>VK_KHR_surface</Extension>
       <Extension os="windows">VK_KHR_win32_surface</Extension>
       <Extension os="linux">VK_KHR_xlib_surface</Extension>

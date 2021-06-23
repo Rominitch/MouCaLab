@@ -567,6 +567,10 @@ TEST_F( TessellationTest, run )
 
         bool needUpdateGUI = true;
 
+        // Execute commands
+        updateCommandBuffers(loader);
+        updateCommandBuffersSurface(loader);
+
         /// Update Light position / camera
         auto demo = [&](const double)
         {
@@ -598,8 +602,8 @@ TEST_F( TessellationTest, run )
                 transfer.immediatCopyCPUToGPU(*_models._uboTessellation, *loader._buffers[10].lock());
 
                 // Refresh Command Buffer with new command
-                loader._commandBuffers[0].lock()->execute();
-                loader._surfaces[0].lock()->updateCommandBuffer(0);
+                updateCommandBuffers(loader);
+                updateCommandBuffersSurface(loader, 0);
             }
         };
         mainLoop(manager, u8"Tessellation Demo ", demo);
@@ -614,12 +618,14 @@ TEST_F( TessellationTest, run )
         // Build GUI design
         updateUIOverlay();
         ASSERT_NO_THROW(GUI.prepareBuffer(*context));
+
         Vulkan::CommandContainer* container = dynamic_cast<Vulkan::CommandContainer*>(loaderGUI._commandLinks[0]);
         ASSERT_TRUE(container != nullptr);
         ASSERT_NO_THROW(GUI.buildCommands(container->getCommands()));
 
         // Refresh Command Buffer with new command
-        loader._surfaces[0].lock()->updateCommandBuffer(0);
+        updateCommandBuffers(loader);
+        updateCommandBuffersSurface(loader, 0);
 
         // Get Sequencer
         context->getDevice().waitIdle();

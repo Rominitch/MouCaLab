@@ -36,6 +36,9 @@ TEST_F(MathematicalRenderingTest, run)
     // Set value
     updateUBO(loader, *context, 0.121f);
 
+    // Execute commands
+    updateCommandBuffersSurface(loader);
+
     // Execute rendering
     if (MouCaEnvironment::isDemonstrator())
     {

@@ -86,10 +86,13 @@ class TriangleTest : public MouCaLabTest
             // Prepare data
             struct Vertex
             {
-                float position[3];
-                float color[3];
+                glm::vec3 position;
+                glm::vec3 color;
             };
-            using Index = uint32_t;
+            struct Index
+            {
+                glm::uvec3 index;
+            };
 
             const float length = 1.0f;
             std::array<Vertex, 3> vertexBuffer
@@ -100,7 +103,7 @@ class TriangleTest : public MouCaLabTest
             } };
 
             // Setup indices
-            std::array<Index, 3> indexBuffer { { 0, 1, 2 } };
+            std::array<Index, 1> indexBuffer { glm::uvec3(0, 1, 2) };
 
             auto cpuVBO = std::make_shared<RT::BufferLinkedCPU>();
             cpuVBO->create(vboDescriptor, vertexBuffer.size(), vertexBuffer.data());
@@ -168,6 +171,9 @@ TEST_F(TriangleTest, run)
 
     // Set 
     updateUBO(manager.getSurfaces().at(0)->_linkWindow, context, loader._buffers[0]);
+
+    // Execute commands
+    updateCommandBuffersSurface(loader);
 
     // Execute rendering
     if (MouCaEnvironment::isDemonstrator())

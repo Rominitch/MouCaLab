@@ -2,7 +2,7 @@
 
 <MouCaLab>
   <Engine3D version="0.1">
-    <Environment>
+    <Environment application="TriangleTest" engine="MouCaLab">
       <Extension>VK_KHR_surface</Extension>
       <Extension os="windows">VK_KHR_win32_surface</Extension>
       <Extension os="linux">VK_KHR_xlib_surface</Extension>
@@ -33,9 +33,15 @@
         </Image>
       </Images>
       <Buffers>
-        <Buffer id="0" size="192" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT" memoryProperty="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
-        <Buffer id="1" size="72" usage="VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
-        <Buffer id="2" size="12" usage="VK_BUFFER_USAGE_INDEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        <Buffer id="0" size="192" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+        </Buffer>
+        <Buffer id="1" size="72" usage="VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        </Buffer>
+        <Buffer id="2" size="12" usage="VK_BUFFER_USAGE_INDEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        </Buffer>
       </Buffers>
       <!--  Shaders -->
       <ShaderModules>

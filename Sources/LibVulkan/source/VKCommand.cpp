@@ -236,6 +236,7 @@ void CommandBindIndexBuffer::execute(const ExecuteCommands& executer)
     if (!_buffer.expired())
     {
         _bufferId = _buffer.lock()->getBuffer();
+        MOUCA_ASSERT(_bufferId != VK_NULL_HANDLE);
     }
 
     vkCmdBindIndexBuffer(executer.commandBuffer, _bufferId, _offset, _indexType);
