@@ -74,7 +74,7 @@ def installGeneric(dstFolder, packages, zipProgram, packageName, localServer, ex
 
         Log.blockStop(packageName, "Start install package")
 
-        if platform.system() is not 'Windows':
+        if platform.system() != 'Windows':
             raise RuntimeError("Currently Windows OS only is supported.")
 
         # Load environment variable if needed
