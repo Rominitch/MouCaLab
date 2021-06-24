@@ -231,7 +231,7 @@
           <Command type="scissor"  width="$resolution" height="$resolution"/>
           <!--  Text -->
           <Command type="bindDescriptorSets" pipelineLayoutId="1" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS" firstSet="0" descriptorSetId="1"/>
-          <Command type="graphicsPipeline" graphicsPipelineId="1" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
+          <Command type="bindPipeline" graphicsPipelineId="1" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
           <Command type="bindVertexBuffers" firstBinding="0" bindingCount="1">
             <Buffer bufferId="0" offset="0" />
           </Command>
@@ -247,7 +247,7 @@
           <Command type="viewport"/>
           <Command type="scissor"/>
           <Command type="bindDescriptorSets" pipelineLayoutId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS" firstSet="0" descriptorSetId="0" />
-          <Command type="graphicsPipeline" graphicsPipelineId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
+          <Command type="bindPipeline" graphicsPipelineId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
           <Command type="draw" vertexCount="3" instanceCount="1" firstVertex="0" firstInstance="0"/>
           <!--  ImGui node -->
           <Command id="1" type="container" />

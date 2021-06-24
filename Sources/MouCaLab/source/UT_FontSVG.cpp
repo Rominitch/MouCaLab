@@ -641,7 +641,7 @@ Core::Path FontSVGTest::_fontNotoA(u8"NotoSansArabicUI-Regular.ttf");
 Core::Path FontSVGTest::_fontCeltic(u8"Celtic Knot.TTF");
 Core::Path FontSVGTest::_fontMevNo(u8"mevno1.ttf");
 
-TEST_F(FontSVGTest, DISABLED_run)
+TEST_F(FontSVGTest, run)
 {
     MouCaGraphic::VulkanManager manager;
     MouCaGraphic::ImGUIManager  GUI;
@@ -861,10 +861,6 @@ TEST_F(FontSVGTest, DISABLED_run)
         updateUIOverlay(manager, refreshCommand);
         // Build GUI design
         updateUIOverlay(manager, refreshCommand);
-        
-        // Execute commands
-        updateCommandBuffers(loader);
-        updateCommandBuffersSurface(loader);
 
         ASSERT_NO_THROW(GUI.prepareBuffer(*context));
         Vulkan::CommandContainer* container = dynamic_cast<Vulkan::CommandContainer*>(loaderGUI._commandLinks[0]);
@@ -872,7 +868,9 @@ TEST_F(FontSVGTest, DISABLED_run)
         ASSERT_NO_THROW(GUI.buildCommands(container->getCommands()));
 
         // Refresh Command Buffer with new command
-        loader._surfaces[0].lock()->updateCommandBuffer(0);
+        // Execute commands
+        updateCommandBuffers(loader);
+        updateCommandBuffersSurface(loader);
 
         // Get Sequencer
         context->getDevice().waitIdle();
