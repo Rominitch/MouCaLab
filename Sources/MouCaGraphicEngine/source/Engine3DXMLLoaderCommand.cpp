@@ -485,7 +485,7 @@ void Engine3DXMLLoader::loadCommands(ContextLoading& context, Vulkan::ContextDev
             auto aPushP = context._parser.autoPushNode(*commandNode);
 
             // Read image memories
-            auto allImageMemories = context._parser.getNode(u8"DynamicOffset");
+            auto allImageMemories = context._parser.getNode(u8"ImageBarrier");
             Vulkan::CommandPipelineBarrier::ImageMemoryBarriers imageBarriers;
             imageBarriers.reserve(allImageMemories->getNbElements());
 

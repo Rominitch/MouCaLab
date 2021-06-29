@@ -7,12 +7,14 @@
 
 #include "LibVR/include/VRPlatform.h"
 
+//#define VR_VERBOSE
+
 namespace MouCaVR
 {
 
 // Define Vulkan constant without include vulkan.h
 #ifndef VK_NULL_HANDLE
-#   define VK_NULL_HANDLE 0
+#   define VK_NULL_HANDLE           0
 #   define VK_FORMAT_R8G8B8A8_SRGB 43
 #endif
 
@@ -122,7 +124,9 @@ void Platform::pollEvents()
             case vr::VREvent_TrackedDeviceActivated:
             {
                 MOUCA_ASSERT(event.trackedDeviceIndex < _trackedDevices.size());
-
+#ifdef VR_VERBOSE
+                std::cout << "TrackDevice ON" << std::endl;
+#endif
                 auto& trackedDevice = _trackedDevices[event.trackedDeviceIndex];
 
                 trackedDevice._isConnected = true;
@@ -136,6 +140,9 @@ void Platform::pollEvents()
             case vr::VREvent_TrackedDeviceDeactivated:
             {
                 MOUCA_ASSERT(event.trackedDeviceIndex < _trackedDevices.size());
+#ifdef VR_VERBOSE
+                std::cout << "TrackDevice OFF" << std::endl;
+#endif
 
                 auto& trackedDevice = _trackedDevices[event.trackedDeviceIndex];
                 trackedDevice._isConnected = false;
@@ -144,6 +151,9 @@ void Platform::pollEvents()
             case vr::VREvent_TrackedDeviceUpdated:
             {
                 MOUCA_ASSERT(event.trackedDeviceIndex < _trackedDevices.size());
+#ifdef VR_VERBOSE
+                std::cout << "TrackDevice Update" << std::endl;
+#endif
 
                 auto& trackedDevice = _trackedDevices[event.trackedDeviceIndex];
             }
@@ -151,11 +161,19 @@ void Platform::pollEvents()
 
             case vr::VREvent_Quit:
             {
+#ifdef VR_VERBOSE
+                std::cout << "VR Quit" << std::endl;
+#endif
                 _system->AcknowledgeQuit_Exiting();
 
                 return;
             }
             break;
+#ifdef VR_VERBOSE
+            default:
+
+                std::cout << "VR Pool unknown" << std::endl;
+#endif
         }
     }
 }
@@ -169,10 +187,12 @@ void Platform::pollControllerEvents()
     {
         if (_trackedDevices[deviceId]._isConnected && _system->GetControllerState(deviceId, &_trackedDevices[deviceId]._state, sizeof(_trackedDevices[deviceId]._state)))
         {
-            //std::cout << u8"Device: "<< deviceId << std::endl;
-            //std::cout << u8"Button Pressed: " << _trackedDevices[deviceId]._state.ulButtonPressed << std::endl;
-            //std::cout << u8"Button Touch:   " << _trackedDevices[deviceId]._state.ulButtonTouched << std::endl;
-            //std::cout << u8"Axis:           " << _trackedDevices[deviceId]._state.rAxis->x << u8" " << _trackedDevices[deviceId]._state.rAxis->y << std::endl;
+#ifdef VR_VERBOSE
+            std::cout << u8"Device: "<< deviceId << std::endl;
+            std::cout << u8"Button Pressed: " << _trackedDevices[deviceId]._state.ulButtonPressed << std::endl;
+            std::cout << u8"Button Touch:   " << _trackedDevices[deviceId]._state.ulButtonTouched << std::endl;
+            std::cout << u8"Axis:           " << _trackedDevices[deviceId]._state.rAxis->x << u8" " << _trackedDevices[deviceId]._state.rAxis->y << std::endl;
+#endif
         }
     }
 }
@@ -211,8 +231,9 @@ void Platform::updateTracked()
                                       matPose.m[0][1], matPose.m[1][1], matPose.m[2][1],
                                       matPose.m[0][2], matPose.m[1][2], matPose.m[2][2]);
             itDevice->_transform._rotation = glm::quat_cast(rotMatrix);
-
+#ifdef VR_VERBOSE
             //std::cout << "Position: " << itDevice->_transform._position.x << itDevice->_transform._position.y << itDevice->_transform._position.z << std::endl;
+#endif
         }
 
         ++itDevice;
@@ -240,58 +261,6 @@ uint64_t Platform::getVulkanPhysicalDevice(const RT::Environment& environment) c
     uint64_t pHMDPhysicalDevice = 0;
     _system->GetOutputDevice(&pHMDPhysicalDevice, vr::TextureType_Vulkan, vkInstance);
     return pHMDPhysicalDevice;
-}
-/*
-void Platform::createHeadset(const RT::Environment& environment, VulkanHandle deviceHandle, VulkanHandle queueHandle, const uint32_t queueFamilyIndex, const uint32_t sampleCount)
-{
-    MOUCA_PRE_CONDITION(!isNull());
-
-    const auto size = getRenderSize();
-
-    _vrLeftEye =
-    {
-        VK_NULL_HANDLE,
-        reinterpret_cast<VkDevice_T*>(deviceHandle),
-        reinterpret_cast<VkPhysicalDevice_T*>(getVulkanPhysicalDevice(environment)),
-        reinterpret_cast<VkInstance_T*>(const_cast<void*>(environment.getGenericInstance())),
-        reinterpret_cast<VkQueue_T*>(queueHandle),
-        queueFamilyIndex,
-        size[0], size[1],
-        VK_FORMAT_R8G8B8A8_SRGB, sampleCount
-    };
-
-    _vrRightEye = _vrLeftEye;
-}
-*/
-
-void Platform::submitHeadsetLeftEye()
-{
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(vr::VRCompositor() != nullptr);
-    MOUCA_PRE_CONDITION(_vrLeftEye.m_nImage != 0);
-
-    const vr::Texture_t texture
-    {
-        &_vrLeftEye, 
-        vr::TextureType_Vulkan,
-        vr::ColorSpace_Auto
-    };
-    vr::VRCompositor()->Submit(vr::Eye_Left, &texture, &_vrLeftEyeBounds);
-}
-
-void Platform::submitHeadsetRightEye()
-{
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(vr::VRCompositor() != nullptr);
-    MOUCA_PRE_CONDITION(_vrRightEye.m_nImage != 0);
-
-    const vr::Texture_t texture
-    {
-        &_vrRightEyeBounds,
-        vr::TextureType_Vulkan,
-        vr::ColorSpace_Auto
-    };
-    vr::VRCompositor()->Submit(vr::Eye_Right, &texture, &_vrRightEyeBounds);
 }
 
 Platform::SequenceWaitPos::SequenceWaitPos(Platform& platform):
@@ -331,7 +300,7 @@ VkResult Platform::SequenceSubmitVR::execute(const Vulkan::Device&)
 
     const vr::Texture_t texture
     {
-        &_vrEyeBounds,
+        &_vrEye,
         vr::TextureType_Vulkan,
         vr::ColorSpace_Auto
     };

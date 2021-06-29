@@ -65,6 +65,10 @@ class MouCaEnvironment : public testing::Environment
             return g_workingPath;
         }
 
+        //------------------------------------------------------------------------
+        /// \brief  Activate demonstrator mode using "--demonstrator"
+        /// 
+        /// \returns True if demonstrator is activated
         static bool isDemonstrator()
         {
             return _isDemonstrator;

@@ -286,7 +286,9 @@ void VulkanManager::execute(const uint32_t deviceID, const uint32_t sequenceID, 
     for(const auto& sequence : *context->getQueueSequences().at(sequenceID))
     {
         if (sequence->execute(context->getDevice()) != VK_SUCCESS)
+        {
             break;
+        }
     }
 
     // Synchronize after operation
