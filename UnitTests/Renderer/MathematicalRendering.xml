@@ -2,7 +2,7 @@
 
 <MouCaLab>
   <Engine3D version="0.1">
-    <Environment>
+    <Environment application="MathematicalRenderingTest" engine="MouCaLab">
       <Extension>VK_KHR_surface</Extension>
       <Extension os="windows">VK_KHR_win32_surface</Extension>
       <Extension os="linux">VK_KHR_xlib_surface</Extension>
@@ -29,7 +29,9 @@
       <!--  Buffer / Image / Uniform -->
       <Images/>
       <Buffers>
-        <Buffer id="0" size="4" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT" memoryProperty="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+        <Buffer id="0" size="4" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+        </Buffer>
       </Buffers>
       <!--  Shaders -->
       <ShaderModules>
@@ -107,7 +109,7 @@
           <Command type="viewport"/>
           <Command type="scissor"/>
           <Command type="bindDescriptorSets" pipelineLayoutId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS" firstSet="0" descriptorSetId="0" />
-          <Command type="graphicsPipeline" graphicsPipelineId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
+          <Command type="bindPipeline" graphicsPipelineId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
           <Command type="draw" vertexCount="4" instanceCount="1" firstVertex="0" firstInstance="0"/>
           <Command type="endRenderPass"/>
         </CommandBuffer>

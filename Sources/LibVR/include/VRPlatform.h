@@ -91,9 +91,6 @@ namespace MouCaVR
 
             uint64_t getVulkanPhysicalDevice(const RT::Environment& environment) const;
 
-            void submitHeadsetLeftEye();
-            void submitHeadsetRightEye();
-
             const TrackedDevices&   getTrackedDevices() const   { return _trackedDevices; }
             TrackedDevicePoses&     getTrackedDevicePoses()     { return _poses; }
 
@@ -102,13 +99,6 @@ namespace MouCaVR
 
             vr::IVRSystem*          _system;
             vr::IVRRenderModels*    _renderModels;
-
-            // Headset
-            vr::VRVulkanTextureData_t _vrLeftEye;
-            vr::VRTextureBounds_t     _vrLeftEyeBounds;
-            
-            vr::VRVulkanTextureData_t _vrRightEye;
-            vr::VRTextureBounds_t     _vrRightEyeBounds;
 
             TrackedDevices      _trackedDevices;
             TrackedDevicePoses  _poses;

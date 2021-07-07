@@ -9,8 +9,7 @@ namespace Vulkan
 
     class Memory
     {
-        private:
-            MOUCA_NOCOPY(Memory);
+        MOUCA_NOCOPY(Memory);
 
         protected:
             VkDeviceMemory          _memory;
@@ -19,7 +18,7 @@ namespace Vulkan
             VkDeviceSize            _allocatedSize;
             VkDeviceSize            _alignment;
 
-            Memory();
+            Memory(const VkMemoryPropertyFlags memoryPropertyFlags=0);
 
             void allocateMemory(const Device& device, const VkMemoryRequirements& memRequirements);
 
@@ -52,6 +51,8 @@ namespace Vulkan
 
             VkMemoryPropertyFlags getFlags() const { return _memoryPropertyFlags; }
 
+            virtual const void* getNext() const { return nullptr; }
+
             //--------------------------------------------------------------------------
             //									Mapping
             //--------------------------------------------------------------------------
@@ -64,13 +65,37 @@ namespace Vulkan
             void copy(const Device& device, const VkDeviceSize size, const void *data);
     };
 
+    using MemoryUPtr = std::unique_ptr<Memory>;
+
     class MemoryBuffer : public Memory
     {
         public:
+            MemoryBuffer(const VkMemoryPropertyFlags memoryPropertyFlags):
+            Memory(memoryPropertyFlags)
+            {}
+
             // Destructor
             ~MemoryBuffer() override = default;
 
-            void initialize(const Device& device, const VkBuffer& buffer, const VkMemoryPropertyFlags memoryPropertyFlags);
+            void initialize(const Device& device, const VkBuffer& buffer);
+    };
+
+    using MemoryBufferUPtr = std::unique_ptr<MemoryBuffer>;
+
+    class MemoryBufferAllocate : public MemoryBuffer
+    {
+        public:
+            MemoryBufferAllocate(const VkMemoryPropertyFlags memoryPropertyFlags, const VkMemoryAllocateFlags allocateFlag) :
+            MemoryBuffer(memoryPropertyFlags), _flagInfo({ VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO, nullptr, allocateFlag, 0 })
+            {}
+
+            // Destructor
+            ~MemoryBufferAllocate() override = default;
+
+            const void* getNext() const override { return &_flagInfo; }
+
+        private:
+            VkMemoryAllocateFlagsInfo _flagInfo;
     };
 
     class MemoryImage : public Memory

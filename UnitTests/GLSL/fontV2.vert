@@ -70,7 +70,7 @@ void main()
     }
 
     
-    out_IndexPts  = gi.index;
+    out_IndexPts    = gi.index;
     out_glyph_index = in_glyph_index;
     //pos[0] = vec4(in_rect.x, in_rect.y, 0.0, 1.0);
     //pos[1] = vec4(in_rect.z, in_rect.y, 0.0, 1.0);

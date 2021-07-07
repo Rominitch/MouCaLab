@@ -2,7 +2,7 @@
 
 <MouCaLab>
   <Engine3D version="0.1">
-    <Environment>
+    <Environment application="FontSVGTest" engine="MouCaLab">
       <Extension>VK_KHR_surface</Extension>
       <Extension os="windows">VK_KHR_win32_surface</Extension>
       <Extension os="linux">VK_KHR_xlib_surface</Extension>
@@ -12,7 +12,7 @@
       <Data name="sampleCount" samples="VK_SAMPLE_COUNT_8_BIT" rasterizationSamples="VK_SAMPLE_COUNT_8_BIT" />
       <Data name="resolution" width="1280" height="720" depth="1" />
     </GlobalData>
-    <Window id="0" title="Font Demo" positionX="30" positionY="30" width="1280" height="720" visible="false" resizable="false" border="true" />
+    <Window id="0" title="Font Demo" positionX="30" positionY="30" width="$resolution" height="$resolution" visible="false" resizable="false" border="true" />
     <Device id="0" mode="render" compatibleWindowId="0">
       <Extension>VK_KHR_swapchain</Extension>
       <Extension>VK_KHR_maintenance1</Extension>
@@ -51,13 +51,23 @@
       </Samplers>
       <Buffers>
       <!-- Vertex : glyph instance -->
-        <Buffer id="0" external="0" usage="VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        <Buffer id="0" external="0" usage="VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        </Buffer>
       <!-- Glyph Info -->
-        <Buffer id="1" external="1" usage="VK_BUFFER_USAGE_STORAGE_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
-        <Buffer id="2" external="2" usage="VK_BUFFER_USAGE_STORAGE_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
-        <Buffer id="3" external="3" usage="VK_BUFFER_USAGE_STORAGE_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        <Buffer id="1" external="1" usage="VK_BUFFER_USAGE_STORAGE_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        </Buffer>
+        <Buffer id="2" external="2" usage="VK_BUFFER_USAGE_STORAGE_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        </Buffer>
+        <Buffer id="3" external="3" usage="VK_BUFFER_USAGE_STORAGE_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        </Buffer>
       <!-- Camera -->
-        <Buffer id="5" external="5" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT" memoryProperty="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+        <Buffer id="5" external="5" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+        </Buffer>
       </Buffers>
       <!--  Shaders -->
       <ShaderModules>
@@ -199,7 +209,6 @@
             <BlendAttachment blendEnable="true" colorWriteMask="VK_COLOR_COMPONENT_R_BIT|VK_COLOR_COMPONENT_G_BIT|VK_COLOR_COMPONENT_B_BIT|VK_COLOR_COMPONENT_A_BIT" srcColorBlendFactor="VK_BLEND_FACTOR_SRC_ALPHA" dstColorBlendFactor="VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA" colorBlendOp="VK_BLEND_OP_ADD" srcAlphaBlendFactor="VK_BLEND_FACTOR_SRC_ALPHA" dstAlphaBlendFactor="VK_BLEND_FACTOR_DST_ALPHA" alphaBlendOp="VK_BLEND_OP_MAX" />
           </BlendState>
           <DepthStencil depthTestEnable="false" depthWriteEnable="false" depthCompareOp="VK_COMPARE_OP_LESS_OR_EQUAL" />
-          <!-- <Multisample rasterizationSamples="$sampleCount" alphaToCoverageEnable="false" alphaToOneEnable="false" minSampleShading="0.25"/> -->
           <Multisample rasterizationSamples="$sampleCount" alphaToCoverageEnable="false" alphaToOneEnable="false"/>
           <DynamicState state="VK_DYNAMIC_STATE_VIEWPORT" />
           <DynamicState state="VK_DYNAMIC_STATE_SCISSOR" />
@@ -222,7 +231,7 @@
           <Command type="scissor"  width="$resolution" height="$resolution"/>
           <!--  Text -->
           <Command type="bindDescriptorSets" pipelineLayoutId="1" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS" firstSet="0" descriptorSetId="1"/>
-          <Command type="graphicsPipeline" graphicsPipelineId="1" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
+          <Command type="bindPipeline" graphicsPipelineId="1" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
           <Command type="bindVertexBuffers" firstBinding="0" bindingCount="1">
             <Buffer bufferId="0" offset="0" />
           </Command>
@@ -238,7 +247,7 @@
           <Command type="viewport"/>
           <Command type="scissor"/>
           <Command type="bindDescriptorSets" pipelineLayoutId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS" firstSet="0" descriptorSetId="0" />
-          <Command type="graphicsPipeline" graphicsPipelineId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
+          <Command type="bindPipeline" graphicsPipelineId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
           <Command type="draw" vertexCount="3" instanceCount="1" firstVertex="0" firstInstance="0"/>
           <!--  ImGui node -->
           <Command id="1" type="container" />

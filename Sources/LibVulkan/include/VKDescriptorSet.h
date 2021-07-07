@@ -5,6 +5,9 @@
 
 namespace Vulkan
 {
+    class AccelerationStructure;
+    using AccelerationStructureWPtr = std::weak_ptr<AccelerationStructure>;
+
     class Buffer;
     using BufferWPtr = std::weak_ptr<Buffer>;
 
@@ -104,11 +107,18 @@ namespace Vulkan
     };
     using DescriptorBufferInfos = std::vector<DescriptorBufferInfo>;
 
+    struct DescriptorAcceleration
+    {
+        std::vector<AccelerationStructureWPtr> _structures;
+    };
+
     class WriteDescriptorSet final
     {
+        // TODO: Make many object ?
         public:
             WriteDescriptorSet(const uint32_t dstBinding, const VkDescriptorType type, DescriptorImageInfos&&  imageInfo);
             WriteDescriptorSet(const uint32_t dstBinding, const VkDescriptorType type, DescriptorBufferInfos&& bufferInfo);
+            WriteDescriptorSet(const uint32_t dstBinding, DescriptorAcceleration&& bufferInfo);
 
             [[deprecated]] WriteDescriptorSet(const uint32_t dstBinding, const VkDescriptorType type, std::vector<VkDescriptorImageInfo>&& vkImageInfo);
             [[deprecated]] WriteDescriptorSet(const uint32_t dstBinding, const VkDescriptorType type, std::vector<VkDescriptorBufferInfo>&& bufferInfo);
@@ -121,10 +131,13 @@ namespace Vulkan
             const VkDescriptorType                 _type;
             const DescriptorImageInfos             _imageInfo;
             const DescriptorBufferInfos            _bufferInfo;
+            const DescriptorAcceleration           _acceleration;
 
-            std::vector<VkDescriptorImageInfo>     _vkImageInfo;
-            std::vector<VkDescriptorBufferInfo>    _vkBufferInfo;
-            std::vector<VkBufferView>              _vkBufferView;
+            std::vector<VkDescriptorImageInfo>      _vkImageInfo;
+            std::vector<VkDescriptorBufferInfo>     _vkBufferInfo;
+            std::vector<VkBufferView>               _vkBufferView;
+            std::vector<VkAccelerationStructureKHR> _vkAccelerationStruct;
+            VkWriteDescriptorSetAccelerationStructureKHR _accelerationStructure;
     };
 
     class DescriptorSet

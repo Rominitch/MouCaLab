@@ -56,7 +56,6 @@
     <Import Project="..\..\..\Props\Boost.props" />
     <Import Project="..\..\..\Props\GoogleTest.props" />
     <Import Project="..\..\..\Props\Xerces3.props" />
-    <Import Project="..\..\..\Props\GLI.props" />
     <Import Project="..\..\..\Props\GLM.props" />
     <Import Project="..\..\..\Props\SteamWorks.props" />
   </ImportGroup>
@@ -67,7 +66,6 @@
     <Import Project="..\..\..\Props\Boost.props" />
     <Import Project="..\..\..\Props\GoogleTest.props" />
     <Import Project="..\..\..\Props\Xerces3.props" />
-    <Import Project="..\..\..\Props\GLI.props" />
     <Import Project="..\..\..\Props\GLM.props" />
     <Import Project="..\..\..\Props\SteamWorks.props" />
   </ImportGroup>
@@ -78,7 +76,6 @@
     <Import Project="..\..\..\Props\Boost.props" />
     <Import Project="..\..\..\Props\GoogleTest.props" />
     <Import Project="..\..\..\Props\Xerces3.props" />
-    <Import Project="..\..\..\Props\GLI.props" />
     <Import Project="..\..\..\Props\GLM.props" />
     <Import Project="..\..\..\Props\SteamWorks.props" />
   </ImportGroup>

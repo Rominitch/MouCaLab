@@ -1,9 +1,11 @@
 #include "Dependencies.h"
 
-#include <LibRT/include/RTBufferCPU.h>
-#include <LibRT/include/RTBufferDescriptor.h>
+#include "LibMedia/include/ImageFI.h"
 
-#include <LibMedia/include/ImageFI.h>
+#include "LibMedia/include/ImageLoader.h"
+
+#include "LibRT/include/RTBufferCPU.h"
+#include "LibRT/include/RTBufferDescriptor.h"
 
 namespace Media
 {
@@ -130,6 +132,11 @@ void ImageFI::saveImage(const Core::Path& filename)
     {
         MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FISaveFileError", filename.u8string());
     }
+}
+
+void ImageFI::export2D(const Core::Path& filename)
+{
+    ImageLoader::export2D(*this, filename);
 }
 
 bool ImageFI::compare(const RT::Image& reference, const size_t nbMaxDefectPixels, const double maxDistance4D,

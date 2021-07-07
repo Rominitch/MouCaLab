@@ -14,8 +14,10 @@ namespace Media
     class ImageLoader
     {
         public:
-            RT::ImageSPtr openImage(const Core::Path& strFilename);
+            static RT::ImageSPtr openImage(const Core::Path& strFilename);
 
-            RT::ImageSPtr createImageFI(const RT::BufferCPUBase& ImageBuffer, const uint32_t szWidth, const uint32_t szHeight);
+            static RT::ImageSPtr createImageFI(const RT::BufferCPUBase& ImageBuffer, const uint32_t szWidth, const uint32_t szHeight);
+
+            static void export2D(RT::Image& image, const Core::Path& fileName);
     };
 }

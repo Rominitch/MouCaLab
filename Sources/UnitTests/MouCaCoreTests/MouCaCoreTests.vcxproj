@@ -49,12 +49,12 @@
     <Import Project="..\..\..\..\MouCaLab\Props\MouCaDebug.props" />
     <Import Project="..\..\..\..\MouCaLab\Props\GoogleTest.props" />
     <Import Project="..\..\..\..\MouCaLab\Props\Boost.props" />
-    <Import Project="..\..\..\..\MouCaLab\Props\GLI.props" />
     <Import Project="..\..\..\..\MouCaLab\Props\GLM.props" />
     <Import Project="..\..\..\Props\Xerces3.props" />
     <Import Project="..\..\..\Props\sqlite.props" />
     <Import Project="..\..\..\Props\FreeImage.props" />
     <Import Project="..\..\..\Props\Assimp.props" />
+    <Import Project="..\..\..\Props\LibKTX.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -62,12 +62,12 @@
     <Import Project="..\..\..\..\MouCaLab\Props\MouCaRelease.props" />
     <Import Project="..\..\..\..\MouCaLab\Props\GoogleTest.props" />
     <Import Project="..\..\..\..\MouCaLab\Props\Boost.props" />
-    <Import Project="..\..\..\..\MouCaLab\Props\GLI.props" />
     <Import Project="..\..\..\..\MouCaLab\Props\GLM.props" />
     <Import Project="..\..\..\Props\Xerces3.props" />
     <Import Project="..\..\..\Props\sqlite.props" />
     <Import Project="..\..\..\Props\FreeImage.props" />
     <Import Project="..\..\..\Props\Assimp.props" />
+    <Import Project="..\..\..\Props\LibKTX.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -75,12 +75,12 @@
     <Import Project="..\..\..\..\MouCaLab\Props\MouCaProfile.props" />
     <Import Project="..\..\..\..\MouCaLab\Props\GoogleTest.props" />
     <Import Project="..\..\..\..\MouCaLab\Props\Boost.props" />
-    <Import Project="..\..\..\..\MouCaLab\Props\GLI.props" />
     <Import Project="..\..\..\..\MouCaLab\Props\GLM.props" />
     <Import Project="..\..\..\Props\Xerces3.props" />
     <Import Project="..\..\..\Props\sqlite.props" />
     <Import Project="..\..\..\Props\FreeImage.props" />
     <Import Project="..\..\..\Props\Assimp.props" />
+    <Import Project="..\..\..\Props\LibKTX.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />

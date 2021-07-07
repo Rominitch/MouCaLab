@@ -7,6 +7,8 @@
 
 #include "LibVulkan/include/VKEnvironment.h"
 
+#define DEBUG_LAYERS
+
 namespace Vulkan
 {
 
@@ -39,9 +41,13 @@ void Environment::initialize(const RT::ApplicationInfo& info, const std::vector<
 
 #ifdef VULKAN_DEBUG
     // Get all extensions
-    const std::vector<const char*> layers = DebugReport::getLayers();
+    std::vector<const char*> layers;
     std::vector<const char*> myExtensions = extensions;
+
+#   ifdef DEBUG_LAYERS
+    layers = DebugReport::getLayers();
     myExtensions.push_back(_report.getExtension());
+#   endif
 
     //Check extensions if wanted by user
     if(!myExtensions.empty())
@@ -56,7 +62,7 @@ void Environment::initialize(const RT::ApplicationInfo& info, const std::vector<
         0,                                              // VkInstanceCreateFlags      flags
         &application_info,                              // const VkApplicationInfo   *pApplicationInfo
         static_cast<uint32_t>(layers.size()),           // uint32_t                   enabledLayerCount
-        layers.data(),                                  // const char * const        *ppEnabledLayerNames
+        !layers.empty() ? layers.data() : nullptr,      // const char * const        *ppEnabledLayerNames
         static_cast<uint32_t>(myExtensions.size()),		// uint32_t                   enabledExtensionCount
         myExtensions.data()                             // const char * const        *ppEnabledExtensionNames
     };
@@ -82,13 +88,16 @@ void Environment::initialize(const RT::ApplicationInfo& info, const std::vector<
 #endif
 
     //Generate instance
-    if(vkCreateInstance(&instance_create_info, nullptr, &_instance) != VK_SUCCESS)
+    const VkResult error = vkCreateInstance(&instance_create_info, nullptr, &_instance);
+    if( error != VK_SUCCESS )
     {
-        MOUCA_THROW_ERROR(u8"VulkanError", u8"InstanceError");
+        MOUCA_THROW_ERROR(u8"VulkanError", error == VK_ERROR_LAYER_NOT_PRESENT ? u8"InstanceLayoutError" : u8"InstanceError");
     }
 
 #ifdef VULKAN_DEBUG
+#   ifdef DEBUG_LAYERS
     _report.initialize(_instance);
+#   endif DEBUG_LAYERS
 
     //Check layers installed
     uint32_t nbLayersProperties = 0;

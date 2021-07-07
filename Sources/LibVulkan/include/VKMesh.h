@@ -2,7 +2,7 @@
 /// \author  Rominitch
 /// \license No license
 #pragma once
-
+/*
 #include <LibRT/include/RTBoundingBox.h>
 #include <LibRT/include/RTBufferDescriptor.h>
 
@@ -36,7 +36,7 @@ namespace Vulkan
             };
 
             /// Constructor
-            Mesh();
+            Mesh(const bool GPUOnly);
             /// Destructor
             ~Mesh();
 
@@ -48,7 +48,7 @@ namespace Vulkan
             /// \param[in] indexSize: size of IBO in byte.
             /// \param[in] indexCount: number of items in IBO.
             /// \param[in] GPUOnly: allow to use getEditVertices() and getEditIndices() for transfer memory when false, GPU mode otherwise.
-            void initialize(const Device& device, const VkDeviceSize vertexSize, const VkDeviceSize indexSize, const uint32_t indexCount, const bool GPUOnly);
+            void initialize(const Device& device, const uint32_t nbVertices, const VkDeviceSize vertexStride, const VkDeviceSize indexSize, const uint32_t indexCount);
 
             void release(const Device& device);
 
@@ -89,6 +89,9 @@ namespace Vulkan
                 return _indexed;
             }
 
+            uint32_t     getVertexCount() const  { return _nbVertices; }
+            VkDeviceSize getVertexStride() const { return _vertexStride; }
+
         private:
             struct MeshBufferInfo
             {
@@ -97,6 +100,8 @@ namespace Vulkan
                 size_t size         = 0;
             };
 
+            uint32_t                  _nbVertices;
+            VkDeviceSize              _vertexStride;
             Buffer                    _vertices;
             Buffer                    _indices;
             uint32_t                  _indexCount;
@@ -105,3 +110,4 @@ namespace Vulkan
             RT::BoundingBox           _bbox;
     };
 }
+*/

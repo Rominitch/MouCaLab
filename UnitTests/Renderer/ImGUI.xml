@@ -58,6 +58,7 @@
             </WriteDescriptor>
           </SetLayout>
         </DescriptorSet>
+      </DescriptorSets>
       <!--  Pipelines -->
       <GraphicsPipelines>
         <!-- to Screen -->
@@ -85,7 +86,7 @@
       <!--  CommandGroup -->
       <CommandsGroups>
         <CommandsGroup id="0">
-          <Command type="graphicsPipeline" graphicsPipelineId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
+          <Command type="bindPipeline" graphicsPipelineId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
           <Command type="bindDescriptorSets" pipelineLayoutId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS" firstSet="0" descriptorSetId="0" />
           <Command type="pushConstants" pipelineLayoutId="0" stage="VK_SHADER_STAGE_VERTEX_BIT" external="0"/>
           <Command type="bindVertexBuffers" firstBinding="0" bindingCount="1">

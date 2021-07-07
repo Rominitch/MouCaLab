@@ -27,7 +27,7 @@ void DebugReport::initialize(const VkInstance& vulkanInstance)
     {
         VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT,            //VkStructureType                 sType;
         nullptr,                                                            //const void*                     pNext;
-        //VK_DEBUG_REPORT_INFORMATION_BIT_EXT | VK_DEBUG_REPORT_DEBUG_BIT_EXT | 
+        //VK_DEBUG_REPORT_INFORMATION_BIT_EXT | VK_DEBUG_REPORT_DEBUG_BIT_EXT |
         VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_ERROR_BIT_EXT,    //VkDebugReportFlagsEXT           flags;
         debugCallback,                                                      //PFN_vkDebugReportCallbackEXT    pfnCallback;
         nullptr                                                             //void*                           pUserData;
@@ -89,11 +89,8 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugReport::debugCallback(VkDebugReportFlagsEXT 
 
     std::cerr << print.c_str() << std::endl;
     OutputDebugString(Core::convertToOS(print).c_str());
-    
-    if(flags & VK_DEBUG_REPORT_ERROR_BIT_EXT)
-        return VK_FALSE;
 
-    return VK_TRUE;
+    return (flags & VK_DEBUG_REPORT_ERROR_BIT_EXT) ? VK_TRUE : VK_FALSE;
 }
 
 PFN_vkDebugMarkerSetObjectTagEXT    pfnDebugMarkerSetObjectTag  = VK_NULL_HANDLE;

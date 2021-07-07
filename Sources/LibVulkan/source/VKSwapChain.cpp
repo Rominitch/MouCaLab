@@ -179,7 +179,7 @@ void SwapChainImage::initialize(const Device& device, const VkFormat& format, co
     MOUCA_PRE_CONDITION(isNull());
     MOUCA_PRE_CONDITION(image != VK_NULL_HANDLE);
     MOUCA_PRE_CONDITION(!device.isNull());
-    MOUCA_PRE_CONDITION(format != VK_NULL_HANDLE);
+    MOUCA_PRE_CONDITION(format != VK_FORMAT_UNDEFINED);
 
     _image = image;
 

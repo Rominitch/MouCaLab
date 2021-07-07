@@ -15,7 +15,7 @@ namespace Vulkan
 {
 
 GraphicsPipeline::GraphicsPipeline() :
-_pipeline(VK_NULL_HANDLE)
+Pipeline()
 {
     MOUCA_PRE_CONDITION(isNull());
 }

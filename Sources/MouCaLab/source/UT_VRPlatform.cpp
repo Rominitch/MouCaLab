@@ -45,7 +45,7 @@ public:
     }
 };
 
-TEST_F(VRTest, DISABLED_platform)
+TEST_F(VRTest, platform)
 {
     auto& vrEngine = _graphic.getVRPlatform();
     
@@ -58,7 +58,7 @@ TEST_F(VRTest, DISABLED_platform)
     EXPECT_LT(0ull, vrEngine.getRenderSize().y);
 }
 
-TEST_F(VRTest, DISABLED_run)
+TEST_F(VRTest, run)
 {
     auto& vrEngine = _graphic.getVRPlatform();
     MouCaGraphic::VulkanManager manager;
@@ -68,40 +68,33 @@ TEST_F(VRTest, DISABLED_run)
 
     auto context = manager.getDevices().at(0);
 
+    // Execute commands
+    updateCommandBuffersSurface(loader);
+    updateCommandBuffers(loader);
+
+    const auto renderVRFrame = [&](const double)
+    {
+        ASSERT_NO_THROW(vrEngine.pollEvents());
+        ASSERT_NO_THROW(vrEngine.pollControllerEvents());
+
+        manager.execute(0, 1, true);
+
+        ASSERT_NO_THROW(vrEngine.updateTracked());
+    };
+
+    context->getDevice().waitIdle();
+
     // Execute rendering
     if (MouCaEnvironment::isDemonstrator())
     {
-        context->getDevice().waitIdle();
-
-        //std::thread thread([&]()
-        //    {
-        //        //float fTime = 0.0;
-        //        while(_environment.get3DEngine().getRTPlatform().isWindowsActive())
-        //        {
-        //            //updateUBO(loader, *context, fTime);
-        //            //fTime += 0.00001f;
-        //
         ASSERT_NO_THROW(vrEngine.pollEvents());
         ASSERT_NO_THROW(vrEngine.pollControllerEvents());
         ASSERT_NO_THROW(vrEngine.updateTracked());
-        //        }
-        //    });
-        auto demo = [&](const double)
-        {
-            ASSERT_NO_THROW(vrEngine.pollEvents());
-            ASSERT_NO_THROW(vrEngine.pollControllerEvents());
-            ASSERT_NO_THROW(vrEngine.updateTracked());
-        };
 
-        mainLoop(manager, u8"Triangle ScreenSpace Demo ", demo);
-
-        //thread.join();
+        mainLoop(manager, u8"Triangle ScreenSpace Demo ", renderVRFrame);
     }
     else
     {
-        // Get allocated item
-        context->getDevice().waitIdle();
-
         auto queueSequences = context->getQueueSequences();
         ASSERT_EQ(2, queueSequences.size());
 
@@ -110,6 +103,8 @@ TEST_F(VRTest, DISABLED_run)
         {
             ASSERT_EQ(VK_SUCCESS, sequence->execute(context->getDevice()));
         }
+
+        renderVRFrame(0.0);
 
         takeScreenshot(manager, L"VRCompanionTriangle.png");
     }

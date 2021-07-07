@@ -297,15 +297,15 @@ namespace Vulkan
 
             static VkFormat computeDescriptorFormat(const RT::ComponentDescriptor& component);
 
-            VkPipelineVertexInputStateCreateInfo const*const   getInputVertexState() const   { return isMode(VertexInput)   ? &_inputVertex._state                   : nullptr; }
-            VkPipelineInputAssemblyStateCreateInfo const*const getInputAssemblyState() const { return isMode(InputAssembly) ? &_inputAssembly._state              : nullptr; }
-            VkPipelineViewportStateCreateInfo const*const      getViewportState() const      { return isMode(Viewport)      ? &_viewport._state         : nullptr; }
-            VkPipelineRasterizationStateCreateInfo const*const getRasterizerState() const    { return isMode(Rasterization) ? &_rasterizer._state  : nullptr; }
+            VkPipelineVertexInputStateCreateInfo const*const   getInputVertexState() const   { return isMode(VertexInput)   ? &_inputVertex._state   : nullptr; }
+            VkPipelineInputAssemblyStateCreateInfo const*const getInputAssemblyState() const { return isMode(InputAssembly) ? &_inputAssembly._state : nullptr; }
+            VkPipelineViewportStateCreateInfo const*const      getViewportState() const      { return isMode(Viewport)      ? &_viewport._state      : nullptr; }
+            VkPipelineRasterizationStateCreateInfo const*const getRasterizerState() const    { return isMode(Rasterization) ? &_rasterizer._state    : nullptr; }
             VkPipelineMultisampleStateCreateInfo const*const   getMultisampleState() const   { return isMode(Multisample)   ? &_multiSampling._state : nullptr; }
-            VkPipelineColorBlendStateCreateInfo const*const    getBlendingState() const      { return isMode(ColorBlend)    ? &_blending._state            : nullptr; }
-            VkPipelineDynamicStateCreateInfo const*const       getDynamicState() const       { return isMode(Dynamic)       ? &_dynamic._state           : nullptr; }
-            VkPipelineDepthStencilStateCreateInfo const*const  getDepthStencilState() const  { return isMode(DepthStencil)  ? &_depthStencil._state             : nullptr; }
-            VkPipelineTessellationStateCreateInfo const*const  getTessellationState() const  { return isMode(Tessellation)  ? &_tessellation._state             : nullptr; }
+            VkPipelineColorBlendStateCreateInfo const*const    getBlendingState() const      { return isMode(ColorBlend)    ? &_blending._state      : nullptr; }
+            VkPipelineDynamicStateCreateInfo const*const       getDynamicState() const       { return isMode(Dynamic)       ? &_dynamic._state       : nullptr; }
+            VkPipelineDepthStencilStateCreateInfo const*const  getDepthStencilState() const  { return isMode(DepthStencil)  ? &_depthStencil._state  : nullptr; }
+            VkPipelineTessellationStateCreateInfo const*const  getTessellationState() const  { return isMode(Tessellation)  ? &_tessellation._state  : nullptr; }
 
             VkGraphicsPipelineCreateInfo buildInfo(const RenderPass& renderPass, const PipelineLayout& layout) const;
 

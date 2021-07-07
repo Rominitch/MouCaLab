@@ -9,6 +9,8 @@ namespace Vulkan
     class Buffer;
     using BufferWPtr = std::weak_ptr<Buffer>;
 
+    class Device;
+
     class DescriptorSet;
     class FrameBuffer;
     using FrameBufferWPtr = std::weak_ptr<FrameBuffer>;
@@ -18,10 +20,16 @@ namespace Vulkan
     class GraphicsPipeline;
     class PipelineLayout;
 
+    class Pipeline;
+    using PipelineWPtr = std::weak_ptr<Pipeline>;
+
     class RenderPass;
     using RenderPassWPtr = std::weak_ptr<RenderPass>;
 
     class Image;
+
+    class TracingRay;
+    using TracingRayWPtr = std::weak_ptr<TracingRay>;
     
     //----------------------------------------------------------------------------
     /// \brief Data to execute command.
@@ -128,6 +136,19 @@ namespace Vulkan
             void execute(const ExecuteCommands& executer) override;
     };
 
+    class CommandBindPipeline final : public Command
+    {
+        private:
+            const PipelineWPtr        _pipeline;
+            const VkPipelineBindPoint _bindPoint;
+
+        public:
+            CommandBindPipeline(const PipelineWPtr pipeline, const VkPipelineBindPoint bindPoint);
+
+            void execute(const VkCommandBuffer& commandBuffer) override;
+            void execute(const ExecuteCommands& executer) override;
+    };
+
     class CommandDraw final : public Command
     {
         private:
@@ -194,7 +215,7 @@ namespace Vulkan
             VkDeviceSize    _offset;
             VkIndexType     _indexType;
     };
-
+/*
     class CommandBindMesh : public Command
     {
         private:
@@ -249,7 +270,7 @@ namespace Vulkan
             void execute(const VkCommandBuffer& commandBuffer) override;
             void execute(const ExecuteCommands& executer) override;
     };
-
+*/
     class CommandBindDescriptorSets final : public Command
     {
         private:
@@ -422,5 +443,39 @@ namespace Vulkan
 
         private:
             size_t  _idNode = 0;
+    };
+
+    class CommandBuildAccelerationStructures final : public Command
+    {
+        public:
+            CommandBuildAccelerationStructures(const Device& device, std::vector<VkAccelerationStructureBuildGeometryInfoKHR>&& buildGeometries,
+                std::vector<const VkAccelerationStructureBuildRangeInfoKHR*>&& accelerationBuildStructureRangeInfos);
+            ~CommandBuildAccelerationStructures() override = default;
+
+
+            void execute(const VkCommandBuffer& commandBuffer) override;
+            void execute(const ExecuteCommands& executer) override;
+
+        private:
+            const Device& _device;
+            const std::vector<VkAccelerationStructureBuildGeometryInfoKHR>     _buildGeometries;
+            const std::vector<const VkAccelerationStructureBuildRangeInfoKHR*> _accelerationBuildStructureRangeInfos;
+    };
+
+    class CommandTraceRay final : public Command
+    {
+        public:
+            CommandTraceRay(const Device& device, const TracingRayWPtr tracingRay, const uint32_t width, const uint32_t height, const uint32_t depth);
+            ~CommandTraceRay() override = default;
+
+            void execute(const VkCommandBuffer & commandBuffer) override;
+            void execute(const ExecuteCommands & executer) override;
+
+        private:
+            const Device& _device;
+            const TracingRayWPtr _tracingRay;
+            const uint32_t _width;
+            const uint32_t _height;
+            const uint32_t _depth;
     };
 }

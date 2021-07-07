@@ -1,6 +1,7 @@
 #include "Dependencies.h"
 
 #include "MouCaGraphicEngine/include/Engine3DXMLLoader.h"
+#include "MouCaGraphicEngine/include/Engine3DXMLHelper.h"
 
 #include <LibCore/include/CoreFileTracker.h>
 
@@ -13,6 +14,9 @@
 
 #include <LibVR/include/VRPlatform.h>
 
+#include <LibVulkan/include/VKAccelerationStructure.h>
+#include <LibVulkan/include/VKAccelerationStructureGeometry.h>
+
 #include <LibVulkan/include/VKCommand.h>
 #include <LibVulkan/include/VKCommandBufferSurface.h>
 #include <LibVulkan/include/VKContextDevice.h>
@@ -24,12 +28,13 @@
 #include <LibVulkan/include/VKImage.h>
 #include <LibVulkan/include/VKPipelineLayout.h>
 #include <LibVulkan/include/VKPipelineStates.h>
-#include <LibVulkan/include/VKRenderPass.h>
+#include <LibVulkan/include/VKRayTracingPipeline.h>
 #include <LibVulkan/include/VKSampler.h>
 #include <LibVulkan/include/VKSemaphore.h>
 #include <LibVulkan/include/VKSequence.h>
 #include <LibVulkan/include/VKSubmitInfo.h>
 #include <LibVulkan/include/VKSwapChain.h>
+#include <LibVulkan/include/VKTracingRay.h>
 
 #include <LibXML/include/XML.h>
 
@@ -39,159 +44,10 @@
 
 namespace MouCaGraphic
 {
-
+    
 Engine3DXMLLoader::ContextLoading::ContextLoading(GraphicEngine& engine, XML::Parser& parser, MouCaCore::ResourceManager& resources):
 _engine(engine), _parser(parser), _resources(resources), _xmlFileName(Core::convertToU8(parser.getFilename()))
 {}
-
-// Convert string to enum based on real integer or custom string or many using |
-// Supported Format:
-//   Integer number: aspectMask = "6"
-//   LiteralFormat:  aspectMask = "VK_IMAGE_ASPECT_DEPTH_BIT"
-//         or with | aspectMask = "VK_IMAGE_ASPECT_DEPTH_BIT|VK_IMAGE_ASPECT_STENCIL_BIT"
-template<typename VulkanEnum>
-VulkanEnum readValue(XML::NodeUPtr& node, const Core::String& attribute, const std::map<Core::String, VulkanEnum>& literalEnum, bool bitMode, Engine3DXMLLoader::ContextLoading& context)
-{
-    Core::String value;
-    node->getAttribute(attribute, value);
-
-    if (value.empty())
-    {
-        MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLEmptyAttributeStringError", context.getFileName(), attribute);
-    }
-
-    auto data = static_cast<VulkanEnum>(0); // Set to 0 to make | operator
-    try
-    {
-        // Here we don't verify if integer exists: can be a combination or future value.
-        // Note: Vulkan enum class would be fine (when possible).
-        data = static_cast<VulkanEnum>(std::stoll(value));
-    }
-    catch (...)
-    {
-        // Search if variable
-        if (value[0] == '$')
-        {
-            if (context._globalData == nullptr)
-            {
-                MOUCA_THROW_ERROR_1(u8"Engine3D", u8"XMLMissingGlobalData", context.getFileName());
-            }
-
-            // Search global data
-            auto result = context._parser.searchNodeFrom(*context._globalData, u8"Data", u8"name", value.substr(1));
-            // Make same job on another node
-            return readValue(result, attribute, literalEnum, bitMode, context);
-        }
-        else
-        {
-            std::vector<Core::String> results;
-            // Possibly | inside
-            if (bitMode)
-            {
-                boost::split(results, value, [](const auto& c) {return c == u8'|'; });
-            }
-            else
-            {
-                results.emplace_back(value);
-            }
-            for (const auto& part : results)
-            {
-                auto itLiteral = literalEnum.find(part);
-                if (itLiteral == literalEnum.cend())
-                {
-                    MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLUnknownAttributeStringError", context.getFileName(), attribute, part);
-                }
-                data = static_cast<VulkanEnum>(data | itLiteral->second);
-            }
-        }
-    }
-    return data;
-}
-
-template<typename DataType>
-void readAttribute(const XML::NodeUPtr& node, const Core::String& attribute, DataType& value, Engine3DXMLLoader::ContextLoading& context)
-{
-    Core::String data;
-    node->getAttribute(attribute, data);
-
-    if (data[0] == '$')
-    {
-        if (context._globalData == nullptr)
-        {
-            MOUCA_THROW_ERROR_1(u8"Engine3D", u8"XMLMissingGlobalData", context.getFileName());
-        }
-
-        // Search global data
-        auto result = context._parser.searchNodeFrom(*context._globalData, u8"Data", u8"name", data.substr(1));
-        // Make same job on another node
-        return result->getAttribute(attribute, value);
-    }
-    else
-        node->getAttribute(attribute, value);
-}
-
-template<typename DataType>
-void readData(const XML::NodeUPtr& node, DataType& value)
-{
-    MOUCA_THROW_ERROR(u8"BasicError", u8"DevImplementationMissing");
-}
-
-template<>
-void readData(const XML::NodeUPtr& node, VkExtent3D& extent)
-{
-    node->getAttribute(u8"width",  extent.width);
-    node->getAttribute(u8"height", extent.height);
-    node->getAttribute(u8"depth",  extent.depth);
-}
-
-template<typename VulkanTypeWeak>
-uint32_t getIdentifiant(const XML::NodeUPtr& node, const Core::String& nodeName, const std::map<uint32_t, VulkanTypeWeak>& container, Engine3DXMLLoader::ContextLoading& context, bool& existing)
-{
-    uint32_t id = 0;
-    if (node->hasAttribute(u8"externalId"))
-    {
-        existing = true;
-        node->getAttribute(u8"externalId", id);
-        if (container.find(id) == container.cend()) //DEV Issue: Must not exist
-        {
-            MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLUnknownIdentifiantError", context.getFileName(), nodeName + u8":externalId", std::to_string(id));
-        }
-    }
-    else
-    {
-        existing = false;
-        node->getAttribute(u8"id", id);
-        if (container.find(id) != container.cend()) //DEV Issue: Must not exist
-        {
-            MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLAlreadyExistingIdError", context.getFileName(), std::to_string(id), u8"id");
-        }
-    }
-    return id;
-}
-
-template<typename VulkanTypeWeak>
-uint32_t getLinkedIdentifiant(const XML::NodeUPtr& node, const Core::String& idName, const std::map<uint32_t, VulkanTypeWeak>& container, Engine3DXMLLoader::ContextLoading& context)
-{
-    uint32_t id = 0;
-    node->getAttribute(idName, id);
-    if (container.find(id) == container.cend()) //DEV Issue: Must exist
-    {
-        MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLUnknownIdentifiantError", context.getFileName(), idName, std::to_string(id));
-    }
-    return id;
-}
-
-void createCharExtensions(std::vector<Core::String>& extensions, std::vector<const char*>& cExtensions)
-{
-    // Need to convert list (MUST keep old to get valid memory)
-    cExtensions.resize(extensions.size());
-    auto cExt = cExtensions.begin();
-    for (auto& ext : extensions)
-    {
-        *cExt = ext.c_str();
-        ++cExt;
-    }
-}
 
 //-----------------------------------------------------------------------------------------
 //                                  Load / Save engine
@@ -225,13 +81,6 @@ void Engine3DXMLLoader::load(ContextLoading& context)
     // cppcheck-suppress unreadVariable // false positive
     auto aPush = context._parser.autoPushNode(*engineNode);
 
-    // Prepare all surfaces
-    // Build new window
-    loadWindows(context);
-
-    // Build new VR
-    loadVR(context);
-
     // Check if we need to load environment
     if (_manager.getEnvironment().isNull())
     {
@@ -240,180 +89,21 @@ void Engine3DXMLLoader::load(ContextLoading& context)
 
     // Prepare global data node
     auto datas = context._parser.getNode(u8"GlobalData");
-    if (datas->getNbElements() > 0 )
+    if (datas->getNbElements() > 0)
     {
         MOUCA_ASSERT(datas->getNbElements() == 1);
         context._globalData = datas->getNode(0);
     }
 
+    // Prepare all surfaces
+    // Build new window
+    loadWindows(context);
+
+    // Build new VR
+    loadVR(context);
+
     // Create device if possible
     loadDevices(context);
-}
-
-void Engine3DXMLLoader::loadEnvironment(ContextLoading& context)
-{
-    MOUCA_PRE_CONDITION(context._parser.isLoaded());           //DEV Issue: Need a valid xml.
-    MOUCA_PRE_CONDITION(_manager.getEnvironment().isNull());    //DEV Issue: Environment MUST be not configured.
-
-    // Check node exists
-    auto result = context._parser.getNode(u8"Environment");
-    if (result->getNbElements() == 0)
-    {
-        MOUCA_THROW_ERROR_2(u8"Engine3D", u8"LoadingXMLCorruptError", context.getFileName(), u8"Environment");
-    }
-
-    // Go into
-    XML::NodeUPtr environmentNode = result->getNode(0);
-    // cppcheck-suppress unreadVariable // false positive
-    auto aPush = context._parser.autoPushNode(*environmentNode);
-
-    // Get extensions: WARNING extensions must exists to validate cExtensions;
-    std::vector<Core::String> extensions;
-
-    // Check if we need to load VR support
-    auto& vrPlatform = context._engine.getVRPlatform();
-    if (!vrPlatform.isNull())
-    {
-        extensions = vrPlatform.getInstanceExtensions();
-    }
-
-    loadExtensions(context, extensions);
-
-    std::vector<const char*> cExtensions;
-    createCharExtensions(extensions, cExtensions);
-
-    // Build environment
-    _manager.getEnvironment().initialize(context._info, cExtensions);
-
-    MOUCA_POST_CONDITION(!_manager.getEnvironment().isNull());  //DEV Issue: Environment MUST be configured.
-}
-
-void Engine3DXMLLoader::loadExtensions(ContextLoading& context, std::vector<Core::String>& extensions)
-{
-    // Read extensions
-    auto result = context._parser.getNode(u8"Extension");
-
-    // Allocate more space
-    extensions.reserve(extensions.size() + result->getNbElements());
-
-    for (size_t idExtension = 0; idExtension < result->getNbElements(); ++idExtension)
-    {
-        Core::String osName;
-        auto extension = result->getNode(idExtension);
-        if (extension->hasAttribute(u8"os"))
-        {
-            extension->getAttribute(u8"os", osName);
-        }
-        else // When attribute is not present consider like current os to add it.
-        {
-            osName = VulkanManager::_osName;
-        }
-
-        if (osName == VulkanManager::_osName)
-        {
-            Core::String extensionValue;
-            extension->getValue(extensionValue);
-            extensions.emplace_back(std::move(extensionValue));
-        }
-    }
-}
-
-void Engine3DXMLLoader::loadDevices(ContextLoading& context)
-{
-    MOUCA_PRE_CONDITION(context._parser.isLoaded()); //DEV Issue: Need a valid xml.
-
-    auto result = context._parser.getNode(u8"Device");
-    for (size_t idDevice = 0; idDevice < result->getNbElements(); ++idDevice)
-    {
-        auto device = result->getNode(idDevice);
-
-        Vulkan::ContextDeviceWPtr ctxDevice;
-        bool existing = false;
-        const uint32_t id = getIdentifiant(device, u8"Device", _devices, context, existing);
-        if (!existing)
-        {
-            Core::String mode;
-            device->getAttribute(u8"mode", mode);
-            if (mode == u8"render")
-            {
-                uint32_t idSurface = 0;
-                device->getAttribute(u8"compatibleWindowId", idSurface);
-
-                if (idSurface >= _manager.getSurfaces().size())
-                {
-                    MOUCA_THROW_ERROR_1(u8"Engine3D", u8"UnknownSurfaceError", context.getFileName());
-                }
-
-                auto aPush = context._parser.autoPushNode(*device);
-
-                // Get extensions: WARNING extensions must exists to validate cExtensions;
-                std::vector<Core::String> extensions;
-                auto& vrPlatform = context._engine.getVRPlatform();
-                if (!vrPlatform.isNull())
-                {
-                    extensions = vrPlatform.getPhysicalDeviceExtensions(vrPlatform.getVulkanPhysicalDevice(_manager.getEnvironment()));
-                }
-                loadExtensions(context, extensions);
-                std::vector<const char*> cExtensions;
-                createCharExtensions(extensions, cExtensions);
-
-                // Check mandatory features
-                VkPhysicalDeviceFeatures mandatory = {};
-
-                // Build device
-                ctxDevice = _manager.createRenderingDevice(cExtensions, mandatory, *_manager.getSurfaces().at(idSurface));
-                // Register
-                _devices[id] = ctxDevice; 
-
-                // Load all device's data (order is important)
-                loadSurfaces(context, ctxDevice);
-            }
-            else
-            {
-                MOUCA_THROW_ERROR_2(u8"Engine3D", u8"DeviceModeError", context.getFileName(), mode);
-            }
-        }
-        else
-        {
-            ctxDevice = _devices[id];
-        }
-        MOUCA_ASSERT(!ctxDevice.expired()); // Bad creation/ bad transfer ?
-
-        // Load all device's data (order is important)
-        loadShaderModules(context, ctxDevice);
-
-        loadSemaphores(context, ctxDevice);
-
-        loadFences(context, ctxDevice);
-
-        loadImagesAndView(context, ctxDevice);
-
-        loadSamplers(context, ctxDevice);
-
-        loadBuffers(context, ctxDevice);
-
-        loadRenderPasses(context, ctxDevice);
-
-        loadFrameBuffers(context, ctxDevice);
-
-        loadDescriptorSetPools(context, ctxDevice);
-
-        loadDescriptorSetLayouts(context, ctxDevice);
-
-        loadDescriptorSets(context, ctxDevice);
-
-        loadPipelineLayouts(context, ctxDevice);
-
-        loadGraphicsPipelines(context, ctxDevice);
-
-        loadCommandPools(context, ctxDevice);
-
-        loadCommandsGroup(context, ctxDevice);
-
-        loadCommandBuffers(context, ctxDevice);
-
-        loadQueueSequences(context, ctxDevice);
-    }
 }
 
 void Engine3DXMLLoader::loadWindows(ContextLoading& context)
@@ -425,7 +115,7 @@ void Engine3DXMLLoader::loadWindows(ContextLoading& context)
     {
         auto window = result->getNode(idWindow);
         bool existing;
-        const uint32_t id = getIdentifiant(window, u8"Window", _dialogs, context, existing);
+        const uint32_t id = LoaderHelper::getIdentifiant(window, u8"Window", _dialogs, context, existing);
         if (existing)
             continue;
 
@@ -462,8 +152,8 @@ void Engine3DXMLLoader::loadWindows(ContextLoading& context)
             window->getAttribute(u8"positionY", posY);
             viewport.setOffset(posX, posY);
 
-            window->getAttribute(u8"width", posX);
-            window->getAttribute(u8"height", posY);
+            LoaderHelper::readAttribute(window, u8"width",  posX, context);
+            LoaderHelper::readAttribute(window, u8"height", posY, context);
             viewport.setSize(posX, posY);
 
             // Validate window
@@ -532,7 +222,7 @@ void Engine3DXMLLoader::loadSurfaces(ContextLoading& context, Vulkan::ContextDev
 
             // Mandatory attribute
             bool existing;
-            const uint32_t id = getIdentifiant(surface, u8"Surface", _surfaces, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(surface, u8"Surface", _surfaces, context, existing);
             if (existing)
             {
                 continue;
@@ -567,23 +257,23 @@ void Engine3DXMLLoader::loadSurfaces(ContextLoading& context, Vulkan::ContextDev
                     
                     if(preferences->hasAttribute(u8"presentationMode"))
                     {   
-                        configuration._presentMode = readValue(preferences, u8"presentationMode", presentModes, false, context);
+                        configuration._presentMode = LoaderHelper::readValue(preferences, u8"presentationMode", presentModes, false, context);
                     }
                     if(preferences->hasAttribute(u8"usage"))
                     {
-                        configuration._usage = readValue(preferences, u8"usage", imageUsages, true, context);
+                        configuration._usage = LoaderHelper::readValue(preferences, u8"usage", imageUsages, true, context);
                     }
                     if (preferences->hasAttribute(u8"transform"))
                     {
-                        configuration._transform = readValue(preferences, u8"transform", surfaceTransforms, true, context);
+                        configuration._transform = LoaderHelper::readValue(preferences, u8"transform", surfaceTransforms, true, context);
                     }
                     if (preferences->hasAttribute(u8"format"))
                     {
-                        configuration._format.format = readValue(preferences, u8"format", formats, false, context);
+                        configuration._format.format = LoaderHelper::readValue(preferences, u8"format", formats, false, context);
                     }
                     if (preferences->hasAttribute(u8"colorSpace"))
                     {
-                        configuration._format.colorSpace = readValue(preferences, u8"colorSpace", colorSpaces, false, context);
+                        configuration._format.colorSpace = LoaderHelper::readValue(preferences, u8"colorSpace", colorSpaces, false, context);
                     }
                 }
             }
@@ -615,7 +305,7 @@ void Engine3DXMLLoader::loadSemaphores(ContextLoading& context, Vulkan::ContextD
             auto semaphoreNode = allSemaphores->getNode(idSemaphore);
             // Mandatory attribute
             bool existing;
-            const uint32_t id = getIdentifiant(semaphoreNode, u8"Semaphore", _semaphores, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(semaphoreNode, u8"Semaphore", _semaphores, context, existing);
 
             auto semaphore = std::make_shared<Vulkan::Semaphore>();
             semaphore->initialize(device->getDevice());
@@ -649,9 +339,9 @@ void Engine3DXMLLoader::loadFences(ContextLoading& context, Vulkan::ContextDevic
             auto semaphoreNode = allFences->getNode(idFence);
             // Mandatory attribute
             bool existing;
-            const uint32_t id = getIdentifiant(semaphoreNode, u8"Fence", _fences, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(semaphoreNode, u8"Fence", _fences, context, existing);
 
-            const VkFenceCreateFlags flag = readValue(semaphoreNode, u8"flag", fenceCreates, true, context);
+            const VkFenceCreateFlags flag = LoaderHelper::readValue(semaphoreNode, u8"flag", fenceCreates, true, context);
 
             auto fence = std::make_shared<Vulkan::Fence>();
             fence->initialize(device->getDevice(), flag);
@@ -686,7 +376,7 @@ void Engine3DXMLLoader::loadFrameBuffers(ContextLoading& context, Vulkan::Contex
             if (frameBufferNode->hasAttribute(u8"id") || frameBufferNode->hasAttribute(u8"externalId"))
             {
                 bool existing;
-                id = getIdentifiant(frameBufferNode, u8"FrameBuffer", _frameBuffers, context, existing);
+                id = LoaderHelper::getIdentifiant(frameBufferNode, u8"FrameBuffer", _frameBuffers, context, existing);
                 if (existing)
                 {
                     continue;
@@ -706,7 +396,7 @@ void Engine3DXMLLoader::loadFrameBuffers(ContextLoading& context, Vulkan::Contex
                     auto attachmentNode = allAttachments->getNode(idAttachment);
                     if (attachmentNode->hasAttribute(u8"viewImageId"))
                     {
-                        const uint32_t viewImageId = getLinkedIdentifiant(attachmentNode, u8"viewImageId", _view, context);
+                        const uint32_t viewImageId = LoaderHelper::getLinkedIdentifiant(attachmentNode, u8"viewImageId", _view, context);
 
                         // Read view information
                         auto view = _view[viewImageId].lock();
@@ -730,7 +420,7 @@ void Engine3DXMLLoader::loadFrameBuffers(ContextLoading& context, Vulkan::Contex
             }
 
             // Mandatory attribute
-            const uint32_t renderPassId = getLinkedIdentifiant(frameBufferNode, u8"renderPassId", _renderPasses, context);
+            const uint32_t renderPassId = LoaderHelper::getLinkedIdentifiant(frameBufferNode, u8"renderPassId", _renderPasses, context);
             
             // Build SwapChain framebuffer
             if (frameBufferNode->hasAttribute(u8"surfaceId"))
@@ -738,7 +428,7 @@ void Engine3DXMLLoader::loadFrameBuffers(ContextLoading& context, Vulkan::Contex
                 MOUCA_ASSERT(!frameBufferNode->hasAttribute(u8"id")); //DEV Issue: Not supported id !
 
                 // Get attached surface
-                const uint32_t surfaceId = getLinkedIdentifiant(frameBufferNode, u8"surfaceId", _renderPasses, context);
+                const uint32_t surfaceId = LoaderHelper::getLinkedIdentifiant(frameBufferNode, u8"surfaceId", _renderPasses, context);
 
                 // Build FrameBuffer inside surface
                 _surfaces[surfaceId].lock()->createFrameBuffer(_renderPasses[renderPassId], attachments);
@@ -764,285 +454,6 @@ void Engine3DXMLLoader::loadFrameBuffers(ContextLoading& context, Vulkan::Contex
     }
 }
 
-struct SubPassAttachment
-{
-    void buildColorAttachments(size_t size)
-    {
-        colorAttachmentReferences.resize(size);
-    }
-
-    void buildAttachments(std::vector<VkAttachmentReference> & attachmentReferences)
-    {
-        MOUCA_PRE_CONDITION(!colorAttachmentReferences.empty());
-        if (attachmentReferences.empty())
-        {
-            attachmentReferences.resize(colorAttachmentReferences.size());
-
-            const VkAttachmentReference empty{ VK_ATTACHMENT_UNUSED, VK_IMAGE_LAYOUT_UNDEFINED };
-            std::fill(attachmentReferences.begin(), attachmentReferences.end(), empty);
-        }
-    }
-
-    void buildDepthAttachments()
-    {
-        buildAttachments(depthAttachmentReferences);
-    }
-
-    void buildResolveAttachments()
-    {
-        buildAttachments(resolveAttachmentReferences);
-    }
-
-    std::vector<VkAttachmentReference> colorAttachmentReferences;
-    std::vector<VkAttachmentReference> depthAttachmentReferences;
-    std::vector<VkAttachmentReference> resolveAttachmentReferences;
-
-    std::vector<VkAttachmentReference> inputAttachmentReferences;
-
-    std::vector<uint32_t> preserveAttachmentReferences;
-};
-
-void Engine3DXMLLoader::loadRenderPasses(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
-{
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
-
-    auto result = context._parser.getNode(u8"RenderPasses");
-    if (result->getNbElements() > 0)
-    {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
-
-        auto aPushR = context._parser.autoPushNode(*result->getNode(0));
-
-        auto device = deviceWeak.lock();
-
-        auto allRenderPasses = context._parser.getNode(u8"RenderPass");
-        for (size_t idRenderPass = 0; idRenderPass < allRenderPasses->getNbElements(); ++idRenderPass)
-        {
-            auto renderPassNode = allRenderPasses->getNode(idRenderPass);
-            // Mandatory attribute
-            bool existing;
-            const uint32_t id = getIdentifiant(renderPassNode, u8"RenderPass", _renderPasses, context, existing);
-            if (existing)
-                continue;
-
-            auto aPush = context._parser.autoPushNode(*renderPassNode);
-
-            // Load data (WARNING: vector MUST be valid/allocated until renderPass->initialize)
-            std::vector<VkAttachmentDescription> attachments;
-            loadRenderPassAttachment(context, id, attachments);
-
-            std::vector<SubPassAttachment> attachmentReferences;
-            std::vector<VkSubpassDescription> subpasses;
-            loadRenderPassSubPass(context, id, subpasses, attachmentReferences);
-
-            std::vector<VkSubpassDependency> dependencies;
-            loadRenderPassDependency(context, id, dependencies, subpasses);
-
-            // Build render pass
-            auto renderPass = std::make_shared<Vulkan::RenderPass>();
-            renderPass->initialize(device->getDevice(), std::move(attachments), std::move(subpasses), std::move(dependencies));
-
-            // Register + ownership
-            device->insertRenderPass(renderPass);
-
-            _renderPasses[id] = renderPass;
-        }
-    }
-}
-
-void Engine3DXMLLoader::loadRenderPassAttachment(ContextLoading& context, const uint32_t id, std::vector<VkAttachmentDescription>& attachments)
-{
-    auto allAttachments = context._parser.getNode(u8"Attachment");
-
-    attachments.resize(allAttachments->getNbElements());
-    for (size_t idAttachment = 0; idAttachment < allAttachments->getNbElements(); ++idAttachment)
-    {
-        auto attachmentNode = allAttachments->getNode(idAttachment);
-        
-        auto& attachment = attachments[idAttachment];
-        // Extract VKImage format (from swapchain image or image)
-        if (attachmentNode->hasAttribute(u8"surfaceId"))
-        {
-            const uint32_t surfaceId = getLinkedIdentifiant(attachmentNode, u8"surfaceId", _surfaces, context);
-
-            // Use format of swapchain
-            attachment.format = _surfaces[surfaceId].lock()->getFormat().getConfiguration()._format.format;
-        }
-        else if (attachmentNode->hasAttribute(u8"imageId"))
-        {
-            const uint32_t imageId = getLinkedIdentifiant(attachmentNode, u8"imageId", _images, context);
-
-            // Use format of image
-            attachment.format = _images[imageId].lock()->getFormat();
-        }
-        else
-        {
-            MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLRenderPassFormatError", context.getFileName(), std::to_string(id));
-        }
-        MOUCA_ASSERT(attachment.format != VK_FORMAT_UNDEFINED);
-
-        // Read sampler
-        attachment.samples = readValue(attachmentNode, u8"samples", samples, false, context);
-        MOUCA_ASSERT(Core::Maths::isPowerOfTwo(static_cast<uint32_t>(attachment.samples)));
-
-        // Read load/store
-        attachment.loadOp         = readValue(attachmentNode, u8"loadOp",        attachmentLoads,  false, context);
-        attachment.storeOp        = readValue(attachmentNode, u8"storeOp",       attachmentStores, false, context);
-        attachment.stencilLoadOp  = readValue(attachmentNode, u8"stencilLoadOp", attachmentLoads,  false, context);
-        attachment.stencilStoreOp = readValue(attachmentNode, u8"stencilSaveOp", attachmentStores, false, context);
-
-        // Read layout
-        attachment.initialLayout = readValue(attachmentNode, u8"initialLayout",  imageLayouts, false, context);
-        attachment.finalLayout   = readValue(attachmentNode, u8"finalLayout",    imageLayouts, false, context);
-    }
-
-    // Manage errors
-    if (attachments.empty())
-    {
-        MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLRenderPassMissAttachmentError", context.getFileName(), std::to_string(id));
-    }
-}
-
-void Engine3DXMLLoader::loadRenderPassSubPass(ContextLoading& context, const uint32_t id, std::vector<VkSubpassDescription>& subPasses, std::vector<SubPassAttachment>& attachmentReferences)
-{
-    auto allSubPasses = context._parser.getNode(u8"SubPass");
-
-    // Allocated memory
-    subPasses.resize(allSubPasses->getNbElements());
-    attachmentReferences.resize(allSubPasses->getNbElements());
-
-    for (size_t idSubPass = 0; idSubPass < allSubPasses->getNbElements(); ++idSubPass)
-    {
-        auto subPassNode       = allSubPasses->getNode(idSubPass);
-        auto& subPass          = subPasses[idSubPass];
-        auto& attachments      = attachmentReferences[idSubPass];
-
-        // Read data
-        subPass.pipelineBindPoint = readValue(subPassNode, u8"bindPoint", bindPoints, false, context);
-
-        auto aPush = context._parser.autoPushNode(*subPassNode);
-
-        // Read color attachment
-        auto allColorAttachments = context._parser.getNode(u8"ColorAttachment");
-        attachments.buildColorAttachments(allColorAttachments->getNbElements());
-        for (size_t idAttachment = 0; idAttachment < allColorAttachments->getNbElements(); ++idAttachment)
-        {
-            auto colorAttachmentNode = allColorAttachments->getNode(idAttachment);
-
-            // Read color Attachment
-            attachments.colorAttachmentReferences[idAttachment] =
-            {
-                readValue(colorAttachmentNode, u8"colorAttachment", subPassAttachmentHelper, false, context),
-                readValue(colorAttachmentNode, u8"colorLayout", imageLayouts, false, context)
-            };
-
-            // Read depth/stencil Attachment
-            if (colorAttachmentNode->hasAttribute(u8"depthStencilAttachment"))
-            {
-                attachments.buildDepthAttachments();
-
-                attachments.depthAttachmentReferences[idAttachment] =
-                {
-                    readValue(colorAttachmentNode, u8"depthStencilAttachment", subPassAttachmentHelper, false, context),
-                    readValue(colorAttachmentNode, u8"depthStencilLayout", imageLayouts, false, context)
-                };
-            }
-            // Read resolve Attachment (optional)
-            if (colorAttachmentNode->hasAttribute(u8"resolveAttachment"))
-            {
-                // Allocate now buffer (re-entrance do nothing)
-                attachments.buildResolveAttachments();
-
-                attachments.colorAttachmentReferences[idAttachment] =
-                {
-                    readValue(colorAttachmentNode, u8"resolveAttachment", subPassAttachmentHelper, false, context),
-                    readValue(colorAttachmentNode, u8"resolveLayout", imageLayouts, false, context)
-                };
-            }
-        }
-
-        if (attachments.colorAttachmentReferences.empty())
-        {
-            MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLRenderPassMissColorAttachmentError", context.getFileName(), std::to_string(idSubPass));
-        }
-
-        // Read color attachment
-        auto allInputAttachments = context._parser.getNode(u8"InputAttachment");
-        attachments.inputAttachmentReferences.resize(allInputAttachments->getNbElements());
-        for (size_t idAttachment = 0; idAttachment < allInputAttachments->getNbElements(); ++idAttachment)
-        {
-            auto inputAttachmentNode = allInputAttachments->getNode(idAttachment);
-
-            // Read depth/stencil Attachment
-            attachments.inputAttachmentReferences[idAttachment] =
-            {
-                readValue(inputAttachmentNode, u8"attachment", subPassAttachmentHelper, false, context),
-                readValue(inputAttachmentNode, u8"layout",     imageLayouts, false, context)
-            };
-        }
-
-        // Read preserve attachment
-        auto allPreserveAttachments = context._parser.getNode(u8"PreserveAttachment");
-        attachments.preserveAttachmentReferences.resize(allPreserveAttachments->getNbElements());
-        for (size_t idAttachment = 0; idAttachment < allPreserveAttachments->getNbElements(); ++idAttachment)
-        {
-            auto preserveAttachmentNode = allPreserveAttachments->getNode(idAttachment);
-            attachments.preserveAttachmentReferences[idAttachment] = readValue(preserveAttachmentNode, u8"attachment", subPassAttachmentHelper, false, context);
-        }
-
-        // Link array to data
-        subPass.colorAttachmentCount = static_cast<uint32_t>(attachments.colorAttachmentReferences.size());
-        subPass.pColorAttachments       = attachments.colorAttachmentReferences.data();
-        subPass.pDepthStencilAttachment = attachments.depthAttachmentReferences.empty()
-                                        ? VK_NULL_HANDLE
-                                        : attachments.depthAttachmentReferences.data();
-        subPass.pResolveAttachments     = attachments.resolveAttachmentReferences.empty()
-                                        ? VK_NULL_HANDLE
-                                        : attachments.resolveAttachmentReferences.data();
-
-        subPass.inputAttachmentCount = static_cast<uint32_t>(attachments.inputAttachmentReferences.size());
-        subPass.pInputAttachments    = attachments.inputAttachmentReferences.data();
-
-        subPass.preserveAttachmentCount = static_cast<uint32_t>(attachments.preserveAttachmentReferences.size());
-        subPass.pPreserveAttachments    = attachments.preserveAttachmentReferences.data();
-    }
-
-    if (subPasses.empty())
-    {
-        MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLRenderPassMissSubpassError", context.getFileName(), std::to_string(id));
-    }
-}
-
-void Engine3DXMLLoader::loadRenderPassDependency(ContextLoading& context, const uint32_t id, std::vector<VkSubpassDependency>& dependencies, const std::vector<VkSubpassDescription>& subPass)
-{
-    auto allDependencies = context._parser.getNode(u8"Dependency");
-
-    dependencies.reserve(allDependencies->getNbElements());
-    for (size_t idDependency = 0; idDependency < allDependencies->getNbElements(); ++idDependency)
-    {
-        auto dependencyNode = allDependencies->getNode(idDependency);
-        const VkSubpassDependency subDependency
-        {
-            readValue(dependencyNode, u8"srcSubpass",      subPassHelper,      false, context),
-            readValue(dependencyNode, u8"dstSubpass",      subPassHelper,      false, context),
-            readValue(dependencyNode, u8"srcStageMask",    pipelineStageFlags, true,  context),
-            readValue(dependencyNode, u8"dstStageMask",    pipelineStageFlags, true,  context),
-            readValue(dependencyNode, u8"srcAccessMask",   accessFlags,        true,  context),
-            readValue(dependencyNode, u8"dstAccessMask",   accessFlags,        true,  context),
-            readValue(dependencyNode, u8"dependencyFlags", dependencyFlags,    true,  context),
-        };
-
-        if(subDependency.dstSubpass != VK_SUBPASS_EXTERNAL && subDependency.dstSubpass >= subPass.size())
-        {
-            MOUCA_THROW_ERROR_4(u8"Engine3D", u8"XMLRenderPassUnknownSubpassError", context.getFileName(), std::to_string(id), u8"dstSubpass", std::to_string(subDependency.dstSubpass));
-        }
-        if(subDependency.srcSubpass != VK_SUBPASS_EXTERNAL && subDependency.srcSubpass >= subPass.size())
-        {
-            MOUCA_THROW_ERROR_4(u8"Engine3D", u8"XMLRenderPassUnknownSubpassError", context.getFileName(), std::to_string(id), u8"srcSubpass", std::to_string(subDependency.srcSubpass));
-        }
-        dependencies.emplace_back(subDependency);
-    }
-}
 
 void Engine3DXMLLoader::loadImagesAndView(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
@@ -1065,17 +476,17 @@ void Engine3DXMLLoader::loadImagesAndView(ContextLoading& context, Vulkan::Conte
 
             // Mandatory attribute
             bool existing;
-            const uint32_t id = getIdentifiant(imageNode, u8"Image", _images, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(imageNode, u8"Image", _images, context, existing);
 
             Vulkan::Image::Size size;
             VkFormat format = VK_FORMAT_UNDEFINED;
             VkImageType type = VK_IMAGE_TYPE_MAX_ENUM;
-            VkImageUsageFlags usage = readValue(imageNode, u8"usage", imageUsages , true, context);
+            VkImageUsageFlags usage = LoaderHelper::readValue(imageNode, u8"usage", imageUsages , true, context);
 
             // Build image from surface/swapchain size/format
             if (imageNode->hasAttribute("fromSurfaceId"))
             {
-                const uint32_t idSC = getLinkedIdentifiant(imageNode, u8"fromSurfaceId", _surfaces, context);
+                const uint32_t idSC = LoaderHelper::getLinkedIdentifiant(imageNode, u8"fromSurfaceId", _surfaces, context);
 
                 auto surface = _surfaces[idSC].lock();
                 const auto& config = surface->getFormat().getConfiguration();
@@ -1092,7 +503,7 @@ void Engine3DXMLLoader::loadImagesAndView(ContextLoading& context, Vulkan::Conte
             {
                 const auto& vrPlatform = context._engine.getVRPlatform();
                 MOUCA_ASSERT(!vrPlatform.isNull());
-                //const uint32_t idSC = getLinkedIdentifiant(imageNode, u8"fromVRId", _surfaces, context);
+                //const uint32_t idSC = LoaderHelper::getLinkedIdentifiant(imageNode, u8"fromVRId", _surfaces, context);
 
 //                 auto surface = _surfaces[idSC].lock();
 //                 const auto& config = surface->getFormat().getConfiguration();
@@ -1108,7 +519,7 @@ void Engine3DXMLLoader::loadImagesAndView(ContextLoading& context, Vulkan::Conte
             }
             else if (imageNode->hasAttribute("external"))
             {
-                const uint32_t idSC = getLinkedIdentifiant(imageNode, u8"external", _cpuImages, context);
+                const uint32_t idSC = LoaderHelper::getLinkedIdentifiant(imageNode, u8"external", _cpuImages, context);
                 auto image = _cpuImages[idSC].lock();
 
                 size._extent =
@@ -1152,15 +563,15 @@ void Engine3DXMLLoader::loadImagesAndView(ContextLoading& context, Vulkan::Conte
 
                 // Extract data
                 auto resultExt = context._parser.searchNodeFrom(*context._globalData, u8"Data", u8"name", name.substr(1));
-                readData(resultExt, size._extent);
+                LoaderHelper::readData(resultExt, size._extent);
             }
             if (imageNode->hasAttribute(u8"format") || format == VK_FORMAT_UNDEFINED)
             {
-                format = readValue(imageNode, u8"format", formats, false, context);
+                format = LoaderHelper::readValue(imageNode, u8"format", formats, false, context);
             }
             if (imageNode->hasAttribute(u8"imageType") || type == VK_IMAGE_TYPE_MAX_ENUM)
             {
-                type = readValue(imageNode, u8"imageType", imageTypes, false, context);
+                type = LoaderHelper::readValue(imageNode, u8"imageType", imageTypes, false, context);
             }
             
             MOUCA_ASSERT(format != VK_FORMAT_UNDEFINED);   // DEV Issue: Need a valid format.
@@ -1169,12 +580,12 @@ void Engine3DXMLLoader::loadImagesAndView(ContextLoading& context, Vulkan::Conte
             auto image = std::make_shared<Vulkan::Image>();
             image->initialize(device->getDevice(),
                               size, type, format,
-                              readValue(imageNode, u8"samples",       samples, false, context),
-                              readValue(imageNode, u8"tiling",        tilings, false, context),
+                              LoaderHelper::readValue(imageNode, u8"samples",       samples, false, context),
+                              LoaderHelper::readValue(imageNode, u8"tiling",        tilings, false, context),
                               usage,
-                              readValue(imageNode, u8"sharingMode",   sharingModes, false, context),
-                              readValue(imageNode, u8"initialLayout", imageLayouts, false, context),
-                              readValue(imageNode, u8"memoryProperty", memoryProperties, true, context)
+                              LoaderHelper::readValue(imageNode, u8"sharingMode",   sharingModes, false, context),
+                              LoaderHelper::readValue(imageNode, u8"initialLayout", imageLayouts, false, context),
+                              LoaderHelper::readValue(imageNode, u8"memoryProperty", memoryProperties, true, context)
                              );
             // Register + ownership
             device->insertImage(image);
@@ -1190,21 +601,21 @@ void Engine3DXMLLoader::loadImagesAndView(ContextLoading& context, Vulkan::Conte
                 auto viewNode = allViews->getNode(idView);
 
                 // Mandatory attribute
-                const uint32_t idV = getIdentifiant(viewNode, u8"View", _view, context, existing);
+                const uint32_t idV = LoaderHelper::getIdentifiant(viewNode, u8"View", _view, context, existing);
 
                 // Read parameter
-                const VkImageViewType typeV   = readValue(viewNode, u8"viewType", viewTypes, false, context);
-                const VkFormat        formatV = readValue(viewNode, u8"format",   formats, false, context);
+                const VkImageViewType typeV   = LoaderHelper::readValue(viewNode, u8"viewType", viewTypes, false, context);
+                const VkFormat        formatV = LoaderHelper::readValue(viewNode, u8"format",   formats, false, context);
 
                 const VkComponentMapping mapping
                 {
-                    readValue(viewNode, u8"componentSwizzleRed",   componentSwizzles, false, context),
-                    readValue(viewNode, u8"componentSwizzleGreen", componentSwizzles, false, context),
-                    readValue(viewNode, u8"componentSwizzleBlue",  componentSwizzles, false, context),
-                    readValue(viewNode, u8"componentSwizzleAlpha", componentSwizzles, false, context)
+                    LoaderHelper::readValue(viewNode, u8"componentSwizzleRed",   componentSwizzles, false, context),
+                    LoaderHelper::readValue(viewNode, u8"componentSwizzleGreen", componentSwizzles, false, context),
+                    LoaderHelper::readValue(viewNode, u8"componentSwizzleBlue",  componentSwizzles, false, context),
+                    LoaderHelper::readValue(viewNode, u8"componentSwizzleAlpha", componentSwizzles, false, context)
                 };
                 VkImageSubresourceRange subRessourceRange;
-                subRessourceRange.aspectMask = readValue(viewNode, u8"aspectMask", aspectFlags, true, context);
+                subRessourceRange.aspectMask = LoaderHelper::readValue(viewNode, u8"aspectMask", aspectFlags, true, context);
                 viewNode->getAttribute(u8"baseMipLevel",   subRessourceRange.baseMipLevel);
                 viewNode->getAttribute(u8"levelCount",     subRessourceRange.levelCount);
                 viewNode->getAttribute(u8"baseArrayLayer", subRessourceRange.baseArrayLayer);
@@ -1241,7 +652,7 @@ void Engine3DXMLLoader::loadSamplers(ContextLoading& context, Vulkan::ContextDev
 
             // Mandatory attribute
             bool existing;
-            const uint32_t id = getIdentifiant(samplerNode, u8"Sampler", _samplers, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(samplerNode, u8"Sampler", _samplers, context, existing);
             if (existing)
             {
                 continue;
@@ -1251,7 +662,7 @@ void Engine3DXMLLoader::loadSamplers(ContextLoading& context, Vulkan::ContextDev
             float maxLod = 0.0f;
             if (samplerNode->hasAttribute(u8"imageId"))
             {
-                const uint32_t idI = getLinkedIdentifiant(samplerNode, u8"imageId", _images, context);
+                const uint32_t idI = LoaderHelper::getLinkedIdentifiant(samplerNode, u8"imageId", _images, context);
                 maxLod = static_cast<float>(_images[idI].lock()->getMaxMipLevels());
             }
 
@@ -1272,7 +683,7 @@ void Engine3DXMLLoader::loadSamplers(ContextLoading& context, Vulkan::ContextDev
             if (samplerNode->hasAttribute(u8"compareOp"))
             {
                 compareEnable = true;
-                compareOp = readValue(samplerNode, u8"compareOp", compareOperations, false, context);
+                compareOp = LoaderHelper::readValue(samplerNode, u8"compareOp", compareOperations, false, context);
             }            
             
             //Read anisotropy
@@ -1297,15 +708,15 @@ void Engine3DXMLLoader::loadSamplers(ContextLoading& context, Vulkan::ContextDev
 
             auto sampler = std::make_shared<Vulkan::Sampler>();
             sampler->initialize(device->getDevice(),
-                readValue(samplerNode, u8"magFilter", filters, false, context),
-                readValue(samplerNode, u8"minFilter", filters, false, context),
-                readValue(samplerNode, u8"mipmapMode", samplerMipmaps, false, context),
-                readValue(samplerNode, u8"addressModeU", samplerAdresses, false, context),
-                readValue(samplerNode, u8"addressModeV", samplerAdresses, false, context),
-                readValue(samplerNode, u8"addressModeW", samplerAdresses, false, context),
+                LoaderHelper::readValue(samplerNode, u8"magFilter", filters, false, context),
+                LoaderHelper::readValue(samplerNode, u8"minFilter", filters, false, context),
+                LoaderHelper::readValue(samplerNode, u8"mipmapMode", samplerMipmaps, false, context),
+                LoaderHelper::readValue(samplerNode, u8"addressModeU", samplerAdresses, false, context),
+                LoaderHelper::readValue(samplerNode, u8"addressModeV", samplerAdresses, false, context),
+                LoaderHelper::readValue(samplerNode, u8"addressModeW", samplerAdresses, false, context),
                 mipLodBias, anisotropyEnable, maxAnisotropy, compareEnable, compareOp,
                 minLod, maxLod,
-                readValue(samplerNode, u8"borderColor", borderColors, false, context),
+                LoaderHelper::readValue(samplerNode, u8"borderColor", borderColors, false, context),
                 unnormalizedCoordinates
                 );
 
@@ -1334,17 +745,17 @@ void Engine3DXMLLoader::loadBuffers(ContextLoading& context, Vulkan::ContextDevi
         for (size_t idBuffer = 0; idBuffer < allBuffers->getNbElements(); ++idBuffer)
         {
             auto bufferNode = allBuffers->getNode(idBuffer);
+            auto aPushM = context._parser.autoPushNode(*bufferNode);
 
             // Mandatory attribute
             bool existing;
-            const uint32_t id = getIdentifiant(bufferNode, u8"Buffer", _buffers, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(bufferNode, u8"Buffer", _buffers, context, existing);
             if (existing)
             {
                 continue;
             }
 
-            const auto usage          = readValue(bufferNode, u8"usage", bufferUsages, true, context);
-            const auto memoryProperty = readValue(bufferNode, u8"memoryProperty", memoryProperties, true, context);
+            const auto usage          = LoaderHelper::readValue(bufferNode, u8"usage", bufferUsages, true, context);
             VkDeviceSize size=0;
             if(bufferNode->hasAttribute(u8"size"))
             {
@@ -1352,13 +763,22 @@ void Engine3DXMLLoader::loadBuffers(ContextLoading& context, Vulkan::ContextDevi
             }
             else if(bufferNode->hasAttribute(u8"external"))
             {
-                const uint32_t idE = getLinkedIdentifiant(bufferNode, u8"external", _cpuBuffers, context);
+                const uint32_t idE = LoaderHelper::getLinkedIdentifiant(bufferNode, u8"external", _cpuBuffers, context);
                 size = _cpuBuffers[idE].lock()->getByteSize();
             }
             MOUCA_ASSERT(size > 0);
 
-            auto buffer = std::make_shared<Vulkan::Buffer>();
-            buffer->initialize(device->getDevice(), usage, memoryProperty, size);
+            VkBufferCreateFlags createFlags = 0;
+            if (bufferNode->hasAttribute(u8"create"))
+            {
+                createFlags = LoaderHelper::readValue(bufferNode, u8"create", bufferCreates, true, context);
+            }
+
+            Vulkan::MemoryBufferUPtr memoryBuffer;
+            loadMemoryBuffer(context, deviceWeak, memoryBuffer);
+
+            auto buffer = std::make_shared<Vulkan::Buffer>(std::move(memoryBuffer));
+            buffer->initialize(device->getDevice(), createFlags, usage, size);
             // Register
             device->insertBuffer(buffer);
             _buffers[id] = buffer;
@@ -1368,6 +788,33 @@ void Engine3DXMLLoader::loadBuffers(ContextLoading& context, Vulkan::ContextDevi
 // <Buffers>
 // <Buffer id = "0" usage = "VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT" size = "192" / >
 // < / Buffers>
+
+void Engine3DXMLLoader::loadMemoryBuffer(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak, Vulkan::MemoryBufferUPtr& memoryBuffer)
+{
+    auto result = context._parser.getNode(u8"MemoryBuffer");
+    if (result->getNbElements() > 0)
+    {
+        auto memoryNode = result->getNode(0);
+        const auto memoryProperty = LoaderHelper::readValue(memoryNode, u8"property", memoryProperties, true, context);
+        memoryBuffer = std::make_unique<Vulkan::MemoryBuffer>(memoryProperty);
+    }
+    else
+    {
+        auto resultAllo = context._parser.getNode(u8"MemoryBufferAllocate");
+        if (resultAllo->getNbElements() > 0)
+        {
+            auto memoryNode = resultAllo->getNode(0);
+            const auto memoryProperty = LoaderHelper::readValue(memoryNode, u8"property", memoryProperties, true, context);
+            const auto memoryAllocate = LoaderHelper::readValue(memoryNode, u8"allocate", memoryAllocates, true, context);
+            memoryBuffer = std::make_unique<Vulkan::MemoryBufferAllocate>(memoryProperty, memoryAllocate);
+        }
+        else
+        {
+            MOUCA_THROW_ERROR(u8"Engine3D", u8"UnknownMemoryError");
+        }
+    }
+}
+
 
 void Engine3DXMLLoader::loadGraphicsPipelines(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
@@ -1389,10 +836,10 @@ void Engine3DXMLLoader::loadGraphicsPipelines(ContextLoading& context, Vulkan::C
 
             // Mandatory attribute
             bool existing;
-            const uint32_t id  = getIdentifiant(graphicsPipelineNode, u8"GraphicsPipeline", _graphicsPipelines, context, existing);
+            const uint32_t id  = LoaderHelper::getIdentifiant(graphicsPipelineNode, u8"GraphicsPipeline", _graphicsPipelines, context, existing);
 
-            const uint32_t idR = getLinkedIdentifiant(graphicsPipelineNode, u8"renderPassId", _renderPasses, context);
-            const uint32_t idL = getLinkedIdentifiant(graphicsPipelineNode, u8"pipelineLayoutId", _pipelineLayouts, context);
+            const uint32_t idR = LoaderHelper::getLinkedIdentifiant(graphicsPipelineNode, u8"renderPassId", _renderPasses, context);
+            const uint32_t idL = LoaderHelper::getLinkedIdentifiant(graphicsPipelineNode, u8"pipelineLayoutId", _pipelineLayouts, context);
 
             auto aPushG = context._parser.autoPushNode(*graphicsPipelineNode);
 
@@ -1407,554 +854,6 @@ void Engine3DXMLLoader::loadGraphicsPipelines(ContextLoading& context, Vulkan::C
             deviceWeak.lock()->insertGraphicsPipeline(graphicsPipeline);
             _graphicsPipelines[id] = graphicsPipeline;
         }
-    }
-}
-
-void Engine3DXMLLoader::loadCommandPools(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
-{
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
-
-    // Search CommandBuffer
-    auto result = context._parser.getNode(u8"CommandPools");
-    if (result->getNbElements() > 0)
-    {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
-        auto device = deviceWeak.lock();
-
-        auto aPush = context._parser.autoPushNode(*result->getNode(0));
-        // Parsing all images
-        auto allCommandPools = context._parser.getNode(u8"CommandPool");
-        for (size_t idPool = 0; idPool < allCommandPools->getNbElements(); ++idPool)
-        {
-            auto poolNode = allCommandPools->getNode(idPool);
-
-            // Mandatory attribute
-            bool existing;
-            const uint32_t id = getIdentifiant(poolNode, u8"CommandPool", _commandPools, context, existing);
-            if (existing)
-            {
-                continue;
-            }
-
-            int idQueue = 0;
-            if (poolNode->hasAttribute(u8"families"))
-            {
-                Core::String families;
-                poolNode->getAttribute(u8"families", families);
-                if (families == u8"graphic")
-                {
-                    idQueue = device->getDevice().getQueueFamilyGraphicId();
-                }   
-                else if (families == u8"compute")
-                {
-                    idQueue = device->getDevice().getQueueFamilyComputeId();
-                }
-                else if (families == u8"transfer")
-                {
-                    idQueue = device->getDevice().getQueueFamilyTransferId();
-                }
-                else
-                {
-                    MOUCA_THROW_ERROR_2(u8"Engine3D", u8"UnknownFamiliesError", context.getFileName(), families);
-                }   
-            }
-            else if (poolNode->hasAttribute(u8"queueId"))
-            {
-                poolNode->getAttribute(u8"queueId", idQueue);
-            }
-
-            VkCommandPoolCreateFlags flags = 0;
-            if (poolNode->hasAttribute(u8"flags"))
-            {
-                flags = readValue(poolNode, u8"flags", poolCreateFlags, true, context);
-            }
-
-            // Build
-            auto pool = std::make_shared<Vulkan::CommandPool>();
-            pool->initialize(device->getDevice(), idQueue, flags);
-
-            // Register
-            device->insertCommandPool(pool);
-            _commandPools[id] = pool;
-        }
-    }
-}
-
-void Engine3DXMLLoader::loadCommandsGroup(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
-{
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
-
-    // Search CommandBuffer
-    auto result = context._parser.getNode(u8"CommandsGroups");
-    if (result->getNbElements() > 0)
-    {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
-        auto device = deviceWeak.lock();
-
-        auto aPush = context._parser.autoPushNode(*result->getNode(0));
-
-        // Parsing all images
-        auto allCommandsGroup = context._parser.getNode(u8"CommandsGroup");
-        for (size_t idGroup = 0; idGroup < allCommandsGroup->getNbElements(); ++idGroup)
-        {
-            auto groupNode = allCommandsGroup->getNode(idGroup);
-
-            bool existing;
-            const uint32_t id = getIdentifiant(groupNode, u8"CommandsGroup", _commandsGroup, context, existing);
-            if (existing)
-            {
-                continue;
-            }
-
-            // Load commands
-            auto allCommands = std::make_unique<Vulkan::Commands>();
-            {
-                // Enter to node each time to parse properly
-                auto aPushC = context._parser.autoPushNode(*groupNode);
-
-                // Build command for specific framebuffer
-                loadCommands(context, deviceWeak, VkExtent2D(), *allCommands.get());
-            }
-
-            // Register
-            _commandsGroup[id] = std::move(allCommands);
-        }
-    }
-}
-
-void Engine3DXMLLoader::loadCommandBuffers(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
-{
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
-
-    // Search CommandBuffer
-    auto result = context._parser.getNode(u8"CommandBuffers");
-    if (result->getNbElements() > 0)
-    {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
-        auto device = deviceWeak.lock();
-
-        auto aPush = context._parser.autoPushNode(*result->getNode(0));
-
-        // Parsing all images
-        auto allCommandBuffers = context._parser.getNode(u8"CommandBuffer");
-        for (size_t idCommandBuffer = 0; idCommandBuffer < allCommandBuffers->getNbElements(); ++idCommandBuffer)
-        {
-            auto commandBufferNode = allCommandBuffers->getNode(idCommandBuffer);
-
-            const uint32_t poolId = getLinkedIdentifiant(commandBufferNode, u8"commandPoolId", _commandPools, context);
-
-            const VkCommandBufferLevel level = readValue(commandBufferNode, u8"level", commandBufferLevels, false, context);
-
-            VkCommandBufferUsageFlags usage = 0;
-            if (commandBufferNode->hasAttribute(u8"usage"))
-            {
-                usage = readValue(commandBufferNode, u8"usage", commandBufferUsages, true, context);
-            }
-
-            // Special command buffer for surface
-            if (commandBufferNode->hasAttribute("surfaceId"))
-            {
-                const uint32_t surfaceId       = getLinkedIdentifiant(commandBufferNode, u8"surfaceId", _surfaces, context);
-                auto surface = _surfaces[surfaceId].lock();
-                MOUCA_ASSERT(surface->getSwapChain().getImages().size() == surface->getFrameBuffer().size());
-
-                // Load commands
-                Vulkan::Commands allCommands;
-                {
-                    // Enter to node each time to parse properly
-                    auto aPushC = context._parser.autoPushNode(*commandBufferNode);
-
-                    // Build command for specific framebuffer
-                    loadCommands(context, deviceWeak, surface->getFormat().getConfiguration()._extent, allCommands);
-                }
-
-                // Create command buffer for surface
-                surface->createCommandBuffer(std::move(allCommands), _commandPools[poolId].lock(), level, usage);
-            }
-            else
-            {
-                bool existing;
-                const uint32_t id = getIdentifiant(commandBufferNode, u8"CommandBuffer", _commandBuffers, context, existing);
-                if (existing)
-                {
-                    continue;
-                }
-
-                // Enter to node each time to parse properly
-                auto aPushC = context._parser.autoPushNode(*commandBufferNode);
-
-                // Build command
-                Vulkan::Commands allCommands;
-                loadCommands(context, deviceWeak, VkExtent2D(), allCommands);
-
-                // Build new CommandBuffer
-                auto commandBuffer = std::make_shared<Vulkan::CommandBuffer>();
-                commandBuffer->initialize(device->getDevice(), _commandPools[poolId].lock(), level, usage);
-                commandBuffer->registerCommands(std::move(allCommands));
-                commandBuffer->execute();
-
-                deviceWeak.lock()->insertCommandBuffer(commandBuffer);
-                _commandBuffers[id] = commandBuffer;
-            }
-        }
-    }
-}
-
-void Engine3DXMLLoader::loadCommands(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak, const VkExtent2D& resolution, std::vector<Vulkan::CommandUPtr>& commands, const Core::String& nodeName)
-{
-    // Parsing all commands
-    auto allCommands = context._parser.getNode(nodeName);
-    for (size_t idCommand = 0; idCommand < allCommands->getNbElements(); ++idCommand)
-    {
-        auto commandNode = allCommands->getNode(idCommand);
-
-        Core::String type;
-        commandNode->getAttribute(u8"type", type);
-
-        // Build command
-        Vulkan::CommandUPtr command;        
-        if(type == u8"viewport")
-        {
-            // Build default viewport
-            VkViewport viewport
-            {
-                0.0f, 0.0f,
-                static_cast<float>(resolution.width), static_cast<float>(resolution.height),
-                0.0f, 1.0f
-            };
-
-            if(commandNode->hasAttribute(u8"x"))        { commandNode->getAttribute(u8"x",        viewport.x); }
-            if(commandNode->hasAttribute(u8"y"))        { commandNode->getAttribute(u8"y",        viewport.y); }
-            if(commandNode->hasAttribute(u8"width"))    { readAttribute(commandNode, u8"width",  viewport.width, context);  }
-            if(commandNode->hasAttribute(u8"height"))   { readAttribute(commandNode, u8"height", viewport.height, context); }
-            if(commandNode->hasAttribute(u8"minDepth")) { commandNode->getAttribute(u8"minDepth", viewport.minDepth); }
-            if(commandNode->hasAttribute(u8"maxDepth")) { commandNode->getAttribute(u8"maxDepth", viewport.maxDepth); }
-            MOUCA_ASSERT(viewport.width != 0 && viewport.height != 0);
-            
-            // Build command
-            command = std::make_unique<Vulkan::CommandViewport>(viewport);
-        }
-        else if(type == u8"scissor")
-        {
-            // Build default rect
-            VkRect2D rect{ {0, 0}, resolution };
-            
-            if(commandNode->hasAttribute(u8"x"))      { commandNode->getAttribute(u8"x",      rect.offset.x); }
-            if(commandNode->hasAttribute(u8"y"))      { commandNode->getAttribute(u8"y",      rect.offset.y); }
-            if(commandNode->hasAttribute(u8"width"))  { readAttribute(commandNode, u8"width",  rect.extent.width, context);  }
-            if(commandNode->hasAttribute(u8"height")) { readAttribute(commandNode, u8"height", rect.extent.height, context); }
-
-            MOUCA_ASSERT(rect.extent.width > 0 && rect.extent.height > 0);
-            // Build command
-            command = std::make_unique<Vulkan::CommandScissor>(rect);
-        }
-        else if(type == u8"beginRenderPass")
-        {
-            const uint32_t renderPassId = getLinkedIdentifiant(commandNode, u8"renderPassId", _renderPasses, context);
-
-            // Get specified frameBuffer or use transmit (only for swapchain)
-            VkRect2D renderArea{ {0,0}, resolution };
-            std::vector<Vulkan::FrameBufferWPtr> frameBuffers;
-            if (commandNode->hasAttribute(u8"frameBufferId"))
-            {
-                const uint32_t idF = getLinkedIdentifiant(commandNode, u8"frameBufferId", _frameBuffers, context);
-                frameBuffers.emplace_back(_frameBuffers[idF]);
-
-                // Use by default framebuffer extent
-                renderArea.extent = _frameBuffers[idF].lock()->getResolution();
-            }
-            else if (commandNode->hasAttribute(u8"surfaceId"))
-            {
-                const uint32_t idS = getLinkedIdentifiant(commandNode, u8"surfaceId", _surfaces, context);
-                const auto& fbs = _surfaces[idS].lock()->getFrameBuffer();
-                frameBuffers.resize(fbs.size());
-                std::copy(fbs.cbegin(), fbs.cend(), frameBuffers.begin());
-            }
-
-            MOUCA_ASSERT(renderArea.extent.width > 0 && renderArea.extent.height > 0);
-
-            if(commandNode->hasAttribute(u8"x"))      { commandNode->getAttribute(u8"x",      renderArea.offset.x); }
-            if(commandNode->hasAttribute(u8"y"))      { commandNode->getAttribute(u8"y",      renderArea.offset.y); }
-            if(commandNode->hasAttribute(u8"width"))  { commandNode->getAttribute(u8"width",  renderArea.extent.width); }
-            if(commandNode->hasAttribute(u8"height")) { commandNode->getAttribute(u8"height", renderArea.extent.height); }
-            const auto subpassContent = readValue(commandNode, u8"subpassContent", subpassContents, false, context);
-            
-            // Read clear
-            auto aPushC = context._parser.autoPushNode(*commandNode);
-
-            auto allCleanValue = context._parser.getNode(u8"CleanValue");
-
-            std::vector<VkClearValue> clearColors(allCleanValue->getNbElements());
-            auto itClean = clearColors.begin();
-            for(size_t idCleanValue = 0; idCleanValue < allCleanValue->getNbElements(); ++idCleanValue)
-            {
-                auto cleanValueNode = allCleanValue->getNode(idCleanValue);
-
-                bool isColor = cleanValueNode->hasAttribute(u8"type") || cleanValueNode->hasAttribute(u8"colorR") || cleanValueNode->hasAttribute(u8"colorG") || cleanValueNode->hasAttribute(u8"colorB") || cleanValueNode->hasAttribute(u8"colorA");
-                bool isDS    = cleanValueNode->hasAttribute(u8"depth") || cleanValueNode->hasAttribute(u8"stencil");
-                // Check validity
-                if(!(isColor ^ isDS))
-                {
-                    MOUCA_THROW_ERROR_1(u8"Engine3D", u8"XMLCleanValueMixError", context.getFileName());
-                }
-
-                if(isColor)
-                {
-                    Core::String dataType;
-                    cleanValueNode->getAttribute(u8"type", dataType);
-
-                    if(dataType==u8"float")
-                    {
-                        cleanValueNode->getAttribute(u8"colorR", itClean->color.float32[0]);
-                        cleanValueNode->getAttribute(u8"colorG", itClean->color.float32[1]);
-                        cleanValueNode->getAttribute(u8"colorB", itClean->color.float32[2]);
-                        cleanValueNode->getAttribute(u8"colorA", itClean->color.float32[3]);
-                    }
-                    else if(dataType==u8"int")
-                    {
-                        cleanValueNode->getAttribute(u8"colorR", itClean->color.int32[0]);
-                        cleanValueNode->getAttribute(u8"colorG", itClean->color.int32[1]);
-                        cleanValueNode->getAttribute(u8"colorB", itClean->color.int32[2]);
-                        cleanValueNode->getAttribute(u8"colorA", itClean->color.int32[3]);
-                    }
-                    else if(dataType==u8"uint")
-                    {
-                        cleanValueNode->getAttribute(u8"colorR", itClean->color.uint32[0]);
-                        cleanValueNode->getAttribute(u8"colorG", itClean->color.uint32[1]);
-                        cleanValueNode->getAttribute(u8"colorB", itClean->color.uint32[2]);
-                        cleanValueNode->getAttribute(u8"colorA", itClean->color.uint32[3]);
-                    }
-                    else
-                    {
-                        MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLCleanValueTypeError", context.getFileName(), dataType);
-                    }
-                }
-                else
-                {
-                    cleanValueNode->getAttribute(u8"depth",   itClean->depthStencil.depth);
-                    cleanValueNode->getAttribute(u8"stencil", itClean->depthStencil.stencil);
-                }
-
-                ++itClean;
-            }
-
-            // Build command
-            if (frameBuffers.size() > 1)
-            {
-                command = std::make_unique<Vulkan::CommandBeginRenderPassSurface>(*_renderPasses[renderPassId].lock(), std::move(frameBuffers), renderArea, std::move(clearColors), subpassContent);
-            }
-            else
-            {
-                command = std::make_unique<Vulkan::CommandBeginRenderPass>(*_renderPasses[renderPassId].lock(), frameBuffers.front(), renderArea, std::move(clearColors), subpassContent);
-            }
-        }
-        else if(type == u8"endRenderPass")
-        {
-            // Build command
-            command = std::make_unique<Vulkan::CommandEndRenderPass>();
-        }
-        else if(type == u8"graphicsPipeline")
-        {
-            const uint32_t graphicsPipelineId = getLinkedIdentifiant(commandNode, u8"graphicsPipelineId", _graphicsPipelines, context);
-            const auto       bindPoint          = readValue(commandNode, u8"bindPoint", bindPoints, false, context);
-            command = std::make_unique<Vulkan::CommandPipeline>(*_graphicsPipelines[graphicsPipelineId].lock(), bindPoint);
-        }
-        else if (type == u8"draw")
-        {
-            uint32_t vertexCount;
-            uint32_t instanceCount;
-            uint32_t firstVertex;
-            uint32_t firstInstance;
-            commandNode->getAttribute(u8"vertexCount",   vertexCount);
-            commandNode->getAttribute(u8"instanceCount", instanceCount);
-            commandNode->getAttribute(u8"firstVertex",   firstVertex);
-            commandNode->getAttribute(u8"firstInstance", firstInstance);
-            command = std::make_unique<Vulkan::CommandDraw>(vertexCount, instanceCount, firstVertex, firstInstance);
-        }
-        else if (type == u8"bindVertexBuffers")
-        {
-            uint32_t firstBinding;
-            uint32_t bindingCount;
-            commandNode->getAttribute(u8"firstBinding",  firstBinding);
-            commandNode->getAttribute(u8"bindingCount",  bindingCount);
-
-            // Read clear
-            auto aPushB = context._parser.autoPushNode(*commandNode);
-
-            auto allBuffers = context._parser.getNode(u8"Buffer");
-
-            std::vector<Vulkan::BufferWPtr> buffers;
-            buffers.reserve(allBuffers->getNbElements());
-            std::vector<VkDeviceSize> offsets;
-            offsets.reserve(allBuffers->getNbElements());
-            
-            for (size_t idBuffer = 0; idBuffer < allBuffers->getNbElements(); ++idBuffer)
-            {
-                auto bufferNode = allBuffers->getNode(idBuffer);
-                const uint32_t idB = getLinkedIdentifiant(bufferNode, u8"bufferId", _buffers, context);
-                VkDeviceSize offset;
-                bufferNode->getAttribute(u8"offset", offset);
-
-                buffers.emplace_back(_buffers[idB]);
-                offsets.emplace_back(offset);
-            }
-            command = std::make_unique<Vulkan::CommandBindVertexBuffer>(firstBinding, bindingCount, std::move(buffers), std::move(offsets));
-        }
-        else if (type == u8"bindIndexBuffers")
-        {
-            const uint32_t idB = getLinkedIdentifiant(commandNode, u8"bufferId", _buffers, context);
-            VkDeviceSize offset;
-            commandNode->getAttribute(u8"offset", offset);
-            VkIndexType indexType = readValue(commandNode, u8"indexType", indexTypes, false, context);
-
-            command = std::make_unique<Vulkan::CommandBindIndexBuffer>(_buffers[idB], offset, indexType);
-        }
-        else if (type == u8"drawIndexed")
-        {
-            uint32_t indexCount;
-            if (commandNode->hasAttribute(u8"bufferId"))
-            {
-                uint32_t idB = getLinkedIdentifiant(commandNode, u8"bufferId", _cpuBuffers, context);
-                indexCount = static_cast<uint32_t>(_cpuBuffers[idB].lock()->getNbElements() * 3);
-            }
-            else
-            {
-                commandNode->getAttribute(u8"indexCount", indexCount);
-            }
-            uint32_t instanceCount;
-            commandNode->getAttribute(u8"instanceCount", instanceCount);
-            uint32_t firstIndex;
-            commandNode->getAttribute(u8"firstIndex", firstIndex);
-            int32_t  vertexOffset;
-            commandNode->getAttribute(u8"vertexOffset", vertexOffset);
-            uint32_t firstInstance;
-            commandNode->getAttribute(u8"firstInstance", firstInstance);
-
-            command = std::make_unique<Vulkan::CommandDrawIndexed>(indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
-        }
-        else if (type == u8"bindDescriptorSets")
-        {
-            const uint32_t idP       = getLinkedIdentifiant(commandNode, u8"pipelineLayoutId", _pipelineLayouts, context);
-            const auto       bindPoint = readValue(commandNode, u8"bindPoint", bindPoints, false, context);
-            uint32_t firstSet;
-            commandNode->getAttribute(u8"firstSet", firstSet);
-            const uint32_t idS       = getLinkedIdentifiant(commandNode, u8"descriptorSetId", _descriptorSets, context);
-
-            auto aPushB = context._parser.autoPushNode(*commandNode);
-                       
-            // Read Dynamic Offset
-            auto allDynamicOffsets = context._parser.getNode(u8"DynamicOffset");
-            std::vector<uint32_t> dynamicOffsets;
-            dynamicOffsets.reserve(allDynamicOffsets->getNbElements());
-
-            for (size_t idDynamicOffset = 0; idDynamicOffset < allDynamicOffsets->getNbElements(); ++idDynamicOffset)
-            {
-                auto dynamicOffsetNode = allDynamicOffsets->getNode(idDynamicOffset);
-                uint32_t offset;
-                dynamicOffsetNode->getAttribute(u8"offset", offset);
-
-                dynamicOffsets.emplace_back(offset);
-            }
-            command = std::make_unique<Vulkan::CommandBindDescriptorSets>(*_pipelineLayouts[idP].lock(), bindPoint, firstSet, _descriptorSets[idS].lock()->getDescriptorSets(), std::move(dynamicOffsets));
-        }
-        else if (type == u8"pipelineBarrier")
-        {
-            const auto srcStage   = readValue(commandNode, u8"srcStage",        pipelineStageFlags, true, context);
-            const auto dstStage   = readValue(commandNode, u8"dstStage",        pipelineStageFlags, true, context);
-            const auto dependency = readValue(commandNode, u8"dependencyFlags", dependencyFlags,    true, context);
-         
-            auto aPushP = context._parser.autoPushNode(*commandNode);
-
-            // Read image memories
-            auto allImageMemories = context._parser.getNode(u8"DynamicOffset");
-            Vulkan::CommandPipelineBarrier::ImageMemoryBarriers imageBarriers;
-            imageBarriers.reserve(allImageMemories->getNbElements());
-
-            for (size_t idImageMemory = 0; idImageMemory < allImageMemories->getNbElements(); ++idImageMemory)
-            {
-                auto imageMemoryNode = allImageMemories->getNode(idImageMemory);
-
-                const uint32_t idI = getLinkedIdentifiant(imageMemoryNode, u8"imageId", _images, context);
-
-                VkImageMemoryBarrier barrier
-                {
-                    VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-                    nullptr,
-                    readValue(imageMemoryNode, u8"srcAccessMask", accessFlags, true, context),
-                    readValue(imageMemoryNode, u8"dstAccessMask", accessFlags, true, context),
-                    readValue(imageMemoryNode, u8"oldLayout",     imageLayouts, false, context),
-                    readValue(imageMemoryNode, u8"newLayout",     imageLayouts, false, context),
-                    0, 0,
-                    _images[idI].lock()->getImage(),
-                    { readValue(imageMemoryNode, u8"aspectMask", aspectFlags, true, context)},
-                };
-
-                imageMemoryNode->getAttribute(u8"srcQueueFamilyIndex", barrier.srcQueueFamilyIndex);
-                imageMemoryNode->getAttribute(u8"dstQueueFamilyIndex", barrier.dstQueueFamilyIndex);
-                imageMemoryNode->getAttribute(u8"baseMipLevel",        barrier.subresourceRange.baseMipLevel);
-                imageMemoryNode->getAttribute(u8"levelCount",          barrier.subresourceRange.levelCount);
-                imageMemoryNode->getAttribute(u8"baseArrayLayer",      barrier.subresourceRange.baseArrayLayer);
-                imageMemoryNode->getAttribute(u8"layerCount",          barrier.subresourceRange.layerCount);
-
-                imageBarriers.emplace_back(barrier);
-            }
-
-            Vulkan::CommandPipelineBarrier::MemoryBarriers memoryBarriers;
-            Vulkan::CommandPipelineBarrier::BufferMemoryBarriers bufferMemoryBarriers;
-
-            command = std::make_unique<Vulkan::CommandPipelineBarrier>(srcStage, dstStage, dependency, std::move(memoryBarriers), std::move(bufferMemoryBarriers), std::move(imageBarriers));
-        }
-        else if (type == u8"pushConstants")
-        {
-            const uint32_t idL           = getLinkedIdentifiant(commandNode, u8"pipelineLayoutId", _pipelineLayouts, context);
-            const VkShaderStageFlags stage = readValue(commandNode, u8"stage", shaderStages, true, context);
-            const uint32_t idB           = getLinkedIdentifiant(commandNode, u8"external", _cpuBuffers, context);
-            const auto& buffer             = _cpuBuffers[idB].lock();
-
-            command = std::make_unique<Vulkan::CommandPushConstants>(*_pipelineLayouts[idL].lock(), stage, static_cast<uint32_t>(buffer->getByteSize()), buffer->getData());
-        }
-        else if (type == u8"container")
-        {
-            bool existing;
-            const uint32_t id = getIdentifiant(commandNode, nodeName, _commandLinks, context, existing);
-            if (existing)
-            {
-                continue;
-            }
-
-            command = std::make_unique<Vulkan::CommandContainer>();
-            _commandLinks[id] = command.get(); // Keep pointer (badly because can be delete -> shared/weak ?)
-        }
-        else if (type == u8"switch")
-        {
-            bool existing;
-            const uint32_t id = getIdentifiant(commandNode, nodeName, _commandLinks, context, existing);
-            if (existing)
-            {
-                continue;
-            }
-            auto commandSwitch = std::make_unique<Vulkan::CommandSwitch>();
-            _commandLinks[id] = commandSwitch.get(); // Keep pointer (badly because can be delete -> shared/weak ?)
-
-            // Load sub-commands
-            {
-                auto aPush = context._parser.autoPushNode(*commandNode);
-
-                std::vector<Vulkan::CommandUPtr> subCommands;
-                loadCommands(context, deviceWeak, resolution, subCommands, Core::String("Sub"+nodeName));
-
-                commandSwitch->transfer(std::move(subCommands));
-            }
-
-            command = std::move(commandSwitch);
-        }
-        else
-        {
-            MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLUnknownCommandError", context.getFileName(), type);
-        }
-
-        // Transfer to vector
-        commands.emplace_back(std::move(command));
     }
 }
 
@@ -1980,7 +879,7 @@ void Engine3DXMLLoader::loadQueueSequences(ContextLoading& context, Vulkan::Cont
 
             // Mandatory attribute
             bool existing;
-            const uint32_t id = getIdentifiant(queueSequenceNode, u8"View", _queueSequences, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(queueSequenceNode, u8"View", _queueSequences, context, existing);
 
             auto aPushQ = context._parser.autoPushNode(*queueSequenceNode);
 
@@ -2021,18 +920,18 @@ void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDe
             // Read optional data
             if( sequenceNode->hasAttribute(u8"fenceId") )
             {
-                const uint32_t idF = getLinkedIdentifiant(sequenceNode, u8"fenceId", _fences, context);
+                const uint32_t idF = LoaderHelper::getLinkedIdentifiant(sequenceNode, u8"fenceId", _fences, context);
                 fence = _fences[idF];
             }
             if(sequenceNode->hasAttribute(u8"timeout")) { sequenceNode->getAttribute(u8"timeout", timeout); }
             if(sequenceNode->hasAttribute(u8"semaphoreId"))
             {
-                const uint32_t idSem = getLinkedIdentifiant(sequenceNode, u8"semaphoreId", _semaphores, context);
+                const uint32_t idSem = LoaderHelper::getLinkedIdentifiant(sequenceNode, u8"semaphoreId", _semaphores, context);
                 semaphore = _semaphores[idSem];
             }
 
             // Build Sequence
-            const uint32_t idS = getLinkedIdentifiant(sequenceNode, u8"surfaceId", _surfaces, context);
+            const uint32_t idS = LoaderHelper::getLinkedIdentifiant(sequenceNode, u8"surfaceId", _surfaces, context);
             queueSequence->emplace_back(std::make_shared<Vulkan::SequenceAcquire>(_surfaces[idS].lock()->getEditSwapChain(), semaphore, fence, timeout));
         }
         else if (type == u8"waitFence")
@@ -2052,7 +951,7 @@ void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDe
             for (size_t idFence = 0; idFence < allFences->getNbElements(); ++idFence)
             {
                 auto fenceNode = allFences->getNode(idFence);
-                const uint32_t idF = getLinkedIdentifiant(fenceNode, u8"fenceId", _fences, context);
+                const uint32_t idF = LoaderHelper::getLinkedIdentifiant(fenceNode, u8"fenceId", _fences, context);
                 fences.emplace_back(_fences[idF]);
             }
             if (fences.empty())
@@ -2072,7 +971,7 @@ void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDe
             for (size_t idFence = 0; idFence < allFences->getNbElements(); ++idFence)
             {
                 auto fenceNode = allFences->getNode(idFence);
-                const uint32_t idF = getLinkedIdentifiant(fenceNode, u8"fenceId", _fences, context);
+                const uint32_t idF = LoaderHelper::getLinkedIdentifiant(fenceNode, u8"fenceId", _fences, context);
                 fences.emplace_back(_fences[idF]);
             }
             if (fences.empty())
@@ -2088,7 +987,7 @@ void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDe
             Vulkan::FenceWPtr fence;
             if (sequenceNode->hasAttribute(u8"fenceId"))
             {
-                const uint32_t idF = getLinkedIdentifiant(sequenceNode, u8"fenceId", _fences, context);
+                const uint32_t idF = LoaderHelper::getLinkedIdentifiant(sequenceNode, u8"fenceId", _fences, context);
                 fence = _fences[idF];
             }
 
@@ -2112,7 +1011,7 @@ void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDe
             sequenceNode->getAttribute(u8"eye", eye);
             const bool isLeftEye = (eye == u8"left");
 
-            const uint32_t idI = getLinkedIdentifiant(sequenceNode, u8"imageId", _images, context);
+            const uint32_t idI = LoaderHelper::getLinkedIdentifiant(sequenceNode, u8"imageId", _images, context);
             auto image = _images[idI].lock();
 
             // Build Sequence
@@ -2124,7 +1023,7 @@ void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDe
             Vulkan::FenceWPtr fence;
             if (sequenceNode->hasAttribute(u8"fenceId"))
             {
-                const uint32_t idF = getLinkedIdentifiant(sequenceNode, u8"fenceId", _fences, context);
+                const uint32_t idF = LoaderHelper::getLinkedIdentifiant(sequenceNode, u8"fenceId", _fences, context);
                 fence = _fences[idF];
             }
 
@@ -2140,7 +1039,7 @@ void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDe
                 auto swapChainNode = allSwapchains->getNode(idSwapchain);
 
                 // Read info
-                const uint32_t idS = getLinkedIdentifiant(swapChainNode, u8"surfaceId", _surfaces, context);
+                const uint32_t idS = LoaderHelper::getLinkedIdentifiant(swapChainNode, u8"surfaceId", _surfaces, context);
                 swapChains.emplace_back(_surfaces[idS].lock()->getEditSwapChain());
             }
 
@@ -2155,7 +1054,7 @@ void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDe
             {
                 auto semaphoreNode = allSemaphores->getNode(idSemaphore);
                 // Read info
-                const uint32_t idSem = getLinkedIdentifiant(semaphoreNode, u8"semaphoreId", _semaphores, context);
+                const uint32_t idSem = LoaderHelper::getLinkedIdentifiant(semaphoreNode, u8"semaphoreId", _semaphores, context);
                 // Store
                 semaphores.emplace_back(_semaphores[idSem]);
             }
@@ -2186,8 +1085,8 @@ void Engine3DXMLLoader::loadSubmitInfo(ContextLoading& context, Vulkan::ContextD
         auto waitSyncNode = allWaitSyncs->getNode(idWaitSync);
 
         // Read info
-        const uint32_t idSem  = getLinkedIdentifiant(waitSyncNode, u8"semaphoreId", _semaphores, context);
-        const auto pipelineFlag = readValue(waitSyncNode, u8"pipelineFlag", pipelineStageFlags, true, context);
+        const uint32_t idSem  = LoaderHelper::getLinkedIdentifiant(waitSyncNode, u8"semaphoreId", _semaphores, context);
+        const auto pipelineFlag = LoaderHelper::readValue(waitSyncNode, u8"pipelineFlag", pipelineStageFlags, true, context);
         // Store
         waitSemaphores.emplace_back(Vulkan::WaitSemaphore(_semaphores[idSem], pipelineFlag));
     }
@@ -2199,7 +1098,7 @@ void Engine3DXMLLoader::loadSubmitInfo(ContextLoading& context, Vulkan::ContextD
         auto signalSyncNode = allSignalSyncs->getNode(idSignalSync);
 
         // Read info
-        const uint32_t idSem  = getLinkedIdentifiant(signalSyncNode, u8"semaphoreId", _semaphores, context);
+        const uint32_t idSem  = LoaderHelper::getLinkedIdentifiant(signalSyncNode, u8"semaphoreId", _semaphores, context);
         // Store
         signalSemaphores.emplace_back(_semaphores[idSem]);
     }
@@ -2213,7 +1112,7 @@ void Engine3DXMLLoader::loadSubmitInfo(ContextLoading& context, Vulkan::ContextD
         if(commandBufferNode->hasAttribute(u8"surfaceId"))
         {
             // Get surface associated
-            const uint32_t idS = getLinkedIdentifiant(commandBufferNode, u8"surfaceId", _surfaces, context);
+            const uint32_t idS = LoaderHelper::getLinkedIdentifiant(commandBufferNode, u8"surfaceId", _surfaces, context);
             
             // Prepare data
             auto surface = _surfaces[idS].lock();
@@ -2222,7 +1121,7 @@ void Engine3DXMLLoader::loadSubmitInfo(ContextLoading& context, Vulkan::ContextD
         else
         {
             // Get surface associated
-            const uint32_t idC = getLinkedIdentifiant(commandBufferNode, u8"id", _commandBuffers, context);
+            const uint32_t idC = LoaderHelper::getLinkedIdentifiant(commandBufferNode, u8"id", _commandBuffers, context);
             commandBuffers.emplace_back(_commandBuffers[idC]);
         }
     }
@@ -2233,550 +1132,6 @@ void Engine3DXMLLoader::loadSubmitInfo(ContextLoading& context, Vulkan::ContextD
     //submitInfo->buildSubmitInfo();
 
     submitInfos.emplace_back(std::move(submitInfo));
-}
-
-void loadStencilOp(Engine3DXMLLoader::ContextLoading& context, XML::NodeUPtr node, VkStencilOpState& state)
-{
-    state.failOp      = readValue(node, u8"failOp",      stencilOperations, false, context);
-    state.passOp      = readValue(node, u8"passOp",      stencilOperations, false, context);
-    state.depthFailOp = readValue(node, u8"depthFailOp", stencilOperations, false, context);
-    state.compareOp   = readValue(node, u8"compareOp",   compareOperations, false, context);
-    node->getAttribute(u8"compareMask", state.compareMask);
-    node->getAttribute(u8"writeMask",   state.writeMask);
-    node->getAttribute(u8"reference",   state.reference);
-}
-
-void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan::PipelineStateCreateInfo& info, const uint32_t graphicsPipelineId, const uint32_t renderPassId)
-{
-    uint32_t states = Vulkan::PipelineStateCreateInfo::Uninitialized;
-    
-    // Stages
-    auto stages = context._parser.getNode(u8"Stages");
-    if (stages->getNbElements() > 0)
-    {
-        MOUCA_ASSERT(stages->getNbElements() == 1); //DEV Issue: Need to clean xml !
-        
-        // cppcheck-suppress unreadVariable // false positive
-        auto aPush = context._parser.autoPushNode(*stages->getNode(0));
-
-        // Parsing all Graphics pipeline
-        auto allStages = context._parser.getNode(u8"Stage");
-        for (size_t idStage = 0; idStage < allStages->getNbElements(); ++idStage)
-        {
-            auto stageNode = allStages->getNode(idStage);
-
-            const uint32_t idS = getLinkedIdentifiant(stageNode, u8"shaderModuleId", _shaderModules, context);
-
-            auto aPushShader = context._parser.autoPushNode(*stageNode);
-
-            Vulkan::ShaderSpecialization specialization;
-            auto specializations = context._parser.getNode(u8"Specialization");
-            if (specializations->getNbElements() > 0)
-            {
-                auto specializationNode = specializations->getNode(0);
-                // Read buffer
-                const uint32_t idB = getLinkedIdentifiant(specializationNode, u8"external", _cpuBuffers, context);
-                const auto& buffer   = _cpuBuffers[idB].lock();
-                MOUCA_ASSERT(buffer != nullptr && !buffer->isNull());
-                specialization.addDataInfo(buffer->getData(), buffer->getByteSize());
-
-                auto aPushS = context._parser.autoPushNode(*specializationNode);
-
-                // Add map entry
-                auto allEntries = context._parser.getNode(u8"Entry");
-
-                std::vector<VkSpecializationMapEntry> entries;
-                entries.resize(allEntries->getNbElements());
-                auto itEntry = entries.begin();
-                for (size_t idEntry = 0; idEntry < allEntries->getNbElements(); ++idEntry)
-                {
-                    auto entryNode = allEntries->getNode(idEntry);
-
-                    entryNode->getAttribute(u8"constantID", itEntry->constantID);
-                    entryNode->getAttribute(u8"offset",     itEntry->offset);
-                    entryNode->getAttribute(u8"size",       itEntry->size);
-                    ++itEntry;
-                }
-
-                specialization.setMapEntries(std::move(entries));
-            }
-
-            info.getStages().addShaderModule(_shaderModules[idS], std::move(specialization));
-        }
-    }
-
-    if(info.getStages().getNbShaders() <= 0)
-    {
-        MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLMissingNodeError", context.getFileName(), u8"GraphicsPipeline" , u8"Stages/Stage");
-    }
-
-    // Input Assembly
-    auto inputAssemblies = context._parser.getNode(u8"InputAssembly");
-    if (inputAssemblies->getNbElements() > 0)
-    {
-        MOUCA_ASSERT(inputAssemblies->getNbElements() == 1); //DEV Issue: Need to clean xml !
-        auto inputAssembly = inputAssemblies->getNode(0);
-
-        // Build Input Assembly
-        bool restart;
-        inputAssembly->getAttribute(u8"primitiveRestartEnable", restart);
-
-        auto& state = info.getInputAssembly()._state;
-        state.topology = readValue(inputAssembly, u8"topology", primitiveTopologies, false, context);
-        state.primitiveRestartEnable = restart ? VK_TRUE : VK_FALSE;
-            
-        // Activate state
-        states |= Vulkan::PipelineStateCreateInfo::InputAssembly;
-    }
-
-    // Vertex Input Assembly
-    auto vertexInput = context._parser.getNode(u8"VertexInput");
-    if (vertexInput->getNbElements() > 0)
-    {
-        MOUCA_ASSERT(vertexInput->getNbElements() == 1); //DEV Issue: Need to clean xml !
-        auto vertexInputNode = vertexInput->getNode(0);
-
-        // cppcheck-suppress unreadVariable // false positive
-        auto pushV = context._parser.autoPushNode(*vertexInputNode);
-
-        // Load binding
-        auto allBindings = context._parser.getNode(u8"BindingDescription");
-        std::vector<VkVertexInputBindingDescription> bindings;
-        bindings.reserve(allBindings->getNbElements());
-        for (size_t idBinding = 0; idBinding < allBindings->getNbElements(); ++idBinding)
-        {
-            auto bindingNode = allBindings->getNode(idBinding);
-
-            VkVertexInputBindingDescription bindingDescription;
-            bindingNode->getAttribute(u8"binding", bindingDescription.binding);
-            bindingDescription.inputRate = readValue(bindingNode, u8"inputRate", vertexInputRates, false, context);
-
-            if (bindingNode->hasAttribute(u8"stride"))
-            {
-                bindingNode->getAttribute(u8"stride", bindingDescription.stride);
-            }
-            else
-            {
-                const uint32_t idM = getLinkedIdentifiant(bindingNode, u8"meshDescriptorId", _cpuMeshDescriptors, context);
-                bindingDescription.stride = static_cast<uint32_t>(_cpuMeshDescriptors[idM].getByteSize());
-            }
-
-            bindings.emplace_back(bindingDescription);
-        }
-        info.getVertexInput().setBindingDescriptions(std::move(bindings));
-        
-        // Load Attributs
-        auto allAttributs = context._parser.getNode(u8"AttributeDescription");
-
-        std::vector<VkVertexInputAttributeDescription> attributs;
-        attributs.reserve(allAttributs->getNbElements());
-        for (size_t idAttribute = 0; idAttribute < allAttributs->getNbElements(); ++idAttribute)
-        {
-            auto attributNode = allAttributs->getNode(idAttribute);
-
-            VkVertexInputAttributeDescription attributDescription;
-            attributNode->getAttribute(u8"binding",  attributDescription.binding);
-            attributNode->getAttribute(u8"location", attributDescription.location);
-            if (attributNode->hasAttribute(u8"offset"))
-            {
-                attributNode->getAttribute(u8"offset", attributDescription.offset);
-                attributDescription.format = readValue(attributNode, u8"format", formats, false, context);
-
-                attributs.emplace_back(attributDescription);
-            }
-            else
-            {
-                // Get descriptor
-                const uint32_t idM = getLinkedIdentifiant(attributNode, u8"meshDescriptorId", _cpuMeshDescriptors, context);
-                const auto& descriptors = _cpuMeshDescriptors[idM].getDescriptors();
-
-                // Reallocate more
-                attributs.reserve(attributs.size() + descriptors.size());
-
-                attributDescription.offset = 0;
-
-                for (const auto& descriptor : descriptors)
-                {
-                    attributDescription.format = Vulkan::PipelineStateCreateInfo::computeDescriptorFormat(descriptor);
-                    
-                    // Add new descriptor
-                    attributs.emplace_back(attributDescription);
-
-                    // Next descriptor
-                    attributDescription.offset += static_cast<uint32_t>(descriptor.getSizeInByte());
-                    attributDescription.location += 1;
-                }
-            }
-        }
-        info.getVertexInput().setAttributeDescriptions(std::move(attributs));
-
-        // Activate state
-        states |= Vulkan::PipelineStateCreateInfo::VertexInput;
-    }
-
-    // Rasterization
-    auto rasterizations = context._parser.getNode(u8"Rasterization");
-    if (rasterizations->getNbElements() > 0)
-    {
-        MOUCA_ASSERT(rasterizations->getNbElements() == 1); //DEV Issue: Need to clean xml !
-        auto rasterization = rasterizations->getNode(0);
-
-        auto& state = info.getRasterizer()._state;
-        state.cullMode    = readValue(rasterization, u8"cullMode",    cullModes,    true,  context);
-        state.polygonMode = readValue(rasterization, u8"polygonMode", polygonModes, false, context);
-        state.frontFace   = readValue(rasterization, u8"frontFace",   frontFaces,   false, context);
-        bool boolean;
-        rasterization->getAttribute(u8"depthClampEnable",         boolean);
-        state.depthClampEnable        = boolean ? VK_TRUE : VK_FALSE;
-        rasterization->getAttribute(u8"rasterizerDiscardEnable",  boolean);
-        state.rasterizerDiscardEnable = boolean ? VK_TRUE : VK_FALSE;
-        rasterization->getAttribute(u8"depthBiasEnable",          boolean);
-        state.depthBiasEnable         = boolean ? VK_TRUE : VK_FALSE;
-        // Depth Bias
-        if(state.depthBiasEnable)
-        {
-            rasterization->getAttribute(u8"depthBiasClamp",          state.depthBiasClamp);
-            rasterization->getAttribute(u8"depthBiasConstantFactor", state.depthBiasConstantFactor);
-            rasterization->getAttribute(u8"depthBiasSlopeFactor",    state.depthBiasSlopeFactor);
-        }
-
-        // Optional
-        if(rasterization->hasAttribute(u8"lineWidth"))
-        {
-            rasterization->getAttribute(u8"lineWidth", state.lineWidth);
-        }
-
-        // Activate state
-        states |= Vulkan::PipelineStateCreateInfo::Rasterization;
-    }
-
-    // Blend
-    auto blends = context._parser.getNode(u8"BlendState");
-    if (blends->getNbElements() > 0)
-    {
-        MOUCA_ASSERT(blends->getNbElements() == 1); //DEV Issue: Need to clean xml !
-        auto blend = blends->getNode(0);
-        
-        auto& state = info.getBlending()._state;
-
-        // Logic Operator
-        bool enable;
-        blend->getAttribute(u8"logicOpEnable", enable);
-        state.logicOpEnable = enable ? VK_TRUE : VK_FALSE;
-        state.logicOp       = VK_LOGIC_OP_CLEAR;
-        if (state.logicOpEnable)
-        {
-            state.logicOp = readValue(blend, u8"logicOp", logicOperators, false, context);
-        }
-        
-        // Blend constant
-        blend->getAttribute(u8"blendConstantsR", state.blendConstants[0]);
-        blend->getAttribute(u8"blendConstantsG", state.blendConstants[1]);
-        blend->getAttribute(u8"blendConstantsB", state.blendConstants[2]);
-        blend->getAttribute(u8"blendConstantsA", state.blendConstants[3]);
-
-        // All attachments: must be equal to RenderPass/subpass/colorAttachment count (See doc)
-        // cppcheck-suppress unreadVariable // false positive
-        auto pushB = context._parser.autoPushNode(*blend);
-        auto allBlends = context._parser.getNode(u8"BlendAttachment");
-        
-        const size_t nbColors = _renderPasses[renderPassId].lock()->getSubPasses()[0].colorAttachmentCount;
-        if( nbColors != allBlends->getNbElements() )
-        {
-            MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLBlendAttachmentSizeError", context.getFileName(), std::to_string(graphicsPipelineId), std::to_string(renderPassId));
-        }
-
-        std::vector<VkPipelineColorBlendAttachmentState> attachments;
-        attachments.reserve(allBlends->getNbElements());
-        for (size_t idBlend = 0; idBlend < allBlends->getNbElements(); ++idBlend)
-        {
-            auto blendAttachmentNode = allBlends->getNode(idBlend);
-            blendAttachmentNode->getAttribute(u8"blendEnable", enable);
-            const VkColorComponentFlags flags = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-            VkPipelineColorBlendAttachmentState attachmentState
-            {
-                static_cast<VkBool32>(enable ? VK_TRUE : VK_FALSE), // VkBool32                 blendEnable
-                VK_BLEND_FACTOR_ZERO,                               // VkBlendFactor            srcColorBlendFactor
-                VK_BLEND_FACTOR_ZERO,                               // VkBlendFactor            dstColorBlendFactor
-                VK_BLEND_OP_ADD,                                    // VkBlendOp                colorBlendOp
-                VK_BLEND_FACTOR_ZERO,                               // VkBlendFactor            srcAlphaBlendFactor
-                VK_BLEND_FACTOR_ZERO,                               // VkBlendFactor            dstAlphaBlendFactor
-                VK_BLEND_OP_ADD,                                    // VkBlendOp                alphaBlendOp
-                flags                                               // VkColorComponentFlags    colorWriteMask
-            };
-            if(attachmentState.blendEnable)
-            {
-                attachmentState.srcColorBlendFactor = readValue(blendAttachmentNode, u8"srcColorBlendFactor", blendFactors, false, context);
-                attachmentState.dstColorBlendFactor = readValue(blendAttachmentNode, u8"dstColorBlendFactor", blendFactors, false, context);
-                attachmentState.colorBlendOp        = readValue(blendAttachmentNode, u8"colorBlendOp",        blendOperations, false, context);
-                attachmentState.srcAlphaBlendFactor = readValue(blendAttachmentNode, u8"srcAlphaBlendFactor", blendFactors, false, context);
-                attachmentState.dstAlphaBlendFactor = readValue(blendAttachmentNode, u8"dstAlphaBlendFactor", blendFactors, false, context);
-                attachmentState.alphaBlendOp        = readValue(blendAttachmentNode, u8"alphaBlendOp",        blendOperations, false, context);
-            }
-
-            attachmentState.colorWriteMask = readValue(blendAttachmentNode, u8"colorWriteMask", colorComponents, true, context);
-
-            attachments.emplace_back(attachmentState);
-        }
-        
-        info.getBlending().setColorBlendAttachments(attachments);
-
-        // Activate state
-        states |= Vulkan::PipelineStateCreateInfo::ColorBlend;
-    }
-
-    // DepthStencil
-    auto depthStencils = context._parser.getNode(u8"DepthStencil");
-    if (depthStencils->getNbElements() > 0)
-    {
-        MOUCA_ASSERT(depthStencils->getNbElements() == 1); //DEV Issue: Need to clean xml !
-        auto depthStencilNode = depthStencils->getNode(0);
-
-        auto& state = info.getDepthStencil()._state;
-        bool enable;
-        depthStencilNode->getAttribute(u8"depthTestEnable", enable);
-        state.depthTestEnable  = enable ? VK_TRUE : VK_FALSE;
-        depthStencilNode->getAttribute(u8"depthWriteEnable", enable);
-        state.depthWriteEnable = enable ? VK_TRUE : VK_FALSE;
-        state.depthCompareOp   = readValue(depthStencilNode, u8"depthCompareOp", compareOperations, false, context);
-
-        // cppcheck-suppress unreadVariable // false positive
-        auto pushD = context._parser.autoPushNode(*depthStencilNode);
-
-        auto stencilFront = context._parser.getNode(u8"StencilFront");
-        auto stencilBack  = context._parser.getNode(u8"StencilBack");
-        if (stencilFront->getNbElements() == 0 && stencilBack->getNbElements() == 0)
-        {
-            state.stencilTestEnable = VK_FALSE;
-        }
-        else
-        {
-            if (stencilFront->getNbElements() != 1 || stencilBack->getNbElements() != 1)
-            {
-                MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLMissingStencilFrontBackError", context.getFileName(), std::to_string(graphicsPipelineId));
-            }
-
-            loadStencilOp(context, stencilFront->getNode(0), state.front);
-            loadStencilOp(context, stencilBack->getNode(0),  state.back);
-        
-            state.stencilTestEnable = VK_TRUE;
-        }
-        
-        auto depthBound  = context._parser.getNode(u8"DepthBounds");
-        if (depthBound->getNbElements() > 0)
-        {
-            MOUCA_ASSERT(depthBound->getNbElements() == 1); //DEV Issue: Need to clean xml !
-            auto depthBoundNode = depthBound->getNode(0);
-
-            state.stencilTestEnable = VK_TRUE;
-
-            depthBoundNode->getAttribute(u8"min", state.minDepthBounds);
-            depthBoundNode->getAttribute(u8"max", state.maxDepthBounds);
-        }
-        else
-        {
-            state.stencilTestEnable = VK_FALSE;
-        }
-
-        // Activate state
-        states |= Vulkan::PipelineStateCreateInfo::DepthStencil;
-    }
-
-    // Dynamic
-    bool dynamicViewport = false;
-    bool dynamicScissor  = false;
-    auto allDynamics = context._parser.getNode(u8"DynamicState");
-    if (allDynamics->getNbElements() > 0)
-    {
-        for (size_t idDynamic = 0; idDynamic < allDynamics->getNbElements(); ++idDynamic)
-        {
-            auto dynamicNode   = allDynamics->getNode(idDynamic);
-            
-            // Read value
-            const auto dynamic = readValue(dynamicNode, u8"state", dynamics, false, context);
-            info.getDynamic().addDynamicState(dynamic);
-
-            dynamicViewport |= (dynamic == VK_DYNAMIC_STATE_VIEWPORT);
-            dynamicScissor  |= (dynamic == VK_DYNAMIC_STATE_SCISSOR);
-        }
-
-        // Activate state
-        states |= Vulkan::PipelineStateCreateInfo::Dynamic;
-    }
-
-    // Viewport
-    auto allViewports = context._parser.getNode(u8"Viewport");
-    if (allViewports->getNbElements() > 0)
-    {
-        MOUCA_TODO("Find best way to make Dynamic<->Viewport/Scissor and manage all cases");
-        if (dynamicViewport && dynamicScissor)
-        {
-            info.getViewport().addDynamicViewport();
-        }
-        else
-        {
-            for (size_t idViewport = 0; idViewport < allViewports->getNbElements(); ++idViewport)
-            {
-                auto viewportNode = allViewports->getNode(idViewport);
-
-                VkViewport viewport{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f };
-                VkRect2D   scissor { {0, 0}, {0, 0} };
-
-                viewportNode->getAttribute(u8"x", viewport.x);
-                viewportNode->getAttribute(u8"y", viewport.y);
-                if (viewportNode->hasAttribute(u8"surfaceId"))
-                {
-                    const uint32_t surfaceId = getLinkedIdentifiant(viewportNode, u8"surfaceId", _surfaces, context);
-                    const VkExtent2D& resolution = _surfaces[surfaceId].lock()->getFormat().getConfiguration()._extent;
-                    viewport.width  = static_cast<float>(resolution.width);
-                    viewport.height = static_cast<float>(resolution.height);
-                    scissor.extent  = resolution;
-                }
-                else if (viewportNode->hasAttribute(u8"imageId"))
-                {
-                    const uint32_t imageId = getLinkedIdentifiant(viewportNode, u8"imageId", _images, context);
-                    const VkExtent3D& imageRes = _images[imageId].lock()->getExtent();
-                    const VkExtent2D resolution = { imageRes.width, imageRes.height };
-                    viewport.width  = static_cast<float>(resolution.width);
-                    viewport.height = static_cast<float>(resolution.height);
-                    scissor.extent = resolution;
-                }
-                else
-                {
-                    viewportNode->getAttribute(u8"width",  viewport.width);
-                    viewportNode->getAttribute(u8"height", viewport.height);
-                }
-                
-                viewportNode->getAttribute(u8"minDepth", viewport.minDepth);
-                viewportNode->getAttribute(u8"maxDepth", viewport.maxDepth);
-
-                viewportNode->getAttribute(u8"scissorX",      scissor.offset.x);
-                viewportNode->getAttribute(u8"scissorY",      scissor.offset.y);
-                if (!viewportNode->hasAttribute(u8"surfaceId") && !viewportNode->hasAttribute(u8"imageId"))
-                {
-                    viewportNode->getAttribute(u8"scissorWidth", scissor.extent.width);
-                    viewportNode->getAttribute(u8"scissorHeight", scissor.extent.height);
-                }
-
-                info.getViewport().addViewport(viewport, scissor);
-            }
-        }
-        
-        // Activate state
-        states |= Vulkan::PipelineStateCreateInfo::Viewport;
-    }
-
-    // Multisample
-    auto multisample = context._parser.getNode(u8"Multisample");
-    if (multisample->getNbElements() > 0)
-    {
-        MOUCA_ASSERT(multisample->getNbElements() == 1); //DEV Issue: Need to clean xml !
-        auto multisampleNode = multisample->getNode(0);
-
-        auto& state = info.getMultisample()._state;
-
-        state.rasterizationSamples = readValue(multisampleNode, u8"rasterizationSamples", samples, false, context);
-        
-        if (multisampleNode->hasAttribute(u8"minSampleShading"))
-        {
-            state.sampleShadingEnable = VK_TRUE;
-            multisampleNode->getAttribute(u8"minSampleShading", state.minSampleShading);
-        }
-        else
-        {
-            state.sampleShadingEnable = VK_FALSE;
-        }
-
-        state.pSampleMask = nullptr;
-        bool enable;
-        multisampleNode->getAttribute(u8"alphaToCoverageEnable", enable);
-        state.alphaToOneEnable = enable ? VK_TRUE : VK_FALSE;
-        multisampleNode->getAttribute(u8"alphaToOneEnable", enable);
-        state.alphaToOneEnable = enable ? VK_TRUE : VK_FALSE;
-
-        // Activate state
-        states |= Vulkan::PipelineStateCreateInfo::Multisample;
-    }
-
-    // Tessellation
-    auto tessellation = context._parser.getNode(u8"Tessellation");
-    if(tessellation->getNbElements() > 0)
-    {
-        MOUCA_ASSERT(tessellation->getNbElements() == 1); //DEV Issue: Need to clean xml !
-        auto tessellationNode = tessellation->getNode(0);
-        
-        // Read data
-        auto& state = info.getTessellation()._state;
-        tessellationNode->getAttribute(u8"patchControlPoints", state.patchControlPoints);
-
-        // Activate state
-        states |= Vulkan::PipelineStateCreateInfo::Tessellation;
-    }
-
-    // Finish creation
-    info.initialize(static_cast<Vulkan::PipelineStateCreateInfo::States>(states));
-}
-
-void Engine3DXMLLoader::loadPipelineLayouts(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
-{
-    // Search Pipeline Layouts
-    auto result = context._parser.getNode(u8"PipelineLayouts");
-    if (result->getNbElements() > 0)
-    {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
-        auto device = deviceWeak.lock();
-
-        // cppcheck-suppress unreadVariable // false positive
-        auto aPush = context._parser.autoPushNode(*result->getNode(0));
-
-        // Parsing all PipelineLayouts
-        auto allPipelineLayouts = context._parser.getNode(u8"PipelineLayout");
-        for (size_t idPipelineLayout = 0; idPipelineLayout < allPipelineLayouts->getNbElements(); ++idPipelineLayout)
-        {
-            auto pipelineLayoutNode = allPipelineLayouts->getNode(idPipelineLayout);
-
-            bool existing;
-            const uint32_t id = getIdentifiant(pipelineLayoutNode, u8"PipelineLayout", _pipelineLayouts, context, existing);
-
-            // Crate PipelineLayout
-            auto pipelineLayout = std::make_shared<Vulkan::PipelineLayout>();
-
-            auto aPushP = context._parser.autoPushNode(*pipelineLayoutNode);
-
-            // Read DescriptorSetLayout
-            auto allDescriptorSetLayouts = context._parser.getNode(u8"DescriptorSetLayout");
-            std::vector<VkDescriptorSetLayout> setLayouts;
-            setLayouts.reserve(allDescriptorSetLayouts->getNbElements());
-            for (size_t idDescriptorSetLayout = 0; idDescriptorSetLayout < allDescriptorSetLayouts->getNbElements(); ++idDescriptorSetLayout)
-            {
-                auto DSLNode = allDescriptorSetLayouts->getNode(idDescriptorSetLayout);
-                const uint32_t idDSL = getLinkedIdentifiant(DSLNode, u8"descriptorSetId", _descriptorSetLayouts, context);
-                // Get Vulkan ID
-                setLayouts.emplace_back(_descriptorSetLayouts[idDSL].lock()->getInstance());
-            }
-
-            // Read PushConstantRange
-            auto allPushConstantRanges = context._parser.getNode(u8"PushConstantRange");
-            for (size_t idPushConstant = 0; idPushConstant < allPushConstantRanges->getNbElements(); ++idPushConstant)
-            {
-                auto pushConstantNode = allPushConstantRanges->getNode(idPushConstant);
-
-                VkPushConstantRange pushConstant;
-                pushConstant.stageFlags = readValue(pushConstantNode, u8"shaderStageFlags", shaderStages, true, context);
-                pushConstantNode->getAttribute(u8"offset", pushConstant.offset);
-                pushConstantNode->getAttribute(u8"size",   pushConstant.size);
-                // Register
-                pipelineLayout->addPushConstant(pushConstant);
-            }
-            
-            // Build PipelineLayout
-            pipelineLayout->initialize(device->getDevice(), setLayouts);
-
-            // Register
-            device->insertPipelineLayout(pipelineLayout);
-            _pipelineLayouts[id] = pipelineLayout;
-        }
-    }
 }
 
 void Engine3DXMLLoader::loadDescriptorSetLayouts(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
@@ -2798,7 +1153,7 @@ void Engine3DXMLLoader::loadDescriptorSetLayouts(ContextLoading& context, Vulkan
 
             // Load mandatory 
             bool existing;
-            const uint32_t id = getIdentifiant(descriptorSetLayoutNode, u8"DescriptorSetLayout", _descriptorSetLayouts, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(descriptorSetLayoutNode, u8"DescriptorSetLayout", _descriptorSetLayouts, context, existing);
             if (existing)
             {
                 continue;
@@ -2815,8 +1170,8 @@ void Engine3DXMLLoader::loadDescriptorSetLayouts(ContextLoading& context, Vulkan
                 
                 uint32_t count;
                 bindingNode->getAttribute(u8"count", count);
-                const auto flags = readValue(bindingNode, u8"shaderStageFlags", shaderStages, true, context);
-                const auto type  = readValue(bindingNode, u8"type", descriptorTypes, false, context);
+                const auto flags = LoaderHelper::readValue(bindingNode, u8"shaderStageFlags", shaderStages, true, context);
+                const auto type  = LoaderHelper::readValue(bindingNode, u8"type", descriptorTypes, false, context);
                 descriptorSetLayout->addBinding(type, count, flags);
             }
             
@@ -2849,7 +1204,7 @@ void Engine3DXMLLoader::loadDescriptorSetPools(ContextLoading& context, Vulkan::
 
             // Mandatory data
             bool existing;
-            const uint32_t id = getIdentifiant(descriptorPoolNode, u8"DescriptorPool", _descriptorPools, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(descriptorPoolNode, u8"DescriptorPool", _descriptorPools, context, existing);
             if(existing)
             {
                 continue;
@@ -2868,7 +1223,7 @@ void Engine3DXMLLoader::loadDescriptorSetPools(ContextLoading& context, Vulkan::
                 auto sizeNode = allSizes->getNode(idSize);
                 VkDescriptorPoolSize poolSize;
                 
-                poolSize.type = readValue(sizeNode, u8"type", descriptorTypes, false, context);
+                poolSize.type = LoaderHelper::readValue(sizeNode, u8"type", descriptorTypes, false, context);
                 sizeNode->getAttribute(u8"descriptorCount", poolSize.descriptorCount);
 
                 sizes.emplace_back(poolSize);
@@ -2904,13 +1259,13 @@ void Engine3DXMLLoader::loadDescriptorSets(ContextLoading& context, Vulkan::Cont
 
             // Load mandatory 
             bool existing;
-            const uint32_t id = getIdentifiant(descriptorSetNode, u8"DescriptorSet", _descriptorSets, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(descriptorSetNode, u8"DescriptorSet", _descriptorSets, context, existing);
             if (existing)
             {
                 continue;
             }
 
-            const uint32_t idPool = getLinkedIdentifiant(descriptorSetNode, u8"descriptorPoolId", _descriptorPools, context);
+            const uint32_t idPool = LoaderHelper::getLinkedIdentifiant(descriptorSetNode, u8"descriptorPoolId", _descriptorPools, context);
             
             // Parse SetLayout
             auto aPushS = context._parser.autoPushNode(*descriptorSetNode);
@@ -2928,7 +1283,7 @@ void Engine3DXMLLoader::loadDescriptorSets(ContextLoading& context, Vulkan::Cont
             {
                 auto dSetLayoutNode = allSetLayouts->getNode(idDSetLayout);
 
-                const uint32_t idS = getLinkedIdentifiant(dSetLayoutNode, u8"descriptorSetLayoutId", _descriptorSetLayouts, context);
+                const uint32_t idS = LoaderHelper::getLinkedIdentifiant(dSetLayoutNode, u8"descriptorSetLayoutId", _descriptorSetLayouts, context);
                 dSetLayouts.emplace_back(_descriptorSetLayouts[idS].lock()->getInstance());
 
                 // Parse WriteDescriptor
@@ -2940,7 +1295,7 @@ void Engine3DXMLLoader::loadDescriptorSets(ContextLoading& context, Vulkan::Cont
                     auto writeDescriptorNode = allWriteDescriptors->getNode(idWriteDescriptor);
 
                     // Read attribute
-                    const auto     type    = readValue(writeDescriptorNode, u8"descriptorType", descriptorTypes, false, context);
+                    const auto     type    = LoaderHelper::readValue(writeDescriptorNode, u8"descriptorType", descriptorTypes, false, context);
                     uint32_t binding;
                     writeDescriptorNode->getAttribute(u8"binding", binding);
 
@@ -2956,7 +1311,7 @@ void Engine3DXMLLoader::loadDescriptorSets(ContextLoading& context, Vulkan::Cont
                         {
                             auto bufferInfoNode = allBufferInfos->getNode(idBufferInfo);
 
-                            const auto idBuffer = getLinkedIdentifiant(bufferInfoNode, u8"bufferId", _buffers, context);
+                            const auto idBuffer = LoaderHelper::getLinkedIdentifiant(bufferInfoNode, u8"bufferId", _buffers, context);
 
                             if (bufferInfoNode->hasAttribute(u8"offset"))
                             {
@@ -2990,14 +1345,14 @@ void Engine3DXMLLoader::loadDescriptorSets(ContextLoading& context, Vulkan::Cont
                         {
                             auto imageInfoNode = allImageInfos->getNode(idImageInfo);
 
-                            const auto idSampler = getLinkedIdentifiant(imageInfoNode, u8"samplerId", _samplers, context);
-                            const auto idView    = getLinkedIdentifiant(imageInfoNode, u8"viewId",    _view, context);
+                            const auto idSampler = LoaderHelper::getLinkedIdentifiant(imageInfoNode, u8"samplerId", _samplers, context);
+                            const auto idView    = LoaderHelper::getLinkedIdentifiant(imageInfoNode, u8"viewId",    _view, context);
 
                             Vulkan::DescriptorImageInfo info
                             {
                                 _samplers[idSampler].lock(),
                                 _view[idView].lock(),
-                                readValue(imageInfoNode, u8"layout", imageLayouts, false, context)
+                                LoaderHelper::readValue(imageInfoNode, u8"layout", imageLayouts, false, context)
                             };
                             images.emplace_back(std::move(info));
                         }
@@ -3044,7 +1399,7 @@ void Engine3DXMLLoader::loadShaderModules(ContextLoading& context, Vulkan::Conte
             auto shaderModuleNode = allShaderModules->getNode(idShaderModule);
 
             bool existing;
-            const uint32_t id = getIdentifiant(shaderModuleNode, u8"ShaderModule", _shaderModules, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(shaderModuleNode, u8"ShaderModule", _shaderModules, context, existing);
 
             // Read info
             Core::String filename;
@@ -3058,7 +1413,7 @@ void Engine3DXMLLoader::loadShaderModules(ContextLoading& context, Vulkan::Conte
 
             // Create shader resources
             auto& resourceManager = context._resources;
-            const auto stage = readValue(shaderModuleNode, u8"stage", shaderStages, false, context);
+            const auto stage = LoaderHelper::readValue(shaderModuleNode, u8"stage", shaderStages, false, context);
 
             auto shaderFile = resourceManager.openShader(Core::convertToOS(filename), shaderKinds[stage], Core::convertToOS(source));
 
@@ -3092,6 +1447,250 @@ void Engine3DXMLLoader::loadShaderModules(ContextLoading& context, Vulkan::Conte
             {
                 _manager.registerShader(shaderFile, { device, shaderModule });
             }
+        }
+    }
+}
+
+void Engine3DXMLLoader::loadRayTracingPipelines(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
+{
+    // Search DescriptorSetLayouts
+    auto result = context._parser.getNode(u8"RayTracingPipelines");
+    if (result->getNbElements() > 0)
+    {
+        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        auto device = deviceWeak.lock();
+
+        // cppcheck-suppress unreadVariable // false positive
+        auto aPush = context._parser.autoPushNode(*result->getNode(0));
+
+        // Parsing all ShaderModule
+        auto allRayPipelines = context._parser.getNode(u8"RayTracingPipeline");
+        for (size_t idPipeline = 0; idPipeline < allRayPipelines->getNbElements(); ++idPipeline)
+        {
+            auto pipelineNode = allRayPipelines->getNode(idPipeline);
+
+            bool existing;
+            const uint32_t id = LoaderHelper::getIdentifiant(pipelineNode, u8"RayTracingPipeline", _rayTracingPipelines, context, existing);
+            if(existing)
+            {
+                continue;
+            }
+
+            auto pipeline = std::make_shared<Vulkan::RayTracingPipeline>();
+
+            auto aPushP = context._parser.autoPushNode(*pipelineNode);            
+            // Stages
+            loadPipelineStages(context, pipeline->getShadersStage());
+            if (pipeline->getShadersStage().getNbShaders() == 0)
+            {
+                MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLMissingNodeError", context.getFileName(), u8"RayTracingPipeline", u8"Stages/Stage");
+            }
+
+            // Groups
+            loadRayTracingShaderGroup(context, deviceWeak, *pipeline);
+
+            const uint32_t idL = LoaderHelper::getLinkedIdentifiant(pipelineNode, u8"pipelineLayoutId", _pipelineLayouts, context);
+            uint32_t maxRecursive = 0;
+            pipelineNode->getAttribute(u8"maxPipelineRayRecursionDepth", maxRecursive);
+            
+            pipeline->initialize(device->getDevice(), _pipelineLayouts[idL], maxRecursive);
+
+            device->insertRayTracingPipeline(pipeline);
+            _rayTracingPipelines[id] = pipeline;
+        }
+    }
+}
+
+void Engine3DXMLLoader::loadRayTracingShaderGroup(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak, Vulkan::RayTracingPipeline& pipeline)
+{
+    auto groups = context._parser.getNode(u8"Groups");
+    if (groups->getNbElements() > 0)
+    {
+        MOUCA_ASSERT(groups->getNbElements() == 1); //DEV Issue: Need to clean xml !
+
+        // cppcheck-suppress unreadVariable // false positive
+        auto aPush = context._parser.autoPushNode(*groups->getNode(0));
+
+        // Parsing all Graphics pipeline
+        auto allGroups = context._parser.getNode(u8"Group");
+        for (size_t idGroup = 0; idGroup < allGroups->getNbElements(); ++idGroup)
+        {
+            auto groupNode = allGroups->getNode(idGroup);
+
+            VkRayTracingShaderGroupCreateInfoKHR group
+            {
+                VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR ,    //VkStructureType                   sType;
+                nullptr,                                                        //const void* pNext;
+                VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR,                   //VkRayTracingShaderGroupTypeKHR    type;
+                VK_SHADER_UNUSED_KHR,                                           //uint32_t                          generalShader;
+                VK_SHADER_UNUSED_KHR,                                           //uint32_t                          closestHitShader;
+                VK_SHADER_UNUSED_KHR,                                           //uint32_t                          anyHitShader;
+                VK_SHADER_UNUSED_KHR,                                           //uint32_t                          intersectionShader;
+                nullptr,                                                        //const void* pShaderGroupCaptureReplayHandle;
+            };
+
+            group.type = LoaderHelper::readValue(groupNode, u8"type", rayTracingGroupTypes, false, context);
+
+            if(groupNode->hasAttribute(u8"generalShader"))
+            {
+                groupNode->getAttribute(u8"generalShader", group.generalShader);
+            }
+            if (groupNode->hasAttribute(u8"closestHitShader"))
+            {
+                groupNode->getAttribute(u8"closestHitShader", group.closestHitShader);
+            }
+            if (groupNode->hasAttribute(u8"anyHitShader"))
+            {
+                groupNode->getAttribute(u8"anyHitShader", group.anyHitShader);
+            }
+            if (groupNode->hasAttribute(u8"intersectionShader"))
+            {
+                groupNode->getAttribute(u8"intersectionShader", group.intersectionShader);
+            }
+
+            pipeline.addGroup(std::move(group));
+        }
+    }
+}
+
+void Engine3DXMLLoader::loadTracingRay(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
+{
+    auto tracingRays = context._parser.getNode(u8"TracingRays");
+    if (tracingRays->getNbElements() > 0)
+    {
+        MOUCA_ASSERT(tracingRays->getNbElements() == 1); //DEV Issue: Need to clean xml !
+        auto device = deviceWeak.lock();
+
+        // cppcheck-suppress unreadVariable // false positive
+        auto aPush = context._parser.autoPushNode(*tracingRays->getNode(0));
+
+        // Parsing all Graphics pipeline
+        auto allTracingRays = context._parser.getNode(u8"TracingRay");
+        for (size_t idTracingRay = 0; idTracingRay < allTracingRays->getNbElements(); ++idTracingRay)
+        {
+            auto tracingRayNode = allTracingRays->getNode(idTracingRay);
+
+            bool existing;
+            const uint32_t id = LoaderHelper::getIdentifiant(tracingRayNode, u8"RayTracingPipeline", _tracingRays, context, existing);
+            if (existing)
+            {
+                continue;
+            }
+
+            const uint32_t idPipeline = LoaderHelper::getLinkedIdentifiant(tracingRayNode, u8"rayTracingPipelines", _rayTracingPipelines, context);
+            Vulkan::TracingRay::BufferSizes sizes{ 0, 0, 0, 0 };
+            
+            tracingRayNode->getAttribute(u8"raygenSize",   sizes[0]);
+            tracingRayNode->getAttribute(u8"missSize",     sizes[1]);
+            tracingRayNode->getAttribute(u8"hitSize",      sizes[2]);
+            tracingRayNode->getAttribute(u8"callableSize", sizes[3]);
+
+            auto tracingRay = std::make_shared<Vulkan::TracingRay>();
+            tracingRay->initialize(device->getDevice(), _rayTracingPipelines[idPipeline], 0, sizes);
+
+            device->insertTracingRay(tracingRay);
+            _tracingRays[id] = tracingRay;
+        }
+    }
+}
+
+void Engine3DXMLLoader::loadAccelerationStructures(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
+{
+    auto accelerationStructures = context._parser.getNode(u8"AccelerationStructures");
+    if (accelerationStructures->getNbElements() > 0)
+    {
+        MOUCA_ASSERT(accelerationStructures->getNbElements() == 1); //DEV Issue: Need to clean xml !
+        auto device = deviceWeak.lock();
+
+        // cppcheck-suppress unreadVariable // false positive
+        auto aPush = context._parser.autoPushNode(*accelerationStructures->getNode(0));
+
+        // Parsing all Graphics pipeline
+        auto allAccelerationStructures = context._parser.getNode(u8"AccelerationStructure");
+        for (size_t idAccelerationStructure = 0; idAccelerationStructure < allAccelerationStructures->getNbElements(); ++idAccelerationStructure)
+        {
+            auto accelerationStructureNode = allAccelerationStructures->getNode(idAccelerationStructure);
+
+            bool existing;
+            const uint32_t id = LoaderHelper::getIdentifiant(accelerationStructureNode, u8"AccelerationStructure", _accelerationStructures, context, existing);
+            if (existing)
+            {
+                continue;
+            }
+
+            auto as = std::make_shared<Vulkan::AccelerationStructure>();
+
+            const auto type = LoaderHelper::readValue(accelerationStructureNode, u8"type", accelerationStructureTypes, false, context);
+
+            auto aPushA = context._parser.autoPushNode(*accelerationStructureNode);
+
+            {
+                auto allGeometries = context._parser.getNode(u8"Geometry");
+                for (size_t idGeometry = 0; idGeometry < allGeometries->getNbElements(); ++idGeometry)
+                {
+                    auto geometryNode = allGeometries->getNode(idGeometry);
+
+                    const auto flag = LoaderHelper::readValue(geometryNode, u8"flag", geometryFlags, true, context );
+                    Core::String typeG;
+                    geometryNode->getAttribute("type", typeG);
+                    if(typeG == u8"triangle")
+                    {
+                        const uint32_t idMesh = LoaderHelper::getLinkedIdentifiant(geometryNode, u8"meshId", _cpuMesh, context);
+
+                        const uint32_t idVBO = LoaderHelper::getLinkedIdentifiant(geometryNode, u8"vboBufferId", _buffers, context);
+                        const uint32_t idIBO = LoaderHelper::getLinkedIdentifiant(geometryNode, u8"iboBufferId", _buffers, context);
+                        
+                        auto triangle = std::make_unique<Vulkan::AccelerationStructureGeometryTriangles>();
+                        triangle->initialize(_cpuMesh[idMesh], _buffers[idIBO], _buffers[idVBO], flag);
+
+                        as->addGeometry(std::move(triangle));
+                    }
+                    else if (typeG == u8"instance")
+                    {
+                        auto aPushGI = context._parser.autoPushNode(*geometryNode);
+
+                        auto allInstances = std::make_unique<Vulkan::AccelerationStructureGeometryInstance>();
+
+                        auto allInstancesNode = context._parser.getNode(u8"Instance");
+                        for (size_t idInstance = 0; idInstance < allInstancesNode->getNbElements(); ++idInstance)
+                        {
+                            auto instanceNode = allInstancesNode->getNode(idInstance);
+                            const uint32_t idAS = LoaderHelper::getLinkedIdentifiant(instanceNode, u8"accelerationStructureId", _accelerationStructures, context);
+
+                            const auto flagI = LoaderHelper::readValue(instanceNode, u8"flag", geometryInstanceFlags, true, context );
+
+                            VkTransformMatrixKHR transformMatrix =
+                            {
+                                1.0f, 0.0f, 0.0f, 0.0f,
+                                0.0f, 1.0f, 0.0f, 0.0f,
+                                0.0f, 0.0f, 1.0f, 0.0f
+                            };
+
+                            auto instance = Vulkan::AccelerationStructureGeometryInstance::Instance();
+                            instance.initialize(_accelerationStructures[idAS], flagI, std::move(transformMatrix));
+
+                            allInstances->addInstance(std::move(instance));
+                        }
+                        
+                        allInstances->initialize(flag);
+
+                        as->addGeometry(std::move(allInstances));
+                    }
+                    else
+                    {
+                        MOUCA_THROW_ERROR_3(u8"Engine3D", u8"UnknownASGeometryError", context.getFileName(), u8"Geometry", typeG);
+                    }
+                }
+                //bgs[0]->initialize(*device);
+            }
+
+            // Prepare AS
+            as->setCreateInfo(0, type);
+
+            // Need to update as when data ready: not here !
+            
+            device->insertAccelerationStructure(as);
+            _accelerationStructures[id] = as;
         }
     }
 }

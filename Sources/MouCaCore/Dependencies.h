@@ -4,7 +4,6 @@
 #include <Cpp.h>
 
 //SDK
-#include <GLI.h>
 #include <GLM.h>
 #include <Boost.h>
 

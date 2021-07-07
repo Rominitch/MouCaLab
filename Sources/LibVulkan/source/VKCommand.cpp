@@ -3,8 +3,10 @@
 /// \license No license
 #include "Dependencies.h"
 
-#include "LibVulkan/include/VKBuffer.h"
 #include "LibVulkan/include/VKCommand.h"
+
+#include "LibVulkan/include/VKBuffer.h"
+#include "LibVulkan/include/VKDevice.h"
 #include "LibVulkan/include/VKDescriptorSet.h"
 #include "LibVulkan/include/VKFrameBuffer.h"
 #include "LibVulkan/include/VKImage.h"
@@ -12,6 +14,7 @@
 #include "LibVulkan/include/VKGraphicsPipeline.h"
 #include "LibVulkan/include/VKPipelineLayout.h"
 #include "LibVulkan/include/VKRenderPass.h"
+#include "LibVulkan/include/VKTracingRay.h"
 
 namespace Vulkan
 {
@@ -140,6 +143,22 @@ void CommandPipeline::execute(const ExecuteCommands& executer)
     vkCmdBindPipeline(executer.commandBuffer, _bindPoint, _pipeline.getInstance());
 }
 
+CommandBindPipeline::CommandBindPipeline(const PipelineWPtr pipeline, const VkPipelineBindPoint bindPoint) :
+_pipeline(pipeline), _bindPoint(bindPoint)
+{
+    MOUCA_POST_CONDITION(!_pipeline.lock()->isNull());
+}
+
+void CommandBindPipeline::execute(const VkCommandBuffer& commandBuffer)
+{
+    vkCmdBindPipeline(commandBuffer, _bindPoint, _pipeline.lock()->getInstance());
+}
+
+void CommandBindPipeline::execute(const ExecuteCommands& executer)
+{
+    vkCmdBindPipeline(executer.commandBuffer, _bindPoint, _pipeline.lock()->getInstance());
+}
+
 CommandDraw::CommandDraw(const uint32_t vertexCount, const uint32_t instanceCount, const uint32_t firstVertex, const uint32_t firstInstance):
 _vertexCount(vertexCount), _instanceCount(instanceCount), _firstVertex(firstVertex), _firstInstance(firstInstance)
 {}
@@ -217,11 +236,12 @@ void CommandBindIndexBuffer::execute(const ExecuteCommands& executer)
     if (!_buffer.expired())
     {
         _bufferId = _buffer.lock()->getBuffer();
+        MOUCA_ASSERT(_bufferId != VK_NULL_HANDLE);
     }
 
     vkCmdBindIndexBuffer(executer.commandBuffer, _bufferId, _offset, _indexType);
 }
-
+/*
 CommandBindMesh::CommandBindMesh(const Mesh& mesh, const uint32_t bindID, const VkIndexType index):
 _index(index),
 _indices(mesh.getIndices().getBuffer()),
@@ -322,7 +342,7 @@ void CommandDrawLines::execute(const ExecuteCommands& executer)
     }
     vkCmdDrawIndexed(executer.commandBuffer, _indicesCount, _instanceCount, 0, 0, 0);
 }
-
+*/
 CommandBindDescriptorSets::CommandBindDescriptorSets(const PipelineLayout& pipelineLayout, const VkPipelineBindPoint bindPoint, const uint32_t firstSet, const std::vector<VkDescriptorSet>& descriptors, std::vector<uint32_t>&& dynamicOffsets):
 _pipelineLayoutID(pipelineLayout.getInstance()), _bindPoint(bindPoint), _firstSet(firstSet), _descriptorsID(std::move(descriptors)), _dynamicOffsets(std::move(dynamicOffsets))
 {
@@ -517,6 +537,66 @@ void CommandSwitch::execute(const ExecuteCommands& executer)
     MOUCA_PRE_CONDITION(_idNode < _commands.size());
 
     _commands[_idNode]->execute(executer);
+}
+
+CommandBuildAccelerationStructures::CommandBuildAccelerationStructures(const Device& device, std::vector<VkAccelerationStructureBuildGeometryInfoKHR>&& buildGeometries,
+                                                                       std::vector<const VkAccelerationStructureBuildRangeInfoKHR*>&& accelerationBuildStructureRangeInfos):
+_device(device), _buildGeometries(std::move(buildGeometries)), _accelerationBuildStructureRangeInfos(std::move(accelerationBuildStructureRangeInfos))
+{
+    MOUCA_PRE_CONDITION(!_buildGeometries.empty());
+    MOUCA_PRE_CONDITION(!_accelerationBuildStructureRangeInfos.empty());
+    MOUCA_PRE_CONDITION(std::find_if(_accelerationBuildStructureRangeInfos.cbegin(), _accelerationBuildStructureRangeInfos.cend(), [](const auto info) -> bool { return info == nullptr; }) == _accelerationBuildStructureRangeInfos.cend());
+}
+
+void CommandBuildAccelerationStructures::execute(const VkCommandBuffer& commandBuffer)
+{
+    //WARNING: if crash check scratch buffer into _buildGeometries is always existing
+    _device.vkCmdBuildAccelerationStructuresKHR(
+        commandBuffer,
+        static_cast<uint32_t>(_buildGeometries.size()), _buildGeometries.data(),
+        _accelerationBuildStructureRangeInfos.data());
+}
+
+void CommandBuildAccelerationStructures::execute(const ExecuteCommands& executer)
+{
+    //WARNING: if crash check scratch buffer into _buildGeometries is always existing
+    _device.vkCmdBuildAccelerationStructuresKHR(executer.commandBuffer,
+        static_cast<uint32_t>(_buildGeometries.size()), _buildGeometries.data(),
+        _accelerationBuildStructureRangeInfos.data());
+}
+
+CommandTraceRay::CommandTraceRay(const Device& device, const TracingRayWPtr tracingRay, const uint32_t width, const uint32_t height, const uint32_t depth):
+_device(device), _tracingRay(tracingRay), _width(width), _height(height), _depth(depth)
+{
+    MOUCA_PRE_CONDITION(!_device.isNull());
+    MOUCA_PRE_CONDITION(!_tracingRay.expired() && !_tracingRay.lock()->isNull());
+    MOUCA_PRE_CONDITION(_width > 0);
+    MOUCA_PRE_CONDITION(_height > 0);
+    MOUCA_PRE_CONDITION(_depth > 0);
+}
+
+void CommandTraceRay::execute(const VkCommandBuffer& commandBuffer)
+{
+    const auto tracingRay = _tracingRay.lock();
+    
+    _device.vkCmdTraceRaysKHR(commandBuffer,
+        &tracingRay->getBufferStrided(0).getStrided(),
+        &tracingRay->getBufferStrided(1).getStrided(),
+        &tracingRay->getBufferStrided(2).getStrided(),
+        &tracingRay->getBufferStrided(3).getStrided(),
+        _width, _height, _depth);
+}
+
+void CommandTraceRay::execute(const ExecuteCommands& executer)
+{
+    const auto tracingRay = _tracingRay.lock();
+
+    _device.vkCmdTraceRaysKHR(executer.commandBuffer,
+        &tracingRay->getBufferStrided(0).getStrided(),
+        &tracingRay->getBufferStrided(1).getStrided(),
+        &tracingRay->getBufferStrided(2).getStrided(),
+        &tracingRay->getBufferStrided(3).getStrided(),
+        _width, _height, _depth);
 }
 
 }

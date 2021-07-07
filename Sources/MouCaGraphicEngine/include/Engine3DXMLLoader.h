@@ -13,6 +13,9 @@ namespace RT
 
     class BufferDescriptor;
 
+    class Mesh;
+    using MeshWPtr = std::weak_ptr<Mesh>;
+
     class RenderDialog;
     using RenderDialogWPtr = std::weak_ptr<RenderDialog>;
 
@@ -35,6 +38,9 @@ namespace XML
 
 namespace Vulkan
 {
+    class AccelerationStructure;
+    using AccelerationStructureWPtr = std::weak_ptr<AccelerationStructure>;
+
     class Buffer;
     using BufferWPtr = std::weak_ptr<Buffer>;
 
@@ -76,9 +82,18 @@ namespace Vulkan
     class ImageView;
     using ImageViewWPtr = std::weak_ptr<ImageView>;
 
+    class MemoryBuffer;
+    using MemoryBufferUPtr = std::unique_ptr<MemoryBuffer>;
+    
+    struct PhysicalDeviceFeatures;
+
     class PipelineStateCreateInfo;
+    class PipelineStageShaders;
     class PipelineLayout;
     using PipelineLayoutWPtr = std::weak_ptr<PipelineLayout>;
+
+    class RayTracingPipeline;
+    using RayTracingPipelineWPtr = std::weak_ptr<RayTracingPipeline>;
 
     class RenderPass;
     using RenderPassWPtr = std::weak_ptr<RenderPass>;
@@ -88,6 +103,9 @@ namespace Vulkan
 
     class Semaphore;
     using SemaphoreWPtr = std::weak_ptr<Semaphore>;
+
+    class TracingRay;
+    using TracingRayWPtr = std::weak_ptr<TracingRay>;
 
     class DescriptorSet;
     using DescriptorSetWPtr = std::weak_ptr<DescriptorSet>;
@@ -140,11 +158,15 @@ namespace MouCaGraphic
             using CommandPoolDict           = std::map<uint32_t, Vulkan::CommandPoolWPtr>;
             using CommandDict               = std::map<uint32_t, Vulkan::Command*>;
             using CommandsDict              = std::map<uint32_t, Vulkan::CommandsUPtr>;
+            using RayTracingPipelineDict    = std::map<uint32_t, Vulkan::RayTracingPipelineWPtr>;
+            using TracingRayDict            = std::map<uint32_t, Vulkan::TracingRayWPtr>;
+            using AccelerationStructureDict = std::map<uint32_t, Vulkan::AccelerationStructureWPtr>;
 
             // CPU external data
             using CPUBufferDict      = std::map<uint32_t, RT::BufferCPUBaseWPtr>;
             using CPUImageDict       = std::map<uint32_t, RT::ImageWPtr>;
             using MeshDescriptorDict = std::map<uint32_t, RT::BufferDescriptor>;
+            using MeshDict           = std::map<uint32_t, RT::MeshWPtr>;
 
             /// Create a loader attached to engine to fill using xml file.
             /// \param[in] engine: engine to fill.
@@ -175,33 +197,37 @@ namespace MouCaGraphic
             void load(ContextLoading& context);
                         
             /// Temporary data for build and retrieve data from ID
-            DeviceDict              _devices;               ///< Pair of xml ID/ContextDevice
-            WindowDict              _dialogs;               ///< Pair of xml ID/Dialog
-            WindowSurfaceDict       _surfaces;              ///< Pair of xml ID/Surface
-            SemaphoreDict           _semaphores;            ///< Pair of xml ID/Semaphore
-            FenceDict               _fences;                ///< Pair of xml ID/Fence
-            FrameBuffersDict        _frameBuffers;          ///< Pair of xml ID/FrameBuffer
-            RenderPassesDict        _renderPasses;          ///< Pair of xml ID/RenderPass
-            ImagesDict              _images;                ///< Pair of xml ID/Image
-            BufferDict              _buffers;               ///< Pair of xml ID/Buffer
-            ImageViewsDict          _view;                  ///< Pair of xml ID/View
-            QueueSequenceDict       _queueSequences;        ///< Pair of xml ID/QueueSequence
-            GraphicsPipelineDict    _graphicsPipelines;     ///< Pair of xml ID/GraphicsPipeline
-            PipelineLayoutDict      _pipelineLayouts;       ///< Pair of xml ID/PipelineLayout
-            DescriptorSetLayoutDict _descriptorSetLayouts;  ///< Pair of xml ID/DescriptorSetLayout
-            DescriptorSetDict       _descriptorSets;        ///< Pair of xml ID/DescriptorSet
-            ShaderModuleDict        _shaderModules;         ///< Pair of xml ID/ShaderModule
-            DescriptorPoolDict      _descriptorPools;       ///< Pair of xml ID/DescriptorPool
-            SamplerDict             _samplers;              ///< Pair of xml ID/Sampler
-            CommandBufferDict       _commandBuffers;        ///< Pair of xml ID/CommandBuffer
-            CommandPoolDict         _commandPools;          ///< Pair of xml ID/CommandPool
-            CommandDict             _commandLinks;          ///< Pair of xml ID/Command
-            CommandsDict            _commandsGroup;         ///< Pair of xml ID/Commands
+            DeviceDict                  _devices;                   ///< Pair of xml ID/ContextDevice
+            WindowDict                  _dialogs;                   ///< Pair of xml ID/Dialog
+            WindowSurfaceDict           _surfaces;                  ///< Pair of xml ID/Surface
+            SemaphoreDict               _semaphores;                ///< Pair of xml ID/Semaphore
+            FenceDict                   _fences;                    ///< Pair of xml ID/Fence
+            FrameBuffersDict            _frameBuffers;              ///< Pair of xml ID/FrameBuffer
+            RenderPassesDict            _renderPasses;              ///< Pair of xml ID/RenderPass
+            ImagesDict                  _images;                    ///< Pair of xml ID/Image
+            BufferDict                  _buffers;                   ///< Pair of xml ID/Buffer
+            ImageViewsDict              _view;                      ///< Pair of xml ID/View
+            QueueSequenceDict           _queueSequences;            ///< Pair of xml ID/QueueSequence
+            GraphicsPipelineDict        _graphicsPipelines;         ///< Pair of xml ID/GraphicsPipeline
+            PipelineLayoutDict          _pipelineLayouts;           ///< Pair of xml ID/PipelineLayout
+            DescriptorSetLayoutDict     _descriptorSetLayouts;      ///< Pair of xml ID/DescriptorSetLayout
+            DescriptorSetDict           _descriptorSets;            ///< Pair of xml ID/DescriptorSet
+            ShaderModuleDict            _shaderModules;             ///< Pair of xml ID/ShaderModule
+            DescriptorPoolDict          _descriptorPools;           ///< Pair of xml ID/DescriptorPool
+            SamplerDict                 _samplers;                  ///< Pair of xml ID/Sampler
+            CommandBufferDict           _commandBuffers;            ///< Pair of xml ID/CommandBuffer
+            CommandPoolDict             _commandPools;              ///< Pair of xml ID/CommandPool
+            CommandDict                 _commandLinks;              ///< Pair of xml ID/Command
+            CommandsDict                _commandsGroup;             ///< Pair of xml ID/Commands
+            RayTracingPipelineDict      _rayTracingPipelines;       ///< Pair of xml ID/RayTracingPipeline
+            TracingRayDict              _tracingRays;               ///< Pair of xml ID/TracinRay
+            AccelerationStructureDict   _accelerationStructures;    ///< Pair of xml ID/TracinRay
 
             // CPU external data
             CPUBufferDict           _cpuBuffers;
             CPUImageDict            _cpuImages;
             MeshDescriptorDict      _cpuMeshDescriptors;
+            MeshDict                _cpuMesh;
 
         private:
         //-----------------------------------------------------------------------------------------
@@ -224,6 +250,7 @@ namespace MouCaGraphic
         //-----------------------------------------------------------------------------------------
             void loadEnvironment(ContextLoading& context);
             void loadDevices(ContextLoading& context);
+            void loadPhysicalDeviceFeatures(ContextLoading& context, Vulkan::PhysicalDeviceFeatures& mandatory);
 
         //-----------------------------------------------------------------------------------------
         //                                  Devices Objects
@@ -259,7 +286,15 @@ namespace MouCaGraphic
             void loadPipelineLayouts(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak);
             void loadGraphicsPipelines(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak);
             void loadPipelineStateCreate(ContextLoading& context, Vulkan::PipelineStateCreateInfo& info, const uint32_t graphicsPipelineId, const uint32_t renderPassId);
+            void loadPipelineStages(ContextLoading& context, Vulkan::PipelineStageShaders& stageShader);
 
             void loadShaderModules(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak);
+
+            void loadMemoryBuffer(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak, Vulkan::MemoryBufferUPtr& memoryBuffer);
+
+            void loadRayTracingPipelines(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak);
+            void loadRayTracingShaderGroup(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak, Vulkan::RayTracingPipeline& pipeline);
+            void loadTracingRay(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak);
+            void loadAccelerationStructures(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak);
     };
 }

@@ -36,6 +36,8 @@ namespace Media
 
             void saveImage(const Core::Path& filename) override;
 
+            void export2D(const Core::Path& filename) override;
+
             uint32_t getLayers() const override   { return 1; }
             
             uint32_t getLevels() const override   { return 1; }
@@ -46,7 +48,7 @@ namespace Media
 
             size_t getMemorySize() const override;
 
-            void const* const getRAWData(const uint32_t layer, const uint32_t level) const override
+            const HandlerMemory getRAWData(const uint32_t layer, const uint32_t level) const override
             {
                 MOUCA_PRE_CONDITION(level < getLevels());
                 MOUCA_UNUSED(layer);

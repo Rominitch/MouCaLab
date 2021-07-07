@@ -12,6 +12,7 @@
 #include "LibVulkan/include/VKGraphicsPipeline.h"
 #include "LibVulkan/include/VKImage.h"
 #include "LibVulkan/include/VKPipelineLayout.h"
+#include "LibVulkan/include/VKRayTracingPipeline.h"
 #include "LibVulkan/include/VKRenderPass.h"
 #include "LibVulkan/include/VKSampler.h"
 #include "LibVulkan/include/VKSequence.h"
@@ -26,7 +27,7 @@ ContextDevice::~ContextDevice()
     MOUCA_POST_CONDITION(isNull());        //Dev Issue: Need to call release
 }
 
-void ContextDevice::initialize(const Vulkan::Environment& environment, const std::vector<const char*>& deviceExtensions, const VkPhysicalDeviceFeatures& enabled, const Vulkan::Surface* surface)
+void ContextDevice::initialize(const Vulkan::Environment& environment, const std::vector<const char*>& deviceExtensions, const PhysicalDeviceFeatures& enabled, const Vulkan::Surface* surface)
 {
     MOUCA_PRE_CONDITION(isNull());                 //DEV Issue: No re-entrance: call release before initialize again.
     MOUCA_PRE_CONDITION(!environment.isNull());    //DEV Issue:  Environment is not ready.
@@ -137,6 +138,12 @@ void ContextDevice::release()
         shader->release(_device);
     }
     _shaderModules.clear();
+
+    for (auto& rayTracingPipeline : _rayTracingPipelines)
+    {
+        rayTracingPipeline->release(_device);
+    }
+    _rayTracingPipelines.clear();
 
     // Release all item which use device
     _pipelineCache.release(_device);

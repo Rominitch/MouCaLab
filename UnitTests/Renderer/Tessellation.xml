@@ -2,7 +2,7 @@
 
 <MouCaLab>
   <Engine3D version="0.1">
-    <Environment>
+    <Environment application="TessellationTest" engine="MouCaLab">
       <Extension>VK_KHR_surface</Extension>
       <Extension os="windows">VK_KHR_win32_surface</Extension>
       <Extension os="linux">VK_KHR_xlib_surface</Extension>
@@ -12,10 +12,11 @@
       <Data name="sampleCount" samples="VK_SAMPLE_COUNT_8_BIT" rasterizationSamples="VK_SAMPLE_COUNT_8_BIT" />
       <Data name="resolution" width="1280" height="720" depth="1" />
     </GlobalData>
-    <Window id="0" title="Tessellation Demo" positionX="30" positionY="30" width="1280" height="720" visible="false" resizable="false" border="true" />
+    <Window id="0" title="Tessellation Demo" positionX="30" positionY="30" width="$resolution" height="$resolution" visible="false" resizable="false" border="true" />
     <Device id="0" mode="render" compatibleWindowId="0">
       <Extension>VK_KHR_swapchain</Extension>
       <Extension>VK_KHR_maintenance1</Extension>
+      <Features fillModeNonSolid="true" multiDrawIndirect="true" samplerAnisotropy="true" sampleRateShading="true" tessellationShader="true" textureCompressionBC="true"/>
       <!--  Synchronization -->
       <Semaphores>
         <Semaphore id="0" /> <!-- Present complete -->
@@ -70,17 +71,29 @@
       <Buffers>
         <!-- Mesh -->
           <!-- Landscape -->
-        <Buffer id="0" external="0" usage="VK_BUFFER_USAGE_INDEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT"  memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
-        <Buffer id="1" external="1" usage="VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT" memoryProperty="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        <Buffer id="0" external="0" usage="VK_BUFFER_USAGE_INDEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        </Buffer>
+        <Buffer id="1" external="1" usage="VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT" />
+        </Buffer>
         <!-- UBO -->
           <!-- Screen -->
-        <Buffer id="6" external="6" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT" memoryProperty="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+        <Buffer id="6" external="6" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+        </Buffer>
           <!-- Camera -->
-        <Buffer id="7" external="7" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT" memoryProperty="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+        <Buffer id="7" external="7" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+        </Buffer>
           <!-- Light -->
-        <Buffer id="8" external="8" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT" memoryProperty="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+        <Buffer id="8" external="8" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+        </Buffer>
           <!-- Tessellation -->
-        <Buffer id="10" external="10" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT" memoryProperty="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+        <Buffer id="10" external="10" usage="VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT">
+          <MemoryBuffer property="VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT" />
+        </Buffer>
       </Buffers>
       <!--  Shaders -->
       <ShaderModules>
@@ -302,8 +315,8 @@
           <Command type="scissor"  width="$resolution" height="$resolution"/>
           <!-- Pipeline -->
           <Command id="1" type="switch">
-            <SubCommand type="graphicsPipeline" graphicsPipelineId="1" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
-            <SubCommand type="graphicsPipeline" graphicsPipelineId="2" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
+            <SubCommand type="bindPipeline" graphicsPipelineId="1" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
+            <SubCommand type="bindPipeline" graphicsPipelineId="2" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
           </Command>
           <!-- Terrain -->
           <Command type="bindDescriptorSets" pipelineLayoutId="1" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS" firstSet="0" descriptorSetId="1" />
@@ -323,7 +336,7 @@
           <Command type="viewport"/>
           <Command type="scissor"/>
           <Command type="bindDescriptorSets" pipelineLayoutId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS" firstSet="0" descriptorSetId="0" />
-          <Command type="graphicsPipeline" graphicsPipelineId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
+          <Command type="bindPipeline" graphicsPipelineId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
           <!-- Triangle screen -->
           <Command type="draw" vertexCount="3" instanceCount="1" firstVertex="0" firstInstance="0"/>
           <!-- Other draw (ImGUI) -->

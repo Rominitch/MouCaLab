@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
 <MouCaLab>
-  <Engine3D version="0.1">
+  <Engine3D version="0.1" application="VRTriangleSSTest" engine="MouCaLab">
     <GlobalData>
       <Data name="VRSampleCount" samples="VK_SAMPLE_COUNT_4_BIT" rasterizationSamples="VK_SAMPLE_COUNT_4_BIT" />
+      <Data name="VRResolution" width="1852" height="2056" />
     </GlobalData>
     <Window id="0" title="Triangle ScreenSpace Demo" positionX="30" positionY="30" width="1280" height="720" visible="false" resizable="false" border="true" />
     <VRHeadset id="0"/>
-    <Environment>
+    <Environment application="VRTriangleTest" engine="MouCaLab">
       <Extension>VK_KHR_surface</Extension>
       <Extension os="windows">VK_KHR_win32_surface</Extension>
       <Extension os="linux">VK_KHR_xlib_surface</Extension>
@@ -20,10 +21,14 @@
       <Semaphores>
         <Semaphore id="0" />
         <Semaphore id="1" />
+        <!--  VR Sync -->  
+        <Semaphore id="2" />
       </Semaphores>
       <Fences>
         <Fence id="0" flag="VK_FENCE_CREATE_SIGNALED_BIT"/>
         <Fence id="1" flag="VK_FENCE_CREATE_SIGNALED_BIT"/>
+        <!--  VR Command -->  
+        <Fence id="2" flag="VK_FENCE_CREATE_SIGNALED_BIT"/>
       </Fences>
       <!--  Surfaces -->
       <Surfaces>
@@ -95,6 +100,7 @@
       </PipelineLayouts>
       <!--  Pipelines -->
       <GraphicsPipelines>
+        <!--  Pipelines Companion -->
         <GraphicsPipeline id="0" renderPassId="0" pipelineLayoutId="0">
           <Stages>
             <Stage shaderModuleId="0" />
@@ -109,6 +115,7 @@
           <Multisample rasterizationSamples="VK_SAMPLE_COUNT_1_BIT" alphaToCoverageEnable="false" alphaToOneEnable="false"/>
           <Viewport surfaceId="0" x="0" y="0" minDepth="0.0" maxDepth="1.0" scissorX="0" scissorY="0"/>
         </GraphicsPipeline>
+        <!--  Pipelines VR Left -->
         <GraphicsPipeline id="1" renderPassId="1" pipelineLayoutId="0">
           <Stages>
             <Stage shaderModuleId="0" />
@@ -123,6 +130,7 @@
           <Multisample rasterizationSamples="$VRSampleCount" alphaToCoverageEnable="false" alphaToOneEnable="false"/>
           <Viewport imageId="0" x="0" y="0" minDepth="0.0" maxDepth="1.0" scissorX="0" scissorY="0"/>
         </GraphicsPipeline>
+        <!--  Pipelines VR Right -->
         <GraphicsPipeline id="2" renderPassId="2" pipelineLayoutId="0">
           <Stages>
             <Stage shaderModuleId="0" />
@@ -149,30 +157,28 @@
           <Command type="beginRenderPass" surfaceId="0" renderPassId="0" subpassContent="VK_SUBPASS_CONTENTS_INLINE">
             <CleanValue colorR="0.0" colorG="0.2" colorB="0.2" colorA="1.0" type="float"/>
           </Command>
-          <Command type="graphicsPipeline" graphicsPipelineId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
+          <Command type="bindPipeline" graphicsPipelineId="0" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
           <Command type="draw" vertexCount="3" instanceCount="1" firstVertex="0" firstInstance="0"/>
           <Command type="endRenderPass"/>   
         </CommandBuffer>
+      <!-- Draw VR -->
         <CommandBuffer id="0" commandPoolId="0" level="VK_COMMAND_BUFFER_LEVEL_PRIMARY">
-          <!-- Draw VR -->
+          <Command type="viewport" width="$VRResolution" height="$VRResolution" />
+          <Command type="scissor"  width="$VRResolution" height="$VRResolution" />
           <!-- Draw Left eye -->
           <Command type="beginRenderPass" frameBufferId="1" renderPassId="1" subpassContent="VK_SUBPASS_CONTENTS_INLINE">
             <CleanValue colorR="0.0" colorG="0.2" colorB="0.2" colorA="1.0" type="float"/>
           </Command>
-          <!--
-          <Command type="graphicsPipeline" graphicsPipelineId="1" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
+          <Command type="bindPipeline" graphicsPipelineId="1" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
           <Command type="draw" vertexCount="3" instanceCount="1" firstVertex="0" firstInstance="0"/>
-          -->
           <Command type="endRenderPass"/>
 
           <!-- Draw Right eye -->
           <Command type="beginRenderPass" frameBufferId="2" renderPassId="2" subpassContent="VK_SUBPASS_CONTENTS_INLINE">
             <CleanValue colorR="0.0" colorG="0.2" colorB="0.2" colorA="1.0" type="float"/>
           </Command>
-          <!--
-          <Command type="graphicsPipeline" graphicsPipelineId="2" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
+          <Command type="bindPipeline" graphicsPipelineId="2" bindPoint="VK_PIPELINE_BIND_POINT_GRAPHICS"/>
           <Command type="draw" vertexCount="3" instanceCount="1" firstVertex="0" firstInstance="0"/>
-          -->
           <Command type="endRenderPass"/>
         </CommandBuffer>
       </CommandBuffers>
@@ -196,8 +202,8 @@
             <Semaphore semaphoreId="1" />
           </Sequence>
         </QueueSequence>
+        <!-- Special submit for VR -->
         <QueueSequence id="1">
-          <!-- Special submit for VR -->
           <Sequence type="waitFence" waitAll="true">
             <Fence fenceId="1"/>
           </Sequence>

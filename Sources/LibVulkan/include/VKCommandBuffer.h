@@ -48,6 +48,8 @@ namespace Vulkan
             Commands                    _commands;  ///< [OWNERSHIP] All commands (Keep memory alive).
     };
 
+    using ICommandBufferWPtr = std::weak_ptr<ICommandBuffer>;
+
     //----------------------------------------------------------------------------
     /// \brief 
     ///

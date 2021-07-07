@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <!-- Include definitions from dxc.xml, which defines the GLSLShader item. -->
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)glslBuild.xml" />
+    <!-- Hook up GLSLShader items to be built by the GLSLShader target. -->
+    <AvailableItemName Include="GLSLShader">
+      <Targets>GLSLShader</Targets>
+    </AvailableItemName>
+  </ItemGroup>
+
+  <Target
+    Name="GLSLShader"
+    Condition="'@(GLSLShader)' != ''"
+    BeforeTargets="ClCompile">
+
+    <Message Importance="High" Text="Building GLSL shaders" />
+    
+    <!-- Find all shader headers (GLSL files) -->
+    <ItemGroup>
+      <ShaderHeader Include="*.vert" />
+      <ShaderHeader Include="*.frag" />
+      <ShaderHeader Include="*.geom" />
+      <ShaderHeader Include="*.tese" />
+      <ShaderHeader Include="*.tesc" />
+      <ShaderHeader Include="*.rmiss" />
+      <ShaderHeader Include="*.rchit" />
+      <ShaderHeader Include="*.rgen" />
+      <ShaderHeader Include="*.rahit" />
+    </ItemGroup>
+    <PropertyGroup>
+      <ShaderHeaders>@(ShaderHeader)</ShaderHeaders>
+    </PropertyGroup>
+
+    <!-- Setup metadata for custom build tool -->
+    <ItemGroup>
+      <GLSLShader>
+        <Command>$(COMPILER_SPIRV) -V -o $(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv %(FullPath) --target-env vulkan1.2</Command>
+        <Message>Generation Vulkan Spir-V of %(Filename)%(Extension)</Message>
+        <Outputs>$(MOUCA_BINARY)SpirV\%(Filename)%(Extension).spv</Outputs>
+        <LinkObjects>false</LinkObjects>
+        <BuildInParallel>true</BuildInParallel>
+      </GLSLShader>
+    </ItemGroup>
+
+    <!-- Compile by forwarding to the Custom Build Tool infrastructure,
+         so it will take care of .tlogs and error/warning parsing -->
+    <CustomBuild
+      Sources="@(GLSLShader)"
+      MinimalRebuildFromTracking="true"
+      TrackerLogDirectory="$(TLogLocation)"
+      ErrorListRegex="(?'FILENAME'.+):(?'LINE'\d+):(?'COLUMN'\d+): (?'CATEGORY'error|warning): (?'TEXT'.*)" />
+  </Target>
+</Project>

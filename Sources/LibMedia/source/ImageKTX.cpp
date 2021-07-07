@@ -1,6 +1,8 @@
 #include "Dependencies.h"
 
-#include <LibMedia/include/ImageKTX.h>
+#include "LibMedia/include/ImageKTX.h"
+
+#include "LibMedia/include/ImageLoader.h"
 
 namespace Media
 {
@@ -10,8 +12,26 @@ void ImageKTX::initialize(const Core::Path& path)
     MOUCA_PRE_CONDITION(isNull());
     MOUCA_PRE_CONDITION(!path.empty());
 
-    // Create Gli image
-    _glImage = std::make_unique<gli::texture>(gli::load(path.string()));
+    ktxResult result = KTX_SUCCESS;
+#if defined(__ANDROID__)
+    AAsset* asset = AAssetManager_open(androidApp->activity->assetManager, path.c_str(), AASSET_MODE_STREAMING);
+    if (!asset) {
+        vks::tools::exitFatal("Could not load texture from " + filename + "\n\nThe file may be part of the additional asset pack.\n\nRun \"download_assets.py\" in the repository root to download the latest version.", -1);
+    }
+    size_t size = AAsset_getLength(asset);
+    assert(size > 0);
+    ktx_uint8_t* textureData = new ktx_uint8_t[size];
+    AAsset_read(asset, textureData, size);
+    AAsset_close(asset);
+    result = ktxTexture_CreateFromMemory(textureData, size, KTX_TEXTURE_CREATE_LOAD_IMAGE_DATA_BIT, &_images);
+    delete[] textureData;
+#else
+    result = ktxTexture_CreateFromNamedFile(path.string().c_str(), KTX_TEXTURE_CREATE_LOAD_IMAGE_DATA_BIT, &_images);
+#endif
+    if(result != KTX_SUCCESS)
+    {
+        MOUCA_THROW_ERROR_1("LibMedia", "KTXReadError", path.string());
+    }
 
     MOUCA_PRE_CONDITION(!isNull());
 }
@@ -25,52 +45,60 @@ void ImageKTX::release()
 {
     MOUCA_PRE_CONDITION(!isNull());
 
-    _glImage.reset();
+    ktxTexture_Destroy(_images);
+    _images = nullptr;
 
     MOUCA_POST_CONDITION(isNull());
 }
 
 uint32_t ImageKTX::getLayers() const
 {
-    return static_cast<uint32_t>(_glImage->layers());
+    MOUCA_PRE_CONDITION(!isNull());
+
+    return _images->numLayers;
 }
 
 uint32_t ImageKTX::getLevels() const
 {
-    return static_cast<uint32_t>(_glImage->levels());
+    MOUCA_PRE_CONDITION(!isNull());
+    return _images->numLevels;
 }
 
 RT::Array3ui ImageKTX::getExtents(const uint32_t level) const
 {
-    const auto ext = _glImage->extent(level);
-    return {ext.x, ext.y, ext.z };
+    MOUCA_PRE_CONDITION(!isNull());
+    return
+    {
+        std::max(1u, _images->baseWidth  >> level),
+        std::max(1u, _images->baseHeight >> level),
+        std::max(1u, _images->baseDepth  >> level)
+    };
 }
 
-void const* const ImageKTX::getRAWData(const uint32_t layer, const uint32_t level) const
+const ImageKTX::HandlerMemory ImageKTX::getRAWData(const uint32_t layer, const uint32_t level) const
 {
-    return _glImage->data(layer, 0, level);
+    MOUCA_PRE_CONDITION(!isNull());
+
+    ktx_size_t offset;
+    auto result = ktxTexture_GetImageOffset(_images, level, layer, 0, &offset);
+    MOUCA_ASSERT(result == KTX_SUCCESS);
+    return ktxTexture_GetData(_images) + offset;
 }
 
 size_t ImageKTX::getMemoryOffset(const uint32_t layer, const uint32_t level) const
 {
+    MOUCA_PRE_CONDITION(!isNull());
+
     size_t offset = 0;
-
-    for (uint32_t layerId = 0; layerId < getLayers(); layerId++)
-    {
-        for (uint32_t mipLevel = 0; mipLevel < getLevels(); mipLevel++)
-        {
-            if(layer == layerId && mipLevel == level)
-                return offset;
-            offset += _glImage->size(mipLevel);
-        }
-    }
-
+    auto result = ktxTexture_GetImageOffset(_images, level, layer, 0, &offset);
+    MOUCA_ASSERT(result == KTX_SUCCESS);
     return offset;
 }
 
 size_t ImageKTX::getMemorySize() const
 {
-    return _glImage->size();
+    MOUCA_PRE_CONDITION(!isNull());
+    return _images->dataSize;
 }
 
 void ImageKTX::saveImage(const Core::Path& filename)
@@ -78,10 +106,15 @@ void ImageKTX::saveImage(const Core::Path& filename)
     MOUCA_PRE_CONDITION(!isNull());
     MOUCA_PRE_CONDITION(!filename.empty());
 
-    if( !gli::save(*_glImage, filename.string()) )
+    if(ktxTexture_WriteToNamedFile(_images, filename.string().c_str()))
     {
         MOUCA_THROW_ERROR_1(u8"BasicError", u8"ImageKTXSave", filename.u8string());
     }
+}
+
+void ImageKTX::export2D(const Core::Path& filename)
+{
+    ImageLoader::export2D(*this, filename);
 }
 
 bool ImageKTX::compare(const RT::Image& reference, const size_t nbMaxDefectPixels, const double maxDistance4D,
@@ -92,12 +125,27 @@ bool ImageKTX::compare(const RT::Image& reference, const size_t nbMaxDefectPixel
 
 ImageKTX::Target ImageKTX::getTarget() const
 {
-    static const std::array<Image::Target, gli::TARGET_COUNT> convert =
-    {
-        Target::Type1D, Target::Type1DArray, Target::Type2D, Target::Type2DArray, Target::Type3D, Target::TypeUnknown, Target::TypeUnknown, Target::TypeUnknown, Target::TypeUnknown
-    };
+    MOUCA_PRE_CONDITION(!isNull());
+    
+    Image::Target target = Target::Type1D;
 
-    return convert[_glImage->target()];
+    bool isArray = _images->numLayers > 1;
+    if(_images->baseHeight > 1)
+    {
+        if (_images->baseDepth > 1)
+        {
+            target = Target::Type3D;
+        }
+        else
+        {
+            target = isArray ? Target::Type2DArray : Target::Type2D;
+        }
+    }
+    else
+    {
+        target = isArray ? Target::Type1DArray : Target::Type1D;
+    }
+    return target;
 }
 
 }

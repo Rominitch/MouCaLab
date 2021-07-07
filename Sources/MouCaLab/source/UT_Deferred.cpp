@@ -489,6 +489,9 @@ TEST_F(DeferredTest, run)
         updateUIOverlay();
         bool needUpdateGUI = true;
 
+        updateCommandBuffers(loader);
+        updateCommandBuffersSurface(loader);
+
         /// Update Light position / camera
         auto demo = [&](const double time)
         {
@@ -514,7 +517,8 @@ TEST_F(DeferredTest, run)
                 ASSERT_NO_THROW(GUI.buildCommands(container->getCommands()));
 
                 // Refresh Command Buffer with new command
-                loader._surfaces[0].lock()->updateCommandBuffer(0);
+                updateCommandBuffers(loader);
+                updateCommandBuffersSurface(loader);
             }
         };
         mainLoop(manager, u8"Deferred Demo ", demo);     
@@ -532,7 +536,8 @@ TEST_F(DeferredTest, run)
         ASSERT_NO_THROW(GUI.buildCommands(container->getCommands()));
 
         // Refresh Command Buffer with new command
-        loader._surfaces[0].lock()->updateCommandBuffer(0);
+        updateCommandBuffers(loader);
+        updateCommandBuffersSurface(loader);
 
         // Get Sequencer
         context->getDevice().waitIdle();

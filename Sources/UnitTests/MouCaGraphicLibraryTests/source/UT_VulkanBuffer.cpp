@@ -25,10 +25,10 @@ protected:
         ASSERT_NO_THROW(environment.release());
     }
 
-    virtual void SetUp() final
+    void SetUp() final
     {}
 
-    virtual void TearDown() final
+    void TearDown() final
     {}
 };
 
@@ -37,12 +37,12 @@ Vulkan::Device      VulkanBuffer::device;
 
 TEST_F(VulkanBuffer, createBuffer)
 {
-    Vulkan::Buffer buffer;
+    Vulkan::Buffer buffer(std::make_unique<Vulkan::MemoryBuffer>(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT));
     ASSERT_TRUE(buffer.isNull());
 
     const VkDeviceSize size = 30;
-    ASSERT_NO_THROW(buffer.initialize(device, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-                                      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, size));
+    ASSERT_NO_THROW(buffer.initialize(device, 0, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                                      size));
     ASSERT_FALSE(buffer.isNull());
 
     const auto& descriptor = buffer.getDescriptor();
@@ -57,13 +57,13 @@ TEST_F(VulkanBuffer, createBuffer)
 
 TEST_F(VulkanBuffer, mapping)
 {
-    Vulkan::Buffer buffer;
+    Vulkan::Buffer buffer(std::make_unique<Vulkan::MemoryBuffer>(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
     ASSERT_TRUE(buffer.isNull());
 
     const std::array<float, 5> data = {0.0f, 1.0f, 2.0f, 1e-15f, 1e15f};
 
     const VkDeviceSize size = sizeof(data);
-    ASSERT_NO_THROW(buffer.initialize(device, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, size, data.data()));
+    ASSERT_NO_THROW(buffer.initialize(device, 0, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, size, data.data()));
     ASSERT_FALSE(buffer.isNull());
 
     ASSERT_LE(size, buffer.getMemory().getAllocatedSize());

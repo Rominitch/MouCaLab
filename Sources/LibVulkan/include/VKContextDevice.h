@@ -10,6 +10,11 @@
 
 namespace Vulkan
 {
+    class AccelerationStructure;
+    using AccelerationStructureSPtr = std::shared_ptr<AccelerationStructure>;
+    using AccelerationStructureWPtr = std::weak_ptr<AccelerationStructure>;
+    using AccelerationStructures    = std::vector<AccelerationStructureSPtr>;
+
     class Buffer;
     using BufferSPtr = std::shared_ptr<Buffer>;
     using BufferWPtr = std::weak_ptr<Buffer>;
@@ -58,10 +63,17 @@ namespace Vulkan
     using GraphicsPipelineWPtr = std::weak_ptr<GraphicsPipeline>;
     using GraphicsPipelines    = std::vector<GraphicsPipelineSPtr>;
 
+    struct PhysicalDeviceFeatures;
+
     class PipelineLayout;
     using PipelineLayoutSPtr = std::shared_ptr<PipelineLayout>;
     using PipelineLayoutWPtr = std::weak_ptr<PipelineLayout>;
     using PipelineLayouts    = std::vector<PipelineLayoutSPtr>;
+
+    class RayTracingPipeline;
+    using RayTracingPipelineSPtr = std::shared_ptr<RayTracingPipeline>;
+    using RayTracingPipelineWPtr = std::weak_ptr<RayTracingPipeline>;
+    using RayTracingPipelines    = std::vector<RayTracingPipelineSPtr>;
 
     class RenderPass;
     using RenderPassSPtr = std::shared_ptr<RenderPass>;
@@ -90,6 +102,12 @@ namespace Vulkan
     using ShaderModuleWPtr = std::weak_ptr<ShaderModule>;
     using ShaderModules    = std::vector<ShaderModuleSPtr>;
 
+    class TracingRay;
+    using TracingRaySPtr = std::shared_ptr<TracingRay>;
+    using TracingRayWPtr = std::weak_ptr<TracingRay>;
+    using TracingRays    = std::vector<TracingRaySPtr>;
+    
+
     //----------------------------------------------------------------------------
     /// \brief Manage a Vulkan device: create all objects which need a device to live.
     class ContextDevice final : public std::enable_shared_from_this<ContextDevice>
@@ -103,7 +121,7 @@ namespace Vulkan
             /// Destructor
             ~ContextDevice();
 
-            void initialize(const Environment& environment, const std::vector<const char*>& extensions, const VkPhysicalDeviceFeatures& enabled, const Surface* surface = nullptr);
+            void initialize(const Environment& environment, const std::vector<const char*>& extensions, const PhysicalDeviceFeatures& enabled, const Surface* surface = nullptr);
             
             void release();
 
@@ -227,6 +245,26 @@ namespace Vulkan
                 _commandPools.emplace_back(commandPool);
             }
 
+            void insertRayTracingPipeline(RayTracingPipelineSPtr rayTracingPipeline)
+            {
+                MOUCA_PRE_CONDITION(rayTracingPipeline); //DEV Issue: Need valid data
+                _rayTracingPipelines.emplace_back(rayTracingPipeline);
+            }
+
+            void insertAccelerationStructure(AccelerationStructureSPtr as)
+            {
+                MOUCA_PRE_CONDITION(as); //DEV Issue: Need valid data
+                _accelerationStructures.emplace_back(as);
+            }
+
+            void insertTracingRay(TracingRaySPtr tracingRay)
+            {
+                MOUCA_PRE_CONDITION(tracingRay); //DEV Issue: Need valid data
+                _tracingRays.emplace_back(tracingRay);
+            }
+
+            RayTracingPipelines& getRayTracingPipelines() { return _rayTracingPipelines; }
+
             GraphicsPipelines& getGraphicsPipelines() { return _graphicsPipelines; }
 
         private:
@@ -247,11 +285,16 @@ namespace Vulkan
             RenderPasses        _renderPasses;          ///< [OWNERSHIP]            
 
         // Pipeline
-            DescriptorPools      _descriptorPools;       ///< [OWNERSHIP]
-            DescriptorSetLayouts _descriptorSetLayouts;  ///< [OWNERSHIP]
-            DescriptorSets       _descriptorSets;        ///< [OWNERSHIP]
-            PipelineLayouts      _pipelineLayouts;       ///< [OWNERSHIP]
-            GraphicsPipelines    _graphicsPipelines;     ///< [OWNERSHIP]
+            DescriptorPools        _descriptorPools;       ///< [OWNERSHIP]
+            DescriptorSetLayouts   _descriptorSetLayouts;  ///< [OWNERSHIP]
+            DescriptorSets         _descriptorSets;        ///< [OWNERSHIP]
+            PipelineLayouts        _pipelineLayouts;       ///< [OWNERSHIP]
+            GraphicsPipelines      _graphicsPipelines;     ///< [OWNERSHIP]
+            RayTracingPipelines    _rayTracingPipelines;   ///< [OWNERSHIP]
+        
+        // RayTracing
+            AccelerationStructures _accelerationStructures;///< [OWNERSHIP]
+            TracingRays            _tracingRays;           ///< [OWNERSHIP]
 
         // Sequence
             CommandPools         _commandPools;          ///< [OWNERSHIP]

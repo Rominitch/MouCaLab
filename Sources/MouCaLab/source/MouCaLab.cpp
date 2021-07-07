@@ -7,27 +7,24 @@
 
 #include <LibGLFW/include/GLFWWindow.h>
 
+#include <LibVulkan/include/VKCommandBuffer.h>
+#include <LibVulkan/include/VKContextWindow.h>
+
 #include <LibRT/include/RTImage.h>
 #include <LibRT/include/RTRenderDialog.h>
 
 MouCaLabTest::MouCaLabTest()
 {
-    // Features that my renderer MUST support
-    _mandatoryFeatures.textureCompressionBC = VK_TRUE;
-    _mandatoryFeatures.tessellationShader   = VK_TRUE;
-    _mandatoryFeatures.multiDrawIndirect    = VK_TRUE;
-    _mandatoryFeatures.samplerAnisotropy    = VK_TRUE;
+    _core.getResourceManager().addResourceFolder(MouCaEnvironment::getWorkingPath(), MouCaCore::ResourceManager::Executable);
+    _core.getResourceManager().addResourceFolder(MouCaEnvironment::getWorkingPath() / ".." / ".." / "MouCaLab" / "UnitTests" / "GLSL",      MouCaCore::ResourceManager::ShadersSource);
+    _core.getResourceManager().addResourceFolder(MouCaEnvironment::getWorkingPath() / ".." / ".." / "MouCaLab" / "UnitTests" / "Renderer",  MouCaCore::ResourceManager::Renderer);
 
-    _core.getResourceManager().addResourceFolder(std::filesystem::canonical(MouCaEnvironment::getWorkingPath()), MouCaCore::ResourceManager::Executable);
-    _core.getResourceManager().addResourceFolder(std::filesystem::canonical(MouCaEnvironment::getWorkingPath() / ".." / ".." / "MouCaLab" / "UnitTests" / "GLSL"),      MouCaCore::ResourceManager::ShadersSource);
-    _core.getResourceManager().addResourceFolder(std::filesystem::canonical(MouCaEnvironment::getWorkingPath() / ".." / ".." / "MouCaLab" / "UnitTests" / "Renderer"),  MouCaCore::ResourceManager::Renderer);
-
-    _core.getResourceManager().addResourceFolder(std::filesystem::canonical(MouCaEnvironment::getInputPath() / "Configuration"), MouCaCore::ResourceManager::Configuration);
-    _core.getResourceManager().addResourceFolder(std::filesystem::canonical(MouCaEnvironment::getInputPath() / "fonts"),         MouCaCore::ResourceManager::Fonts);
-    _core.getResourceManager().addResourceFolder(std::filesystem::canonical(MouCaEnvironment::getInputPath() / "mesh"),          MouCaCore::ResourceManager::Meshes);
-    _core.getResourceManager().addResourceFolder(std::filesystem::canonical(MouCaEnvironment::getInputPath() / "textures"),      MouCaCore::ResourceManager::Textures);
-    _core.getResourceManager().addResourceFolder(std::filesystem::canonical(MouCaEnvironment::getInputPath() / ".." / "SpirV"),  MouCaCore::ResourceManager::Shaders);
-    _core.getResourceManager().addResourceFolder(std::filesystem::canonical(MouCaEnvironment::getInputPath() / "references"),    MouCaCore::ResourceManager::References);
+    _core.getResourceManager().addResourceFolder(MouCaEnvironment::getInputPath() / "Configuration", MouCaCore::ResourceManager::Configuration);
+    _core.getResourceManager().addResourceFolder(MouCaEnvironment::getInputPath() / "fonts",         MouCaCore::ResourceManager::Fonts);
+    _core.getResourceManager().addResourceFolder(MouCaEnvironment::getInputPath() / "mesh",          MouCaCore::ResourceManager::Meshes);
+    _core.getResourceManager().addResourceFolder(MouCaEnvironment::getInputPath() / "textures",      MouCaCore::ResourceManager::Textures);
+    _core.getResourceManager().addResourceFolder(MouCaEnvironment::getInputPath() / ".." / "SpirV",  MouCaCore::ResourceManager::Shaders);
+    _core.getResourceManager().addResourceFolder(MouCaEnvironment::getInputPath() / "references",    MouCaCore::ResourceManager::References);
 }
 
 void MouCaLabTest::SetUp()
@@ -258,4 +255,18 @@ void MouCaLabTest::clearDialog(MouCaGraphic::VulkanManager& manager)
         }
         empty = manager.getSurfaces().empty();
     }
+}
+void MouCaLabTest::updateCommandBuffers(MouCaGraphic::Engine3DXMLLoader& loader, const VkCommandBufferResetFlags reset)
+{
+    // Execute Command
+    for(auto cmdBuffer : loader._commandBuffers)
+    {
+        cmdBuffer.second.lock()->execute(reset);
+    }
+}
+
+void MouCaLabTest::updateCommandBuffersSurface(MouCaGraphic::Engine3DXMLLoader& loader, const VkCommandBufferResetFlags reset)
+{
+    // Execute commands
+    loader._surfaces[0].lock()->updateCommandBuffer(reset);
 }
