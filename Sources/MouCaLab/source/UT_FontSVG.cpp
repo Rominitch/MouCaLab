@@ -752,20 +752,32 @@ TEST_F(FontSVGTest, run)
     }
 
 //-------------------------------------------------------------------------------------------------
-//                                             Step 4: Play
+//                                             Step 4: Build commands
 //-------------------------------------------------------------------------------------------------
     bool refreshCommand = false;
+    // Build GUI design
+    updateUIOverlay(manager, refreshCommand);
+    updateUIOverlay(manager, refreshCommand);
+
+    // Create command
+    ASSERT_NO_THROW(GUI.prepareBuffer(*context));
+    Vulkan::CommandContainer* container = dynamic_cast<Vulkan::CommandContainer*>(loaderGUI._commandLinks[0]);
+    ASSERT_TRUE(container != nullptr);
+    ASSERT_NO_THROW(GUI.buildCommands(container->getCommands()));
+
+    // Refresh Command Buffer with new command
+    // Execute commands
+    updateCommandBuffers(loader);
+    updateCommandBuffersSurface(loader);
+
+//-------------------------------------------------------------------------------------------------
+//                                             Step 5: Play
+//-------------------------------------------------------------------------------------------------
+    
     // Execute rendering
     if (MouCaEnvironment::isDemonstrator())
     {
         // DisableCodeCoverage
-
-        updateUIOverlay(manager, refreshCommand);
-
-        // Execute commands
-        updateCommandBuffers(loader);
-        updateCommandBuffersSurface(loader);
-
         bool needUpdateGUI = true;
 
         /// Update Light position / camera
@@ -858,20 +870,6 @@ TEST_F(FontSVGTest, run)
     }
     else
     {
-        updateUIOverlay(manager, refreshCommand);
-        // Build GUI design
-        updateUIOverlay(manager, refreshCommand);
-
-        ASSERT_NO_THROW(GUI.prepareBuffer(*context));
-        Vulkan::CommandContainer* container = dynamic_cast<Vulkan::CommandContainer*>(loaderGUI._commandLinks[0]);
-        ASSERT_TRUE(container != nullptr);
-        ASSERT_NO_THROW(GUI.buildCommands(container->getCommands()));
-
-        // Refresh Command Buffer with new command
-        // Execute commands
-        updateCommandBuffers(loader);
-        updateCommandBuffersSurface(loader);
-
         // Get Sequencer
         context->getDevice().waitIdle();
         auto queueSequences = context->getQueueSequences();
