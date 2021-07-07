@@ -252,7 +252,7 @@ float bezier3CoverageX(in vec2 p1, in vec2 p2, in vec2 p3, in vec2 p4, in vec2 p
     float coverage = 0.0;
     if (max(max(max(p1.x, p2.x), p3.x), p4.x) * pixelsPerEm.x < -0.5)
         return coverage;
-
+    /*
     // Split code into 
     uint code = 0;
     if(p1.x > 0.0)
@@ -298,18 +298,18 @@ float bezier3CoverageX(in vec2 p1, in vec2 p2, in vec2 p3, in vec2 p4, in vec2 p
 
         float root1, root2, root3;
 
-  // three possible real roots:
+        // three possible real roots:
         if( discriminant.y < 0 )
         {
             float r = sqrt(-p_3.y * p_3.y * p_3.y);
             float t = -q.y / (2 * r);
             float cosphi = clamp(-1.0, t, 1.0);
-            float phi  = acos(cosphi),
-            float crtr = pow(r, 1.0/3.0),
+            float phi = acos(cosphi);
+            float crtr = pow(r, 1.0 / 3.0);
             float t1   = 2.0*crtr;
-            root1 = t1 * cos(phi/3.0) - A/3.0;
-            root2 = t1 * cos((phi+2*PI)/3.0) - A/3.0;
-            root3 = t1 * cos((phi+4*PI)/3.0) - A/3.0;
+            root1 = t1 * cos(phi/3.0) - A.x/3.0;
+            root2 = t1 * cos((phi+2*PI)/3.0) - A.x/3.0;
+            root3 = t1 * cos((phi+4*PI)/3.0) - A.x/3.0;
 
             float x1 = (a.y * t1 - b.y * 2.0) * t1 + p1.y;
             float x2 = (a.y * t2 - b.y * 2.0) * t2 + p1.y;
@@ -324,22 +324,23 @@ float bezier3CoverageX(in vec2 p1, in vec2 p2, in vec2 p3, in vec2 p4, in vec2 p
 
         }
 
-  // three real roots, but two of them are equal:
-  if(discriminant === 0) {
-    u1 = q2 < 0 ? cuberoot(-q2) : -cuberoot(q2);
-    root1 = 2*u1 - a/3;
-    root2 = -u1 - a/3;
-    return [root1, root2].filter(accept);
-  }
+        // three real roots, but two of them are equal:
+        if(discriminant === 0)
+        {
+            u1 = q2 < 0 ? cuberoot(-q2) : -cuberoot(q2);
+            root1 = 2*u1 - a/3;
+            root2 = -u1 - a/3;
+            return [root1, root2].filter(accept);
+        }
 
-  // one real root, two complex roots
-  var sd = sqrt(discriminant);
-  u1 = cuberoot(sd - q2);
-  v1 = cuberoot(sd + q2);
-  root1 = u1 - v1 - a/3;
-  return [root1].filter(accept);
-  */
+        // one real root, two complex roots
+        var sd = sqrt(discriminant);
+        u1 = cuberoot(sd - q2);
+        v1 = cuberoot(sd + q2);
+        root1 = u1 - v1 - a/3;
+        return [root1].filter(accept);
     }
+    */
 
     return coverage;
 }
@@ -451,5 +452,5 @@ void main()
     
     out_color = vec4(0, 0, 0, coverage);
     
-    showPoints();
+    //showPoints();
 }
