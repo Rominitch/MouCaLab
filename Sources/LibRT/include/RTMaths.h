@@ -159,7 +159,7 @@ namespace RT
 
             static std::array<glm::vec2, 3> computeIntersections(const std::array<glm::vec2, 4>& bezierPts, const std::array<glm::vec2, 2>& line, uint32_t& nbSolutions, const float epsilon = 1e-5f)
             {
-                std::array<glm::vec2, 3> X;
+                std::array<glm::vec2, 3> X = {};
  
                 const glm::vec2 displacement(
                     line[1].y - line[0].y,                            //A=y2-y1

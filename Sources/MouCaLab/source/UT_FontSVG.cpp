@@ -124,22 +124,25 @@ class FontSVGTest : public MouCaLabTest
         GUI::FontFamilySVGWPtr _fontFamilyNoto;
         GUI::FontFamilySVGWPtr _fontFamilyCeltic;
         GUI::FontFamilySVGWPtr _fontFamilyMevNo;
+        GUI::FontFamilySVGWPtr _fontFamilyEmoji;
         
         std::array<GlyphInstance, MAX_VISIBLE_GLYPHS> _glyphInstances;
         uint32_t                                      _glyphCount;
 
         // Performances / GUI
-        std::array<bool, 4> _modeGUI = { false, false, false, false };
+        std::array<bool, 5> _modeGUI = { false, false, false, false, false };
         uint32_t      _nbChars;
         TimeElapsed   _charAppends;
         TimeElapsed   _fontBuild;
 
         uint32_t      _startDemo;
+        bool          _hasEmoji = false;
 
         static std::vector<const char*> _textDebug;
         static std::vector<const char*> _text;
         static std::vector<const char*> _textASCII;
         static std::vector<const char*> _textU8;
+        static std::vector<const char*> _textEmoji;
 
         static Core::Path _fontRoboto;
         static Core::Path _fontNoto;
@@ -147,6 +150,8 @@ class FontSVGTest : public MouCaLabTest
         static Core::Path _fontNotoA;
         static Core::Path _fontCeltic;
         static Core::Path _fontMevNo;
+        //static Core::Path _fontNotoEmoji;
+        static Core::Path _fontSeguiEmoji;
 
         struct Text
         {
@@ -305,6 +310,15 @@ class FontSVGTest : public MouCaLabTest
             _fontFamilyNoto   = fontSVGManager.createFont({ fontPath / _fontNoto, fontPath / _fontNotoJP, fontPath / _fontNotoA });
             _fontFamilyCeltic = fontSVGManager.createFont({ fontPath / _fontCeltic });
             _fontFamilyMevNo  = fontSVGManager.createFont({ fontPath / _fontMevNo  });
+            
+            // Emoji
+            Core::Path windowsFont = Core::Path("C:\\Windows") / u8"Fonts";
+            if (std::filesystem::exists(windowsFont))
+            {
+                _hasEmoji = true;
+                _fontFamilyEmoji = fontSVGManager.createFont({ windowsFont / _fontSeguiEmoji });
+                ASSERT_FALSE(_fontFamilyEmoji.expired());
+            }
 
             _fontBuild.cumulate();
         }
@@ -335,11 +349,10 @@ class FontSVGTest : public MouCaLabTest
         
         void demoPage(const uint32_t idPage, GUI::FontSVGManager& fontSVGManager)
         {
-            const std::array<std::vector<Text>, 4> _pages
+            const std::array<std::vector<Text>, 5> _pages
             {{
                 //Page 0 
                 { Text(_text, glm::vec2(-0.7f, -0.51f), &_fontFamilyRoboto, 0.0003f, 0.045f) },
-                //{ Text(_text, glm::vec2(0.0f, 0.0f), &_fontFamilyRoboto, 1.0f, 0.045f) },
                 //Page 1 
                 {
                     Text(_textASCII, glm::vec2(-0.7f, -0.51f), &_fontFamilyRoboto, 0.0003f, 0.045f),
@@ -351,13 +364,14 @@ class FontSVGTest : public MouCaLabTest
                 { Text(_textU8, glm::vec2(-0.7f, -0.3f), &_fontFamilyNoto, 0.0012f, 0.16f) },
                 //Page 3
                 { Text(_textDebug, glm::vec2(-0.85f, 0.2f), &_fontFamilyNoto, 0.0027f, 0.45f) },
-                //{ Text(_textDebug, glm::vec2(0.0f, 0.0f), &_fontFamilyNoto, 10.0f, 0.45f) },
+                //Page 4
+                { Text(_textEmoji, glm::vec2(-0.85f, 0.2f), &_fontFamilyEmoji, 0.0027f, 0.45f) },
             }};
 
             // Build page from empty manager
             {
                 // Build all fonts from scratch
-                buildFontFamilies(fontSVGManager);
+                ASSERT_NO_THROW(buildFontFamilies(fontSVGManager));
                 _glyphCount = 0;
                 _nbChars    = 0;
                 bool update = false;
@@ -366,6 +380,7 @@ class FontSVGTest : public MouCaLabTest
                 // Build all texts
                 for(const auto& text : _pages[idPage])
                 {
+                    ASSERT_TRUE(!text._font->expired());
                     update |= buildText(text);
                 }
                 // Update glyph buffer if needed
@@ -490,6 +505,17 @@ class FontSVGTest : public MouCaLabTest
 
                     change = true;
                     pageId = 3;
+                }
+                if (_hasEmoji)
+                {
+                    if(ImGui::RadioButton("Emoji", _modeGUI[3]))
+                    {
+                        _modeGUI.fill(false);
+                        _modeGUI[4] = true;
+
+                        change = true;
+                        pageId = 4;
+                    }
                 }
                 
                 if(change)
@@ -632,6 +658,11 @@ std::vector<const char*> FontSVGTest::_textU8 =
     u8"عندما يريد العالم أن يتكلّم ‬ ، فهو يتحدّث بلغة يونيكود"
 };
 
+std::vector<const char*> FontSVGTest::_textEmoji =
+{
+    u8"😁🤮💃🦊"
+};
+
 Core::Path FontSVGTest::_fontRoboto(u8"Roboto-Medium.ttf");
 
 Core::Path FontSVGTest::_fontNoto(u8"NotoSans-Regular.ttf");
@@ -640,6 +671,10 @@ Core::Path FontSVGTest::_fontNotoA(u8"NotoSansArabicUI-Regular.ttf");
 
 Core::Path FontSVGTest::_fontCeltic(u8"Celtic Knot.TTF");
 Core::Path FontSVGTest::_fontMevNo(u8"mevno1.ttf");
+
+//Core::Path FontSVGTest::_fontNotoEmoji(u8"NotoColorEmoji.ttf");                       //Not working
+//Core::Path FontSVGTest::_fontNotoEmoji(u8"NotoColorEmoji_WindowsCompatible.ttf");     //Not working
+Core::Path FontSVGTest::_fontSeguiEmoji(u8"seguiemj.ttf");
 
 TEST_F(FontSVGTest, run)
 {

@@ -9,6 +9,20 @@
 namespace GUI
 {
 
+template<typename FUNCTION_DECLARATION>
+inline static void executeFT(FUNCTION_DECLARATION call, const Core::String& error)
+{
+#ifdef _DEBUG
+    const auto err = call;
+    if(err)
+    {
+        MOUCA_THROW_ERROR(u8"GUI", u8"FreeType2LoadGlyphError");
+    }
+#else
+    call;
+#endif
+}
+
 FontSVGManager::FontSVGManager():
 _library(nullptr)
 {
@@ -205,16 +219,11 @@ void FontFamilySVG::initialize(FT_Library library)
 
     for(auto& font : _fonts)
     {
-        if (FT_New_Face(library, font._fontsPath.string().c_str(), 0, &font._face))
-        {
-            MOUCA_THROW_ERROR(u8"GUI", u8"FreeType2NewFaceError");
-        }
+        executeFT(FT_New_Face(library, font._fontsPath.string().c_str(), 0, &font._face), u8"FreeType2NewFaceError");
 
-        FT_Error error = FT_Select_Charmap(font._face, ft_encoding_unicode);
-        MOUCA_ASSERT(!error);
-        //error = FT_Set_Char_Size(font._face, 0, 64000, 96, 96);
-        error = FT_Set_Char_Size(font._face, 0, 6400, 96, 96);
-        MOUCA_ASSERT(!error);
+        executeFT(FT_Select_Charmap(font._face, ft_encoding_unicode),                     u8"FreeType2NewFaceError");
+
+        executeFT(FT_Set_Char_Size(font._face, 0, 6400, 96, 96),                          u8"FreeType2NewFaceError");
     }
 
     MOUCA_POST_CONDITION(!isNull());
@@ -228,10 +237,7 @@ void FontFamilySVG::release()
 
     for (auto& font : _fonts)
     {
-        if (FT_Done_Face(font._face))
-        {
-            MOUCA_THROW_ERROR(u8"GUI", u8"FreeType2DoneFaceError");
-        }
+        executeFT(FT_Done_Face(font._face), u8"FreeType2DoneFaceError");
     }
     _fonts.clear();
 
@@ -257,10 +263,9 @@ const FontFamilySVG::GlyphSVG& FontFamilySVG::addGlyph(const GlyphCode& glyphCod
 
     const auto& createGlyph = [&](const auto& itFont) -> const FontFamilySVG::GlyphSVG&
     {
-        if (FT_Load_Glyph(itFont->_face, glyph_index, FT_LOAD_NO_HINTING))
-        {
-            MOUCA_THROW_ERROR(u8"GUI", u8"FreeType2LoadGlyphError");
-        }
+        //executeFT(FT_Load_Glyph(itFont->_face, glyph_index, FT_LOAD_FORCE_AUTOHINT), u8"FreeType2LoadGlyphError");
+        executeFT(FT_Load_Glyph(itFont->_face, glyph_index, FT_LOAD_NO_HINTING), u8"FreeType2LoadGlyphError");
+
         Outline outline;
         if (itFont->_isOTF)
         {

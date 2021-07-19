@@ -325,7 +325,7 @@ float bezier3CoverageX(in vec2 p1, in vec2 p2, in vec2 p3, in vec2 p4, in vec2 p
         }
 
         // three real roots, but two of them are equal:
-        if(discriminant === 0)
+        if(discriminant == 0)
         {
             u1 = q2 < 0 ? cuberoot(-q2) : -cuberoot(q2);
             root1 = 2*u1 - a/3;

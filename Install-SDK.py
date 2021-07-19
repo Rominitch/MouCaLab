@@ -18,7 +18,7 @@ zipProgram = os.path.join("C:\Program Files", "7-Zip", "7z.exe")
 packages = [ ("assimp-5.0.0.rc1.7z",    "13T0WsgNH8Kl8eEiGeYMzv2yawFCJQZli", None,                                   (None, "assimp5.0.0rc1.dll", "assimp5.0.0rc1D.dll")),
              ("Boost-1.76.0.7z",        "19LK6miLn-JPI3q9bjun1ZvBLLxOfqMfr", None,                                   (None)),
              ("FreeImage-3.180.7z",     "1x8QCnw4X6xegu8OwLF6CqjB-H5G2_xT0", None,                                    (os.path.join("Dist", "x64"), "FreeImage.dll", "FreeImaged.dll")),
-             ("Freetype-2.10.2.7z",     "1zF5L61Fo4m3alCdq1xHk_l0C_tJDsMYL", None,                                    None),
+             ("Freetype-2.10.4.7z",     "15176cE4yZdkMQ4oB_8mVRFZnU8j2u5lV", None,                                    None),
              ("glfw-3.3.4.7z",          "1x2J-iTEZ8Q8EI8_0U7wsji47bEKdYukG", None,                                    None),
              ("glm-0.9.9.8.7z",         "1Ec6aQyTo7DGd79w52OhjL67jgWKlEq4g", None,                                    None),
              ("googletest-1.10.0.7z",   "1I8tvgpFE03YUChGELMtFTpqfmuzo0g-Q", None,                                    (None, "gtest.dll", "gtestd.dll")),
