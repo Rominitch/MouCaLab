@@ -144,11 +144,6 @@ int Outline::FTConic(const FT_Vector* control, const FT_Vector* point, Outline* 
 int Outline::FTCubic(const FT_Vector* control1, const FT_Vector* control2, const FT_Vector* to, Outline* o)
 {
     const glm::vec2 to_p = glm::vec2(to->x, to->y);
-    //const glm::vec2 p = RT::Maths::lerp(o->_points.back(), to_p * _scale, 0.5f);
-    //o->_points.emplace_back(p);
-    //o->_points.emplace_back(to_p * _scale);
-
-    //o->_outlinePoints[latestCurve].setIndex(static_cast<uint32_t>(o->_outlinePoints.size()));
     o->_outlinePoints.emplace_back(Point(scale(to_p * _scale2, o), Code::Cubic, static_cast<uint32_t>(o->_controlPoints.size())));
     o->_controlPoints.emplace_back(scale(glm::vec2(control1->x, control1->y) * _scale2, o));
     o->_controlPoints.emplace_back(scale(glm::vec2(control2->x, control2->y) * _scale2, o));

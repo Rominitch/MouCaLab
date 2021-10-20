@@ -21,6 +21,7 @@
 #include <LibVulkan/include/VKContextDevice.h>
 #include <LibVulkan/include/VKCommand.h>
 #include <LibVulkan/include/VKCommandBuffer.h>
+#include <LibVulkan/include/VKCommandBufferSurface.h>
 #include <LibVulkan/include/VKDescriptorSet.h>
 #include <LibVulkan/include/VKSequence.h>
 #include <LibVulkan/include/VKSubmitInfo.h>
@@ -71,6 +72,17 @@ struct GlyphInstance
     GlyphInstance():
     glyph_index(0), sharpness(1.0f)
     {}
+};
+
+class FontSVGTest;
+struct RefreshSystem
+{
+    FontSVGTest* testManager;
+    MouCaGraphic::Engine3DXMLLoader* loader;
+    MouCaGraphic::VulkanManager* manager;
+
+    void afterShaderRefresh();
+    
 };
 
 class FontSVGTest : public MouCaLabTest
@@ -130,7 +142,7 @@ class FontSVGTest : public MouCaLabTest
         uint32_t                                      _glyphCount;
 
         // Performances / GUI
-        std::array<bool, 5> _modeGUI = { false, false, false, false, false };
+        std::array<bool, 6> _modeGUI = { false, false, false, false, false, false };
         uint32_t      _nbChars;
         TimeElapsed   _charAppends;
         TimeElapsed   _fontBuild;
@@ -138,11 +150,14 @@ class FontSVGTest : public MouCaLabTest
         uint32_t      _startDemo;
         bool          _hasEmoji = false;
 
+        RefreshSystem rs;
+
         static std::vector<const char*> _textDebug;
         static std::vector<const char*> _text;
         static std::vector<const char*> _textASCII;
         static std::vector<const char*> _textU8;
         static std::vector<const char*> _textEmoji;
+        static std::vector<const char*> _textHarfbuzz;
 
         static Core::Path _fontRoboto;
         static Core::Path _fontNoto;
@@ -349,7 +364,7 @@ class FontSVGTest : public MouCaLabTest
         
         void demoPage(const uint32_t idPage, GUI::FontSVGManager& fontSVGManager)
         {
-            const std::array<std::vector<Text>, 5> _pages
+            const std::array<std::vector<Text>, 6> _pages
             {{
                 //Page 0 
                 { Text(_text, glm::vec2(-0.7f, -0.51f), &_fontFamilyRoboto, 0.0003f, 0.045f) },
@@ -366,6 +381,8 @@ class FontSVGTest : public MouCaLabTest
                 { Text(_textDebug, glm::vec2(-0.85f, 0.2f), &_fontFamilyNoto, 0.0027f, 0.45f) },
                 //Page 4
                 { Text(_textEmoji, glm::vec2(-0.85f, 0.2f), &_fontFamilyEmoji, 0.0027f, 0.45f) },
+                //Page 5
+                { Text(_textHarfbuzz, glm::vec2(-0.7f, -0.51f), &_fontFamilyNoto, 0.0003f, 0.045f) },
             }};
 
             // Build page from empty manager
@@ -508,7 +525,7 @@ class FontSVGTest : public MouCaLabTest
                 }
                 if (_hasEmoji)
                 {
-                    if(ImGui::RadioButton("Emoji", _modeGUI[3]))
+                    if(ImGui::RadioButton("Emoji", _modeGUI[4]))
                     {
                         _modeGUI.fill(false);
                         _modeGUI[4] = true;
@@ -516,6 +533,14 @@ class FontSVGTest : public MouCaLabTest
                         change = true;
                         pageId = 4;
                     }
+                }
+                if(ImGui::RadioButton("Harfbuzz", _modeGUI[5]))
+                {
+                    _modeGUI.fill(false);
+                    _modeGUI[5] = true;
+
+                    change = true;
+                    pageId = 5;
                 }
                 
                 if(change)
@@ -663,6 +688,12 @@ std::vector<const char*> FontSVGTest::_textEmoji =
     u8"😁🤮💃🦊"
 };
 
+std::vector<const char*> FontSVGTest::_textHarfbuzz =
+{
+    u8"a̜͌m̟͆u̼̓s᷂ͥe̱᷄"
+};
+
+
 Core::Path FontSVGTest::_fontRoboto(u8"Roboto-Medium.ttf");
 
 Core::Path FontSVGTest::_fontNoto(u8"NotoSans-Regular.ttf");
@@ -675,6 +706,24 @@ Core::Path FontSVGTest::_fontMevNo(u8"mevno1.ttf");
 //Core::Path FontSVGTest::_fontNotoEmoji(u8"NotoColorEmoji.ttf");                       //Not working
 //Core::Path FontSVGTest::_fontNotoEmoji(u8"NotoColorEmoji_WindowsCompatible.ttf");     //Not working
 Core::Path FontSVGTest::_fontSeguiEmoji(u8"seguiemj.ttf");
+
+
+void RefreshSystem::afterShaderRefresh()
+{
+    MOUCA_DEBUG("DEMO: Shader");
+
+    testManager->updateCommandBuffers(*loader);
+    testManager->updateCommandBuffersSurface(*loader);
+
+    // Step4 : Restart all commands
+    for (auto& window : manager->getContextWindows())
+    {
+        window->getCommandBuffer().execute(VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+        window->setReady(true);
+    }
+
+    manager->getDevices().front()->getDevice().waitIdle();
+}
 
 TEST_F(FontSVGTest, run)
 {
@@ -804,6 +853,11 @@ TEST_F(FontSVGTest, run)
     // Execute commands
     updateCommandBuffers(loader);
     updateCommandBuffersSurface(loader);
+
+    rs.testManager = this;
+    rs.loader = &loader;
+    rs.manager = &manager;
+    manager.getAfterShaderChanged().connectMember(&rs, &RefreshSystem::afterShaderRefresh);
 
 //-------------------------------------------------------------------------------------------------
 //                                             Step 5: Play

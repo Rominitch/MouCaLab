@@ -224,6 +224,13 @@ void FontFamilySVG::initialize(FT_Library library)
         executeFT(FT_Select_Charmap(font._face, ft_encoding_unicode),                     u8"FreeType2NewFaceError");
 
         executeFT(FT_Set_Char_Size(font._face, 0, 6400, 96, 96),                          u8"FreeType2NewFaceError");
+
+        FT_Palette_Data palette;
+        const auto error = FT_Palette_Data_Get(font._face, &palette);
+        if (error)
+        {
+            printf("%d", error);
+        }
     }
 
     MOUCA_POST_CONDITION(!isNull());

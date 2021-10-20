@@ -87,8 +87,8 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugReport::debugCallback(VkDebugReportFlagsEXT 
         print = u8"Vulkan: " + typeError + u8":\t" + message + u8"\r\n";
     }
 
-    std::cerr << print.c_str() << std::endl;
-    OutputDebugString(Core::convertToOS(print).c_str());
+    MOUCA_DEBUG(print);
+    BT_PRINT_MESSAGE(print);
 
     return (flags & VK_DEBUG_REPORT_ERROR_BIT_EXT) ? VK_TRUE : VK_FALSE;
 }

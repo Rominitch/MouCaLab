@@ -41,7 +41,7 @@ void ShaderFile::compile()
     // Check rc code
     if (rc != 0)
     {
-        MOUCA_THROW_ERROR_1(u8"Vulkan", u8"ShaderCompilationError", "Error code: " + std::to_string(rc));
+        MOUCA_THROW_ERROR_1(u8"Vulkan", u8"ShaderCompilationError", "Command: " + cmd + "\nError code: " + std::to_string(rc));
     }
     else
     {

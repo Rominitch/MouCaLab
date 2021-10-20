@@ -252,8 +252,10 @@ float bezier3CoverageX(in vec2 p1, in vec2 p2, in vec2 p3, in vec2 p4, in vec2 p
     float coverage = 0.0;
     if (max(max(max(p1.x, p2.x), p3.x), p4.x) * pixelsPerEm.x < -0.5)
         return coverage;
-    /*
-    // Split code into 
+
+    return linearCoverage(p1, p4, pixelsPerEm);
+
+    // Search resolution case
     uint code = 0;
     if(p1.x > 0.0)
         code = (0x97D348U >> (((p4.x > 0.0) ? 3U : 0U) +
@@ -266,6 +268,26 @@ float bezier3CoverageX(in vec2 p1, in vec2 p2, in vec2 p3, in vec2 p4, in vec2 p
 
     if (code != 0U)
     {
+        // 3 roots
+        if (code != 7U)
+        {
+            coverage = linearCoverage(p1, p4, pixelsPerEm);
+        }
+        else if (code != 4U)
+        {
+            coverage = linearCoverage(p1, p4, pixelsPerEm);
+        }
+        else if (code != 2U)
+        {
+            coverage = linearCoverage(p1, p4, pixelsPerEm);
+        }
+        else if (code != 1U)
+        {
+            coverage = linearCoverage(p1, p4, pixelsPerEm);
+        }
+        else
+            coverage = linearCoverage(p1, p4, pixelsPerEm);
+        /*
         // Equation: C(t) = p1(1-t)^3 + p2 3t(1-t)^2 + p3 t^2(1-t) + p4 t^3
 
         // Simplify a t^3 + b t^2 + c t + p1
@@ -339,8 +361,8 @@ float bezier3CoverageX(in vec2 p1, in vec2 p2, in vec2 p3, in vec2 p4, in vec2 p
         v1 = cuberoot(sd + q2);
         root1 = u1 - v1 - a/3;
         return [root1].filter(accept);
+        */
     }
-    */
 
     return coverage;
 }
@@ -431,10 +453,9 @@ void main()
         {
             uint indexPC = pointBuffer.points[i+1].code >> shiftCode;
             
-                
             vec2 p1 = s - in_TexCoord;
             vec2 p2 = controlBuffer.points[indexPC] - in_TexCoord;
-            vec2 p3 = e - in_TexCoord;
+            vec2 p3 = e - in_TexCoord;  
                         
             coverage += bezier2Coverage(p1, p2, p3, pixelsPerEm);
         }
@@ -452,5 +473,5 @@ void main()
     
     out_color = vec4(0, 0, 0, coverage);
     
-    //showPoints();
+    showPoints();
 }

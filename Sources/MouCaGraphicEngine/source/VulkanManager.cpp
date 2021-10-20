@@ -276,14 +276,15 @@ void VulkanManager::afterStateSizeWindow(RT::Window* window, RT::Window::StateSi
 
 void VulkanManager::execute(const uint32_t deviceID, const uint32_t sequenceID, bool sync) const
 {
-    const_cast<VulkanManager*>(this)->_locked.lock();
-    
     MOUCA_ASSERT(deviceID < _devices.size());
     auto context = _devices.at(deviceID);
+
     MOUCA_ASSERT(sequenceID < context->getQueueSequences().size());
     MOUCA_ASSERT(context->getQueueSequences().at(sequenceID).use_count() > 0);
     MOUCA_ASSERT(!context->getQueueSequences().at(sequenceID).get()->empty());
-    for(const auto& sequence : *context->getQueueSequences().at(sequenceID))
+    
+    const_cast<VulkanManager*>(this)->_locked.lock();
+    for (const auto& sequence : *context->getQueueSequences().at(sequenceID))
     {
         if (sequence->execute(context->getDevice()) != VK_SUCCESS)
         {
@@ -353,15 +354,29 @@ void VulkanManager::afterShaderEdition(Core::Resource& resource)
                                  [&](auto& current) {return current.first.lock().get() == &resource; });
     if (itShader != _shaders.cend())
     {
-        _locked.lock();
+        bool compilation = true;
+        auto shaderFile = itShader->first.lock();
 
         try
         {
-            MOUCA_DEBUG(u8"Vulkan: Reload shader " << itShader->first.lock()->getTrackedFilename());
+            MOUCA_DEBUG(u8"Vulkan: Reload shader " << shaderFile->getTrackedFilename());
 
             // Compile new version
-            auto shaderFile = itShader->first.lock();
             shaderFile->compile();
+        }
+        catch (const Core::Exception& e)
+        {
+            MOUCA_UNUSED(e);
+            // Keep old shader
+            MOUCA_DEBUG("Vulkan: Reload shader failure with "<< e.read(0).getErrorLabel() << " " << (e.read(0).getParameters().empty() ? "" : e.read(0).getParameters().front()));
+            compilation = false;
+        }
+        catch(...)
+        {}
+
+        if(compilation)
+        {
+            _locked.lock();
 
             // ------ Brutal algo ------------------
             // Step1 : disable all
@@ -372,7 +387,7 @@ void VulkanManager::afterShaderEdition(Core::Resource& resource)
             }
 
             context->getDevice().waitIdle();
-
+            
             // Step2 : Rebuild module ...
             auto module = itShader->second.second.lock();
             module->release(context->getDevice());
@@ -389,29 +404,22 @@ void VulkanManager::afterShaderEdition(Core::Resource& resource)
 
                 pipeline->initialize(context->getDevice(), pipeline->getRenderPass(), pipeline->getPipelineLayout(), pipeline->getPipelineCache());
             }
-
+            /*
             // Step4 : Restart all commands
             for (auto& window : _windows)
             {
                 window->getCommandBuffer().execute(VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
                 window->setReady(true);
             }
+            */
 
             context->getDevice().waitIdle();
-        }
-        catch (const Core::Exception& e)
-        {
-            MOUCA_UNUSED(e);
-            // Keep old shader
-            MOUCA_DEBUG("Vulkan: Reload shader failure with "<< e.read(0).getErrorLabel() << " " << (e.read(0).getParameters().empty() ? "" : e.read(0).getParameters().front()));
-        }
-        catch(...)
-        {}
 
-        _locked.unlock();
+            // Send event
+            _afterShaderChanged.emit();
 
-        // Send event
-        _afterShaderChanged.emit();
+            _locked.unlock();
+        }
     }
 }
 
