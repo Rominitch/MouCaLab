@@ -14,7 +14,7 @@ namespace RT
             Matrix4 projectionMatrix;
 
         public:
-            Camera(const Core::String& label = u8"Default Camera"):
+            Camera(const Core::String& label = "Default Camera"):
             Object(TCamera, label)
             {}
 

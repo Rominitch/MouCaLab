@@ -69,7 +69,7 @@ namespace Core
         template<typename DataType>
         static DataType angleCyclic(DataType angleRad)
         {
-            MOUCA_PRE_CONDITION(!std::numeric_limits<DataType>::is_integer);
+            MouCa::preCondition(!std::numeric_limits<DataType>::is_integer);
 
             const DataType f2PI = PI<DataType> * static_cast<DataType>(2.0);
             bool normalized;

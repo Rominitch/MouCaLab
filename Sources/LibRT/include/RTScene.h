@@ -40,7 +40,7 @@ namespace RT
 
         public:
             Scene():
-            _root(Object::TObject, u8"SceneRoot")
+            _root(Object::TObject, "SceneRoot")
             {
                 MOUCA_PRE_CONDITION( isNull() );
             }

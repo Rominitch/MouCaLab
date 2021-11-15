@@ -20,7 +20,7 @@ void File::open(const StringOS& mode)
     const errno_t eError = _wfopen_s(&_file, _filename.c_str(), mode.c_str());
     if(eError!=0)
     {
-        MOUCA_THROW_ERROR_1(u8"BasicError", u8"InvalidPathError", convertToU8(_filename));
+        MOUCA_THROW_ERROR_1("BasicError", "InvalidPathError", convertToU8(_filename));
     }
     else
     {
@@ -107,7 +107,7 @@ size_t File::read(Core::ByteBuffer& buffer)
     }
     else
     {
-        MOUCA_THROW_ERROR_1(u8"BasicError", u8"InvalidFileRead", convertToU8(_filename));
+        MOUCA_THROW_ERROR_1("BasicError", "InvalidFileRead", convertToU8(_filename));
     }
     return mem;
 }
@@ -126,9 +126,22 @@ size_t File::write(const std::stringstream& stream)
     return write(stream.str().c_str(), stream.str().size()*sizeof(char));
 }
 
-StringUTF8 File::extractUTF8() const
+StringCPP File::extractUTF8() const
 {
-    return extractString();
+    const size_t fileSize = getSizeOfFile();
+    if (fileSize == 0)
+        return std::string();
+
+    //Create buffer
+    std::vector<wchar_t> txtline;
+    txtline.resize(fileSize);
+
+    //Read all file
+    read(0, txtline.data(), fileSize);
+
+    //Build converter and return string
+    std::wstring utf8(txtline.begin(), txtline.end());
+    return Core::convertToU8(utf8);
 }
 
 std::string File::extractString() const
@@ -162,7 +175,7 @@ void File::setFilePosition(const size_t positionInFile) const
 
     if(fsetpos(_file, &pPosition) != 0)
     {
-        MOUCA_THROW_ERROR(u8"BasicError", u8"InvalidReadingPositionError");
+        MOUCA_THROW_ERROR("BasicError", "InvalidReadingPositionError");
     }
 }
 
@@ -172,7 +185,7 @@ size_t File::getFilePosition() const
     fpos_t pPosition = 0;
     if(fgetpos(_file, &pPosition) != 0)
     {
-        MOUCA_THROW_ERROR(u8"BasicError", u8"InvalidReadingPositionError");
+        MOUCA_THROW_ERROR("BasicError", "InvalidReadingPositionError");
     }
     return (size_t)pPosition;
 }

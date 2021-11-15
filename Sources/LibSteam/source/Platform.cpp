@@ -29,19 +29,19 @@ void Platform::initialize()
     MOUCA_PRE_CONDITION(isNull());
 
     if(SteamAPI_RestartAppIfNecessary(k_uAppIdInvalid))
-        MOUCA_THROW_ERROR(u8"Steam", u8"APINeedRestartError");
+        MOUCA_THROW_ERROR("Steam", "APINeedRestartError");
     
     if(!Steamworks_InitCEGLibrary())
-        MOUCA_THROW_ERROR(u8"Steam", u8"CEGInitializationError");
+        MOUCA_THROW_ERROR("Steam", "CEGInitializationError");
 
     if(!SteamAPI_Init())
-        MOUCA_THROW_ERROR(u8"Steam", u8"APIInitializationError");
+        MOUCA_THROW_ERROR("Steam", "APIInitializationError");
 
     // DRM self check
     Steamworks_SelfCheck();
 
     if(!SteamInput()->Init())
-        MOUCA_THROW_ERROR(u8"Steam", u8"InputInitializationError");
+        MOUCA_THROW_ERROR("Steam", "InputInitializationError");
 
     _initialize = true;
 

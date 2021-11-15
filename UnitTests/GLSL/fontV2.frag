@@ -253,25 +253,25 @@ float bezier3CoverageX(in vec2 p1, in vec2 p2, in vec2 p3, in vec2 p4, in vec2 p
     if (max(max(max(p1.x, p2.x), p3.x), p4.x) * pixelsPerEm.x < -0.5)
         return coverage;
 
-    return linearCoverage(p1, p4, pixelsPerEm);
-
     // Search resolution case
     uint code = 0;
-    if(p1.x > 0.0)
-        code = (0x97D348U >> (((p4.x > 0.0) ? 3U : 0U) +
-                              ((p3.x > 0.0) ? 6U : 0U) + 
-                              ((p2.x > 0.0) ? 12U : 0U)) ) & 7U;
-    else
-        code = (0x06CBECU >> (((p4.x > 0.0) ? 3U  : 0U) +
+    if (p1.x > 0.0)
+        code = (0x9e9a40U >> (((p4.x > 0.0) ? 3U : 0U) +
+                              ((p3.x > 0.0) ? 6U : 0U) +
+                              ((p2.x > 0.0) ? 12U : 0U))) & 7U;
+    else 
+        code = (0x069be0U >> (((p4.x > 0.0) ? 3U  : 0U) +
                               ((p3.x > 0.0) ? 6U  : 0U) + 
                               ((p2.x > 0.0) ? 12U : 0U)) ) & 7U;
-
+   
     if (code != 0U)
     {
+        coverage = linearCoverage(p1, p4, pixelsPerEm);
+        /*
         // 3 roots
         if (code != 7U)
         {
-            coverage = linearCoverage(p1, p4, pixelsPerEm);
+            
         }
         else if (code != 4U)
         {
@@ -287,6 +287,7 @@ float bezier3CoverageX(in vec2 p1, in vec2 p2, in vec2 p3, in vec2 p4, in vec2 p
         }
         else
             coverage = linearCoverage(p1, p4, pixelsPerEm);
+        */
         /*
         // Equation: C(t) = p1(1-t)^3 + p2 3t(1-t)^2 + p3 t^2(1-t) + p4 t^3
 

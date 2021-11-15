@@ -6,8 +6,8 @@ TEST(CoreErrorData, createDefault)
 {
     Core::ErrorData error;
 
-    EXPECT_EQ(u8"BasicError",   error.getLibraryLabel());
-    EXPECT_EQ(u8"UnknownError", error.getErrorLabel());
+    EXPECT_EQ("BasicError",   error.getLibraryLabel());
+    EXPECT_EQ("UnknownError", error.getErrorLabel());
     EXPECT_EQ("",               error.getFile());
     EXPECT_EQ(0,                error.getLine());
     EXPECT_EQ(0,                error.getNbParameters());
@@ -15,11 +15,11 @@ TEST(CoreErrorData, createDefault)
 
 TEST(CoreErrorData, createParam)
 {
-    const Core::String mylib(u8"DemoLib");
-    const Core::String myerror(u8"DemoError");
+    const Core::String mylib("DemoLib");
+    const Core::String myerror("DemoError");
     const Core::String myfile("c:\\pouet\\error.cpp");
     const int myLine = 12345;
-    const Core::String myParameter1(u8"parameter1");
+    const Core::String myParameter1("parameter1");
 
     Core::ErrorData error1(mylib, myerror, myfile, myLine);
 
@@ -50,11 +50,11 @@ TEST(CoreErrorData, createParam)
 
 TEST(CoreErrorData, convertMessage)
 {
-    const Core::String mylib(u8"DemoLib");
-    const Core::String myerror(u8"DemoError");
-    const Core::String myParameter1(u8"parameter1");
+    const Core::String mylib("DemoLib");
+    const Core::String myerror("DemoError");
+    const Core::String myParameter1("parameter1");
 
-    const Core::String message(u8"%P0");
+    const Core::String message("%P0");
 
     // Parameters tests
     {
@@ -67,14 +67,14 @@ TEST(CoreErrorData, convertMessage)
         error << myParameter1;
         EXPECT_EQ(myParameter1, error.convertMessage(message));
     
-        EXPECT_EQ(myParameter1+u8"-%P1", error.convertMessage(u8"%P0-%P1"));
+        EXPECT_EQ(myParameter1+"-%P1", error.convertMessage("%P0-%P1"));
     }
 
     // End of line
     {
         Core::ErrorData error(mylib, myerror, __FILE__, __LINE__);
-        EXPECT_EQ(u8"\r\n", error.convertMessage(u8"\n"));
+        EXPECT_EQ("\r\n", error.convertMessage("\n"));
 
-        EXPECT_EQ(u8"\r\nabc\r\nefgh\tijkl\r\n", error.convertMessage(u8"\nabc\nefgh\tijkl\n"));
+        EXPECT_EQ("\r\nabc\r\nefgh\tijkl\r\n", error.convertMessage("\nabc\nefgh\tijkl\n"));
     }
 }

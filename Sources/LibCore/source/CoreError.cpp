@@ -16,7 +16,7 @@ Core::String ErrorData::convertMessage(const Core::String& strMessage) const
 	{
 		//Compute parameter label
 		StringStream ssParameter;
-		ssParameter<<u8"%P"<<szParameter;
+		ssParameter<<"%P"<<szParameter;
 
 		size_t szPos=0;
 		while((szPos=strFinalMessage.find(ssParameter.str()))!=String::npos)
@@ -28,9 +28,9 @@ Core::String ErrorData::convertMessage(const Core::String& strMessage) const
 
 	//Add \n\r
 	size_t szPos=0;
-	while((szPos=strFinalMessage.find(u8"\n", szPos))!=String::npos)
+	while((szPos=strFinalMessage.find("\n", szPos))!=String::npos)
 	{
-		strFinalMessage.insert(szPos, u8"\r");
+		strFinalMessage.insert(szPos, "\r");
 		szPos += 2;
 	}
 

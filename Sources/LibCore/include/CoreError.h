@@ -26,8 +26,8 @@ namespace Core
             ErrorData():
             _filePath(), _line(0)
             {
-                _errorDefinition[static_cast<size_t>(Code::LibraryCode)] = u8"BasicError";
-                _errorDefinition[static_cast<size_t>(Code::ErrorCode)]   = u8"UnknownError";
+                _errorDefinition[static_cast<size_t>(Code::LibraryCode)] = "BasicError";
+                _errorDefinition[static_cast<size_t>(Code::ErrorCode)]   = "UnknownError";
             }
 
             //------------------------------------------------------------------------

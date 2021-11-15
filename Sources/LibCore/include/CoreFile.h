@@ -173,13 +173,13 @@ namespace Core
             /// \brief  Extract all whole file into string UTF-8 buffer.
             /// 
             /// \returns UTF-8 buffer with all file data.
-            StringUTF8 extractUTF8() const;
+            StringCPP extractUTF8() const;
 
             //------------------------------------------------------------------------
             /// \brief  Extract all whole file into string buffer.
             /// 
             /// \returns Buffer with all file data.
-            std::string extractString() const;
+            StringCPP extractString() const;
 
             //------------------------------------------------------------------------
             /// \brief  Check if current file exists on disk.

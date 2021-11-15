@@ -117,11 +117,11 @@ String ErrorManager::getError(const ErrorData& error) const
         
         MOUCA_ASSERT(pLibrary != nullptr);
         const ErrorDescription* pDescription = pLibrary->getDescription(error.getErrorLabel());
-        ssStream << error.convertMessage(pDescription->getMessage()) << u8"\r\n" << error.convertMessage(pDescription->getSolution());
+        ssStream << error.convertMessage(pDescription->getMessage()) << "\r\n" << error.convertMessage(pDescription->getSolution());
     }
     else
     {
-        ssStream << error.getLibraryLabel() << u8" " << error.getErrorLabel();
+        ssStream << error.getLibraryLabel() << " " << error.getErrorLabel();
     }
     return ssStream.str();
 }

@@ -54,7 +54,7 @@ void XercesParser::openXMLFile(const Core::Path& strFilePath)
     }
     catch(const xercesc::XMLException&)
     {
-        MOUCA_THROW_ERROR_1(u8"BasicError", u8"NULLPointerError", u8"_parser"); // DEV Issue: Missing XML::Platform !
+        MOUCA_THROW_ERROR_1("BasicError", "NULLPointerError", "_parser"); // DEV Issue: Missing XML::Platform !
     }
     MOUCA_ASSERT(_parser != nullptr);
 
@@ -72,7 +72,7 @@ void XercesParser::openXMLFile(const Core::Path& strFilePath)
         if(_parser->getDocument()==nullptr)
         {
             _parser.reset();
-            MOUCA_THROW_ERROR_1(u8"BasicError", u8"NULLPointerError", u8"_parser->getDocument()");
+            MOUCA_THROW_ERROR_1("BasicError", "NULLPointerError", "_parser->getDocument()");
         }
     }
     catch(const xercesc::XMLException&)
@@ -98,7 +98,7 @@ ResultUPtr XercesParser::getNode(const Core::String& strName) const
         }
         else
         {
-            MOUCA_THROW_ERROR(u8"BasicError", u8"NULLPointerError");
+            MOUCA_THROW_ERROR("BasicError", "NULLPointerError");
         }
     }
     else
@@ -110,7 +110,7 @@ ResultUPtr XercesParser::getNode(const Core::String& strName) const
 
     if(nodeList==nullptr)
     {
-        MOUCA_THROW_ERROR( u8"BasicError", u8"NULLPointerError" );
+        MOUCA_THROW_ERROR( "BasicError", "NULLPointerError" );
     }
 
     auto result = std::make_unique<XercesResult>();
@@ -169,7 +169,7 @@ NodeUPtr XercesParser::searchNodeGeneric(const ResultUPtr& result, const Core::S
         }
         else
         {
-            MOUCA_THROW_ERROR_1(u8"XMLError", u8"XMLMissingNodeError", parameterLabel);
+            MOUCA_THROW_ERROR_1("XMLError", "XMLMissingNodeError", parameterLabel);
         }
     }
     return node;
@@ -201,7 +201,7 @@ ResultUPtr XercesParser::getNodeFrom(const Node& node, const Core::String& strNa
 
     if (nodeList == nullptr)
     {
-        MOUCA_THROW_ERROR(u8"BasicError", u8"NULLPointerError");
+        MOUCA_THROW_ERROR("BasicError", "NULLPointerError");
     }
 
     auto result = std::make_unique<XercesResult>();

@@ -41,7 +41,7 @@ namespace RT
 
     protected:
         /// Constructor
-        explicit Geometry(const Type type = TGeometry, const Core::String& label = u8"Default Geometry") :
+        explicit Geometry(const Type type = TGeometry, const Core::String& label = "Default Geometry") :
         Object(type, label)
         {}
 
@@ -55,7 +55,7 @@ namespace RT
     {
         public:
             /// Constructor
-            explicit GeometryExternal(const Core::String& label = u8"Default Geometry external"):
+            explicit GeometryExternal(const Core::String& label = "Default Geometry external"):
             Geometry(TGeometry, label)
             {}
 
@@ -98,7 +98,7 @@ namespace RT
     {
         public:
             /// Constructor
-            explicit GeometryInternal(const Core::String& label = u8"Default Geometry") :
+            explicit GeometryInternal(const Core::String& label = "Default Geometry") :
             Geometry(TGeometry, label)
             {}
 

@@ -41,5 +41,5 @@ TEST(Scene, root)
 {
     RT::Scene scene;
     const RT::Object& root = scene.getRoot();
-    EXPECT_EQ(u8"SceneRoot", root.getLabel());
+    EXPECT_EQ("SceneRoot", root.getLabel());
 }

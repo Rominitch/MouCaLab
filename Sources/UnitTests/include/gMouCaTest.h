@@ -39,7 +39,7 @@ class MouCaEnvironment : public testing::Environment
 
             for (int id = 1; id < argc; ++id)
             {
-                if (Core::String(argv[id]).compare(u8"--demonstrator") == 0)
+                if (Core::String(argv[id]).compare("--demonstrator") == 0)
                 {
                     _isDemonstrator = true;
                 }
@@ -128,7 +128,7 @@ namespace testing
     } \
     catch (const boost::system::system_error & e) { \
       std::stringstream ss; \
-      ss << u8"BOOST Exception: " << e.what(); \
+      ss << "BOOST Exception: " << e.what(); \
       std::cout << ss.str() << std::endl; \
       goto GTEST_CONCAT_TOKEN_(gtest_label_testnothrow_, __LINE__); \
     } \

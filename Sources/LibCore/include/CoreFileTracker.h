@@ -98,7 +98,7 @@ namespace Core
 
             Signal<Resource&>& signalFileChanged()
             {
-                MOUCA_PRE_CONDITION(_thread != nullptr);
+                MouCa::preCondition(_thread != nullptr);
                 return _thread->signalFileChanged();
             }
 

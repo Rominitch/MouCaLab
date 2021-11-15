@@ -5,24 +5,36 @@
 
 #include <LibCore/include/CoreString.h>
 
+namespace MouCa
+{
+    void assertHeader(const bool condition, const std::string_view header, const std::source_location& location = std::source_location::current());
+
+    void preCondition(const bool condition, const std::source_location& location = std::source_location::current());
+
+    void postCondition(const bool condition, const std::source_location& location = std::source_location::current());
+}
+
 /// Assertion 
 #ifndef NDEBUG
-#   define MOUCA_ASSERT_HEADER(condition, header)                                                                                  \
+    
+    
+
+#   define MOUCA_ASSERT_HEADER(condition, header)                                                                               \
     if(!static_cast<bool>(condition))                                                                                           \
     {                                                                                                                           \
         Core::String message;                                                                                                   \
-        message += Core::String(__FILE__) + Core::String(u8"(") + std::to_string(__LINE__)                                      \
-                + Core::String(u8"): [ERROR] ")+ Core::String(#header) + Core::String(u8" - ")                                  \
-                + Core::String(#condition) + Core::String(u8"\n");                                                              \
+        message += Core::String(__FILE__) + Core::String("(") + std::to_string(__LINE__)                                        \
+                + Core::String("): [ERROR] ")+ Core::String(#header) + Core::String(" - ")                                      \
+                + Core::String(#condition) + Core::String("\n");                                                                \
         std::cerr << message;                                                                                                   \
         OutputDebugString(Core::convertToOS(message).c_str());                                                                  \
         assert(condition);                                                                                                      \
     }
 
-#   define MOUCA_PRE_CONDITION(condition)  MOUCA_ASSERT_HEADER(condition, u8"Pre-condition assert")
-#   define MOUCA_POST_CONDITION(condition) MOUCA_ASSERT_HEADER(condition, u8"Post-condition assert")
+#   define MOUCA_PRE_CONDITION(condition)  MOUCA_ASSERT_HEADER(condition, "Pre-condition assert")
+#   define MOUCA_POST_CONDITION(condition) MOUCA_ASSERT_HEADER(condition, "Post-condition assert")
 
-#   define MOUCA_ASSERT(condition) MOUCA_ASSERT_HEADER(condition, u8"Application assert")
+#   define MOUCA_ASSERT(condition) MOUCA_ASSERT_HEADER(condition, "Application assert")
 
 #   define MOUCA_LAST_REFERENCED(iterable)                                                                                         \
     for(const auto& iter : iterable)                                                                                            \
@@ -40,10 +52,10 @@
     if(ref != cmp)                                                                                                              \
     {                                                                                                                           \
         Core::String message;                                                                                                   \
-        message += Core::String(__FILE__) + Core::String(u8"(") + std::to_string(__LINE__)                                      \
-                + Core::String(u8"): [ERROR] Application assert - Compare:\n")                                                  \
-                + Core::String(u8"[ERROR] ") + Core::String(#ref) + Core::String(u8" = ") + std::to_string(ref) + Core::String(u8"\n")  \
-                + Core::String(u8"[ERROR] ") + Core::String(#cmp) + Core::String(u8" = ") + std::to_string(cmp) + Core::String(u8"\n"); \
+        message += Core::String(__FILE__) + Core::String("(") + std::to_string(__LINE__)                                      \
+                + Core::String("): [ERROR] Application assert - Compare:\n")                                                  \
+                + Core::String("[ERROR] ") + Core::String(#ref) + Core::String(" = ") + std::to_string(ref) + Core::String("\n")  \
+                + Core::String("[ERROR] ") + Core::String(#cmp) + Core::String(" = ") + std::to_string(cmp) + Core::String("\n"); \
         std::cerr << message;                                                                                                   \
         OutputDebugString(Core::convertToOS(message).c_str());                                                                  \
         assert(ref == cmp);                                                                                                     \
@@ -58,12 +70,12 @@ void assertBetween(const DataType ref, const DataType lowEd, const DataType High
     if (lowEd > ref || ref >= HighTh)                                                                             
     {                                                                                                             
         Core::String message;                                                                                       
-        message += file + Core::String(u8"(") + std::to_string(line)
-        + Core::String(u8"): [ERROR] Application assert - Between:\n")
-        + Core::String(u8"[ERROR] ") + lowName + Core::String(u8" <= ") + refName
-        + Core::String(u8" < ") + highName + Core::String(u8"\n")
-        + Core::String(u8"[ERROR] ") + std::to_string(lowEd) + Core::String(u8" <= ") + std::to_string(ref)
-        + Core::String(u8" < ") + std::to_string(HighTh) + Core::String(u8"\n");
+        message += file + Core::String("(") + std::to_string(line)
+        + Core::String("): [ERROR] Application assert - Between:\n")
+        + Core::String("[ERROR] ") + lowName + Core::String(" <= ") + refName
+        + Core::String(" < ") + highName + Core::String("\n")
+        + Core::String("[ERROR] ") + std::to_string(lowEd) + Core::String(" <= ") + std::to_string(ref)
+        + Core::String(" < ") + std::to_string(HighTh) + Core::String("\n");
         std::cerr << message;                                                                                                  
         OutputDebugString(Core::convertToOS(message).c_str());                                                                   
         assert(lowEd <= ref && ref < HighTh);                                                                                  
@@ -78,12 +90,12 @@ void assertBetween(const uint8_t ref, const uint8_t lowEd, const uint8_t HighTh,
     if (lowEd > ref || ref >= HighTh)                                                                                          
     {                                                                                                                          
         Core::String message;                                                                                                    
-        message += file + Core::String(u8"(") + std::to_string(line)
-        + Core::String(u8"): [ERROR] Application assert - Between:\n")
-        + Core::String(u8"[ERROR] ") + lowName + Core::String(u8" <= ") + refName
-        + Core::String(u8" < ") + highName + Core::String(u8"\n")
-        + Core::String(u8"[ERROR] ") + std::to_string(static_cast<int>(lowEd)) + Core::String(u8" <= ") + std::to_string(static_cast<int>(ref))
-        + Core::String(u8" < ") + std::to_string(static_cast<int>(HighTh)) + Core::String(u8"\n");                                          
+        message += file + Core::String("(") + std::to_string(line)
+        + Core::String("): [ERROR] Application assert - Between:\n")
+        + Core::String("[ERROR] ") + lowName + Core::String(" <= ") + refName
+        + Core::String(" < ") + highName + Core::String("\n")
+        + Core::String("[ERROR] ") + std::to_string(static_cast<int>(lowEd)) + Core::String(" <= ") + std::to_string(static_cast<int>(ref))
+        + Core::String(" < ") + std::to_string(static_cast<int>(HighTh)) + Core::String("\n");                                          
     std::cerr << message;
     OutputDebugString(Core::convertToOS(message).c_str());
     assert(lowEd <= ref && ref < HighTh);
@@ -96,12 +108,12 @@ void assertBetween(const uint8_t ref, const uint8_t lowEd, const uint8_t HighTh,
     if(lowEd > ref || ref >= HighTh)                                                                                            \
     {                                                                                                                           \
         Core::String message;                                                                                                   \
-        message += Core::String(__FILE__) + Core::String(u8"(") + std::to_string(__LINE__)                                      \
-                + Core::String(u8"): [ERROR] Application assert - Between:\n")                                                  \
-                + Core::String(u8"[ERROR] ") + Core::String(#lowEd) + Core::String(u8" <= ") + Core::String(#ref)               \
-                + Core::String(u8" < ") + Core::String(#HighTh) + Core::String(u8"\n")                                          \
-                + Core::String(u8"[ERROR] ") + std::to_string(static_cast<int>(lowEd)) + Core::String(u8" <= ") + std::to_string(static_cast<int>(ref)) \
-                + Core::String(u8" < ") + std::to_string(static_cast<int>(HighTh)) + Core::String(u8"\n");                      \
+        message += Core::String(__FILE__) + Core::String("(") + std::to_string(__LINE__)                                      \
+                + Core::String("): [ERROR] Application assert - Between:\n")                                                  \
+                + Core::String("[ERROR] ") + Core::String(#lowEd) + Core::String(" <= ") + Core::String(#ref)               \
+                + Core::String(" < ") + Core::String(#HighTh) + Core::String("\n")                                          \
+                + Core::String("[ERROR] ") + std::to_string(static_cast<int>(lowEd)) + Core::String(" <= ") + std::to_string(static_cast<int>(ref)) \
+                + Core::String(" < ") + std::to_string(static_cast<int>(HighTh)) + Core::String("\n");                      \
         std::cerr << message;                                                                                                   \
         OutputDebugString(Core::convertToOS(message).c_str());                                                                  \
         assert(lowEd <= ref && ref < HighTh);                                                                                   \
@@ -111,12 +123,12 @@ void assertBetween(const uint8_t ref, const uint8_t lowEd, const uint8_t HighTh,
     if(lowEq > ref || ref > HighEq)                                                                                             \
     {                                                                                                                           \
         Core::String message;                                                                                                   \
-        message += Core::String(__FILE__) + Core::String(u8"(") + std::to_string(__LINE__)                                      \
-                + Core::String(u8"): [ERROR] Application assert - Between:\n")                                                  \
-                + Core::String(u8"[ERROR] ") + Core::String(#lowEq) + Core::String(u8" <= ") + Core::String(#ref)               \
-                + Core::String(u8" <= ") + Core::String(#HighEq) + Core::String(u8"\n")                                         \
-                + Core::String(u8"[ERROR] ") + std::to_string(lowEq) + Core::String(u8" <= ") + std::to_string(ref)             \
-                + Core::String(u8" <= ") + std::to_string(HighEq) + Core::String(u8"\n");                                       \
+        message += Core::String(__FILE__) + Core::String("(") + std::to_string(__LINE__)                                      \
+                + Core::String("): [ERROR] Application assert - Between:\n")                                                  \
+                + Core::String("[ERROR] ") + Core::String(#lowEq) + Core::String(" <= ") + Core::String(#ref)               \
+                + Core::String(" <= ") + Core::String(#HighEq) + Core::String("\n")                                         \
+                + Core::String("[ERROR] ") + std::to_string(lowEq) + Core::String(" <= ") + std::to_string(ref)             \
+                + Core::String(" <= ") + std::to_string(HighEq) + Core::String("\n");                                       \
         std::cerr << message;                                                                                                   \
         OutputDebugString(Core::convertToOS(message).c_str());                                                                  \
         assert(lowEq <= ref && ref <= HighEq);                                                                                  \

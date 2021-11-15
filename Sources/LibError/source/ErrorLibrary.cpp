@@ -27,7 +27,7 @@ void ErrorLibrary::initialize(XML::Parser& parser, const Core::String& libraryLa
     //Check data are valid
     if(parser.getFilename().empty() || libraryLabel.empty())
     {
-        MOUCA_THROW_ERROR_1(u8"BasicError", u8"InvalidPathError", Core::convertToU8(parser.getFilename()));
+        MOUCA_THROW_ERROR_1("BasicError", "InvalidPathError", Core::convertToU8(parser.getFilename()));
     }
 
     //Create parser and try to open error file
@@ -37,12 +37,12 @@ void ErrorLibrary::initialize(XML::Parser& parser, const Core::String& libraryLa
     XML::NodeUPtr languageNode;
     try
     {
-        languageNode = parser.searchNode(u8"Language", u8"country", country);
+        languageNode = parser.searchNode("Language", "country", country);
     }
     catch(...)
     {
         // Get first otherwise
-    	languageNode = parser.getNode(u8"Language")->getNode(0);
+    	languageNode = parser.getNode("Language")->getNode(0);
     }
             
     //Go to node
@@ -51,17 +51,17 @@ void ErrorLibrary::initialize(XML::Parser& parser, const Core::String& libraryLa
         const auto aPush = parser.autoPushNode(*languageNode);
 
         //Read Library part
-        XML::NodeUPtr libraryNode = parser.searchNode(u8"ErrorLibrary", u8"name", libraryLabel);
+        XML::NodeUPtr libraryNode = parser.searchNode("ErrorLibrary", "name", libraryLabel);
         if (libraryNode.get() == nullptr)
         {
-            MOUCA_THROW_ERROR(u8"BasicError", u8"CorruptErrorLibrary");
+            MOUCA_THROW_ERROR("BasicError", "CorruptErrorLibrary");
         }
 
         //Go to node
         const auto aPushL = parser.autoPushNode(*libraryNode);
 
         //Read all errors
-        XML::ResultUPtr result = parser.getNode(u8"Error");
+        XML::ResultUPtr result = parser.getNode("Error");
 
         for (size_t errorId = 0; errorId < result->getNbElements(); errorId++)
         {
@@ -69,22 +69,22 @@ void ErrorLibrary::initialize(XML::Parser& parser, const Core::String& libraryLa
 
             //Get and control version
             Core::String strErrorLabel;
-            result->getNode(errorId)->getAttribute(u8"name", strErrorLabel);
+            result->getNode(errorId)->getAttribute("name", strErrorLabel);
 
             Core::String message, solution;
             //Read all errors
-            XML::ResultUPtr messageNode = parser.getNode(u8"Message");
+            XML::ResultUPtr messageNode = parser.getNode("Message");
             if (messageNode->getNbElements() != 1)
             {
-                MOUCA_THROW_ERROR_1(u8"XMLError", u8"XMLMissingNodeError", u8"Message");
+                MOUCA_THROW_ERROR_1("XMLError", "XMLMissingNodeError", "Message");
             }
             messageNode->getNode(0)->getValue(message);
 
             //Read all errors
-            XML::ResultUPtr solutionNode = parser.getNode(u8"Solution");
+            XML::ResultUPtr solutionNode = parser.getNode("Solution");
             if (solutionNode->getNbElements() != 1)
             {
-                MOUCA_THROW_ERROR_1(u8"XMLError", u8"XMLMissingNodeError", u8"Solution");
+                MOUCA_THROW_ERROR_1("XMLError", "XMLMissingNodeError", "Solution");
             }
             solutionNode->getNode(0)->getValue(solution);
 
@@ -128,7 +128,7 @@ ErrorDescription const * const ErrorLibrary::getDescription(const Core::String& 
     {
         return itError->second;
     }
-    MOUCA_THROW_ERROR(u8"BasicError", u8"LibraryErrorUnknown");
+    MOUCA_THROW_ERROR("BasicError", "LibraryErrorUnknown");
 }
 
 }

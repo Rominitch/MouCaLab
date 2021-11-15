@@ -91,7 +91,7 @@ void FileTracker::TrackerThread::registerResource( Core::ResourceSPtr resource )
         const HANDLE modifyHandle = FindFirstChangeNotification( folder.c_str(), FALSE, FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_SIZE );
         if( modifyHandle == INVALID_HANDLE_VALUE )
         {
-            MOUCA_THROW_ERROR_1( u8"Tools", u8"FileTrackingError", convertToU8( resource->getTrackedFilename() ) );
+            MOUCA_THROW_ERROR_1( "Tools", "FileTrackingError", convertToU8( resource->getTrackedFilename() ) );
         }
 
         const key newKey = {modifyHandle, folder};
@@ -176,7 +176,7 @@ void FileTracker::TrackerThread::run()
                 {
                     if( FindNextChangeNotification( handle ) == FALSE )
                     {
-                        MOUCA_THROW_ERROR( u8"Tools", u8"FileTrackingError" );
+                        MOUCA_THROW_ERROR( "Tools", "FileTrackingError" );
                     }
 
                     if( !_tracked.empty() )
@@ -190,7 +190,7 @@ void FileTracker::TrackerThread::run()
                             const auto newTime = std::filesystem::last_write_time( resource->getTrackedFilename() );
                             if( newTime != fileInfo._lastEdited )
                             {
-                                MOUCA_DEBUG(u8"FileTracker: " << resource->getTrackedFilename() << u8" has changed.");
+                                MOUCA_DEBUG("FileTracker: " << resource->getTrackedFilename() << " has changed.");
 
                                 // Update time
                                 fileInfo._lastEdited = newTime;

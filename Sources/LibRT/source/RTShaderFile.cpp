@@ -41,11 +41,11 @@ void ShaderFile::compile()
     // Check rc code
     if (rc != 0)
     {
-        MOUCA_THROW_ERROR_1(u8"Vulkan", u8"ShaderCompilationError", "Command: " + cmd + "\nError code: " + std::to_string(rc));
+        MOUCA_THROW_ERROR_1("Vulkan", "ShaderCompilationError", "Command: " + cmd + "\nError code: " + std::to_string(rc));
     }
     else
     {
-        MOUCA_DEBUG(u8"GLSL compilation Success: " << _sourceFilepath.filename());
+        MOUCA_DEBUG("GLSL compilation Success: " << _sourceFilepath.filename());
     }
 }
 

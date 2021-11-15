@@ -46,7 +46,7 @@ namespace RT
         uint64_t _pitchRow;
 
     public:
-        BufferLinkedCPU(const Core::String& strLabel = u8"CPU Linked Buffer"):
+        BufferLinkedCPU(const Core::String& strLabel = "CPU Linked Buffer"):
         BufferCPUBase(strLabel), _pitchRow(0)
         {}
 
@@ -96,7 +96,7 @@ namespace RT
     class BufferCPU : public BufferCPUBase
     {
         public:
-            BufferCPU(const Core::String& strLabel = u8"CPU Buffer") :
+            BufferCPU(const Core::String& strLabel = "CPU Buffer") :
             BufferCPUBase( strLabel )
             {}
 

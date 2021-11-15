@@ -160,5 +160,8 @@
     <ClCompile Include="Dependencies.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="source\CoreDefine.cpp">
+      <Filter>Fichiers sources\Tools</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

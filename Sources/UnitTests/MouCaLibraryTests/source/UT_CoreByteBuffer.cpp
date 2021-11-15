@@ -62,7 +62,7 @@ TEST(CoreByteBuffer, standardUse)
         ASSERT_NO_THROW(buffer >> ar >> br >> cr);
 
         EXPECT_EQ(val,      i);
-        EXPECT_EQ(std::string(u8"abcd"), std::string(str.data()));
+        EXPECT_EQ(std::string("abcd"), std::string(str.data()));
         EXPECT_EQ(15.0f,    f);
         EXPECT_EQ(16.0,     d);
         EXPECT_EQ(Core::String("Hello"), btString);

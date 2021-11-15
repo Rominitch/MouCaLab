@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <FREETYPE_PATH>$(SolutionDir)..\SDK\freetype-2.10.4\</FREETYPE_PATH>
+    <FREETYPE_PATH>$(SolutionDir)..\SDK\freetype-2.11.0C\</FREETYPE_PATH>
   </PropertyGroup>
   <PropertyGroup>
     <_PropertySheetDisplayName>Freetype</_PropertySheetDisplayName>

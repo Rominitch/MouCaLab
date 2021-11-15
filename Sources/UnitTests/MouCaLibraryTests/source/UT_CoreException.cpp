@@ -17,7 +17,7 @@ TEST(CoreException, create)
     EXPECT_EQ(error.getLine(),          savedError.getLine());
     EXPECT_EQ(error.getNbParameters(),  savedError.getNbParameters());
     
-    Core::ErrorData error2(u8"MyLib", u8"MyError", __FILE__, __LINE__);
+    Core::ErrorData error2("MyLib", "MyError", __FILE__, __LINE__);
     ASSERT_NO_THROW(exception.addCatchedError(error2));
     ASSERT_EQ(2, exception.getNbErrors());
     

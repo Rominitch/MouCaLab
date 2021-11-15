@@ -92,7 +92,7 @@ void ConnectionTCP::handleWrite(const boost::system::error_code& error, const si
     if (error)
     {
         LOG_MESSAGE(error.message());
-        MOUCA_THROW_ERROR(u8"Network", u8"WriteError");
+        MOUCA_THROW_ERROR("Network", "WriteError");
     }
 }
 
@@ -105,7 +105,7 @@ void ConnectionTCP::handleRead(const boost::system::error_code& error, const siz
         if (error)
         {
             LOG_MESSAGE(error.message());
-            MOUCA_THROW_ERROR(u8"Network", u8"ReadError");
+            MOUCA_THROW_ERROR("Network", "ReadError");
         }
 
         // Block: To delete IMessage and release lock before launch another receive
@@ -175,7 +175,7 @@ void Network::handleAccept(AcceptorWPtr acceptorWeak, IMessagesManagerWPtr manag
     if (!_IOService.stopped())
     {
         if (error)
-            MOUCA_THROW_ERROR(u8"Network", u8"AcceptError");
+            MOUCA_THROW_ERROR("Network", "AcceptError");
 
         // When valid connection
         if (connect != nullptr && connect->getSocket().is_open())

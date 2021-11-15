@@ -727,6 +727,40 @@ void RefreshSystem::afterShaderRefresh()
 
 TEST_F(FontSVGTest, run)
 {
+    /*
+    const std::array<int8_t, 24> table
+    {
+        0,0,0,
+        0,0,1,
+        1,0,1,
+        0,0,1,
+        1,0,1,
+        1,1,1,
+        1,0,0
+    };
+    std::array<bool, 3> value{ true, true, true };
+
+    int compute = 0;
+    for (int8_t v : table)
+        compute = (compute << 1) | v;
+    printf("0x%x", compute);
+
+    const std::array<int8_t, 24> table2
+    {
+        1,0,0,
+        1,1,1,
+        1,0,1,
+        0,0,1,
+        1,0,1,
+        0,0,1,
+        0,0,0
+    };
+    compute = 0;
+    for (int8_t v : table2)
+        compute = (compute << 1) | v;
+    printf("0x%x", compute);
+    */
+
     MouCaGraphic::VulkanManager manager;
     MouCaGraphic::ImGUIManager  GUI;
 

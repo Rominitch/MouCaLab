@@ -7,8 +7,8 @@
 
 namespace Core
 {
-    const String Locale::defaultLanguage(u8"fr");
-	const String Locale::defaultCountry(u8"FR");
+    const String Locale::defaultLanguage("fr");
+	const String Locale::defaultCountry("FR");
 
 Locale::Locale():
 _language(defaultLanguage), _country(defaultCountry)
