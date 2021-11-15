@@ -18,7 +18,7 @@ RT::ImageSPtr ImageLoader::openImage(const Core::Path& fileName)
 {
     MOUCA_PRE_CONDITION( !fileName.empty() );
 
-    const Core::String ext = fileName.extension().u8string();
+    const auto ext = fileName.extension().u8string();
     // Special OpenGL/Vulkan format
     if(ext == u8".dds" || ext == u8".ktx" || ext == u8".kmg")
     {
@@ -42,7 +42,7 @@ RT::ImageSPtr ImageLoader::createImageFI(const RT::BufferCPUBase& imageBuffer, c
 
 void ImageLoader::export2D(RT::Image& image, const Core::Path& fileName)
 {
-    const Core::String ext = fileName.extension().u8string();
+    const auto ext = fileName.extension().u8string();
     if (ext == u8".dds" || ext == u8".ktx" || ext == u8".kmg")
     {
         MOUCA_ASSERT_HEADER(false, "Not implemented");

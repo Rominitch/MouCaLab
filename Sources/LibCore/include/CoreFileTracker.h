@@ -63,7 +63,7 @@ namespace Core
 
                         FileInfo( ResourceSPtr resource ):
                         _data(resource),
-                        _lastEdited(std::filesystem::last_write_time( std::filesystem::path( _data.lock()->getTrackedFilename() ) ))
+                        _lastEdited(std::filesystem::last_write_time(Path( _data.lock()->getTrackedFilename() ) ))
                         {}
 
                         /*

@@ -44,7 +44,7 @@ void File::release()
 
 bool File::isExist() const
 {
-    return !_filename.empty() && std::filesystem::exists(std::filesystem::path(_filename));
+    return !_filename.empty() && std::filesystem::exists(Path(_filename));
 }
 
 bool File::isOpened() const
@@ -126,22 +126,10 @@ size_t File::write(const std::stringstream& stream)
     return write(stream.str().c_str(), stream.str().size()*sizeof(char));
 }
 
-StringCPP File::extractUTF8() const
+StringUTF8 File::extractUTF8() const
 {
-    const size_t fileSize = getSizeOfFile();
-    if (fileSize == 0)
-        return std::string();
-
-    //Create buffer
-    std::vector<wchar_t> txtline;
-    txtline.resize(fileSize);
-
-    //Read all file
-    read(0, txtline.data(), fileSize);
-
-    //Build converter and return string
-    std::wstring utf8(txtline.begin(), txtline.end());
-    return Core::convertToU8(utf8);
+    auto a = extractString();
+    return StringUTF8(a.begin(), a.end());
 }
 
 std::string File::extractString() const

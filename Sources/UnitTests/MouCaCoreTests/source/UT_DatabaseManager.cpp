@@ -43,7 +43,7 @@ TEST_F(DatabaseTest, create)
     // Test block
     const Core::StringOS invalidDB(MouCaEnvironment::getOutputPath() / L"InvalidFolder" / L"invalid.db");
     
-    std::filesystem::path fileInfo(MouCaEnvironment::getOutputPath() / L"testDB.db");
+    const Core::Path fileInfo(MouCaEnvironment::getOutputPath() / L"testDB.db");
     //fileInfo.normalize();
     const Core::StringOS databaseFile = fileInfo.wstring();
 
@@ -98,8 +98,8 @@ TEST_F(DatabaseTest, create)
 
 TEST_F(DatabaseTest, openMultiDB)
 {
-    const std::filesystem::path fileData(MouCaEnvironment::getOutputPath() / L"Data.db");
-    const std::filesystem::path fileLabel(MouCaEnvironment::getOutputPath() / L"Internationnal.db");
+    const Core::Path fileData(MouCaEnvironment::getOutputPath() / L"Data.db");
+    const Core::Path fileLabel(MouCaEnvironment::getOutputPath() / L"Internationnal.db");
 
     // Clean files
     clean(fileData);
@@ -121,7 +121,7 @@ TEST_F(DatabaseTest, openMultiDB)
 
         EXPECT_NO_THROW(dbMouca->createDB(databaseMouca));
 
-        EXPECT_NO_THROW(dbMouca->attachAnotherDB(databaseLabel, u8"Internationnal"));
+        EXPECT_NO_THROW(dbMouca->attachAnotherDB(databaseLabel, "Internationnal"));
         
         // Read file and extract query data
         Core::File sqlMouca(MouCaEnvironment::getInputPath() / "libraries" / "creation.sql");
@@ -157,7 +157,7 @@ TEST_F(DatabaseTest, queryError)
     MouCaCore::DatabaseSPtr dbMouca = createDatabase();
     EXPECT_NO_THROW(dbMouca->createDB(fileData));
 
-    const Core::String query = u8"SELECT something but request is dummy;";
+    const Core::String query = "SELECT something but request is dummy;";
     EXPECT_ANY_THROW(dbMouca->quickQuery(query));
 
     EXPECT_NO_THROW(releaseDatabase(dbMouca));
@@ -167,7 +167,7 @@ TEST_F(DatabaseTest, queryError)
 
 TEST_F(DatabaseTest, query)
 {
-    std::filesystem::path fileData(MouCaEnvironment::getOutputPath() / "MouCaDungeonQuery.db");
+    const Core::Path fileData(MouCaEnvironment::getOutputPath() / "MouCaDungeonQuery.db");
 
     // Clean files
     clean(fileData);
@@ -186,8 +186,8 @@ TEST_F(DatabaseTest, query)
     }
 
     const int64_t      id = 123;
-    const Core::String label(u8"MyDEMO");
-    const Core::String descr(u8"A Description");
+    const Core::String label("MyDEMO");
+    const Core::String descr("A Description");
     const double       value = 123.456;
     const uint64_t     blob1 = 1234567ull;
     const float        blob2 = 10.10f;
@@ -197,13 +197,13 @@ TEST_F(DatabaseTest, query)
         Core::ByteBuffer blob;
         blob << blob1 << blob2;
 
-        const Core::String query = u8"INSERT INTO `GlobalName` VALUES ('"+ std::to_string(id) + u8"', '" + label + u8"', '" + descr + u8"', X'" + blob.exportHex() + u8"', "+ std::to_string(value)+");";
+        const Core::String query = std::format("INSERT INTO `GlobalName` VALUES ('{}', '{}', '{}', X'{}', {});", std::to_string(id), label, descr, blob.exportHex(), std::to_string(value));
         ASSERT_NO_THROW(dbMouca->quickQuery(query));
     }
 
     // Run query SELECT
     {
-        const Core::String query = u8"SELECT * FROM `GlobalName`;";
+        const Core::String query = "SELECT * FROM `GlobalName`;";
 
         MouCaCore::DatabaseStatementSPtr statement;
         ASSERT_NO_THROW(statement = dbMouca->query(query));
@@ -236,7 +236,7 @@ TEST_F(DatabaseTest, query)
 
     // Run query SELECT valid without result
     {
-        const Core::String query = u8"SELECT * FROM `GlobalName` WHERE id_global_name = 1234567;";
+        const Core::String query = "SELECT * FROM `GlobalName` WHERE id_global_name = 1234567;";
 
         MouCaCore::DatabaseStatementSPtr statement;
         ASSERT_NO_THROW(statement = dbMouca->query(query));
@@ -248,7 +248,7 @@ TEST_F(DatabaseTest, query)
 
     // Run query ERROR
     {
-        const Core::String query = u8"SELECT * ABCDEFGHI /* */ FROM `GlobalName`;";
+        const Core::String query = "SELECT * ABCDEFGHI /* */ FROM `GlobalName`;";
 
         MouCaCore::DatabaseStatementSPtr statement;
         ASSERT_ANY_THROW(statement = dbMouca->query(query));

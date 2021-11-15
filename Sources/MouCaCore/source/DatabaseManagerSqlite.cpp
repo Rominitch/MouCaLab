@@ -35,7 +35,7 @@ void DatabaseManagerSqlite::configure()
 {
     MOUCA_PRE_CONDITION(!isNull());                     // DEV Issue: Need to open() or createDB()
 
-    const Core::String query(u8"PRAGMA foreign_keys = ON;");
+    const Core::String query("PRAGMA foreign_keys = ON;");
     quickQuery(query);
 }
 
@@ -53,7 +53,7 @@ void DatabaseManagerSqlite::quickQuery(const Core::String& query)
         if(rc != SQLITE_OK)
         {
             const Core::String error(sqlite3_errmsg(_database));
-            MOUCA_THROW_ERROR_1(u8"DataError", u8"Reading", error);
+            MOUCA_THROW_ERROR_1("DataError", "Reading", error);
         }
         // this happens for a comment or white-space
         if(ppStmt == nullptr)
@@ -74,7 +74,7 @@ void DatabaseManagerSqlite::quickQuery(const Core::String& query)
         {
 // DisableCodeCoverage
             const Core::String error(sqlite3_errmsg(_database));
-            MOUCA_THROW_ERROR_1(u8"DataError", u8"EndReading", error);
+            MOUCA_THROW_ERROR_1("DataError", "EndReading", error);
         }
 // EnableCodeCoverage
 
@@ -98,7 +98,7 @@ void DatabaseManagerSqlite::open(const Core::StringOS& databaseFile)
     {
         const Core::String error(sqlite3_errmsg(_database));
         release();
-        MOUCA_THROW_ERROR_1(u8"DataError", u8"OpenFailed", error);
+        MOUCA_THROW_ERROR_1("DataError", "OpenFailed", error);
     }
     MOUCA_ASSERT(!isNull());
 
@@ -112,7 +112,7 @@ void DatabaseManagerSqlite::createDB(const Core::Path& databaseFile, const Core:
 
     if(Core::File::isExist(databaseFile))
     {
-        MOUCA_THROW_ERROR_1(u8"DataError", u8"OpenOverwriteFailed", Core::convertToU8(databaseFile));
+        MOUCA_THROW_ERROR_1("DataError", "OpenOverwriteFailed", Core::convertToU8(databaseFile));
     }
 
     _filename = databaseFile;
@@ -123,7 +123,7 @@ void DatabaseManagerSqlite::createDB(const Core::Path& databaseFile, const Core:
     {
         const Core::String error(sqlite3_errmsg(_database));
         release();
-        MOUCA_THROW_ERROR_1(u8"DataError", u8"OpenFailed", error);
+        MOUCA_THROW_ERROR_1("DataError", "OpenFailed", error);
     }
     MOUCA_POST_CONDITION(_database != nullptr);
 
@@ -142,10 +142,10 @@ void DatabaseManagerSqlite::createDB(const Core::Path& databaseFile, const Core:
 void DatabaseManagerSqlite::attachAnotherDB(const Core::Path& filePath, const Core::String& databaseName)
 {
     MOUCA_PRE_CONDITION(!isNull());                     // DEV Issue: Need to open() or createDB()
-    MOUCA_PRE_CONDITION(std::filesystem::exists(std::filesystem::path(filePath)));
+    MOUCA_PRE_CONDITION(std::filesystem::exists(Core::Path(filePath)));
 
     //Create ATTACH query
-    const Core::String query = u8"ATTACH `" + Core::convertToU8(filePath) + u8"` AS `" + databaseName + u8"`;";
+    const Core::String query = "ATTACH `" + Core::convertToU8(filePath) + "` AS `" + databaseName + "`;";
     quickQuery(query.c_str());
 }
 
@@ -159,7 +159,7 @@ DatabaseStatementSPtr DatabaseManagerSqlite::query(const Core::String& query)
     if(rc != SQLITE_OK)
     {
         const Core::String error(sqlite3_errmsg(_database));
-        MOUCA_THROW_ERROR_1(u8"DataError", u8"Reading", error);
+        MOUCA_THROW_ERROR_1("DataError", "Reading", error);
     }
 
     MOUCA_ASSERT(nextStep == &query.c_str()[query.size()]); //DEV Issue: unsupported multi query here !
@@ -200,7 +200,7 @@ void DatabaseStatementSqlite::release()
     {
 // DisableCodeCoverage
         const Core::String error( sqlite3_errmsg( sqlite3_db_handle(_stmt) ) );
-        MOUCA_THROW_ERROR_1( u8"DataError", u8"EndReading", error );
+        MOUCA_THROW_ERROR_1( "DataError", "EndReading", error );
     }
 // EnableCodeCoverage
     _stmt = nullptr;

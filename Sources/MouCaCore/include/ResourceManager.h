@@ -94,7 +94,7 @@ namespace MouCaCore
         //--------------------------------------------------------------------------
         //						    Readable only resources
         //--------------------------------------------------------------------------
-            RT::ShaderFileSPtr openShader( const Core::Path& filename, const RT::ShaderKind kind, const Core::StringOS& sourceShader = Core::StringOS() );
+            RT::ShaderFileSPtr openShader( const Core::Path& filename, const RT::ShaderKind kind, const Core::Path& sourceShader = Core::Path() );
 
             Core::FileSPtr openFile(const Core::Path& filename);
 

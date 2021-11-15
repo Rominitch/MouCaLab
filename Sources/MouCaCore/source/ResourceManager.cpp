@@ -163,7 +163,7 @@ RT::MeshImportSPtr ResourceManager::openMeshImport(const Core::Path& filename, c
     return file;
 }
 
-RT::ShaderFileSPtr ResourceManager::openShader( const Core::Path& filePath, const RT::ShaderKind kind, const Core::StringOS& sourceShader )
+RT::ShaderFileSPtr ResourceManager::openShader( const Core::Path& filePath, const RT::ShaderKind kind, const Core::Path& sourceShader )
 {
     MOUCA_PRE_CONDITION( !filePath.empty() );
 
@@ -171,18 +171,18 @@ RT::ShaderFileSPtr ResourceManager::openShader( const Core::Path& filePath, cons
     const Core::Path realFilePath = std::filesystem::absolute(
                                     std::filesystem::exists( filePath ) 
                                     ? filePath
-                                    : std::filesystem::path(getResourceFolder(ResourceFolder::Shaders) / std::filesystem::path(filePath)));
+                                    : Core::Path(getResourceFolder(ResourceFolder::Shaders) / Core::Path(filePath)));
     
     MOUCA_PRE_CONDITION( std::filesystem::exists( realFilePath ) );
 
     // Build source default path
-    Core::StringOS realSourcePath;
+    Core::Path realSourcePath;
     if (!sourceShader.empty())
     {
         realSourcePath = std::filesystem::absolute(
                        std::filesystem::exists(sourceShader)
                        ? sourceShader
-                       : std::filesystem::path(getResourceFolder(ResourceFolder::ShadersSource) / std::filesystem::path(sourceShader)));
+                       : Core::Path(getResourceFolder(ResourceFolder::ShadersSource) / Core::Path(sourceShader)));
 
         MOUCA_PRE_CONDITION(std::filesystem::exists(realSourcePath));
     }

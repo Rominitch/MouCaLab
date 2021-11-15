@@ -75,9 +75,11 @@ class MouCaEnvironment : public testing::Environment
         }
 };
 
+
 //-------------------------------------------------------------------------------------------------
 //                                         GoogleTest Extended
 //-------------------------------------------------------------------------------------------------
+
 namespace testing
 {
     template <typename T1, typename T2>

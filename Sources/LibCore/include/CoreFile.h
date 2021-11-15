@@ -173,7 +173,7 @@ namespace Core
             /// \brief  Extract all whole file into string UTF-8 buffer.
             /// 
             /// \returns UTF-8 buffer with all file data.
-            StringCPP extractUTF8() const;
+            StringUTF8 extractUTF8() const;
 
             //------------------------------------------------------------------------
             /// \brief  Extract all whole file into string buffer.

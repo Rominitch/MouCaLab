@@ -22,7 +22,7 @@ void ImageFI::initialize(const Core::Path& path)
         imageFormat = FreeImage_GetFIFFromFilenameU(path.c_str());
         if (imageFormat == FIF_UNKNOWN)
         {
-            MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FIUnknownFileError", path.u8string());
+            MOUCA_THROW_ERROR_1("ModuleError", "FIUnknownFileError", path.string());
         }
     }
 
@@ -36,7 +36,7 @@ void ImageFI::initialize(const Core::Path& path)
     }
     else
     {
-        MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FIReadFileError", path.u8string());
+        MOUCA_THROW_ERROR_1("ModuleError", "FIReadFileError", path.string());
     }
 
     MOUCA_PRE_CONDITION(!isNull());
@@ -56,7 +56,7 @@ void ImageFI::createFill(const RT::BufferCPUBase& imageBuffer, const uint32_t wi
     _imageData = FreeImage_Allocate(static_cast<int>(width), static_cast<int>(height), 8 * static_cast<int>(descriptor.getByteSize()));
     if (_imageData == nullptr)
     {
-        MOUCA_THROW_ERROR_1(u8"BasicError", u8"NULLPointerError", u8"_imageData");
+        MOUCA_THROW_ERROR_1("BasicError", "NULLPointerError", "_imageData");
     }
 
     const char* pSource = reinterpret_cast<const char*>(imageBuffer.getData());
@@ -108,14 +108,14 @@ void ImageFI::saveImage(const Core::Path& filename)
     //Check we have a picture
     if(_imageData == nullptr)
     {
-        MOUCA_THROW_ERROR_1(u8"BasicError", u8"NULLPointerError", u8"m_pImageData");
+        MOUCA_THROW_ERROR_1("BasicError", "NULLPointerError", "m_pImageData");
     }
 
     //Try to guess the file format from the file extension
     const FREE_IMAGE_FORMAT imageFormat = FreeImage_GetFIFFromFilenameU(filename.c_str());
     if(imageFormat == FIF_UNKNOWN)
     {
-        MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FIUnknownFileError", filename.u8string());
+        MOUCA_THROW_ERROR_1("ModuleError", "FIUnknownFileError", filename.string());
     }
 
     //Check that the plugin has sufficient writing and export capabilities ...
@@ -125,12 +125,12 @@ void ImageFI::saveImage(const Core::Path& filename)
         // ok, we can save the file
         if(FreeImage_SaveU(imageFormat, _imageData, filename.c_str(), 0) == FALSE)
         {
-            MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FISaveFileError", filename.u8string());
+            MOUCA_THROW_ERROR_1("ModuleError", "FISaveFileError", filename.string());
         }
     }
     else
     {
-        MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FISaveFileError", filename.u8string());
+        MOUCA_THROW_ERROR_1("ModuleError", "FISaveFileError", filename.string());
     }
 }
 
@@ -152,10 +152,10 @@ bool ImageFI::compare(const RT::Image& reference, const size_t nbMaxDefectPixels
     {
 #ifndef NDEBUG
         const RT::Array3ui refExtents = reference.getExtents(level);
-        Core::String message = Core::String(u8"Comparison image: different size: ") + std::to_string(extents.x) + Core::String(u8"x") + std::to_string(extents.y)
-            + Core::String(u8" != ")
-            + std::to_string(refExtents.x) + Core::String(u8"x") + std::to_string(refExtents.y)
-            + Core::String(u8"\nComparison: FAILURE");
+        Core::String message = Core::String("Comparison image: different size: ") + std::to_string(extents.x) + Core::String("x") + std::to_string(extents.y)
+            + Core::String(" != ")
+            + std::to_string(refExtents.x) + Core::String("x") + std::to_string(refExtents.y)
+            + Core::String("\nComparison: FAILURE");
         BT_PRINT_MESSAGE(message);
 #endif
         return equal;
@@ -189,10 +189,10 @@ bool ImageFI::compare(const RT::Image& reference, const size_t nbMaxDefectPixels
     }
 
 #ifndef NDEBUG
-    const Core::String state = (nbMaxDefectPixels >= nbDefect) ? Core::String(u8"SUCCESS\n") : Core::String(u8"FAILURE\n");
-    Core::String message = Core::String(u8"Comparison image: max defect distance: ") + std::to_string(max) + Core::String(u8" < ") + std::to_string(maxDistance4D)
-        + Core::String(u8"\n                  pixel count: ") + std::to_string(nbDefect) + Core::String(u8" < ") + std::to_string(nbMaxDefectPixels)
-        + Core::String(u8"\nComparison: ") + state;
+    const Core::String state = (nbMaxDefectPixels >= nbDefect) ? Core::String("SUCCESS\n") : Core::String("FAILURE\n");
+    Core::String message = Core::String("Comparison image: max defect distance: ") + std::to_string(max) + Core::String(" < ") + std::to_string(maxDistance4D)
+        + Core::String("\n                  pixel count: ") + std::to_string(nbDefect) + Core::String(" < ") + std::to_string(nbMaxDefectPixels)
+        + Core::String("\nComparison: ") + state;
     BT_PRINT_MESSAGE(message);
 #endif
     return nbMaxDefectPixels >= nbDefect;

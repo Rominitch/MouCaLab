@@ -59,10 +59,10 @@ TEST(CoreFile, readUTF8)
     
     Core::File myfile;
     ASSERT_NO_THROW(myfile.setFileInfo(string));
-    ASSERT_NO_THROW(myfile.open(L"rt, ccs=UTF-8"));
+    ASSERT_NO_THROW(myfile.open());
 
     // UTF8 sans BOM
-    EXPECT_EQ(Core::convertToU8(L"\u7530\u4E2D\u3002"), myfile.extractUTF8());
+    EXPECT_EQ(u8"\u7530\u4E2D\u3002", myfile.extractUTF8());
 
     ASSERT_NO_THROW(myfile.close());
 }

@@ -203,9 +203,9 @@ void MouCaLabTest::takeScreenshot(MouCaGraphic::VulkanManager& manager, const Co
     const bool compare = diskImage->getImage().lock()->compare(*refImage->getImage().lock(), nbMaxDefectPixels, maxDistance4D, &nbDefect, &maxFoundDistance);
     if (!compare) // Have you update the reference ? Or bug ?
     {
-        const std::filesystem::path sourceFile(MouCaEnvironment::getOutputPath() / imageFile);
-        const std::filesystem::path targetParent(MouCaEnvironment::getOutputPath() / L".." / L".." / L".." / L"Report");
-        const std::filesystem::path targetFile(targetParent / imageFile);
+        const Core::Path sourceFile(MouCaEnvironment::getOutputPath() / imageFile);
+        const Core::Path targetParent(MouCaEnvironment::getOutputPath() / L".." / L".." / L".." / L"Report");
+        const Core::Path targetFile(targetParent / imageFile);
 
         // Duplicate result into failure folder
         if (!std::filesystem::exists(targetParent))

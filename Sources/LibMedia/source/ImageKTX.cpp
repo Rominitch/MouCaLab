@@ -38,7 +38,7 @@ void ImageKTX::initialize(const Core::Path& path)
 
 void ImageKTX::createFill(const RT::BufferCPUBase& imageBuffer, const uint32_t width, const uint32_t height)
 {
-    MOUCA_THROW_ERROR(u8"BasicError", u8"ImageNoneImplemented");
+    MOUCA_THROW_ERROR("BasicError", "ImageNoneImplemented");
 }
 
 void ImageKTX::release()
@@ -108,7 +108,7 @@ void ImageKTX::saveImage(const Core::Path& filename)
 
     if(ktxTexture_WriteToNamedFile(_images, filename.string().c_str()))
     {
-        MOUCA_THROW_ERROR_1(u8"BasicError", u8"ImageKTXSave", filename.u8string());
+        MOUCA_THROW_ERROR_1("BasicError", "ImageKTXSave", filename.string());
     }
 }
 
@@ -120,7 +120,7 @@ void ImageKTX::export2D(const Core::Path& filename)
 bool ImageKTX::compare(const RT::Image& reference, const size_t nbMaxDefectPixels, const double maxDistance4D,
                        size_t* nbDefectPixels, double* distance4D) const
 {
-    MOUCA_THROW_ERROR(u8"BasicError", u8"ImageNoneImplemented");
+    MOUCA_THROW_ERROR("BasicError", "ImageNoneImplemented");
 }
 
 ImageKTX::Target ImageKTX::getTarget() const
