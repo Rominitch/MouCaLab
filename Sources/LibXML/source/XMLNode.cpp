@@ -14,7 +14,7 @@
 namespace XML
 {
 
-bool XercesNode::hasAttribute(const Core::String& label) const
+bool XercesNode::hasAttribute(const Core::StringView& label) const
 {
     MouCa::preCondition(!isNull());
 
@@ -22,14 +22,14 @@ bool XercesNode::hasAttribute(const Core::String& label) const
     return (attribute != nullptr);
 }
 
-void XercesNode::getAttribute(const Core::String& label, bool& value) const
+void XercesNode::getAttribute(const Core::StringView& label, bool& value) const
 {
     MouCa::preCondition(!isNull());
 
     const xercesc::DOMAttr* attribute = _node->getAttributeNode(XercesString(label).toXMLChar());
     if (attribute == nullptr)
     {
-        throw Core::Exception(Core::ErrorData("XMLError", "XMLMissingParameterError") << label);
+        throw Core::Exception(Core::ErrorData("XMLError", "XMLMissingParameterError") << Core::String(label));
     }
 
     Core::String sValue = XercesString::toString(attribute->getValue());
@@ -45,79 +45,79 @@ void XercesNode::getAttribute(const Core::String& label, bool& value) const
     }
     else
     {
-        throw Core::Exception(Core::ErrorData("XMLError", "XMLBooleanBadParameterError") << label);
+        throw Core::Exception(Core::ErrorData("XMLError", "XMLBooleanBadParameterError") << Core::String(label));
     }
 }
 
-void XercesNode::getAttribute(const Core::String& label, Core::String& value) const
+void XercesNode::getAttribute(const Core::StringView& label, Core::String& value) const
 {
     MouCa::preCondition(!isNull());
 
     const xercesc::DOMAttr* attribute = _node->getAttributeNode(XercesString(label).toXMLChar());
     if(attribute == nullptr)
     {
-        throw Core::Exception(Core::ErrorData("XMLError", "XMLMissingParameterError") << label);
+        throw Core::Exception(Core::ErrorData("XMLError", "XMLMissingParameterError") << Core::String(label));
     }
     
     value = XercesString::toString(attribute->getValue());
 }
 
-void XercesNode::getAttribute(const Core::String& label, uint32_t& value) const
+void XercesNode::getAttribute(const Core::StringView& label, uint32_t& value) const
 {
     MouCa::preCondition(!isNull());
 
     const xercesc::DOMAttr* attribute = _node->getAttributeNode(XercesString(label).toXMLChar());
     if(attribute == nullptr)
     {
-        throw Core::Exception(Core::ErrorData("XMLError", "XMLMissingParameterError") << label);
+        throw Core::Exception(Core::ErrorData("XMLError", "XMLMissingParameterError") << Core::String(label));
     }
     value = std::stoul(XercesString::toString(attribute->getValue()));
 }
 
-void XercesNode::getAttribute(const Core::String& label, int32_t& value) const
+void XercesNode::getAttribute(const Core::StringView& label, int32_t& value) const
 {
     MouCa::preCondition(!isNull());
 
     const xercesc::DOMAttr* attribute = _node->getAttributeNode(XercesString(label).toXMLChar());
     if(attribute == nullptr)
     {
-        throw Core::Exception(Core::ErrorData("XMLError", "XMLMissingParameterError") << label);
+        throw Core::Exception(Core::ErrorData("XMLError", "XMLMissingParameterError") << Core::String(label));
     }
     value = std::stol(XercesString::toString(attribute->getValue()));
 }
 
-void XercesNode::getAttribute(const Core::String& label, uint64_t& value) const
+void XercesNode::getAttribute(const Core::StringView& label, uint64_t& value) const
 {
     MouCa::preCondition(!isNull());
 
     const xercesc::DOMAttr* attribute = _node->getAttributeNode(XercesString(label).toXMLChar());
     if(attribute == nullptr)
     {
-        throw Core::Exception(Core::ErrorData("XMLError", "XMLMissingParameterError") << label);
+        throw Core::Exception(Core::ErrorData("XMLError", "XMLMissingParameterError") << Core::String(label));
     }
     value = std::stoull(XercesString::toString(attribute->getValue()));
 }
 
-void XercesNode::getAttribute(const Core::String& label, int64_t&  value) const
+void XercesNode::getAttribute(const Core::StringView& label, int64_t&  value) const
 {
     MouCa::preCondition(!isNull());
 
     const xercesc::DOMAttr* attribute = _node->getAttributeNode(XercesString(label).toXMLChar());
     if(attribute == nullptr)
     {
-        throw Core::Exception(Core::ErrorData("XMLError", "XMLMissingParameterError") << label);
+        throw Core::Exception(Core::ErrorData("XMLError", "XMLMissingParameterError") << Core::String(label));
     }
     value = std::stoll(XercesString::toString(attribute->getValue()));
 }
 
-void XercesNode::getAttribute(const Core::String& label, float& value) const
+void XercesNode::getAttribute(const Core::StringView& label, float& value) const
 {
     MouCa::preCondition(!isNull());
 
     const xercesc::DOMAttr* attribute = _node->getAttributeNode(XercesString(label).toXMLChar());
     if(attribute == nullptr)
     {
-        throw Core::Exception(Core::ErrorData("XMLError", "XMLMissingParameterError") << label);
+        throw Core::Exception(Core::ErrorData("XMLError", "XMLMissingParameterError") << Core::String(label));
     }
     value = std::stof(XercesString::toString(attribute->getValue()));
 }

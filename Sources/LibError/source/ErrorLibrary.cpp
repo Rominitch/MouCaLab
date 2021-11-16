@@ -37,7 +37,7 @@ void ErrorLibrary::initialize(XML::Parser& parser, const StringView& libraryLabe
     XML::NodeUPtr languageNode;
     try
     {
-        languageNode = parser.searchNodeView("Language", "country", country);
+        languageNode = parser.searchNode("Language", "country", country);
     }
     catch(...)
     {
@@ -51,7 +51,7 @@ void ErrorLibrary::initialize(XML::Parser& parser, const StringView& libraryLabe
         const auto aPush = parser.autoPushNode(*languageNode);
 
         //Read Library part
-        XML::NodeUPtr libraryNode = parser.searchNodeView("ErrorLibrary", "name", String(libraryLabel));
+        XML::NodeUPtr libraryNode = parser.searchNode("ErrorLibrary", "name", String(libraryLabel));
         if (libraryNode.get() == nullptr)
         {
             throw Core::Exception(Core::ErrorData("BasicError", "CorruptErrorLibrary"));

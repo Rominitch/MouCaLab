@@ -83,42 +83,7 @@ void XercesParser::openXMLFile(const Core::Path& strFilePath)
     MouCa::postCondition(!isNull());
 }
 
-ResultUPtr XercesParser::getNode(const Core::String& strName) const
-{
-    MouCa::preCondition(!isNull());
-
-    xercesc::DOMNodeList* nodeList=nullptr;
-    if(_parseStack.empty())
-    {
-        // no need to free this pointer - owned by the parent parser object
-        xercesc::DOMDocument* pXMLDoc = _parser->getDocument();
-        if(pXMLDoc!=nullptr)
-        {
-            nodeList=pXMLDoc->getElementsByTagName(XercesString(strName).toXMLChar());
-        }
-        else
-        {
-            throw Core::Exception(Core::ErrorData("BasicError", "NULLPointerError"));
-        }
-    }
-    else
-    {
-        MouCa::assertion(_parseStack.top() != NULL);
-
-        nodeList=_parseStack.top()->getElementsByTagName(XercesString(strName).toXMLChar());
-    }
-
-    if(nodeList==nullptr)
-    {
-        throw Core::Exception(Core::ErrorData("BasicError", "NULLPointerError"));
-    }
-
-    auto result = std::make_unique<XercesResult>();
-    result->initialize( nullptr, nodeList );
-    return result;
-}
-
-ResultUPtr XercesParser::getNodeView(const Core::StringView& strName) const
+ResultUPtr XercesParser::getNode(const Core::StringView& strName) const
 {
     MouCa::preCondition(!isNull());
 
@@ -176,41 +141,7 @@ void XercesParser::popNode()
     _parseStack.pop();
 }
 
-NodeUPtr XercesParser::searchNodeGeneric(const ResultUPtr& result, const Core::String& parameterLabel, const Core::String& value) const
-{
-    NodeUPtr node;
-    if (result->getNbElements() > 0)
-    {
-        bool bFind = false;
-        size_t szSearch = 0;
-        Core::String read;
-        do
-        {
-            //Search attribute
-            result->getNode(szSearch)->getAttribute(parameterLabel, read);
-
-            //Compare value and continue or quit
-            bFind = (value == read);
-            if (bFind == false)
-            {
-                szSearch++;
-            }
-        } while (bFind == false && szSearch < result->getNbElements());
-
-        //If find data we return node
-        if (szSearch < result->getNbElements())
-        {
-            node = result->getNode(szSearch);
-        }
-        else
-        {
-            throw Core::Exception(Core::ErrorData("XMLError", "XMLMissingNodeError") << parameterLabel);
-        }
-    }
-    return node;
-}
-
-NodeUPtr XercesParser::searchNodeGenericView(const ResultUPtr& result, const Core::StringView& parameterLabel, const Core::String& value) const
+NodeUPtr XercesParser::searchNodeGeneric(const ResultUPtr& result, const Core::StringView& parameterLabel, const Core::String& value) const
 {
     NodeUPtr node;
     if (result->getNbElements() > 0)
@@ -244,14 +175,7 @@ NodeUPtr XercesParser::searchNodeGenericView(const ResultUPtr& result, const Cor
     return node;
 }
 
-NodeUPtr XercesParser::searchNodeView(const Core::StringView& strNodeLabel, const Core::StringView& strParameterLabel, const Core::String& strValue) const
-{
-    MouCa::preCondition(!isNull());
-
-    return searchNodeGenericView(getNodeView(strNodeLabel), strParameterLabel, strValue);
-}
-
-NodeUPtr XercesParser::searchNode(const Core::String& strNodeLabel, const Core::String& strParameterLabel, const Core::String& strValue) const
+NodeUPtr XercesParser::searchNode(const Core::StringView& strNodeLabel, const Core::StringView& strParameterLabel, const Core::String& strValue) const
 {
     MouCa::preCondition(!isNull());
 

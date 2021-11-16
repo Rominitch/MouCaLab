@@ -9,14 +9,8 @@ namespace XML
     class XercesString
     {
         public:
-            explicit XercesString(const Core::String& unicode):
-            _xmlChar(xercesc::XMLString::transcode(unicode.c_str()))
-            {
-                MouCa::preCondition(_xmlChar!=NULL);
-            }
-
             explicit XercesString(const Core::StringView& unicode) :
-                _xmlChar(xercesc::XMLString::transcode(unicode.data()))
+            _xmlChar(xercesc::XMLString::transcode(unicode.data()))
             {
                 MouCa::preCondition(_xmlChar != NULL);
             }
@@ -72,15 +66,15 @@ namespace XML
                 value = Core::String(xercesc::XMLString::transcode(_node->getFirstChild()->getNodeValue()));
             }
 
-            bool hasAttribute(const Core::String& label) const override;
+            bool hasAttribute(const Core::StringView& label) const override;
 
-            void getAttribute(const Core::String& label, bool& value) const override;
-            void getAttribute(const Core::String& label, Core::String& value) const override;
-            void getAttribute(const Core::String& label, uint32_t& value) const override;
-            void getAttribute(const Core::String& label, int32_t&  value) const override;
-            void getAttribute(const Core::String& label, uint64_t& value) const override;
-            void getAttribute(const Core::String& label, int64_t&  value) const override;
-            void getAttribute(const Core::String& label, float&      value) const override;
+            void getAttribute(const Core::StringView& label, bool& value) const override;
+            void getAttribute(const Core::StringView& label, Core::String& value) const override;
+            void getAttribute(const Core::StringView& label, uint32_t& value) const override;
+            void getAttribute(const Core::StringView& label, int32_t&  value) const override;
+            void getAttribute(const Core::StringView& label, uint64_t& value) const override;
+            void getAttribute(const Core::StringView& label, int64_t&  value) const override;
+            void getAttribute(const Core::StringView& label, float&    value) const override;
 
         private:
             DOMElement* _node;
