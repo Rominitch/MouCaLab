@@ -91,7 +91,7 @@ void PlugInManager::release()
         // Remove DLL handle
         if(DYNLIB_UNLOAD((DYNLIB_HANDLE)plugIn->_hHandle))
         {
-            throw Core::Exception(Core::ErrorData("BasicError", "InvalidPathError") << Core::convertToU8(plugIn->_name));
+            throw Core::Exception(Core::ErrorData("BasicError", "InvalidPathError") << plugIn->_name.string());
         }
     }
     _loadedPlugins.clear();

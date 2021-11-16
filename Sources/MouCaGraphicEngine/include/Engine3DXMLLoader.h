@@ -189,9 +189,9 @@ namespace MouCaGraphic
                     XML::NodeUPtr       _globalData;    ///< Saved node
                     RT::ApplicationInfo _info;
 
-                    const Core::String& getFileName() const { return _xmlFileName; }
+                    const Core::Path& getFileName() const { return _xmlFileName; }
                 private:
-                    Core::String    _xmlFileName;
+                    Core::Path    _xmlFileName;
             };
 
             void load(ContextLoading& context);
@@ -296,5 +296,7 @@ namespace MouCaGraphic
             void loadRayTracingShaderGroup(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak, Vulkan::RayTracingPipeline& pipeline);
             void loadTracingRay(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak);
             void loadAccelerationStructures(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak);
+
+            Core::ErrorData makeLoaderError(const ContextLoading& context, const Core::StringView& idError) const;
     };
 }

@@ -83,7 +83,7 @@ void DatabaseManagerSqlite::quickQuery(const Core::String& query)
     while(currentQuery != nullptr && currentQuery[0] != '\0');
 }
 
-void DatabaseManagerSqlite::open(const Core::StringOS& databaseFile)
+void DatabaseManagerSqlite::open(const Core::Path& databaseFile)
 {
     MouCa::preCondition(isNull());                     // DEV Issue: Must be release !
     MouCa::preCondition(!databaseFile.empty());        // DEV Issue: Need file !
@@ -91,7 +91,7 @@ void DatabaseManagerSqlite::open(const Core::StringOS& databaseFile)
     _filename = databaseFile;
 
     //Try to open database
-    const Core::String fileUTF8 = Core::convertToU8(_filename);
+    const auto fileUTF8 = _filename.string();
 
     //Create file
     if(sqlite3_open_v2(fileUTF8.c_str(), &_database, SQLITE_OPEN_READWRITE, nullptr) != SQLITE_OK)
@@ -144,7 +144,7 @@ void DatabaseManagerSqlite::attachAnotherDB(const Core::Path& filePath, const Co
     MouCa::preCondition(std::filesystem::exists(Core::Path(filePath)));
 
     //Create ATTACH query
-    quickQuery(std::format("ATTACH `{}` AS `{}`;", Core::convertToU8(filePath), databaseName));
+    quickQuery(std::format("ATTACH `{}` AS `{}`;", filePath.string(), databaseName));
 }
 
 DatabaseStatementSPtr DatabaseManagerSqlite::query(const Core::String& query)

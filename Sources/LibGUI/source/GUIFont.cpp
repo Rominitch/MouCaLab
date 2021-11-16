@@ -36,7 +36,7 @@ void Font::CreateTextureFont(const Core::Path& strFontTTLUnicode, Core::FileWrap
         // This Is Where We Load In The Font Information From The File.
         // Of All The Places Where The Code Might Die, This Is The Most Likely,
         // As FT_New_Face Will Fail If The Font File Does Not Exist Or Is Somehow Broken.
-        Core::String u8FontTTLUnicode = Core::convertToU8(strFontTTLUnicode);
+        const Core::String u8FontTTLUnicode = strFontTTLUnicode.string();
         if (FT_New_Face(FreeFontLibrary, u8FontTTLUnicode.c_str(), 0, &face))
         {
             throw Core::Exception(Core::ErrorData("ModuleError", "FontFileMissingError") << u8FontTTLUnicode);

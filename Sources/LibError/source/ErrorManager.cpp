@@ -45,7 +45,7 @@ void ErrorManager::addErrorLibrary(XML::Parser& parser, const String& strLibrary
 
     if(parser.getFilename().empty())
     {
-        throw Core::Exception(Core::ErrorData("BasicError", "InvalidPathError") << Core::convertToU8(parser.getFilename()));
+        throw Core::Exception(Core::ErrorData("BasicError", "InvalidPathError") << parser.getFilename().string());
     }
 
     //Search if library already exist

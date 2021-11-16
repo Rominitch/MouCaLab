@@ -81,7 +81,7 @@ namespace MouCaCore
             ///	\throw	BTException: Can't open DB.
             /// \pre	filePath is not empty
             ///         m_database is empty
-            void open(const Core::StringOS& filePath) override;
+            void open(const Core::Path& filePath) override;
 
             ///	Create database and populate
             ///	\param	filePath: path where write DB.

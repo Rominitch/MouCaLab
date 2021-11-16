@@ -91,7 +91,7 @@ void ShaderProgram::initialize(const Device& device, const Core::File& shaderSou
     const std::string code = shaderSourceFile.extractString();
     if(code.empty())
     {
-        throw Core::Exception(Core::ErrorData("Vulkan", "ShaderFileEmptyError") << Core::convertToU8(shaderSourceFile.getFilePath()));
+        throw Core::Exception(Core::ErrorData("Vulkan", "ShaderFileEmptyError") << shaderSourceFile.getFilePath().string());
     }
 
     //Build info
@@ -107,7 +107,7 @@ void ShaderProgram::initialize(const Device& device, const Core::File& shaderSou
     //Create shader
     if(vkCreateShaderModule(device.getInstance(), &shaderModuleCreateInfo, nullptr, &_shaderModule) != VK_SUCCESS)
     {
-        throw Core::Exception(Core::ErrorData("Vulkan", "ShaderCreationError") << Core::convertToU8(shaderSourceFile.getFilePath()));
+        throw Core::Exception(Core::ErrorData("Vulkan", "ShaderCreationError") << shaderSourceFile.getFilePath().string());
     }
 }
 

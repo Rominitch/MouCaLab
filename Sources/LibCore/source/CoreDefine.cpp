@@ -5,6 +5,11 @@
 namespace MouCa
 {
 
+void logVisualStudio(const Core::String& message)
+{
+    OutputDebugString(Core::convertToOS(message).c_str());
+}
+
 void assertHeader(const bool condition, const Core::StringView& header, const std::source_location& location)
 {
 #ifdef MOUCA_ACTIVE_ASSERT
@@ -12,7 +17,7 @@ void assertHeader(const bool condition, const Core::StringView& header, const st
     {
         auto message = std::format("{} ({}): [ERROR] {} - Bad condition into {}() \n", location.file_name(), location.line(), header, location.function_name());
 
-        OutputDebugString(Core::convertToOS(message).c_str());
+        logVisualStudio(message);
         assert(condition);
     }
 #endif

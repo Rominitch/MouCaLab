@@ -127,7 +127,7 @@ void Engine3DXMLLoader::loadRenderPassAttachment(ContextLoading& context, const 
         }
         else
         {
-            throw Core::Exception(Core::ErrorData("Engine3D", "XMLRenderPassFormatError") << context.getFileName() << std::to_string(id));
+            throw Core::Exception(Core::ErrorData("Engine3D", "XMLRenderPassFormatError") << context.getFileName().string() << std::to_string(id));
         }
         MouCa::assertion(attachment.format != VK_FORMAT_UNDEFINED);
 
@@ -149,7 +149,7 @@ void Engine3DXMLLoader::loadRenderPassAttachment(ContextLoading& context, const 
     // Manage errors
     if (attachments.empty())
     {
-        throw Core::Exception(Core::ErrorData("Engine3D", "XMLRenderPassMissAttachmentError") << context.getFileName() << std::to_string(id));
+        throw Core::Exception(Core::ErrorData("Engine3D", "XMLRenderPassMissAttachmentError") << context.getFileName().string() << std::to_string(id));
     }
 }
 
@@ -213,7 +213,7 @@ void Engine3DXMLLoader::loadRenderPassSubPass(ContextLoading& context, const uin
 
         if (attachments.colorAttachmentReferences.empty())
         {
-            throw Core::Exception(Core::ErrorData("Engine3D", "XMLRenderPassMissColorAttachmentError") << context.getFileName() << std::to_string(idSubPass));
+            throw Core::Exception(Core::ErrorData("Engine3D", "XMLRenderPassMissColorAttachmentError") << context.getFileName().string() << std::to_string(idSubPass));
         }
 
         // Read color attachment
@@ -259,7 +259,7 @@ void Engine3DXMLLoader::loadRenderPassSubPass(ContextLoading& context, const uin
 
     if (subPasses.empty())
     {
-        throw Core::Exception(Core::ErrorData("Engine3D", "XMLRenderPassMissSubpassError") << context.getFileName() << std::to_string(id));
+        throw Core::Exception(Core::ErrorData("Engine3D", "XMLRenderPassMissSubpassError") << context.getFileName().string() << std::to_string(id));
     }
 }
 
@@ -284,11 +284,11 @@ void Engine3DXMLLoader::loadRenderPassDependency(ContextLoading& context, const 
 
         if (subDependency.dstSubpass != VK_SUBPASS_EXTERNAL && subDependency.dstSubpass >= subPass.size())
         {
-            throw Core::Exception(Core::ErrorData("Engine3D", "XMLRenderPassUnknownSubpassError") << context.getFileName() << std::to_string(id) << "dstSubpass" << std::to_string(subDependency.dstSubpass));
+            throw Core::Exception(Core::ErrorData("Engine3D", "XMLRenderPassUnknownSubpassError") << context.getFileName().string() << std::to_string(id) << "dstSubpass" << std::to_string(subDependency.dstSubpass));
         }
         if (subDependency.srcSubpass != VK_SUBPASS_EXTERNAL && subDependency.srcSubpass >= subPass.size())
         {
-            throw Core::Exception(Core::ErrorData("Engine3D", "XMLRenderPassUnknownSubpassError") << context.getFileName() << std::to_string(id) << "srcSubpass" << std::to_string(subDependency.srcSubpass));
+            throw Core::Exception(Core::ErrorData("Engine3D", "XMLRenderPassUnknownSubpassError") << context.getFileName().string() << std::to_string(id) << "srcSubpass" << std::to_string(subDependency.srcSubpass));
         }
         dependencies.emplace_back(subDependency);
     }

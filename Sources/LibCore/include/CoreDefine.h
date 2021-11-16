@@ -11,6 +11,8 @@
 
 namespace MouCa
 {
+    void logVisualStudio(const Core::String& message);
+
     void assertHeader(const bool condition, const Core::StringView& header, const std::source_location& location = std::source_location::current());
 
     void preCondition(const bool condition, const std::source_location& location = std::source_location::current());
@@ -28,7 +30,7 @@ namespace MouCa
             auto message = std::format("{} ({}): [ERROR] Application assert into {} - Compare: \n {} != {} \n", location.file_name(), location.line(), location.function_name(), std::to_string(reference), std::to_string(comparison));
             std::cerr << message;
 
-            OutputDebugString(Core::convertToOS(message).c_str());
+            logVisualStudio(message);
             assert(reference == comparison);
         }
 #endif
@@ -39,7 +41,7 @@ namespace MouCa
     {
 #ifdef MOUCA_ACTIVE_ASSERT
         std::cout << message;
-        OutputDebugString(Core::convertToOS(message).c_str());
+        logVisualStudio(message);
 #endif
     }
 }

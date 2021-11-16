@@ -115,7 +115,7 @@ void AnimationLoader::createAnimation(RT::AnimationImporter& animationImport) co
 {
     MouCa::preCondition(!animationImport.getFilename().empty());
     Assimp::Importer    importer;
-    const aiScene*      scene = importer.ReadFile(Core::convertToU8(animationImport.getFilename()), 0);
+    const aiScene*      scene = importer.ReadFile(animationImport.getFilename().string(), 0);
 
     auto bones = std::make_shared<RT::AnimationBones>();
 

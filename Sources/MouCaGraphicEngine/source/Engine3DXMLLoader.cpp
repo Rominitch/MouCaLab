@@ -45,6 +45,11 @@
 namespace MouCaGraphic
 {
 
+Core::ErrorData Engine3DXMLLoader::makeLoaderError(const ContextLoading& context, const Core::StringView& idError) const
+{
+    return Core::ErrorData("Engine3D", idError) << context.getFileName().string();
+}
+
 template<>
 static void LoaderHelper::readData(const XML::NodeUPtr& node, VkExtent3D& extent)
 {
@@ -54,7 +59,7 @@ static void LoaderHelper::readData(const XML::NodeUPtr& node, VkExtent3D& extent
 }
     
 Engine3DXMLLoader::ContextLoading::ContextLoading(GraphicEngine& engine, XML::Parser& parser, MouCaCore::ResourceManager& resources):
-_engine(engine), _parser(parser), _resources(resources), _xmlFileName(Core::convertToU8(parser.getFilename()))
+_engine(engine), _parser(parser), _resources(resources), _xmlFileName(parser.getFilename())
 {}
 
 //-----------------------------------------------------------------------------------------
@@ -72,7 +77,7 @@ void Engine3DXMLLoader::load(ContextLoading& context)
     auto result = context._parser.getNode("Engine3D");
     if (result->getNbElements() == 0)
     {
-        throw Core::Exception(Core::ErrorData("Engine3D", "LoadingXMLCorruptError") << context.getFileName() << "Engine3D");
+        throw Core::Exception(makeLoaderError(context, "LoadingXMLCorruptError") << "Engine3D");
     }
 
     XML::NodeUPtr engineNode = result->getNode(0);
@@ -82,7 +87,7 @@ void Engine3DXMLLoader::load(ContextLoading& context)
     // Check version before continue
     if (VulkanManager::_version < version)
     {
-        throw Core::Exception(Core::ErrorData("Engine3D", "LoadingXMLVersionError") << context.getFileName() << std::to_string(version));
+        throw Core::Exception(makeLoaderError(context, "LoadingXMLVersionError") << std::to_string(version));
     }
 
     //Go to node
@@ -143,7 +148,7 @@ void Engine3DXMLLoader::loadWindows(ContextLoading& context)
             window->getAttribute("monitor", idMonitor);
             if (idMonitor >= context._engine.getMonitors().size())
             {
-                throw Core::Exception(Core::ErrorData("Engine3D", "WindowUnknownMonitorError") << context.getFileName() << std::to_string(idMonitor));
+                throw Core::Exception(makeLoaderError(context, "WindowUnknownMonitorError") << std::to_string(idMonitor));
             }
 
             window->getAttribute("fullscreen", state);
@@ -175,7 +180,7 @@ void Engine3DXMLLoader::loadWindows(ContextLoading& context)
 
             if (!valid)
             {
-                throw Core::Exception(Core::ErrorData("Engine3D", "WindowCreationOutsideError") << context.getFileName() << "La position de la fenêtre n'est pas dans un écran.");
+                throw Core::Exception(makeLoaderError(context, "WindowCreationOutsideError") << "Current windows is not on a screen.");
             }
 
             // Mode
@@ -240,7 +245,7 @@ void Engine3DXMLLoader::loadSurfaces(ContextLoading& context, Vulkan::ContextDev
             surface->getAttribute("windowId", windowId);
             if (_dialogs.find(windowId) == _dialogs.cend()) //DEV Issue: Must exist
             {
-                throw Core::Exception(Core::ErrorData("Engine3D", "UnknownSurfaceError") << context.getFileName());
+                throw Core::Exception(makeLoaderError(context, "UnknownSurfaceError"));
             }
 
             // Read user preferences
@@ -424,7 +429,7 @@ void Engine3DXMLLoader::loadFrameBuffers(ContextLoading& context, Vulkan::Contex
 
             if (attachments.empty())
             {
-                throw Core::Exception(Core::ErrorData("Engine3D", "XMLFrameBufferMissAttachmentError") << context.getFileName());
+                throw Core::Exception(makeLoaderError(context, "XMLFrameBufferMissAttachmentError"));
             }
 
             // Mandatory attribute
@@ -964,7 +969,7 @@ void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDe
             }
             if (fences.empty())
             {
-                throw Core::Exception(Core::ErrorData("Engine3D", "XMLMissingNodeError") << context.getFileName() << "Sequence type=waitFence" << "Fence");
+                throw Core::Exception(makeLoaderError(context, "XMLMissingNodeError") << "Sequence type=waitFence" << "Fence");
             }
 
             // Build Sequence
@@ -984,7 +989,7 @@ void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDe
             }
             if (fences.empty())
             {
-                throw Core::Exception(Core::ErrorData("Engine3D", "XMLMissingNodeError") << context.getFileName() << "Sequence type=waitFence" << "Fence");
+                throw Core::Exception(makeLoaderError(context, "XMLMissingNodeError") << "Sequence type=waitFence" << "Fence");
             }
 
             // Build Sequence
@@ -1053,7 +1058,7 @@ void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDe
 
             if( swapChains.empty() )
             {
-                throw Core::Exception(Core::ErrorData("Engine3D", "XMLMissingNodeError") << context.getFileName() << "Sequence type=presentKHR" << "Swapchain");
+                throw Core::Exception(makeLoaderError(context, "XMLMissingNodeError") << "Sequence type=presentKHR" << "Swapchain");
             }
 
             // Parsing all Signal Semaphore
@@ -1073,7 +1078,7 @@ void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDe
         }
         else
         {
-            throw Core::Exception(Core::ErrorData("Engine3D", "XMLUnknownSequenceError") << context.getFileName() << type);
+            throw Core::Exception(makeLoaderError(context, "XMLUnknownSequenceError") << type);
         }
     }
 }
@@ -1423,7 +1428,7 @@ void Engine3DXMLLoader::loadShaderModules(ContextLoading& context, Vulkan::Conte
             auto& resourceManager = context._resources;
             const auto stage = LoaderHelper::readValue(shaderModuleNode, "stage", shaderStages, false, context);
 
-            auto shaderFile = resourceManager.openShader(Core::convertToOS(filename), shaderKinds[stage], Core::convertToOS(source));
+            auto shaderFile = resourceManager.openShader(filename, shaderKinds[stage], source);
 
             // If code source: enable tracking
             if(!source.empty())
@@ -1491,7 +1496,7 @@ void Engine3DXMLLoader::loadRayTracingPipelines(ContextLoading& context, Vulkan:
             loadPipelineStages(context, pipeline->getShadersStage());
             if (pipeline->getShadersStage().getNbShaders() == 0)
             {
-                throw Core::Exception(Core::ErrorData("Engine3D", "XMLMissingNodeError") << context.getFileName() << "RayTracingPipeline" << "Stages/Stage");
+                throw Core::Exception(makeLoaderError(context, "XMLMissingNodeError") << "RayTracingPipeline" << "Stages/Stage");
             }
 
             // Groups
@@ -1686,7 +1691,7 @@ void Engine3DXMLLoader::loadAccelerationStructures(ContextLoading& context, Vulk
                     }
                     else
                     {
-                        throw Core::Exception(Core::ErrorData("Engine3D", "UnknownASGeometryError") << context.getFileName() << "Geometry" << typeG);
+                        throw Core::Exception(makeLoaderError(context, "UnknownASGeometryError") << "Geometry" << typeG);
                     }
                 }
                 //bgs[0]->initialize(*device);

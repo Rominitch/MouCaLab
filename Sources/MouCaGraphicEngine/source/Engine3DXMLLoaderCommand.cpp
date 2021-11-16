@@ -62,7 +62,7 @@ void Engine3DXMLLoader::loadCommandPools(ContextLoading& context, Vulkan::Contex
                 }
                 else
                 {
-                    throw Core::Exception(Core::ErrorData("Engine3D", "UnknownFamiliesError") << context.getFileName() << families);
+                    throw Core::Exception(Core::ErrorData("Engine3D", "UnknownFamiliesError") << context.getFileName().string() << families);
                 }   
             }
             else if (poolNode->hasAttribute("queueId"))
@@ -301,7 +301,7 @@ void Engine3DXMLLoader::loadCommands(ContextLoading& context, Vulkan::ContextDev
                 // Check validity
                 if(!(isColor ^ isDS))
                 {
-                    throw Core::Exception(Core::ErrorData("Engine3D", "XMLCleanValueMixError") << context.getFileName());
+                    throw Core::Exception(Core::ErrorData("Engine3D", "XMLCleanValueMixError") << context.getFileName().string());
                 }
 
                 if(isColor)
@@ -332,7 +332,7 @@ void Engine3DXMLLoader::loadCommands(ContextLoading& context, Vulkan::ContextDev
                     }
                     else
                     {
-                        throw Core::Exception(Core::ErrorData("Engine3D", "XMLCleanValueTypeError") << context.getFileName() << dataType);
+                        throw Core::Exception(Core::ErrorData("Engine3D", "XMLCleanValueTypeError") << context.getFileName().string() << dataType);
                     }
                 }
                 else
@@ -375,7 +375,7 @@ void Engine3DXMLLoader::loadCommands(ContextLoading& context, Vulkan::ContextDev
             }
             else
             {
-                throw Core::Exception(Core::ErrorData("Engine3D", "XMLUnknownBindPipelineError") << context.getFileName() << type);
+                throw Core::Exception(Core::ErrorData("Engine3D", "XMLUnknownBindPipelineError") << context.getFileName().string() << type);
             }
         }
         else if (type == "draw")
@@ -583,7 +583,7 @@ void Engine3DXMLLoader::loadCommands(ContextLoading& context, Vulkan::ContextDev
         }
         else
         {
-        throw Core::Exception(Core::ErrorData("Engine3D", "XMLUnknownCommandError") << context.getFileName() << type);
+            throw Core::Exception(Core::ErrorData("Engine3D", "XMLUnknownCommandError") << context.getFileName().string() << type);
         }
 
         // Transfer to vector

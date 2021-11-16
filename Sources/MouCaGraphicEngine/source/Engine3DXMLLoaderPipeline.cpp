@@ -36,7 +36,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
 
     if(info.getStages().getNbShaders() <= 0)
     {
-        throw Core::Exception(Core::ErrorData("Engine3D", "XMLMissingNodeError") << context.getFileName() << "GraphicsPipeline" << "Stages/Stage");
+        throw Core::Exception(makeLoaderError(context, "XMLMissingNodeError") << "GraphicsPipeline" << "Stages/Stage");
     }
 
     // Input Assembly
@@ -212,7 +212,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
         const size_t nbColors = _renderPasses[renderPassId].lock()->getSubPasses()[0].colorAttachmentCount;
         if( nbColors != allBlends->getNbElements() )
         {
-            throw Core::Exception(Core::ErrorData("Engine3D", "XMLBlendAttachmentSizeError") << context.getFileName() << std::to_string(graphicsPipelineId) << std::to_string(renderPassId));
+            throw Core::Exception(makeLoaderError(context, "XMLBlendAttachmentSizeError") << std::to_string(graphicsPipelineId) << std::to_string(renderPassId));
         }
 
         std::vector<VkPipelineColorBlendAttachmentState> attachments;
@@ -282,7 +282,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
         {
             if (stencilFront->getNbElements() != 1 || stencilBack->getNbElements() != 1)
             {
-                throw Core::Exception(Core::ErrorData("Engine3D", "XMLMissingStencilFrontBackError") << context.getFileName() << std::to_string(graphicsPipelineId));
+                throw Core::Exception(makeLoaderError(context, "XMLMissingStencilFrontBackError") << std::to_string(graphicsPipelineId));
             }
 
             loadStencilOp(context, stencilFront->getNode(0), state.front);

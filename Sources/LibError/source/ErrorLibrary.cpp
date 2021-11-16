@@ -27,7 +27,7 @@ void ErrorLibrary::initialize(XML::Parser& parser, const StringView& libraryLabe
     //Check data are valid
     if(parser.getFilename().empty() || libraryLabel.empty())
     {
-        throw Core::Exception(Core::ErrorData("BasicError", "InvalidPathError") << Core::convertToU8(parser.getFilename()));
+        throw Core::Exception(Core::ErrorData("BasicError", "InvalidPathError") << parser.getFilename().string());
     }
 
     //Create parser and try to open error file

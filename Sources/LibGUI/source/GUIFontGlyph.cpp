@@ -70,7 +70,7 @@ void GUIFontPolice::Release()
 	}	
 }
 
-void GUIFontPolice::Create(const Core::StringOS& strFilename, const float fSize, std::shared_ptr<GUIFontAtlas>& pAtlas)
+void GUIFontPolice::Create(const Core::Path& strFilename, const float fSize, std::shared_ptr<GUIFontAtlas>& pAtlas)
 {
 	MouCa::assertion(fSize > 0.0f);
 	MouCa::assertion(!strFilename.empty());
@@ -107,7 +107,7 @@ void GUIFontPolice::Create(const Core::StringOS& strFilename, const float fSize,
 	CreateSpecialGlyph();
 }
 
-void GUIFontPolice::LoadFace(FT_Library& pLibrary, const Core::StringOS& strFilename, const float size, FT_Face& pFace)
+void GUIFontPolice::LoadFace(FT_Library& pLibrary, const Core::Path& strFilename, const float size, FT_Face& pFace)
 {
 	const size_t szHRes = 64;	
 
@@ -119,7 +119,7 @@ void GUIFontPolice::LoadFace(FT_Library& pLibrary, const Core::StringOS& strFile
 
 	try
 	{
-        const Core::String u8Filename = Core::convertToU8(strFilename);
+        const Core::String u8Filename = strFilename.string();
 		//Create And Initialize A Face.
 		if(FT_New_Face(pLibrary, u8Filename.c_str(), 0, &pFace))
 		{

@@ -20,7 +20,7 @@ void File::open(const StringOS& mode)
     const errno_t eError = _wfopen_s(&_file, _filename.c_str(), mode.c_str());
     if(eError!=0)
     {
-        throw Core::Exception(Core::ErrorData("BasicError", "InvalidPathError") << convertToU8(_filename));
+        throw Core::Exception(Core::ErrorData("BasicError", "InvalidPathError") << _filename.string());
     }
     else
     {
@@ -107,7 +107,7 @@ size_t File::read(Core::ByteBuffer& buffer)
     }
     else
     {
-        throw Core::Exception(Core::ErrorData("BasicError", "InvalidFileRead") << convertToU8(_filename));
+        throw Core::Exception(Core::ErrorData("BasicError", "InvalidFileRead") << _filename.string());
     }
     return mem;
 }

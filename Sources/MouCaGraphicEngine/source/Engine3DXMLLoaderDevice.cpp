@@ -22,7 +22,7 @@ void Engine3DXMLLoader::loadEnvironment(ContextLoading& context)
     auto result = context._parser.getNode("Environment");
     if (result->getNbElements() == 0)
     {
-        throw Core::Exception(Core::ErrorData("Engine3D", "LoadingXMLCorruptError") << context.getFileName() << "Environment");
+        throw Core::Exception(makeLoaderError(context, "LoadingXMLCorruptError") << "Environment");
     }
 
     // Go into
@@ -214,7 +214,7 @@ void Engine3DXMLLoader::loadDevices(ContextLoading& context)
 
                 if (idSurface >= _manager.getSurfaces().size())
                 {
-                    throw Core::Exception(Core::ErrorData("Engine3D", "UnknownSurfaceError") << context.getFileName());
+                    throw Core::Exception(makeLoaderError(context, "UnknownSurfaceError"));
                 }
 
                 auto aPush = context._parser.autoPushNode(*device);
@@ -244,7 +244,7 @@ void Engine3DXMLLoader::loadDevices(ContextLoading& context)
             }
             else
             {
-                throw Core::Exception(Core::ErrorData("Engine3D", "DeviceModeError") << context.getFileName() << mode);
+                throw Core::Exception(makeLoaderError(context, "DeviceModeError") << mode);
             }
         }
         else

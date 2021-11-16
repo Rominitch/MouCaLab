@@ -91,7 +91,7 @@ void FileTracker::TrackerThread::registerResource( Core::ResourceSPtr resource )
         const HANDLE modifyHandle = FindFirstChangeNotification( folder.c_str(), FALSE, FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_SIZE );
         if( modifyHandle == INVALID_HANDLE_VALUE )
         {
-            throw Core::Exception(Core::ErrorData( "Tools", "FileTrackingError") << convertToU8( resource->getTrackedFilename() ) );
+            throw Core::Exception(Core::ErrorData("Tools", "FileTrackingError") << resource->getTrackedFilename().string() );
         }
 
         const key newKey = {modifyHandle, folder};

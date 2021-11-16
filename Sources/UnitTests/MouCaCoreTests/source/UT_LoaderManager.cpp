@@ -87,7 +87,7 @@ class LoaderManagerTest : public testing::Test
             // Generate list of data
             for(uint32_t job = 0; job < _nbJobs; ++job)
             {
-                const auto imageName = Core::StringOS(L"img") + Core::convertToOS(std::to_string(job)) + Core::StringOS(L".ktx");
+                const auto imageName = std::format("img{}.ktx", job);
                 // Duplicate data
                 const auto dest = MouCaEnvironment::getOutputPath() / imageName;
                 ASSERT_TRUE( std::filesystem::copy_file( filename, dest, std::filesystem::copy_options::overwrite_existing ) );
