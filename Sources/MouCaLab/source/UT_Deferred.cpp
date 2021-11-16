@@ -397,9 +397,9 @@ TEST_F(DeferredTest, run)
     loader._dialogs[0].lock()->initialize(_eventManager, _resolution);
 
     _switchScreen     = dynamic_cast<Vulkan::CommandSwitch*>(loader._commandLinks[1]);
-    MOUCA_ASSERT(_switchScreen != nullptr);
+    MouCa::assertion(_switchScreen != nullptr);
     _switchOffScreeen = dynamic_cast<Vulkan::CommandSwitch*>(loader._commandLinks[2]);
-    MOUCA_ASSERT(_switchOffScreeen != nullptr);
+    MouCa::assertion(_switchOffScreeen != nullptr);
 
     ASSERT_NO_FATAL_FAILURE(GUI.initialize(_resolution));
 
@@ -424,7 +424,7 @@ TEST_F(DeferredTest, run)
     // Transfer commands
     {
         Vulkan::CommandContainer* container = dynamic_cast<Vulkan::CommandContainer*>(loader._commandLinks[0]);
-        MOUCA_ASSERT(container != nullptr);
+        MouCa::assertion(container != nullptr);
         container->transfer(std::move(*loaderGUI._commandsGroup[0].get()));
     }
 
@@ -532,7 +532,7 @@ TEST_F(DeferredTest, run)
         updateUIOverlay();
         ASSERT_NO_THROW(GUI.prepareBuffer(*context));
         Vulkan::CommandContainer* container = dynamic_cast<Vulkan::CommandContainer*>(loaderGUI._commandLinks[0]);
-        MOUCA_ASSERT(container != nullptr);
+        MouCa::assertion(container != nullptr);
         ASSERT_NO_THROW(GUI.buildCommands(container->getCommands()));
 
         // Refresh Command Buffer with new command

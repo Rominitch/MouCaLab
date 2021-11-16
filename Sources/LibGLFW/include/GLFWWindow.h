@@ -94,11 +94,11 @@ namespace GLFW
         /// \returns Pointer to associate RT::Window.
         static Window* getWindow(GLFWwindow* glfwWindow)
         {
-            MOUCA_ASSERT(glfwWindow != NULL);
+            MouCa::assertion(glfwWindow != NULL);
 
             //Get user data
             Window* window = reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfwWindow));
-            MOUCA_ASSERT(window != NULL);
+            MouCa::assertion(window != NULL);
             return window;
         }
 

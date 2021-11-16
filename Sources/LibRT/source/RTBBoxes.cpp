@@ -10,7 +10,7 @@ namespace RT
 
 void BBoxes::initialize()
 {
-    MOUCA_PRE_CONDITION( isNull() );
+    MouCa::preCondition( isNull() );
 
     // Build bbox mesh : centered bbox of 1 size
     _nodes =
@@ -71,18 +71,18 @@ void BBoxes::initialize()
     };
     _bbox.initialize( vbo, ibo, subDescriptors, RT::FaceOrder::CounterClockWise, RT::Topology::Lines, RT::BoundingBox(_nodes[0], _nodes[7]) );
 
-    MOUCA_POST_CONDITION( !isNull() );
+    MouCa::postCondition( !isNull() );
 }
 
 void BBoxes::release()
 {
-    MOUCA_PRE_CONDITION( !isNull() );
+    MouCa::preCondition( !isNull() );
 
     _bbox.release();
 
     BasicMassiveInstance::release();
 
-    MOUCA_POST_CONDITION( isNull() );
+    MouCa::postCondition( isNull() );
 }
 
 bool BBoxes::isNull() const
@@ -92,8 +92,8 @@ bool BBoxes::isNull() const
 
 void BBoxes::update( const std::vector<Indirect>& indirects, const std::vector<Instance>& instances )
 {
-    MOUCA_PRE_CONDITION( !isNull() );               // DEV Issue: Mesh are set !
-    MOUCA_PRE_CONDITION( 1 == indirects.size() );   // DEV Issue: Need same size to parse easily ! 
+    MouCa::preCondition( !isNull() );               // DEV Issue: Mesh are set !
+    MouCa::preCondition( 1 == indirects.size() );   // DEV Issue: Need same size to parse easily ! 
 
     // Copy data
     _indirects = indirects;
@@ -109,7 +109,7 @@ void BBoxes::update( const std::vector<Indirect>& indirects, const std::vector<I
     // Control data: check nb of instances is correctly sync with indirect
     const uint32_t nbObjects = std::accumulate(_indirects.cbegin(), _indirects.cend(), 0,
                                                  [](uint32_t count, const Indirect& indirect) { return count + indirect._count; });
-    MOUCA_POST_CONDITION( _instances.size() == nbObjects );
+    MouCa::postCondition( _instances.size() == nbObjects );
 #endif
 }
 

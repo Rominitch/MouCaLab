@@ -33,7 +33,7 @@ namespace RT
     constexpr size_t computeSizeOf(const Type eType)
     {
         if (eType == Type::Unknown || eType >= RT::Type::NbTypes)
-            MOUCA_THROW_ERROR("BasicError", "UnknownEnumError");
+            throw Core::Exception(Core::ErrorData("BasicError", "UnknownEnumError"));
 
         const std::array<size_t, static_cast<size_t>(RT::Type::NbTypes)> typeSizeOf
         { {

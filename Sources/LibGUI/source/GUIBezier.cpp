@@ -75,7 +75,7 @@ namespace GUI
             }
 
 			default:
-				MOUCA_ASSERT(false); // Unknown state : missing enum ?
+				MouCa::assertion(false); // Unknown state : missing enum ?
 				return false;
         }
     }

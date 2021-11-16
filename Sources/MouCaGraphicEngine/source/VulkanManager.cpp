@@ -45,7 +45,7 @@ const Core::String VulkanManager::_osName = Core::String("android");
 VulkanManager::~VulkanManager()
 {
     // Validation release was called !
-    MOUCA_PRE_CONDITION(_environment.isNull());    //DEV Issue: Check you call release() properly.
+    MouCa::preCondition(_environment.isNull());    //DEV Issue: Check you call release() properly.
 
     // Remove latest link (Nothing to delete)
     _surfaces.clear();
@@ -53,11 +53,11 @@ VulkanManager::~VulkanManager()
 
 void VulkanManager::initialize(const RT::ApplicationInfo& info, const std::vector<const char*>& extensions)
 {
-    MOUCA_PRE_CONDITION(_environment.isNull());    //DEV Issue: No re-entrance: already call initialize().
+    MouCa::preCondition(_environment.isNull());    //DEV Issue: No re-entrance: already call initialize().
 
     _environment.initialize(info, extensions);
 
-    MOUCA_PRE_CONDITION(!_environment.isNull());   //DEV Issue: Safety check.
+    MouCa::preCondition(!_environment.isNull());   //DEV Issue: Safety check.
 }
 
 void VulkanManager::release()
@@ -99,8 +99,8 @@ void VulkanManager::release()
 
 uint32_t VulkanManager::addRenderDialog(RT::RenderDialogWPtr window)
 {
-    MOUCA_PRE_CONDITION(!window.expired());
-    MOUCA_PRE_CONDITION(std::find_if(_surfaces.cbegin(), _surfaces.cend(), [&](const auto& surface) { return surface->_linkWindow.lock() == window.lock(); }) == _surfaces.cend());
+    MouCa::preCondition(!window.expired());
+    MouCa::preCondition(std::find_if(_surfaces.cbegin(), _surfaces.cend(), [&](const auto& surface) { return surface->_linkWindow.lock() == window.lock(); }) == _surfaces.cend());
 
     // Event - register signal
     {
@@ -119,23 +119,23 @@ uint32_t VulkanManager::addRenderDialog(RT::RenderDialogWPtr window)
 //-----------------------------------------------------------------------------------------
 void VulkanManager::buildSurface(Vulkan::WindowSurface& surface) const
 {
-    MOUCA_PRE_CONDITION(!_environment.isNull());           //DEV Issue: Need to call initialize()
-    MOUCA_PRE_CONDITION(!surface._linkWindow.expired());   //DEV Issue: surface data is not anymore valid.
-    MOUCA_PRE_CONDITION(surface._surface == nullptr);      //DEV Issue: Re-entrance is not allowed.
+    MouCa::preCondition(!_environment.isNull());           //DEV Issue: Need to call initialize()
+    MouCa::preCondition(!surface._linkWindow.expired());   //DEV Issue: surface data is not anymore valid.
+    MouCa::preCondition(surface._surface == nullptr);      //DEV Issue: Re-entrance is not allowed.
 
     RT::WindowSPtr lockedWindow = surface._linkWindow.lock();
-    MOUCA_ASSERT(lockedWindow.get() != nullptr);
+    MouCa::assertion(lockedWindow.get() != nullptr);
 
     surface._surface = std::make_unique<Vulkan::Surface>();
     surface._surface->initialize(_environment, *lockedWindow.get());
 
-    MOUCA_POST_CONDITION(!surface._surface->isNull());     //DEV Issue: Bad initialization ?
+    MouCa::postCondition(!surface._surface->isNull());     //DEV Issue: Bad initialization ?
 }
 
 Vulkan::ContextDeviceWPtr VulkanManager::createRenderingDevice(const std::vector<const char*>& deviceExtensions, const Vulkan::PhysicalDeviceFeatures& mandatoryFeatures, Vulkan::WindowSurface& surface)
 {
-    MOUCA_PRE_CONDITION(!_environment.isNull());           //DEV Issue: Need to call initialize()
-    MOUCA_PRE_CONDITION(!surface._linkWindow.expired());   //DEV Issue: Need to give a valid dialog.
+    MouCa::preCondition(!_environment.isNull());           //DEV Issue: Need to call initialize()
+    MouCa::preCondition(!surface._linkWindow.expired());   //DEV Issue: Need to give a valid dialog.
 
     // Build surface before use
     if (surface._surface == nullptr)
@@ -155,7 +155,7 @@ Vulkan::ContextDeviceWPtr VulkanManager::createRenderingDevice(const std::vector
     }
 #endif
 
-    MOUCA_POST_CONDITION(!context->isNull());    //DEV Issue: creation was done properly !
+    MouCa::postCondition(!context->isNull());    //DEV Issue: creation was done properly !
     // Save into list by move (Don't use context after this line)
     _devices.emplace_back(context);
     
@@ -199,7 +199,7 @@ void VulkanManager::releaseSurface(Vulkan::WindowSurface& surface)
 
 void VulkanManager::afterClose(RT::Window* window)
 {
-    MOUCA_PRE_CONDITION(window != nullptr); //DEV Issue: bad signal ?
+    MouCa::preCondition(window != nullptr); //DEV Issue: bad signal ?
 
     // Search current surface
     auto itSurface = std::find_if(_surfaces.begin(), _surfaces.end(), [&](const auto& surface) { return window->getHandle() == surface->getHandle(); });
@@ -233,10 +233,10 @@ void VulkanManager::afterResizeWindow(RT::Window* window, const RT::Array2ui& si
 {
     // Search current surface
     auto itSurface = std::find_if(_surfaces.begin(), _surfaces.end(), [&](const auto& surface) { return window->getHandle() == surface->getHandle(); });
-    MOUCA_ASSERT(itSurface != _surfaces.end()); //DEV Issue: Already remove ?
+    MouCa::assertion(itSurface != _surfaces.end()); //DEV Issue: Already remove ?
 
     auto itContext = std::find_if(_windows.begin(), _windows.end(), [&](const auto& window) { return window->isWindowSurface(**itSurface); });
-    MOUCA_ASSERT(itContext != _windows.end()); //DEV Issue: Already remove ?
+    MouCa::assertion(itContext != _windows.end()); //DEV Issue: Already remove ?
 
     // Stop rendering
     (*itContext)->setReady(false);
@@ -259,10 +259,10 @@ void VulkanManager::afterStateSizeWindow(RT::Window* window, RT::Window::StateSi
 {
     // Search current surface
     auto itSurface = std::find_if(_surfaces.begin(), _surfaces.end(), [&](const auto& surface) { return window->getHandle() == surface->getHandle(); });
-    MOUCA_ASSERT(itSurface != _surfaces.end()); //DEV Issue: Already remove ?
+    MouCa::assertion(itSurface != _surfaces.end()); //DEV Issue: Already remove ?
 
     auto itContext = std::find_if(_windows.begin(), _windows.end(), [&](const auto& window) { return window->isWindowSurface(**itSurface); });
-    MOUCA_ASSERT(itContext != _windows.end()); //DEV Issue: Already remove ?
+    MouCa::assertion(itContext != _windows.end()); //DEV Issue: Already remove ?
 
     // Stop rendering
     (*itContext)->setReady(false);
@@ -276,12 +276,12 @@ void VulkanManager::afterStateSizeWindow(RT::Window* window, RT::Window::StateSi
 
 void VulkanManager::execute(const uint32_t deviceID, const uint32_t sequenceID, bool sync) const
 {
-    MOUCA_ASSERT(deviceID < _devices.size());
+    MouCa::assertion(deviceID < _devices.size());
     auto context = _devices.at(deviceID);
 
-    MOUCA_ASSERT(sequenceID < context->getQueueSequences().size());
-    MOUCA_ASSERT(context->getQueueSequences().at(sequenceID).use_count() > 0);
-    MOUCA_ASSERT(!context->getQueueSequences().at(sequenceID).get()->empty());
+    MouCa::assertion(sequenceID < context->getQueueSequences().size());
+    MouCa::assertion(context->getQueueSequences().at(sequenceID).use_count() > 0);
+    MouCa::assertion(!context->getQueueSequences().at(sequenceID).get()->empty());
     
     const_cast<VulkanManager*>(this)->_locked.lock();
     for (const auto& sequence : *context->getQueueSequences().at(sequenceID))
@@ -339,13 +339,13 @@ void VulkanManager::takeScreenshot(const Core::Path& imageFilePath, RT::ImageImp
 
 void VulkanManager::registerShader(RT::ShaderFileWPtr file, const ShaderRegistration& shader)
 {
-    MOUCA_PRE_CONDITION(!file.expired());                          // DEV Issue: Need valid data !
-    MOUCA_PRE_CONDITION(!shader.second.expired());                 // DEV Issue: Need valid data !
-    MOUCA_PRE_CONDITION(_shaders.find(file) == _shaders.cend());   // DEV Issue: Never added !
+    MouCa::preCondition(!file.expired());                          // DEV Issue: Need valid data !
+    MouCa::preCondition(!shader.second.expired());                 // DEV Issue: Need valid data !
+    MouCa::preCondition(_shaders.find(file) == _shaders.cend());   // DEV Issue: Never added !
 
     _shaders[file] = shader;
 
-    MOUCA_POST_CONDITION(_shaders.find(file) != _shaders.cend());   // DEV Issue: Not added ?
+    MouCa::postCondition(_shaders.find(file) != _shaders.cend());   // DEV Issue: Not added ?
 }
 
 void VulkanManager::afterShaderEdition(Core::Resource& resource)
@@ -359,7 +359,7 @@ void VulkanManager::afterShaderEdition(Core::Resource& resource)
 
         try
         {
-            MOUCA_DEBUG(u8"Vulkan: Reload shader " << shaderFile->getTrackedFilename());
+            MouCa::logConsole(std::format("Vulkan: Reload shader {}", shaderFile->getTrackedFilename()));
 
             // Compile new version
             shaderFile->compile();
@@ -368,7 +368,7 @@ void VulkanManager::afterShaderEdition(Core::Resource& resource)
         {
             MOUCA_UNUSED(e);
             // Keep old shader
-            MOUCA_DEBUG("Vulkan: Reload shader failure with "<< e.read(0).getErrorLabel() << " " << (e.read(0).getParameters().empty() ? "" : e.read(0).getParameters().front()));
+            MouCa::logConsole(std::format("Vulkan: Reload shader failure with {} {}", e.read(0).getErrorLabel(), (e.read(0).getParameters().empty() ? "" : e.read(0).getParameters().front())));
             compilation = false;
         }
         catch(...)

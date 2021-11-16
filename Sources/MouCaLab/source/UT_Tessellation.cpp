@@ -234,7 +234,7 @@ public:
 
     void generateTerrain()
     {
-        MOUCA_PRE_CONDITION(!_models._imageHeight->isNull());
+        MouCa::preCondition(!_models._imageHeight->isNull());
         // Define struct to manipulate vertices (WARNING: must be similar to descriptor)
         struct Vertex
         {
@@ -285,7 +285,7 @@ public:
                 rpos /= glm::ivec2(scale);
 
                 const size_t idMem = (rpos.x + rpos.y * dim) * scale;
-                MOUCA_ASSERT_BETWEEN(idMem, 0, dim * dim);
+                MouCa::assertion_BETWEEN(idMem, 0, dim * dim);
                 return *(heightdata + idMem) / 65535.0f;
             };
 

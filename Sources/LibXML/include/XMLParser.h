@@ -34,22 +34,22 @@ namespace XML
 
             size_t getNbElements() const override
             {
-                MOUCA_PRE_CONDITION(_findNodesList!=NULL);
+                MouCa::preCondition(_findNodesList!=NULL);
                 return _findNodesList->getLength();
             }
 
             NodeUPtr getNode(const size_t szNode) const override
             {
-                MOUCA_PRE_CONDITION(_findNodesList!=NULL);
+                MouCa::preCondition(_findNodesList!=NULL);
 #ifndef XERCES_SPEED_DEBUG
-                MOUCA_PRE_CONDITION(szNode < _findNodesList->getLength());
+                MouCa::preCondition(szNode < _findNodesList->getLength());
 #endif
                 xercesc::DOMNode* pNode = _findNodesList->item(szNode);
 #ifndef XERCES_SPEED_DEBUG
-                MOUCA_PRE_CONDITION(pNode != NULL && pNode->getNodeType() && pNode->getNodeType() == xercesc::DOMNode::ELEMENT_NODE);
+                MouCa::preCondition(pNode != NULL && pNode->getNodeType() && pNode->getNodeType() == xercesc::DOMNode::ELEMENT_NODE);
 #endif
 
-                MOUCA_PRE_CONDITION(dynamic_cast<const DOMElement*>(pNode) != NULL);
+                MouCa::preCondition(dynamic_cast<const DOMElement*>(pNode) != NULL);
                 return std::make_unique<XercesNode>(static_cast<DOMElement*>(pNode));
             }
         private:
@@ -115,6 +115,7 @@ namespace XML
         //                                  Parsing with stack
         //-----------------------------------------------------------------------------------------
             ResultUPtr getNode(const Core::String& name) const override;
+            ResultUPtr getNodeView(const Core::StringView& strName) const override;
 
             AutoPop autoPushNode(const Node& node) override;
 
@@ -122,6 +123,8 @@ namespace XML
             void popNode() override;
 
             NodeUPtr searchNode(const Core::String& nodeLabel, const Core::String& parameterLabel, const Core::String& strValue) const override;
+
+            NodeUPtr searchNodeView(const Core::StringView& strNodeLabel, const Core::StringView& strParameterLabel, const Core::String& strValue) const override;
 
         //-----------------------------------------------------------------------------------------
         //                                 Parsing without stack
@@ -135,6 +138,7 @@ namespace XML
             std::stack<const xercesc::DOMElement*>	    _parseStack;    ///< Current stack of node parsing (managed with push/pop).
 
             NodeUPtr searchNodeGeneric(const ResultUPtr& result, const Core::String& parameterLabel, const Core::String& strValue) const;
+            NodeUPtr searchNodeGenericView(const ResultUPtr& result, const Core::StringView& parameterLabel, const Core::String& strValue) const;
 
             MOUCA_NOCOPY_NOMOVE(XercesParser);
     };

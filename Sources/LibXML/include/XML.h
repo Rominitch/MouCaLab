@@ -88,6 +88,7 @@ namespace XML
         //                                  Parsing with stack
         //-----------------------------------------------------------------------------------------
             virtual ResultUPtr getNode(const Core::String& name) const = 0;
+            virtual ResultUPtr getNodeView(const Core::StringView& strName) const = 0;
 
             virtual AutoPop autoPushNode(const Node& node) = 0;
 
@@ -95,7 +96,7 @@ namespace XML
             virtual void popNode() = 0;
 
             virtual NodeUPtr searchNode(const Core::String& nodeLabel, const Core::String& parameterLabel, const Core::String& strValue) const = 0;
-
+            virtual NodeUPtr searchNodeView(const Core::StringView& strNodeLabel, const Core::StringView& strParameterLabel, const Core::String& strValue) const = 0;
         //-----------------------------------------------------------------------------------------
         //                                 Parsing without stack
         //-----------------------------------------------------------------------------------------

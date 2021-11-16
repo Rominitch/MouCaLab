@@ -15,23 +15,23 @@ namespace Vulkan
 
 CommandBufferSurface::CommandBufferSurface()
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 CommandBufferSurface::~CommandBufferSurface()
 {
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 void CommandBufferSurface::initialize(const ContextWindowWPtr weakWindow, CommandPoolSPtr pool, const VkCommandBufferLevel level, const VkCommandBufferUsageFlags usage)
 {
-    MOUCA_PRE_CONDITION(isNull());                 // DEV Issue: Already build CommandBuffer ?
-    MOUCA_PRE_CONDITION(!weakWindow.expired());    // DEV Issue: Need a valid surface !
+    MouCa::preCondition(isNull());                 // DEV Issue: Already build CommandBuffer ?
+    MouCa::preCondition(!weakWindow.expired());    // DEV Issue: Need a valid surface !
 
     // Copy window data
     _window = weakWindow;
     auto window = weakWindow.lock();
-    MOUCA_PRE_CONDITION(!window->getSwapChain().getImages().empty());
+    MouCa::preCondition(!window->getSwapChain().getImages().empty());
 
     // Copy data
     _usage = usage;
@@ -52,16 +52,16 @@ void CommandBufferSurface::initialize(const ContextWindowWPtr weakWindow, Comman
     // Allocate
     if (vkAllocateCommandBuffers(window->getContextDevice().getDevice().getInstance(), &cmdBufferAllocateInfo, _commandBuffers.data()) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"CommandBufferCreationError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "CommandBufferCreationError"));
     }
 
-    MOUCA_POST_CONDITION(!isNull());    //DEV Issue: Not initialize ?
+    MouCa::postCondition(!isNull());    //DEV Issue: Not initialize ?
 }
 
 void CommandBufferSurface::release(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!isNull());        // DEV Issue: Never initialize ?
-    MOUCA_PRE_CONDITION(!_pool.expired()); //DEV Issue: Pool was delete before command.
+    MouCa::preCondition(!isNull());        // DEV Issue: Never initialize ?
+    MouCa::preCondition(!_pool.expired()); //DEV Issue: Pool was delete before command.
 
     // Release CommandBuffers
     vkFreeCommandBuffers(device.getInstance(), _pool.lock()->getInstance(), static_cast<uint32_t>(_commandBuffers.size()), _commandBuffers.data());
@@ -71,7 +71,7 @@ void CommandBufferSurface::release(const Device& device)
     _commands.clear();
     _pool.reset();
 
-    MOUCA_POST_CONDITION(isNull());       // DEV Issue: Something wrong ?
+    MouCa::postCondition(isNull());       // DEV Issue: Something wrong ?
 }
 
 bool CommandBufferSurface::isNull() const
@@ -97,11 +97,11 @@ void CommandBufferSurface::execute(const VkCommandBufferResetFlags reset) const
 
 VkCommandBuffer CommandBufferSurface::getActiveCommandBuffer() const
 {
-    MOUCA_PRE_CONDITION(!isNull());            // DEV Issue: Never initialize ?
-    MOUCA_PRE_CONDITION(!_window.expired());   // DEV Issue: No window ?
+    MouCa::preCondition(!isNull());            // DEV Issue: Never initialize ?
+    MouCa::preCondition(!_window.expired());   // DEV Issue: No window ?
 
     const auto idBuffer = _window.lock()->getSwapChain().getCurrentImage();
-    MOUCA_ASSERT(idBuffer < _commandBuffers.size());
+    MouCa::assertion(idBuffer < _commandBuffers.size());
     return _commandBuffers[idBuffer];
 }
 

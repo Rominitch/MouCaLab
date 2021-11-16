@@ -34,7 +34,7 @@ namespace Core
             Thread():
             _latestException(nullptr)
             {
-                MOUCA_PRE_CONDITION(isNull());
+                MouCa::preCondition(isNull());
             }
             
         public:
@@ -42,7 +42,7 @@ namespace Core
             virtual ~Thread()
             {
                 // Have you call join() thread before remove object ?
-                MOUCA_PRE_CONDITION(isNull() || isTerminated());
+                MouCa::preCondition(isNull() || isTerminated());
             }
 
             //------------------------------------------------------------------------
@@ -60,9 +60,9 @@ namespace Core
             /// \note Can be launched only one time.
             void start()
             {
-                MOUCA_PRE_CONDITION(isNull());  //DEV Issue: Second start() calling !
+                MouCa::preCondition(isNull());  //DEV Issue: Second start() calling !
                 _pThread = std::unique_ptr<std::thread>(new std::thread(runThread, this));
-                MOUCA_POST_CONDITION(!isNull());
+                MouCa::postCondition(!isNull());
             }
 
             //------------------------------------------------------------------------
@@ -72,7 +72,7 @@ namespace Core
             /// \note This method is possible ONLY after start().
             bool isTerminated() const
             {
-                MOUCA_PRE_CONDITION(!isNull());    //DEV Issue: Need start() before
+                MouCa::preCondition(!isNull());    //DEV Issue: Need start() before
                 return !(_pThread->joinable());
             }
 
@@ -83,7 +83,7 @@ namespace Core
             /// \note This method is possible ONLY after start().
             void join()
             {
-                MOUCA_PRE_CONDITION(!isNull());    //DEV Issue: Need start() before
+                MouCa::preCondition(!isNull());    //DEV Issue: Need start() before
                 _pThread->join();
 
                 // Rethrow exception inside thread
@@ -104,7 +104,7 @@ namespace Core
             /// \note This method manages exception transfer. Using join() rethrow will be called, if exception happens.
             static void runThread(Thread* pThread)
             {
-                MOUCA_PRE_CONDITION(pThread != NULL);
+                MouCa::preCondition(pThread != NULL);
                 try
                 {
                     //Run Thread methods

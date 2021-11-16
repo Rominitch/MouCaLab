@@ -43,7 +43,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
     auto inputAssemblies = context._parser.getNode(u8"InputAssembly");
     if (inputAssemblies->getNbElements() > 0)
     {
-        MOUCA_ASSERT(inputAssemblies->getNbElements() == 1); //DEV Issue: Need to clean xml !
+        MouCa::assertion(inputAssemblies->getNbElements() == 1); //DEV Issue: Need to clean xml !
         auto inputAssembly = inputAssemblies->getNode(0);
 
         // Build Input Assembly
@@ -62,7 +62,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
     auto vertexInput = context._parser.getNode(u8"VertexInput");
     if (vertexInput->getNbElements() > 0)
     {
-        MOUCA_ASSERT(vertexInput->getNbElements() == 1); //DEV Issue: Need to clean xml !
+        MouCa::assertion(vertexInput->getNbElements() == 1); //DEV Issue: Need to clean xml !
         auto vertexInputNode = vertexInput->getNode(0);
 
         // cppcheck-suppress unreadVariable // false positive
@@ -147,7 +147,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
     auto rasterizations = context._parser.getNode(u8"Rasterization");
     if (rasterizations->getNbElements() > 0)
     {
-        MOUCA_ASSERT(rasterizations->getNbElements() == 1); //DEV Issue: Need to clean xml !
+        MouCa::assertion(rasterizations->getNbElements() == 1); //DEV Issue: Need to clean xml !
         auto rasterization = rasterizations->getNode(0);
 
         auto& state = info.getRasterizer()._state;
@@ -183,7 +183,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
     auto blends = context._parser.getNode(u8"BlendState");
     if (blends->getNbElements() > 0)
     {
-        MOUCA_ASSERT(blends->getNbElements() == 1); //DEV Issue: Need to clean xml !
+        MouCa::assertion(blends->getNbElements() == 1); //DEV Issue: Need to clean xml !
         auto blend = blends->getNode(0);
         
         auto& state = info.getBlending()._state;
@@ -258,7 +258,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
     auto depthStencils = context._parser.getNode(u8"DepthStencil");
     if (depthStencils->getNbElements() > 0)
     {
-        MOUCA_ASSERT(depthStencils->getNbElements() == 1); //DEV Issue: Need to clean xml !
+        MouCa::assertion(depthStencils->getNbElements() == 1); //DEV Issue: Need to clean xml !
         auto depthStencilNode = depthStencils->getNode(0);
 
         auto& state = info.getDepthStencil()._state;
@@ -294,7 +294,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
         auto depthBound  = context._parser.getNode(u8"DepthBounds");
         if (depthBound->getNbElements() > 0)
         {
-            MOUCA_ASSERT(depthBound->getNbElements() == 1); //DEV Issue: Need to clean xml !
+            MouCa::assertion(depthBound->getNbElements() == 1); //DEV Issue: Need to clean xml !
             auto depthBoundNode = depthBound->getNode(0);
 
             state.stencilTestEnable = VK_TRUE;
@@ -399,7 +399,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
     auto multisample = context._parser.getNode(u8"Multisample");
     if (multisample->getNbElements() > 0)
     {
-        MOUCA_ASSERT(multisample->getNbElements() == 1); //DEV Issue: Need to clean xml !
+        MouCa::assertion(multisample->getNbElements() == 1); //DEV Issue: Need to clean xml !
         auto multisampleNode = multisample->getNode(0);
 
         auto& state = info.getMultisample()._state;
@@ -431,7 +431,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
     auto tessellation = context._parser.getNode(u8"Tessellation");
     if(tessellation->getNbElements() > 0)
     {
-        MOUCA_ASSERT(tessellation->getNbElements() == 1); //DEV Issue: Need to clean xml !
+        MouCa::assertion(tessellation->getNbElements() == 1); //DEV Issue: Need to clean xml !
         auto tessellationNode = tessellation->getNode(0);
         
         // Read data
@@ -452,7 +452,7 @@ void Engine3DXMLLoader::loadPipelineLayouts(ContextLoading& context, Vulkan::Con
     auto result = context._parser.getNode(u8"PipelineLayouts");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         // cppcheck-suppress unreadVariable // false positive
@@ -513,7 +513,7 @@ void Engine3DXMLLoader::loadPipelineStages(ContextLoading& context, Vulkan::Pipe
     auto stages = context._parser.getNode(u8"Stages");
     if (stages->getNbElements() > 0)
     {
-        MOUCA_ASSERT(stages->getNbElements() == 1); //DEV Issue: Need to clean xml !
+        MouCa::assertion(stages->getNbElements() == 1); //DEV Issue: Need to clean xml !
 
         // cppcheck-suppress unreadVariable // false positive
         auto aPush = context._parser.autoPushNode(*stages->getNode(0));
@@ -536,7 +536,7 @@ void Engine3DXMLLoader::loadPipelineStages(ContextLoading& context, Vulkan::Pipe
                 // Read buffer
                 const uint32_t idB = LoaderHelper::getLinkedIdentifiant(specializationNode, u8"external", _cpuBuffers, context);
                 const auto& buffer = _cpuBuffers[idB].lock();
-                MOUCA_ASSERT(buffer != nullptr && !buffer->isNull());
+                MouCa::assertion(buffer != nullptr && !buffer->isNull());
                 specialization.addDataInfo(buffer->getData(), buffer->getByteSize());
 
                 auto aPushS = context._parser.autoPushNode(*specializationNode);

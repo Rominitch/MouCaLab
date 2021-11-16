@@ -18,12 +18,12 @@ _surface(VK_NULL_HANDLE)
 
 Surface::~Surface()
 {
-    MOUCA_ASSERT(_surface == VK_NULL_HANDLE);
+    MouCa::assertion(_surface == VK_NULL_HANDLE);
 }
 
 void Surface::initialize(const Environment& environment, const RT::Window& window)
 {
-    MOUCA_ASSERT(_surface == VK_NULL_HANDLE);
+    MouCa::assertion(_surface == VK_NULL_HANDLE);
 
 #ifdef VK_USE_PLATFORM_WIN32_KHR
     //Prepare data
@@ -39,7 +39,7 @@ void Surface::initialize(const Environment& environment, const RT::Window& windo
     //Allocate surface
     if(vkCreateWin32SurfaceKHR(environment.getInstance(), &surfaceCreateInfo, nullptr, &_surface) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"SurfaceError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "SurfaceError"));
     }
 /*
 #elif defined(VK_USE_PLATFORM_XCB_KHR)
@@ -68,13 +68,13 @@ void Surface::initialize(const Environment& environment, const RT::Window& windo
     }
 */
 #else
-    MOUCA_THROW_ERROR(u8"Vulkan", L"SurfaceError");
+    throw Core::Exception(Core::ErrorData("Vulkan", "SurfaceError"));
 #endif
 }
 
 void Surface::release(const Environment& environment)
 {
-    MOUCA_ASSERT(_surface != VK_NULL_HANDLE);
+    MouCa::assertion(_surface != VK_NULL_HANDLE);
 
     vkDestroySurfaceKHR(environment.getInstance(), _surface, nullptr);
     _surface = VK_NULL_HANDLE;
@@ -82,37 +82,37 @@ void Surface::release(const Environment& environment)
 
 void Surface::computeSurfaceFormat(const Device& device, const SurfaceFormat::Configuration& userPreferences, SurfaceFormat& surfaceFormat)
 {
-    MOUCA_ASSERT(!device.isNull());                 //DEV Issue: Need a valid device !
+    MouCa::assertion(!device.isNull());                 //DEV Issue: Need a valid device !
 
     //Read surface information
     VkSurfaceCapabilitiesKHR surfaceCapabilities;
     if(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device.getPhysicalDevice(), _surface, &surfaceCapabilities) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"ReadSurfaceCapabilityError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "ReadSurfaceCapabilityError"));
     }
 
     uint32_t nbFormats=0;
     if(vkGetPhysicalDeviceSurfaceFormatsKHR(device.getPhysicalDevice(), _surface, &nbFormats, nullptr) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"ReadSurfaceFormatError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "ReadSurfaceFormatError"));
     }
 
     std::vector<VkSurfaceFormatKHR> surfaceFormats(nbFormats);
     if(vkGetPhysicalDeviceSurfaceFormatsKHR(device.getPhysicalDevice(), _surface, &nbFormats, &surfaceFormats[0]) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"ReadSurfaceFormatError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "ReadSurfaceFormatError"));
     }
 
     uint32_t nbPresentModes=0;
     if(vkGetPhysicalDeviceSurfacePresentModesKHR(device.getPhysicalDevice(), _surface, &nbPresentModes, nullptr) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"ReadSurfacePresentModesError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "ReadSurfacePresentModesError"));
     }
 
     std::vector<VkPresentModeKHR> presentModes(nbPresentModes);
     if(vkGetPhysicalDeviceSurfacePresentModesKHR(device.getPhysicalDevice(), _surface, &nbPresentModes, &presentModes[0]) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"ReadSurfacePresentModesError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "ReadSurfacePresentModesError"));
     }
 
     // Analyze and adapt to surface requirement

@@ -72,8 +72,8 @@ void GUIFontPolice::Release()
 
 void GUIFontPolice::Create(const Core::StringOS& strFilename, const float fSize, std::shared_ptr<GUIFontAtlas>& pAtlas)
 {
-	MOUCA_ASSERT(fSize > 0.0f);
-	MOUCA_ASSERT(!strFilename.empty());
+	MouCa::assertion(fSize > 0.0f);
+	MouCa::assertion(!strFilename.empty());
 
 	//Clear old data
 	Release();
@@ -114,7 +114,7 @@ void GUIFontPolice::LoadFace(FT_Library& pLibrary, const Core::StringOS& strFile
 	//Create And Initialize A FreeType Font Library.
 	if(FT_Init_FreeType(&pLibrary))
 	{
-		MOUCA_THROW_ERROR(u8"ModuleError", u8"InitializeError")
+		throw Core::Exception(Core::ErrorData("ModuleError", "InitializeError"));
 	}
 
 	try
@@ -123,19 +123,19 @@ void GUIFontPolice::LoadFace(FT_Library& pLibrary, const Core::StringOS& strFile
 		//Create And Initialize A Face.
 		if(FT_New_Face(pLibrary, u8Filename.c_str(), 0, &pFace))
 		{
-			MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FontFileMissingError", u8Filename);
+			throw Core::Exception(Core::ErrorData("ModuleError", "FontFileMissingError") << u8Filename);
 		}
 
 		//Select Charmap for unicode support
 		if(FT_Select_Charmap(pFace, FT_ENCODING_UNICODE))
 		{
-			MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FontFileMissingError", u8Filename);
+			throw Core::Exception(Core::ErrorData("ModuleError", "FontFileMissingError") << u8Filename);
 		}
 
 		// Set char size
 		if(FT_Set_Char_Size(pFace, (int)(size*szHRes), 0, 72*szHRes, 72))
 		{
-			MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FontFileMissingError", u8Filename);
+			throw Core::Exception(Core::ErrorData("ModuleError", "FontFileMissingError") << u8Filename);
 		}
 
 		// Set transform matrix
@@ -155,8 +155,8 @@ void GUIFontPolice::LoadFace(FT_Library& pLibrary, const Core::StringOS& strFile
 
 void GUIFontPolice::GenerateKerning()
 {
-	MOUCA_ASSERT(m_pFace != NULL && m_pLibrary != NULL);
-	MOUCA_ASSERT(!m_mapGlyphs.empty());
+	MouCa::assertion(m_pFace != NULL && m_pLibrary != NULL);
+	MouCa::assertion(!m_mapGlyphs.empty());
 
 	//Compute start glyph
 	GlyphMap::iterator itStartGlyph = m_mapGlyphs.begin();
@@ -286,7 +286,7 @@ GUIFontGlyph::SGlyphBitmap GUIFontPolice::ConvertGlyphToBitmap(const FT_GlyphSlo
 		FT_Stroker stroker;
 		if(FT_Stroker_New(m_pLibrary, &stroker))
 		{
-			MOUCA_ASSERT(false);
+			MouCa::assertion(false);
 			//Exception
 		}
 		FT_Stroker_Set(stroker, (int)(m_outline_thickness * m_fHResolution), FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0);
@@ -294,7 +294,7 @@ GUIFontGlyph::SGlyphBitmap GUIFontPolice::ConvertGlyphToBitmap(const FT_GlyphSlo
 		FT_Glyph ft_glyph;
 		if(FT_Get_Glyph(slot, &ft_glyph))
 		{
-			MOUCA_ASSERT(false);
+			MouCa::assertion(false);
 			//Exception
 		}
 		
@@ -319,7 +319,7 @@ GUIFontGlyph::SGlyphBitmap GUIFontPolice::ConvertGlyphToBitmap(const FT_GlyphSlo
 		}
 		if(error)
 		{
-			MOUCA_ASSERT(false);
+			MouCa::assertion(false);
 			//Exception
 		}
 		  
@@ -333,7 +333,7 @@ GUIFontGlyph::SGlyphBitmap GUIFontPolice::ConvertGlyphToBitmap(const FT_GlyphSlo
 		}
 		if(error)
 		{
-			MOUCA_ASSERT(false);
+			MouCa::assertion(false);
 			//Exception
 		}
 		FT_BitmapGlyph ft_bitmap_glyph = (FT_BitmapGlyph) ft_glyph;

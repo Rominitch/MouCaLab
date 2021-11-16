@@ -299,7 +299,7 @@ class FontSVGTest : public MouCaLabTest
         //bool buildText(GUI::FontFamilySVGWPtr font, std::vector<const char*> text, const glm::vec2& offset, const float scale, const float interLine)
         bool buildText(const Text& text)
         {
-            MOUCA_PRE_CONDITION(!text._font->expired());
+            MouCa::preCondition(!text._font->expired());
 
             bool update = false;
 
@@ -710,7 +710,7 @@ Core::Path FontSVGTest::_fontSeguiEmoji(u8"seguiemj.ttf");
 
 void RefreshSystem::afterShaderRefresh()
 {
-    MOUCA_DEBUG("DEMO: Shader");
+    MouCa::logConsole("DEMO: Shader");
 
     testManager->updateCommandBuffers(*loader);
     testManager->updateCommandBuffersSurface(*loader);

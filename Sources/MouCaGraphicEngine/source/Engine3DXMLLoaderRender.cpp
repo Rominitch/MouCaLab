@@ -23,7 +23,7 @@ struct SubPassAttachment
 
     void buildAttachments(std::vector<VkAttachmentReference>& attachmentReferences)
     {
-        MOUCA_PRE_CONDITION(!colorAttachmentReferences.empty());
+        MouCa::preCondition(!colorAttachmentReferences.empty());
         if (attachmentReferences.empty())
         {
             attachmentReferences.resize(colorAttachmentReferences.size());
@@ -54,12 +54,12 @@ struct SubPassAttachment
 
 void Engine3DXMLLoader::loadRenderPasses(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
+    MouCa::preCondition(!deviceWeak.expired()); //DEV Issue: Bad device !
 
     auto result = context._parser.getNode(u8"RenderPasses");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
 
         auto aPushR = context._parser.autoPushNode(*result->getNode(0));
 
@@ -129,11 +129,11 @@ void Engine3DXMLLoader::loadRenderPassAttachment(ContextLoading& context, const 
         {
             MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLRenderPassFormatError", context.getFileName(), std::to_string(id));
         }
-        MOUCA_ASSERT(attachment.format != VK_FORMAT_UNDEFINED);
+        MouCa::assertion(attachment.format != VK_FORMAT_UNDEFINED);
 
         // Read sampler
         attachment.samples = LoaderHelper::readValue(attachmentNode, u8"samples", samples, false, context);
-        MOUCA_ASSERT(Core::Maths::isPowerOfTwo(static_cast<uint32_t>(attachment.samples)));
+        MouCa::assertion(Core::Maths::isPowerOfTwo(static_cast<uint32_t>(attachment.samples)));
 
         // Read load/store
         attachment.loadOp = LoaderHelper::readValue(attachmentNode, u8"loadOp", attachmentLoads, false, context);

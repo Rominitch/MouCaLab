@@ -11,12 +11,12 @@ namespace Steam
 Platform::Platform():
 _initialize(false)
 {
-    MOUCA_POST_CONDITION(isNull());                /// DEV Issue: missing call release() ?
+    MouCa::postCondition(isNull());                /// DEV Issue: missing call release() ?
 }
 
 Platform::~Platform()
 {
-    MOUCA_POST_CONDITION(isNull());                /// DEV Issue: missing call release() ?
+    MouCa::postCondition(isNull());                /// DEV Issue: missing call release() ?
 }
 
 bool Platform::isNull() const
@@ -26,31 +26,31 @@ bool Platform::isNull() const
 
 void Platform::initialize()
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 
     if(SteamAPI_RestartAppIfNecessary(k_uAppIdInvalid))
-        MOUCA_THROW_ERROR("Steam", "APINeedRestartError");
+        throw Core::Exception(Core::ErrorData("Steam", "APINeedRestartError"));
     
     if(!Steamworks_InitCEGLibrary())
-        MOUCA_THROW_ERROR("Steam", "CEGInitializationError");
+        throw Core::Exception(Core::ErrorData("Steam", "CEGInitializationError"));
 
     if(!SteamAPI_Init())
-        MOUCA_THROW_ERROR("Steam", "APIInitializationError");
+        throw Core::Exception(Core::ErrorData("Steam", "APIInitializationError"));
 
     // DRM self check
     Steamworks_SelfCheck();
 
     if(!SteamInput()->Init())
-        MOUCA_THROW_ERROR("Steam", "InputInitializationError");
+        throw Core::Exception(Core::ErrorData("Steam", "InputInitializationError"));
 
     _initialize = true;
 
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 }
 
 void Platform::release()
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
 
     // Shutdown the SteamAPI
     SteamAPI_Shutdown();
@@ -60,7 +60,7 @@ void Platform::release()
 
     _initialize = false;
 
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 }

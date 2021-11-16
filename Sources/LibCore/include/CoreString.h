@@ -167,10 +167,13 @@ namespace Core
 
     /// Basic String
     using StringUTF8 = std::u8string;
-    using StringCPP  = std::string;
+
+    using StringCPP     = std::string;
+    using StringViewCPP = std::string_view;
 
     // Standard Program string
-    using String = StringCPP;
+    using String     = StringCPP;
+    using StringView = StringViewCPP;
 
     // Custom string
     using StringHex = std::string;

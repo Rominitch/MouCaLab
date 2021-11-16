@@ -41,7 +41,7 @@ class EventManager3D : public RT::EventManager
 
         void setSpeedWheel(float speedWheel)
         {
-            MOUCA_PRE_CONDITION(speedWheel > 0.0f);
+            MouCa::preCondition(speedWheel > 0.0f);
             _speedWheel = speedWheel;
         }
 

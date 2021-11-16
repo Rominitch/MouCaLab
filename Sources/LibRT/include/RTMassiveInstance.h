@@ -69,7 +69,7 @@ namespace RT
         /// Destructor
         ~BasicMassiveInstance() override
         {
-            MOUCA_PRE_CONDITION( isNull() );
+            MouCa::preCondition( isNull() );
         }
 
         virtual void update( const std::vector<Indirect>& indirects, const std::vector<Instance>& instances ) = 0;
@@ -97,7 +97,7 @@ namespace RT
         BasicMassiveInstance( const Type type ):
         Object( type )
         {
-            MOUCA_PRE_CONDITION( isNull() );
+            MouCa::preCondition( isNull() );
         }
 
         std::vector<Indirect>   _indirects;     ///< Indirect data.
@@ -119,13 +119,13 @@ namespace RT
             MassiveInstance():
             BasicMassiveInstance(Object::TMassive)
             {
-                MOUCA_PRE_CONDITION(isNull());
+                MouCa::preCondition(isNull());
             }
 
             /// Destructor
             ~MassiveInstance() override
             {
-                MOUCA_PRE_CONDITION(isNull());
+                MouCa::preCondition(isNull());
             }
   
             /// Release

@@ -14,8 +14,8 @@ namespace Media
 
 void MeshLoader::createMesh(RT::MeshImport& mesh) const
 {
-    MOUCA_PRE_CONDITION(Core::File::isExist( mesh.getFilename()));
-    MOUCA_PRE_CONDITION(mesh.getDescriptor().getNbDescriptors() > 0);
+    MouCa::preCondition(Core::File::isExist( mesh.getFilename()));
+    MouCa::preCondition(mesh.getDescriptor().getNbDescriptors() > 0);
     
     // Build import flag for ASSIMP
     int flag = aiProcess_FlipWindingOrder | aiProcess_Triangulate | aiProcess_PreTransformVertices;
@@ -38,8 +38,8 @@ void MeshLoader::createMesh(RT::MeshImport& mesh) const
         size_t szVBOSize = 0;
         size_t szIBOSize = 0;
         computeVBOIBOSize(pScene, szVBOSize, szIBOSize);
-        MOUCA_ASSERT(szVBOSize > 0);
-        MOUCA_ASSERT(szIBOSize > 0);
+        MouCa::assertion(szVBOSize > 0);
+        MouCa::assertion(szIBOSize > 0);
 
         //Allocate buffer
         RT::BufferCPUSPtr VBOQuad = std::make_shared<RT::BufferCPU>();
@@ -70,8 +70,8 @@ void MeshLoader::createMesh(RT::MeshImport& mesh) const
         }
 
         mesh.getEditMesh().initialize(VBOQuad, IBOQuad, descriptor, RT::FaceOrder::CounterClockWise, RT::Topology::Triangles, bbox );
-        MOUCA_POST_CONDITION(mesh.getEditMesh().getNbVertices()  > 0); // DEV Issue: nothing ?
-        MOUCA_POST_CONDITION(mesh.getEditMesh().getNbPolygones() > 0); // DEV Issue: nothing ?
+        MouCa::postCondition(mesh.getEditMesh().getNbVertices()  > 0); // DEV Issue: nothing ?
+        MouCa::postCondition(mesh.getEditMesh().getNbPolygones() > 0); // DEV Issue: nothing ?
     }
 }
 
@@ -93,10 +93,10 @@ void MeshLoader::computeVBOIBOSize(const struct aiScene* pScene, size_t& szVBOSi
 
 void MeshLoader::computeVBOIBO(const struct aiScene* pScene, float* pCurrentVertex, uint32_t* pCurrentIndex, const RT::BufferDescriptor& description, std::vector<RT::Mesh::SubMeshDescriptor>& descriptors, const bool invertedY, RT::BoundingBox& bbox ) const
 {
-    MOUCA_PRE_CONDITION(pScene != nullptr);
-    MOUCA_PRE_CONDITION(pCurrentVertex != nullptr);
-    MOUCA_PRE_CONDITION(pCurrentIndex != nullptr);
-    MOUCA_PRE_CONDITION(description.getNbDescriptors() > 0 && description.getComponentDescriptor(0).getComponentUsage() == RT::ComponentUsage::Vertex);
+    MouCa::preCondition(pScene != nullptr);
+    MouCa::preCondition(pCurrentVertex != nullptr);
+    MouCa::preCondition(pCurrentIndex != nullptr);
+    MouCa::preCondition(description.getNbDescriptors() > 0 && description.getComponentDescriptor(0).getComponentUsage() == RT::ComponentUsage::Vertex);
 
     RT::AnimationBones bones;
 
@@ -164,11 +164,11 @@ void MeshLoader::computeVBOIBO(const struct aiScene* pScene, float* pCurrentVert
 
     uint32_t indexBase = 0;
 
-    MOUCA_ASSERT(descriptors.size() == pScene->mNumMeshes);
+    MouCa::assertion(descriptors.size() == pScene->mNumMeshes);
     for(uint32_t uiMesh = 0; uiMesh < pScene->mNumMeshes; ++uiMesh)
     {
         const struct aiMesh* pMesh = pScene->mMeshes[uiMesh];
-        MOUCA_ASSERT(pMesh != nullptr);
+        MouCa::assertion(pMesh != nullptr);
 
         // Need to load bones
         if( description.hasComponentUsage(RT::ComponentUsage::BonesWeights) )
@@ -229,17 +229,17 @@ void MeshLoader::computeVBOIBO(const struct aiScene* pScene, float* pCurrentVert
                     if( descriptor.getFormatType() == RT::Type::Float && descriptor.getNbComponents() == 4 )
                         copier.emplace_back(boneWeightsCopy);
                     else
-                        MOUCA_ASSERT(false);
+                        MouCa::assertion(false);
                 break;
 
                 case RT::ComponentUsage::BonesIds:
                     if( descriptor.getFormatType() == RT::Type::Int && descriptor.getNbComponents() == 4 )
                         copier.emplace_back(boneIDsCopy);
                     else
-                        MOUCA_ASSERT(false);
+                        MouCa::assertion(false);
                 break;
                 default:
-                    MOUCA_ASSERT(false);
+                    MouCa::assertion(false);
             }
         }
 
@@ -270,7 +270,7 @@ void MeshLoader::computeVBOIBO(const struct aiScene* pScene, float* pCurrentVert
                 ++countValid;
             }
             //else
-                //MOUCA_ASSERT_HEADER(false, "Number of indice is not 3.");
+                //MouCa::assertion_HEADER(false, "Number of indice is not 3.");
         }
 
         descriptors[uiMesh]._startIndex = indexBase;

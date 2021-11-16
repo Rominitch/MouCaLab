@@ -11,7 +11,7 @@ namespace Vulkan
 WindowSurface::WindowSurface(RT::RenderDialogWPtr linkWindow) :
 _linkWindow(linkWindow), _handle(linkWindow.lock()->getHandle())
 {
-    MOUCA_PRE_CONDITION(!linkWindow.expired());
+    MouCa::preCondition(!linkWindow.expired());
 }
 
 }

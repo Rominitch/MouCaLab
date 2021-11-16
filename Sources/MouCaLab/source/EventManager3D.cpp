@@ -27,21 +27,21 @@ void EventManager3D::addManipulator(RT::CameraManipulatorSPtr& cameraManipulator
 
 void EventManager3D::onClose(RT::Canvas* pCanvas)
 {
-    MOUCA_PRE_CONDITION(pCanvas != nullptr);
+    MouCa::preCondition(pCanvas != nullptr);
     MOUCA_UNUSED(pCanvas);
 }
 
 RT::CameraComportement* EventManager3D::getComportement() const
 {
-    MOUCA_PRE_CONDITION(!_manipulators.empty());
-    MOUCA_PRE_CONDITION(_current != _manipulators.end());
+    MouCa::preCondition(!_manipulators.empty());
+    MouCa::preCondition(_current != _manipulators.end());
 
     return (*_current)->getComportement();
 }
 
 void EventManager3D::onSize(RT::Canvas*, const RT::Array2ui&)
 {
-    //MOUCA_PRE_CONDITION(pCanvas != nullptr);
+    //MouCa::preCondition(pCanvas != nullptr);
     /*
     RT::ViewportInt32 viewport;
     viewport.setSize(size.x, size.y);
@@ -59,8 +59,8 @@ void EventManager3D::onSize(RT::Canvas*, const RT::Array2ui&)
 
 void EventManager3D::onMouseWheel(RT::Canvas* pCanvas, const RT::VirtualMouse& mouse, const int deltaWheel)
 {
-    MOUCA_PRE_CONDITION(!_manipulators.empty());
-    MOUCA_PRE_CONDITION(pCanvas != nullptr);
+    MouCa::preCondition(!_manipulators.empty());
+    MouCa::preCondition(pCanvas != nullptr);
     MOUCA_UNUSED(pCanvas);
     MOUCA_UNUSED(mouse);
 
@@ -75,8 +75,8 @@ void EventManager3D::onMouseWheel(RT::Canvas* pCanvas, const RT::VirtualMouse& m
 
 void EventManager3D::onMouseMove(RT::Canvas* pCanvas, const RT::VirtualMouse& mouse)
 {
-    MOUCA_PRE_CONDITION(!_manipulators.empty());
-    MOUCA_PRE_CONDITION(pCanvas != nullptr);
+    MouCa::preCondition(!_manipulators.empty());
+    MouCa::preCondition(pCanvas != nullptr);
     MOUCA_UNUSED(pCanvas);
 
     _mouseState._mousePositionSN = mouse.getNormScreenPosition();
@@ -119,7 +119,7 @@ void EventManager3D::onMouseMove(RT::Canvas* pCanvas, const RT::VirtualMouse& mo
 
 void EventManager3D::onMousePress(RT::Canvas* pCanvas, const RT::VirtualMouse& mouse, const RT::VirtualMouse::Buttons eButton)
 {
-    MOUCA_PRE_CONDITION(pCanvas != nullptr);
+    MouCa::preCondition(pCanvas != nullptr);
     MOUCA_UNUSED(pCanvas);
 
     if (RT::VirtualMouse::isPressed(eButton, RT::VirtualMouse::Buttons::Left))
@@ -130,7 +130,7 @@ void EventManager3D::onMousePress(RT::Canvas* pCanvas, const RT::VirtualMouse& m
 
 void EventManager3D::onMouseRelease(RT::Canvas* pCanvas, const RT::VirtualMouse& mouse, const RT::VirtualMouse::Buttons eButton)
 {
-    MOUCA_PRE_CONDITION(pCanvas != nullptr);
+    MouCa::preCondition(pCanvas != nullptr);
     MOUCA_UNUSED(pCanvas);
     MOUCA_UNUSED(mouse);
     MOUCA_UNUSED(eButton);
@@ -138,7 +138,7 @@ void EventManager3D::onMouseRelease(RT::Canvas* pCanvas, const RT::VirtualMouse&
 
 void EventManager3D::onKeyPress(RT::Canvas* pCanvas, int key, int scancode, int action, int mods)
 {
-    MOUCA_PRE_CONDITION(pCanvas != nullptr);
+    MouCa::preCondition(pCanvas != nullptr);
     MOUCA_UNUSED(pCanvas);
     MOUCA_UNUSED(scancode);
     MOUCA_UNUSED(action);

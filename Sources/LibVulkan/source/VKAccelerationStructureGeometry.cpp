@@ -33,7 +33,7 @@ void AccelerationStructureGeometry::initialize(const VkGeometryFlagsKHR geometry
 
 void AccelerationStructureGeometryInstance::create(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!device.isNull());
+    MouCa::preCondition(!device.isNull());
 
     // Copy data to buffer
     std::vector<VkAccelerationStructureInstanceKHR> data;
@@ -69,7 +69,7 @@ void AccelerationStructureGeometryInstance::create(const Device& device)
 void AccelerationStructureGeometryInstance::Instance::initialize(AccelerationStructureWPtr reference, const VkGeometryInstanceFlagsKHR flag, VkTransformMatrixKHR&& transform4x3,
                                                                  const uint32_t instanceCustomIndex, const uint32_t instanceShaderBinding, const uint32_t mask)
 {
-    MOUCA_PRE_CONDITION(!reference.expired());
+    MouCa::preCondition(!reference.expired());
 
     _reference = reference;
     _instance =
@@ -107,7 +107,7 @@ void AccelerationStructureGeometryTriangles::initialize(const RT::MeshWPtr mesh,
 
 void AccelerationStructureGeometryTriangles::create(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!device.isNull());
+    MouCa::preCondition(!device.isNull());
 
     const auto mesh = _mesh.lock();
     const uint64_t vertexStride = mesh->getVBOBuffer().lock()->getDescriptor().getByteSize();

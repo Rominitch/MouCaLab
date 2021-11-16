@@ -42,12 +42,12 @@ namespace RT
             Scene():
             _root(Object::TObject, "SceneRoot")
             {
-                MOUCA_PRE_CONDITION( isNull() );
+                MouCa::preCondition( isNull() );
             }
 
             ~Scene()
             {
-                MOUCA_POST_CONDITION( isNull() );  ///DEV Issue: Missing calling release()
+                MouCa::postCondition( isNull() );  ///DEV Issue: Missing calling release()
             }
 
             void release();
@@ -57,31 +57,31 @@ namespace RT
         //---------------------------------------------------------------
             void addGeometry(GeometrySPtr geometry)
             {
-                MOUCA_PRE_CONDITION(geometry.get() != nullptr);
+                MouCa::preCondition(geometry.get() != nullptr);
                 _geometries.emplace_back(geometry);
             }
 
             void addObjectRenderable( const ObjectSPtr& object )
             {
-                MOUCA_PRE_CONDITION( object.get() != nullptr );
+                MouCa::preCondition( object.get() != nullptr );
                 _objects.emplace_back( object );
             }
 
             void addLight(const LightSPtr& light)
             {
-                MOUCA_PRE_CONDITION(light.get() != nullptr);
+                MouCa::preCondition(light.get() != nullptr);
                 _sources.emplace_back(light);
             }
 
             void addCamera(const CameraSPtr& camera)
             {
-                MOUCA_PRE_CONDITION(camera.get() != nullptr);
+                MouCa::preCondition(camera.get() != nullptr);
                 _cameras.emplace_back(camera);
             }
 
             void addMassive(const MassiveInstanceSPtr& massive)
             {
-                MOUCA_PRE_CONDITION(massive.get() != nullptr);
+                MouCa::preCondition(massive.get() != nullptr);
                 _massives.emplace_back(massive);
             }
 

@@ -31,7 +31,7 @@ namespace Vulkan
 
             ~DescriptorPool()
             {
-                MOUCA_ASSERT(isNull());
+                MouCa::assertion(isNull());
             }
 
             void initialize(const Device& device, const std::vector<VkDescriptorPoolSize>& poolSizes, const uint32_t maxSets);
@@ -65,7 +65,7 @@ namespace Vulkan
 
             ~DescriptorSetLayout()
             {
-                MOUCA_ASSERT(isNull());
+                MouCa::assertion(isNull());
             }
 
             void addBinding(const VkDescriptorType type, const uint32_t count, const VkShaderStageFlags stageFlags);
@@ -149,7 +149,7 @@ namespace Vulkan
 
             ~DescriptorSet()
             {
-                MOUCA_POST_CONDITION(isNull());
+                MouCa::postCondition(isNull());
             }
 
             void initialize(const Device& device, const DescriptorPoolWPtr& descriptorPool, const std::vector<VkDescriptorSetLayout>& layouts);
@@ -163,7 +163,7 @@ namespace Vulkan
 
             const VkDescriptorSet& getInstance(const size_t id) const
             {
-                MOUCA_PRE_CONDITION(id < _descriptors.size());
+                MouCa::preCondition(id < _descriptors.size());
                 return _descriptors[id];
             }
 

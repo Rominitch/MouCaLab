@@ -39,8 +39,8 @@ void GraphicEngine::loopEvent()
 
 void GraphicEngine::getDefaultConfiguration(GraphicConfiguration& configuration) const
 {
-    MOUCA_PRE_CONDITION(!_platform.isNull());
-    MOUCA_PRE_CONDITION(!_hardware.getMonitors().empty());
+    MouCa::preCondition(!_platform.isNull());
+    MouCa::preCondition(!_hardware.getMonitors().empty());
 #ifndef NDEBUG
     configuration.clear();
 

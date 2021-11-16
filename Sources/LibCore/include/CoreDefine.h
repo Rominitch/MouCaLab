@@ -5,168 +5,57 @@
 
 #include <LibCore/include/CoreString.h>
 
+#ifndef NDEBUG
+#   define MOUCA_ACTIVE_ASSERT
+#endif
+
 namespace MouCa
 {
-    void assertHeader(const bool condition, const std::string_view header, const std::source_location& location = std::source_location::current());
+    void assertHeader(const bool condition, const Core::StringView& header, const std::source_location& location = std::source_location::current());
 
     void preCondition(const bool condition, const std::source_location& location = std::source_location::current());
 
     void postCondition(const bool condition, const std::source_location& location = std::source_location::current());
+
+    void assertion(const bool condition, const std::source_location& location = std::source_location::current());
+
+    template<typename DataType>
+    void assertCompare(const DataType& reference, const DataType& comparison, const std::source_location& location = std::source_location::current())
+    {
+#ifdef MOUCA_ACTIVE_ASSERT
+        if (reference != comparison)
+        {
+            auto message = std::format("{} ({}): [ERROR] Application assert into {} - Compare: \n {} != {} \n", location.file_name(), location.line(), location.function_name(), std::to_string(reference), std::to_string(comparison));
+            std::cerr << message;
+
+            OutputDebugString(Core::convertToOS(message).c_str());
+            assert(reference == comparison);
+        }
+#endif
+    }
+
+    template<typename DataType>
+    void logConsole(const DataType& message, const std::source_location& location = std::source_location::current())
+    {
+#ifdef MOUCA_ACTIVE_ASSERT
+        std::cout << message;
+        OutputDebugString(Core::convertToOS(message).c_str());
+#endif
+    }
 }
 
 /// Assertion 
 #ifndef NDEBUG
-    
-    
-
-#   define MOUCA_ASSERT_HEADER(condition, header)                                                                               \
-    if(!static_cast<bool>(condition))                                                                                           \
-    {                                                                                                                           \
-        Core::String message;                                                                                                   \
-        message += Core::String(__FILE__) + Core::String("(") + std::to_string(__LINE__)                                        \
-                + Core::String("): [ERROR] ")+ Core::String(#header) + Core::String(" - ")                                      \
-                + Core::String(#condition) + Core::String("\n");                                                                \
-        std::cerr << message;                                                                                                   \
-        OutputDebugString(Core::convertToOS(message).c_str());                                                                  \
-        assert(condition);                                                                                                      \
-    }
-
-#   define MOUCA_PRE_CONDITION(condition)  MOUCA_ASSERT_HEADER(condition, "Pre-condition assert")
-#   define MOUCA_POST_CONDITION(condition) MOUCA_ASSERT_HEADER(condition, "Post-condition assert")
-
-#   define MOUCA_ASSERT(condition) MOUCA_ASSERT_HEADER(condition, "Application assert")
-
-#   define MOUCA_LAST_REFERENCED(iterable)                                                                                         \
-    for(const auto& iter : iterable)                                                                                            \
-    {                                                                                                                           \
-        MOUCA_ASSERT(iter.use_count() == 1);                                                                                       \
-    }
-
-#   define MOUCA_NOT_LAST_REFERENCED(iterable)                                                                                     \
-    for(const auto& iter : iterable)                                                                                            \
-    {                                                                                                                           \
-        MOUCA_ASSERT(iter.use_count() != 1);                                                                                       \
-    }
-
-#   define MOUCA_ASSERT_EQ(ref, cmp)                                                                                               \
-    if(ref != cmp)                                                                                                              \
-    {                                                                                                                           \
-        Core::String message;                                                                                                   \
-        message += Core::String(__FILE__) + Core::String("(") + std::to_string(__LINE__)                                      \
-                + Core::String("): [ERROR] Application assert - Compare:\n")                                                  \
-                + Core::String("[ERROR] ") + Core::String(#ref) + Core::String(" = ") + std::to_string(ref) + Core::String("\n")  \
-                + Core::String("[ERROR] ") + Core::String(#cmp) + Core::String(" = ") + std::to_string(cmp) + Core::String("\n"); \
-        std::cerr << message;                                                                                                   \
-        OutputDebugString(Core::convertToOS(message).c_str());                                                                  \
-        assert(ref == cmp);                                                                                                     \
-    }
-
-/*
-template<typename DataType>
-void assertBetween(const DataType ref, const DataType lowEd, const DataType HighTh,
-                   const Core::String& refName, const Core::String& lowName, const Core::String& highName,
-                   const Core::String& file, const int32_t line)
-{
-    if (lowEd > ref || ref >= HighTh)                                                                             
-    {                                                                                                             
-        Core::String message;                                                                                       
-        message += file + Core::String("(") + std::to_string(line)
-        + Core::String("): [ERROR] Application assert - Between:\n")
-        + Core::String("[ERROR] ") + lowName + Core::String(" <= ") + refName
-        + Core::String(" < ") + highName + Core::String("\n")
-        + Core::String("[ERROR] ") + std::to_string(lowEd) + Core::String(" <= ") + std::to_string(ref)
-        + Core::String(" < ") + std::to_string(HighTh) + Core::String("\n");
-        std::cerr << message;                                                                                                  
-        OutputDebugString(Core::convertToOS(message).c_str());                                                                   
-        assert(lowEd <= ref && ref < HighTh);                                                                                  
-    }
-}
-
-template<>
-void assertBetween(const uint8_t ref, const uint8_t lowEd, const uint8_t HighTh,
-    const Core::String& refName, const Core::String& lowName, const Core::String& highName,
-    const Core::String& file, const int32_t line)
-{
-    if (lowEd > ref || ref >= HighTh)                                                                                          
-    {                                                                                                                          
-        Core::String message;                                                                                                    
-        message += file + Core::String("(") + std::to_string(line)
-        + Core::String("): [ERROR] Application assert - Between:\n")
-        + Core::String("[ERROR] ") + lowName + Core::String(" <= ") + refName
-        + Core::String(" < ") + highName + Core::String("\n")
-        + Core::String("[ERROR] ") + std::to_string(static_cast<int>(lowEd)) + Core::String(" <= ") + std::to_string(static_cast<int>(ref))
-        + Core::String(" < ") + std::to_string(static_cast<int>(HighTh)) + Core::String("\n");                                          
-    std::cerr << message;
-    OutputDebugString(Core::convertToOS(message).c_str());
-    assert(lowEd <= ref && ref < HighTh);
-    }
-}
- #   define MOUCA_ASSERT_BETWEEN(ref, lowEd, HighTh)                                                                                \
-        assertBetween(ref, lowEd, HighTh, #ref, #lowEd, #HighTh, __FILE__, __LINE__);
-*/
-#   define MOUCA_ASSERT_BETWEEN(ref, lowEd, HighTh)                                                                                \
-    if(lowEd > ref || ref >= HighTh)                                                                                            \
-    {                                                                                                                           \
-        Core::String message;                                                                                                   \
-        message += Core::String(__FILE__) + Core::String("(") + std::to_string(__LINE__)                                      \
-                + Core::String("): [ERROR] Application assert - Between:\n")                                                  \
-                + Core::String("[ERROR] ") + Core::String(#lowEd) + Core::String(" <= ") + Core::String(#ref)               \
-                + Core::String(" < ") + Core::String(#HighTh) + Core::String("\n")                                          \
-                + Core::String("[ERROR] ") + std::to_string(static_cast<int>(lowEd)) + Core::String(" <= ") + std::to_string(static_cast<int>(ref)) \
-                + Core::String(" < ") + std::to_string(static_cast<int>(HighTh)) + Core::String("\n");                      \
-        std::cerr << message;                                                                                                   \
-        OutputDebugString(Core::convertToOS(message).c_str());                                                                  \
-        assert(lowEd <= ref && ref < HighTh);                                                                                   \
-    }
-
-#   define MOUCA_ASSERT_BETWEEN_EQ(ref, lowEq, HighEq)                                                                             \
-    if(lowEq > ref || ref > HighEq)                                                                                             \
-    {                                                                                                                           \
-        Core::String message;                                                                                                   \
-        message += Core::String(__FILE__) + Core::String("(") + std::to_string(__LINE__)                                      \
-                + Core::String("): [ERROR] Application assert - Between:\n")                                                  \
-                + Core::String("[ERROR] ") + Core::String(#lowEq) + Core::String(" <= ") + Core::String(#ref)               \
-                + Core::String(" <= ") + Core::String(#HighEq) + Core::String("\n")                                         \
-                + Core::String("[ERROR] ") + std::to_string(lowEq) + Core::String(" <= ") + std::to_string(ref)             \
-                + Core::String(" <= ") + std::to_string(HighEq) + Core::String("\n");                                       \
-        std::cerr << message;                                                                                                   \
-        OutputDebugString(Core::convertToOS(message).c_str());                                                                  \
-        assert(lowEq <= ref && ref <= HighEq);                                                                                  \
-    }
-
-#   define BT_PRINT_MESSAGE(message)                                                                                            \
-    {                                                                                                                           \
-        std::cerr << message;                                                                                                   \
-        OutputDebugString(Core::convertToOS(message).c_str());                                                                  \
-    }
-
 #   define MOUCA__STR(x)   #x
 #   define MOUCA_STR(x)    MOUCA__STR(x)
-    /// Allow to define all TODO into code and retrieve quickly
+#endif
+
+#define MOUCA_UNUSED(variable) variable;
+/// Allow to define all TODO into code and retrieve quickly
 #   define MOUCA_TODO(msg)                                                  \
     {                                                                       \
         __pragma(message(__FILE__ "(" MOUCA_STR(__LINE__) "): TODO: " msg)) \
     }
-
-#   define MOUCA_DEBUG(msg) std::cout << msg << std::endl
-
-#else
-#   define MOUCA_PRE_CONDITION(condition)      void(0)
-#   define MOUCA_POST_CONDITION(condition)     void(0)
-#   define MOUCA_ASSERT(condition)             void(0)
-#   define MOUCA_ASSERT_HEADER(condition, h)   void(0)
-
-#   define MOUCA_ASSERT_EQ(ref, cmp)            void(0)
-#   define MOUCA_ASSERT_BETWEEN(ref, le, ht)    void(0)
-#   define MOUCA_ASSERT_BETWEEN_EQ(ref, le, he) void(0)
-#   define MOUCA_LAST_REFERENCED(iterable)      void(0)
-#   define MOUCA_NOT_LAST_REFERENCED(iterable)  void(0)
-
-#   define MOUCA_TODO(msg)                      void(0)    /// Allow to define all TODO into code and retrieve quickly
-#   define MOUCA_DEBUG(msg)                     void(0) 
-#endif
-
-#define MOUCA_UNUSED(variable) variable;
 
 namespace Core
 {
@@ -215,7 +104,7 @@ namespace Core
     {
         bool operator() (const std::weak_ptr<DataType> &lhs, const std::weak_ptr<DataType> &rhs) const
         {
-            MOUCA_PRE_CONDITION(!lhs.expired() && !rhs.expired()); // DEV Issue: Supposed impossible !
+            MouCa::preCondition(!lhs.expired() && !rhs.expired()); // DEV Issue: Supposed impossible !
             return lhs.lock() < rhs.lock();
         }
     };

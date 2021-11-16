@@ -11,29 +11,29 @@ namespace MouCaCore
 DatabaseManagerSqlite::DatabaseManagerSqlite():
 _database(nullptr)
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 DatabaseManagerSqlite::~DatabaseManagerSqlite()
 {
-    MOUCA_PRE_CONDITION(isNull()); // DEV Issue: Need to call release !
+    MouCa::preCondition(isNull()); // DEV Issue: Need to call release !
 }
 
 void DatabaseManagerSqlite::release()
 {
-    MOUCA_PRE_CONDITION(!isNull()); // DEV Issue: Need to open() or createDB()
+    MouCa::preCondition(!isNull()); // DEV Issue: Need to open() or createDB()
 
     sqlite3_close_v2(_database);
     _database = nullptr;
     _filename.clear();
 
-    MOUCA_PRE_CONDITION(isNull());  // DEV Issue: release doesn't clean properly all initialized object  ?
+    MouCa::preCondition(isNull());  // DEV Issue: release doesn't clean properly all initialized object  ?
 
 }
 
 void DatabaseManagerSqlite::configure()
 {
-    MOUCA_PRE_CONDITION(!isNull());                     // DEV Issue: Need to open() or createDB()
+    MouCa::preCondition(!isNull());                     // DEV Issue: Need to open() or createDB()
 
     const Core::String query("PRAGMA foreign_keys = ON;");
     quickQuery(query);
@@ -41,8 +41,8 @@ void DatabaseManagerSqlite::configure()
 
 void DatabaseManagerSqlite::quickQuery(const Core::String& query)
 {
-    MOUCA_PRE_CONDITION(!isNull()); // DEV Issue: Need to open() or createDB()
-    MOUCA_PRE_CONDITION(!query.empty());
+    MouCa::preCondition(!isNull()); // DEV Issue: Need to open() or createDB()
+    MouCa::preCondition(!query.empty());
 
     sqlite3_stmt *ppStmt = nullptr;
     const char*  currentQuery = query.c_str();
@@ -85,8 +85,8 @@ void DatabaseManagerSqlite::quickQuery(const Core::String& query)
 
 void DatabaseManagerSqlite::open(const Core::StringOS& databaseFile)
 {
-    MOUCA_PRE_CONDITION(isNull());                     // DEV Issue: Must be release !
-    MOUCA_PRE_CONDITION(!databaseFile.empty());        // DEV Issue: Need file !
+    MouCa::preCondition(isNull());                     // DEV Issue: Must be release !
+    MouCa::preCondition(!databaseFile.empty());        // DEV Issue: Need file !
 
     _filename = databaseFile;
 
@@ -100,15 +100,15 @@ void DatabaseManagerSqlite::open(const Core::StringOS& databaseFile)
         release();
         MOUCA_THROW_ERROR_1("DataError", "OpenFailed", error);
     }
-    MOUCA_ASSERT(!isNull());
+    MouCa::assertion(!isNull());
 
     configure();
 }
 
 void DatabaseManagerSqlite::createDB(const Core::Path& databaseFile, const Core::File& sqlRequest)
 {
-    MOUCA_PRE_CONDITION(isNull());                     // DEV Issue: Must be release !
-    MOUCA_PRE_CONDITION(!databaseFile.empty());        // DEV Issue: Need file !
+    MouCa::preCondition(isNull());                     // DEV Issue: Must be release !
+    MouCa::preCondition(!databaseFile.empty());        // DEV Issue: Need file !
 
     if(Core::File::isExist(databaseFile))
     {
@@ -125,14 +125,14 @@ void DatabaseManagerSqlite::createDB(const Core::Path& databaseFile, const Core:
         release();
         MOUCA_THROW_ERROR_1("DataError", "OpenFailed", error);
     }
-    MOUCA_POST_CONDITION(_database != nullptr);
+    MouCa::postCondition(_database != nullptr);
 
     configure();
 
     //Apply SQL request (in UTF-8)
     if( sqlRequest.isOpened() )
     {
-        MOUCA_ASSERT(sqlRequest.isExist() && sqlRequest.isOpened()); //DEV Issue: Sql request file !
+        MouCa::assertion(sqlRequest.isExist() && sqlRequest.isOpened()); //DEV Issue: Sql request file !
 
         const Core::String query = sqlRequest.extractUTF8();
         quickQuery(query);
@@ -141,8 +141,8 @@ void DatabaseManagerSqlite::createDB(const Core::Path& databaseFile, const Core:
 
 void DatabaseManagerSqlite::attachAnotherDB(const Core::Path& filePath, const Core::String& databaseName)
 {
-    MOUCA_PRE_CONDITION(!isNull());                     // DEV Issue: Need to open() or createDB()
-    MOUCA_PRE_CONDITION(std::filesystem::exists(Core::Path(filePath)));
+    MouCa::preCondition(!isNull());                     // DEV Issue: Need to open() or createDB()
+    MouCa::preCondition(std::filesystem::exists(Core::Path(filePath)));
 
     //Create ATTACH query
     const Core::String query = "ATTACH `" + Core::convertToU8(filePath) + "` AS `" + databaseName + "`;";
@@ -162,7 +162,7 @@ DatabaseStatementSPtr DatabaseManagerSqlite::query(const Core::String& query)
         MOUCA_THROW_ERROR_1("DataError", "Reading", error);
     }
 
-    MOUCA_ASSERT(nextStep == &query.c_str()[query.size()]); //DEV Issue: unsupported multi query here !
+    MouCa::assertion(nextStep == &query.c_str()[query.size()]); //DEV Issue: unsupported multi query here !
 
     statement->initialize(ppStmt);
 
@@ -175,18 +175,18 @@ DatabaseStatementSPtr DatabaseManagerSqlite::query(const Core::String& query)
 DatabaseStatementSqlite::DatabaseStatementSqlite():
 _stmt(nullptr)
 {
-    MOUCA_PRE_CONDITION( _stmt == nullptr );
+    MouCa::preCondition( _stmt == nullptr );
 }
 
 DatabaseStatementSqlite::~DatabaseStatementSqlite()
 {
-    MOUCA_PRE_CONDITION( _stmt == nullptr ); // DEV Issue: Missing calling release();
+    MouCa::preCondition( _stmt == nullptr ); // DEV Issue: Missing calling release();
 }
 
 void DatabaseStatementSqlite::initialize( sqlite3_stmt* stmt )
 {
-    MOUCA_PRE_CONDITION( _stmt == nullptr );
-    MOUCA_PRE_CONDITION( stmt  != nullptr );
+    MouCa::preCondition( _stmt == nullptr );
+    MouCa::preCondition( stmt  != nullptr );
 
     // Copy statement pointer
     _stmt = stmt;
@@ -208,26 +208,26 @@ void DatabaseStatementSqlite::release()
 
 int DatabaseStatementSqlite::getNumberColumn() const
 {
-    MOUCA_PRE_CONDITION( _stmt != nullptr );
+    MouCa::preCondition( _stmt != nullptr );
     return sqlite3_column_count( _stmt );
 }
 
 bool DatabaseStatementSqlite::nextRow() const
 {
-    MOUCA_PRE_CONDITION( _stmt != nullptr );
+    MouCa::preCondition( _stmt != nullptr );
     return sqlite3_step( _stmt ) == SQLITE_ROW;
 }
 
 bool DatabaseStatementSqlite::isNull(const int columnID) const
 {
-    MOUCA_PRE_CONDITION(_stmt != nullptr);
+    MouCa::preCondition(_stmt != nullptr);
     return sqlite3_column_type(_stmt, columnID) == SQLITE_NULL;
 }
 
 Core::String DatabaseStatementSqlite::readString( const int columnID ) const
 {
-    MOUCA_PRE_CONDITION( _stmt != nullptr );
-    MOUCA_PRE_CONDITION( columnID < getNumberColumn());
+    MouCa::preCondition( _stmt != nullptr );
+    MouCa::preCondition( columnID < getNumberColumn());
     
     const unsigned char* text = sqlite3_column_text( _stmt, columnID );
     return Core::String(reinterpret_cast< const char* >(text));
@@ -245,24 +245,24 @@ int16_t DatabaseStatementSqlite::readI16( const int columnID ) const
 
 int32_t DatabaseStatementSqlite::readI32(const int columnID) const
 {
-    MOUCA_PRE_CONDITION(_stmt != nullptr);
-    MOUCA_PRE_CONDITION(columnID < getNumberColumn());
+    MouCa::preCondition(_stmt != nullptr);
+    MouCa::preCondition(columnID < getNumberColumn());
 
     return sqlite3_column_int(_stmt, columnID);
 }
 
 int64_t DatabaseStatementSqlite::readI64(const int columnID) const
 {
-    MOUCA_PRE_CONDITION(_stmt != nullptr);
-    MOUCA_PRE_CONDITION(columnID < getNumberColumn());
+    MouCa::preCondition(_stmt != nullptr);
+    MouCa::preCondition(columnID < getNumberColumn());
 
     return sqlite3_column_int64(_stmt, columnID);
 }
 
 double DatabaseStatementSqlite::readDouble(const int columnID) const
 {
-    MOUCA_PRE_CONDITION(_stmt != nullptr);
-    MOUCA_PRE_CONDITION(columnID < getNumberColumn());
+    MouCa::preCondition(_stmt != nullptr);
+    MouCa::preCondition(columnID < getNumberColumn());
 
     return sqlite3_column_double(_stmt, columnID);
 }
@@ -274,8 +274,8 @@ float DatabaseStatementSqlite::readFloat( const int columnID ) const
 
 Core::ByteBuffer DatabaseStatementSqlite::readBlob(const int columnID) const
 {
-    MOUCA_PRE_CONDITION(_stmt != nullptr);
-    MOUCA_PRE_CONDITION(columnID < getNumberColumn());
+    MouCa::preCondition(_stmt != nullptr);
+    MouCa::preCondition(columnID < getNumberColumn());
 
     int byteCount = sqlite3_column_bytes(_stmt, columnID);
     const void* blob = sqlite3_column_blob(_stmt, columnID);

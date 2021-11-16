@@ -19,8 +19,8 @@ _pool(VK_NULL_HANDLE)
 
 void DescriptorPool::initialize(const Device& device, const std::vector<VkDescriptorPoolSize>& poolSizes, const uint32_t maxSets)
 {
-    MOUCA_PRE_CONDITION(isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
+    MouCa::preCondition(isNull());
+    MouCa::preCondition(!device.isNull());
 
     const VkDescriptorPoolCreateInfo info =
     {
@@ -34,15 +34,15 @@ void DescriptorPool::initialize(const Device& device, const std::vector<VkDescri
 
     if(vkCreateDescriptorPool(device.getInstance(), &info, nullptr, &_pool) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"DescriptorPoolCreationError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "DescriptorPoolCreationError"));
     }
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 }
 
 void DescriptorPool::release(const Device& device)
 {
-    MOUCA_ASSERT(!isNull());
-    MOUCA_ASSERT(!device.isNull());
+    MouCa::assertion(!isNull());
+    MouCa::assertion(!device.isNull());
 
     vkDestroyDescriptorPool(device.getInstance(), _pool, nullptr);
     _pool = VK_NULL_HANDLE;
@@ -51,12 +51,12 @@ void DescriptorPool::release(const Device& device)
 DescriptorSetLayout::DescriptorSetLayout():
 _layout(VK_NULL_HANDLE)
 {
-    MOUCA_ASSERT(isNull());
+    MouCa::assertion(isNull());
 }
 
 void DescriptorSetLayout::addBinding(const VkDescriptorType type, const uint32_t count, const VkShaderStageFlags stageFlags)
 {
-    MOUCA_ASSERT(isNull()); //DEV Issue: Already call initialize()
+    MouCa::assertion(isNull()); //DEV Issue: Already call initialize()
 
     const VkDescriptorSetLayoutBinding descriptorSetLayoutCreateInfo =
     {
@@ -72,7 +72,7 @@ void DescriptorSetLayout::addBinding(const VkDescriptorType type, const uint32_t
 
 void DescriptorSetLayout::addUniformBinding(const VkShaderStageFlags stageFlags)
 {
-    MOUCA_ASSERT(isNull());
+    MouCa::assertion(isNull());
 
     const VkDescriptorSetLayoutBinding descriptorSetLayoutCreateInfo =
     {
@@ -88,7 +88,7 @@ void DescriptorSetLayout::addUniformBinding(const VkShaderStageFlags stageFlags)
 
 void DescriptorSetLayout::addImageSamplerBinding(const VkShaderStageFlags stageFlags)
 {
-    MOUCA_ASSERT(isNull());
+    MouCa::assertion(isNull());
 
     const VkDescriptorSetLayoutBinding descriptorSetLayoutCreateInfo =
     {
@@ -104,9 +104,9 @@ void DescriptorSetLayout::addImageSamplerBinding(const VkShaderStageFlags stageF
 
 void DescriptorSetLayout::initialize(const Device& device)
 {
-    MOUCA_ASSERT(isNull());
-    MOUCA_ASSERT(!device.isNull());
-    MOUCA_ASSERT(!_bindings.empty()); // DEV Issue: Missing binding !
+    MouCa::assertion(isNull());
+    MouCa::assertion(!device.isNull());
+    MouCa::assertion(!_bindings.empty()); // DEV Issue: Missing binding !
 
     const VkDescriptorSetLayoutCreateInfo info =
     {
@@ -119,21 +119,21 @@ void DescriptorSetLayout::initialize(const Device& device)
 
     if(vkCreateDescriptorSetLayout(device.getInstance(), &info, nullptr, &_layout) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"DescriptorLayoutCreationError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "DescriptorLayoutCreationError"));
     }
-    MOUCA_ASSERT(!isNull());
+    MouCa::assertion(!isNull());
 }
 
 void DescriptorSetLayout::release(const Device& device)
 {
-    MOUCA_ASSERT(!isNull());
-    MOUCA_ASSERT(!device.isNull());
+    MouCa::assertion(!isNull());
+    MouCa::assertion(!device.isNull());
 
     vkDestroyDescriptorSetLayout(device.getInstance(), _layout, nullptr);
     _layout = VK_NULL_HANDLE;
     
     _bindings.clear();
-    MOUCA_ASSERT(isNull());
+    MouCa::assertion(isNull());
 }
 
 WriteDescriptorSet::WriteDescriptorSet(const uint32_t dstBinding, const VkDescriptorType type, std::vector<VkDescriptorImageInfo>&& vkImageInfo):
@@ -162,8 +162,8 @@ _dstBinding(dstBinding), _type(VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR), _
 
 VkWriteDescriptorSet WriteDescriptorSet::compute(const DescriptorSet& set, const uint32_t setId)
 {
-    MOUCA_PRE_CONDITION(!set.isNull());
-    MOUCA_PRE_CONDITION(setId < set.getDescriptorSets().size());
+    MouCa::preCondition(!set.isNull());
+    MouCa::preCondition(setId < set.getDescriptorSets().size());
 
     if(_type != VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR)
     {
@@ -240,10 +240,10 @@ VkWriteDescriptorSet WriteDescriptorSet::compute(const DescriptorSet& set, const
 
 void DescriptorSet::initialize(const Device& device, const DescriptorPoolWPtr& descriptorPool, const std::vector<VkDescriptorSetLayout>& layouts)
 {
-    MOUCA_PRE_CONDITION(isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
-    MOUCA_PRE_CONDITION(!descriptorPool.expired() && !descriptorPool.lock()->isNull());
-    MOUCA_PRE_CONDITION(!layouts.empty());
+    MouCa::preCondition(isNull());
+    MouCa::preCondition(!device.isNull());
+    MouCa::preCondition(!descriptorPool.expired() && !descriptorPool.lock()->isNull());
+    MouCa::preCondition(!layouts.empty());
 
     // Resize array of descriptors
     //_descriptors.resize(1);// layouts.size());
@@ -266,27 +266,27 @@ void DescriptorSet::initialize(const Device& device, const DescriptorPoolWPtr& d
         _descriptors.clear();
         if (result == VK_ERROR_OUT_OF_POOL_MEMORY)
         {
-            MOUCA_THROW_ERROR(u8"Vulkan", u8"PoolDescriptorSetAllocateError");
+            throw Core::Exception(Core::ErrorData("Vulkan", "PoolDescriptorSetAllocateError"));
         }   
         else
         {
-            MOUCA_THROW_ERROR(u8"Vulkan", u8"DescriptorSetAllocateError");
+            throw Core::Exception(Core::ErrorData("Vulkan", "DescriptorSetAllocateError"));
         }
     }
 
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 #ifndef NDEBUG
     for (const auto desc : _descriptors)
     {
-        MOUCA_PRE_CONDITION(desc != VK_NULL_HANDLE);
+        MouCa::preCondition(desc != VK_NULL_HANDLE);
     }
 #endif
 }
 
 void DescriptorSet::update(const Device& device, const uint32_t setId, std::vector<WriteDescriptorSet>&& writeDescriptor)
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(!device.isNull());
 
     _writeDescriptor = std::move(writeDescriptor);
     _setId           = setId;
@@ -296,9 +296,9 @@ void DescriptorSet::update(const Device& device, const uint32_t setId, std::vect
 
 void DescriptorSet::update(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
-    MOUCA_PRE_CONDITION(!_writeDescriptor.empty());
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(!device.isNull());
+    MouCa::preCondition(!_writeDescriptor.empty());
 
     std::vector<VkWriteDescriptorSet> writeSets;
     writeSets.resize(_writeDescriptor.size());
@@ -320,18 +320,18 @@ void DescriptorSet::update(const Device& device)
 
 void DescriptorSet::release(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
-    MOUCA_PRE_CONDITION(!_pool.expired());
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(!device.isNull());
+    MouCa::preCondition(!_pool.expired());
 
     if(vkFreeDescriptorSets(device.getInstance(), _pool.lock()->getInstance(), static_cast<uint32_t>(_descriptors.size()), _descriptors.data()) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"DescriptorCreationError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "DescriptorCreationError"));
     }
     _descriptors.clear();
     _pool.reset();
 
-    MOUCA_ASSERT(isNull());
+    MouCa::assertion(isNull());
 }
 
 }

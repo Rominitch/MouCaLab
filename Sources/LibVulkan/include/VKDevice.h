@@ -135,25 +135,25 @@ namespace Vulkan
 
             const VkPhysicalDevice& getPhysicalDevice() const
             {
-                MOUCA_PRE_CONDITION(!isNull());
+                MouCa::preCondition(!isNull());
                 return _physicalDevice;
             }
 
             const VkPhysicalDeviceProperties& getPhysicalDeviceProperties() const
             {
-                MOUCA_PRE_CONDITION(!isNull());
+                MouCa::preCondition(!isNull());
                 return _properties;
             }
 
             const VkPhysicalDeviceRayTracingPipelinePropertiesKHR& getPhysicalDeviceRayTracingPipelineProperties() const
             {
-                MOUCA_PRE_CONDITION(!isNull());
+                MouCa::preCondition(!isNull());
                 return _rayTracingPipelineProperties;
             }
 
             const VkPhysicalDeviceAccelerationStructureFeaturesKHR& getPhysicalDeviceAccelerationStructureFeatures() const
             {
-                MOUCA_PRE_CONDITION(!isNull());
+                MouCa::preCondition(!isNull());
                 return _accelerationStructureFeatures;
             }
 
@@ -163,7 +163,7 @@ namespace Vulkan
             /// \returns Vulkan device handle.
             const VkDevice& getInstance() const
             {
-                MOUCA_PRE_CONDITION(!isNull());
+                MouCa::preCondition(!isNull());
                 return _device;
             }
 

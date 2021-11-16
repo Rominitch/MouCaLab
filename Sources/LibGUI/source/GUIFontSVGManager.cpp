@@ -16,7 +16,7 @@ inline static void executeFT(FUNCTION_DECLARATION call, const Core::String& erro
     const auto err = call;
     if(err)
     {
-        MOUCA_THROW_ERROR(u8"GUI", u8"FreeType2LoadGlyphError");
+        throw Core::Exception(Core::ErrorData("GUI", "FreeType2LoadGlyphError"));
     }
 #else
     call;
@@ -26,24 +26,24 @@ inline static void executeFT(FUNCTION_DECLARATION call, const Core::String& erro
 FontSVGManager::FontSVGManager():
 _library(nullptr)
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 FontSVGManager::~FontSVGManager()
 {
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 void FontSVGManager::initialize()
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 
     if (FT_Init_FreeType(&_library))
     {
-        MOUCA_THROW_ERROR(u8"GUI", u8"FreeType2InitError");
+        throw Core::Exception(Core::ErrorData("GUI", "FreeType2InitError"));
     }
     
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 }
 
 void FontSVGManager::release()
@@ -59,7 +59,7 @@ void FontSVGManager::release()
 
     if (FT_Done_FreeType(_library))
     {
-        MOUCA_THROW_ERROR(u8"GUI", u8"FreeType2DoneError");
+        throw Core::Exception(Core::ErrorData("GUI", "FreeType2DoneError"));
     }
     _library = nullptr;
 }
@@ -115,7 +115,7 @@ struct GlyphInfo
 
 void FontSVGManager::buildFontBuffers(RT::BufferCPU& glyphDict, RT::BufferCPU& glyphCells, RT::BufferCPU& glyphPoints)
 {
-    MOUCA_ASSERT(!_fonts.empty());
+    MouCa::assertion(!_fonts.empty());
 
     uint32_t nbGlyphs = 0;
     uint32_t nbCells  = 0;
@@ -130,7 +130,7 @@ void FontSVGManager::buildFontBuffers(RT::BufferCPU& glyphDict, RT::BufferCPU& g
             nbPoints += static_cast<uint32_t>(glyph.second._outline.getPoints().size());
         }
     }
-    MOUCA_ASSERT(nbGlyphs > 0);
+    MouCa::assertion(nbGlyphs > 0);
 
     auto glyphs = reinterpret_cast<DeviceGlyphInfo*>(glyphDict.create(RT::BufferDescriptor(sizeof(DeviceGlyphInfo)), nbGlyphs));
     auto cells  = reinterpret_cast<uint32_t*>(glyphCells.create(RT::BufferDescriptor(sizeof(uint32_t)),          nbCells));
@@ -160,7 +160,7 @@ void FontSVGManager::buildFontBuffers(RT::BufferCPU& glyphDict, RT::BufferCPU& g
 
 void FontSVGManager::buildFontBuffersV2(RT::BufferCPU& glyphDict, RT::BufferCPU& glyphPoints, RT::BufferCPU& glyphControl)
 {
-    MOUCA_ASSERT(!_fonts.empty());
+    MouCa::assertion(!_fonts.empty());
 
     uint32_t nbGlyphs   = 0;
     uint32_t nbControls = 0;
@@ -176,13 +176,13 @@ void FontSVGManager::buildFontBuffersV2(RT::BufferCPU& glyphDict, RT::BufferCPU&
             nbControls += static_cast<uint32_t>(glyph.second._outline.getControlPoint().size());
         }
     }
-    MOUCA_ASSERT(nbGlyphs > 0);
+    MouCa::assertion(nbGlyphs > 0);
 
     auto glyphs   = reinterpret_cast<GlyphInfo*>            (glyphDict.create(RT::BufferDescriptor(sizeof(GlyphInfo)),                nbGlyphs));
     auto points   = reinterpret_cast<Outline::Point*>       (glyphPoints.create(RT::BufferDescriptor(sizeof(Outline::Point)),         nbPoints));
     auto controls = reinterpret_cast<Outline::ControlPoint*>(glyphControl.create(RT::BufferDescriptor(sizeof(Outline::ControlPoint)), nbControls));
 
-    MOUCA_ASSERT(_ordered.size() == nbGlyphs);
+    MouCa::assertion(_ordered.size() == nbGlyphs);
 
     uint32_t pointOffset   = 0;
     uint32_t controlOffset = 0;
@@ -214,16 +214,16 @@ void FontSVGManager::buildFontBuffersV2(RT::BufferCPU& glyphDict, RT::BufferCPU&
 
 void FontFamilySVG::initialize(FT_Library library)
 {
-    MOUCA_PRE_CONDITION(library != nullptr);
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(library != nullptr);
+    MouCa::preCondition(isNull());
 
     for(auto& font : _fonts)
     {
-        executeFT(FT_New_Face(library, font._fontsPath.string().c_str(), 0, &font._face), u8"FreeType2NewFaceError");
+        executeFT(FT_New_Face(library, font._fontsPath.string().c_str(), 0, &font._face), "FreeType2NewFaceError");
 
-        executeFT(FT_Select_Charmap(font._face, ft_encoding_unicode),                     u8"FreeType2NewFaceError");
+        executeFT(FT_Select_Charmap(font._face, ft_encoding_unicode),                     "FreeType2NewFaceError");
 
-        executeFT(FT_Set_Char_Size(font._face, 0, 6400, 96, 96),                          u8"FreeType2NewFaceError");
+        executeFT(FT_Set_Char_Size(font._face, 0, 6400, 96, 96),                          "FreeType2NewFaceError");
 
         FT_Palette_Data palette;
         const auto error = FT_Palette_Data_Get(font._face, &palette);
@@ -233,22 +233,22 @@ void FontFamilySVG::initialize(FT_Library library)
         }
     }
 
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 }
 
 void FontFamilySVG::release()
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
 
     _glyphs.clear();
 
     for (auto& font : _fonts)
     {
-        executeFT(FT_Done_Face(font._face), u8"FreeType2DoneFaceError");
+        executeFT(FT_Done_Face(font._face), "FreeType2DoneFaceError");
     }
     _fonts.clear();
 
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 bool FontFamilySVG::isNull() const
@@ -263,7 +263,7 @@ bool FontFamilySVG::isNull() const
 
 const FontFamilySVG::GlyphSVG& FontFamilySVG::addGlyph(const GlyphCode& glyphCode)
 {
-    MOUCA_PRE_CONDITION(_glyphs.find(glyphCode) == _glyphs.cend());
+    MouCa::preCondition(_glyphs.find(glyphCode) == _glyphs.cend());
     
     FT_UInt glyph_index = 0;
     auto itFont = _fonts.cbegin();
@@ -271,7 +271,7 @@ const FontFamilySVG::GlyphSVG& FontFamilySVG::addGlyph(const GlyphCode& glyphCod
     const auto& createGlyph = [&](const auto& itFont) -> const FontFamilySVG::GlyphSVG&
     {
         //executeFT(FT_Load_Glyph(itFont->_face, glyph_index, FT_LOAD_FORCE_AUTOHINT), u8"FreeType2LoadGlyphError");
-        executeFT(FT_Load_Glyph(itFont->_face, glyph_index, FT_LOAD_NO_HINTING), u8"FreeType2LoadGlyphError");
+        executeFT(FT_Load_Glyph(itFont->_face, glyph_index, FT_LOAD_NO_HINTING), "FreeType2LoadGlyphError");
 
         Outline outline;
         if (itFont->_isOTF)
@@ -281,7 +281,7 @@ const FontFamilySVG::GlyphSVG& FontFamilySVG::addGlyph(const GlyphCode& glyphCod
         outline.convert(itFont->_face->glyph->outline);
 
         const auto [it, success] = _glyphs.insert({ glyphCode, std::move(GlyphSVG(std::move(outline), static_cast<float>(itFont->_face->glyph->metrics.horiAdvance * Outline::_scale), static_cast<uint32_t>(_manager._ordered.size()))) });
-        MOUCA_ASSERT(success);
+        MouCa::assertion(success);
         _manager._ordered.emplace_back(&it->second);
         return it->second;
     };
@@ -303,14 +303,14 @@ const FontFamilySVG::GlyphSVG& FontFamilySVG::addGlyph(const GlyphCode& glyphCod
 
 const FontFamilySVG::GlyphSVG& FontFamilySVG::readGlyph(const GlyphCode& glyph) const
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(_glyphs.find(glyph) != _glyphs.cend());
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(_glyphs.find(glyph) != _glyphs.cend());
     return _glyphs.find(glyph)->second;
 }
 
 bool FontFamilySVG::tryGlyph(const GlyphCode& glyphCode, FontFamilySVG::GlyphSVG& glyphSVG)
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
     
     auto itGlyph = _glyphs.find(glyphCode);
     if(itGlyph == _glyphs.cend())

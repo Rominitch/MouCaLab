@@ -40,7 +40,7 @@ PlugInManager::PlugInArray::const_iterator PlugInManager::searchPlugIn(const Plu
 
 PlugInEntrySPtr PlugInManager::loadDynamicLibrary(const Path& dynamicLibraryPath)
 {
-    MOUCA_ASSERT(!dynamicLibraryPath.empty());
+    MouCa::assertion(!dynamicLibraryPath.empty());
 
     PlugInEntrySPtr pPlugInInformation;
 
@@ -51,20 +51,20 @@ PlugInEntrySPtr PlugInManager::loadDynamicLibrary(const Path& dynamicLibraryPath
         DYNLIB_HANDLE hGetProcIDDLL = DYNLIB_LOAD(dynamicLibraryPath.c_str());
         if(!hGetProcIDDLL)
         {
-            MOUCA_THROW_ERROR_1("BasicError", "DLLLoadingMissingFile", dynamicLibraryPath.string());
+            throw Core::Exception(Core::ErrorData("BasicError", "DLLLoadingMissingFile") << dynamicLibraryPath.string());
         }
 
         //Try to load entry point
         auto pLauncher = reinterpret_cast<PlugInLoadingEntryPoint>(DYNLIB_GETSYM(hGetProcIDDLL, "PlugInLoadingEntryPoint"));
         if(pLauncher==nullptr)
         {
-            MOUCA_THROW_ERROR_1("BasicError", "DLLMissingEntryPointFile", std::to_string(GetLastError()));
+            throw Core::Exception(Core::ErrorData("BasicError", "DLLMissingEntryPointFile") << std::to_string(GetLastError()));
         }
 
         auto pPlugInInstance = pLauncher();
         if(pPlugInInstance==nullptr)
         {
-            MOUCA_THROW_ERROR("BasicError", "DLLCorruptionFile");
+            throw Core::Exception(Core::ErrorData("BasicError", "DLLCorruptionFile"));
         }
 
         pPlugInInformation = PluginEntrySPtr(pPlugInInstance);
@@ -83,7 +83,7 @@ void PlugInManager::release()
 {
     for(auto& plugIn : _loadedPlugins)
     {
-        MOUCA_ASSERT(plugIn->_plugInInstance.use_count() <= 1); // DEV Issue: Need latest instance to guaranty memory security !
+        MouCa::assertion(plugIn->_plugInInstance.use_count() <= 1); // DEV Issue: Need latest instance to guaranty memory security !
 
         // Clean instance
         plugIn->_plugInInstance.reset();
@@ -91,7 +91,7 @@ void PlugInManager::release()
         // Remove DLL handle
         if(DYNLIB_UNLOAD((DYNLIB_HANDLE)plugIn->_hHandle))
         {
-            MOUCA_THROW_ERROR_1("BasicError", "InvalidPathError", Core::convertToU8(plugIn->_name));
+            throw Core::Exception(Core::ErrorData("BasicError", "InvalidPathError") << Core::convertToU8(plugIn->_name));
         }
     }
     _loadedPlugins.clear();

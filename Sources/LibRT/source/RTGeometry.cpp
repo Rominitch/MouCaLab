@@ -18,7 +18,7 @@ void Geometry::addImage(const RT::ImageWPtr& image)
 
 void GeometryExternal::initialize(const MeshImportWPtr& mesh, const BoundingBox& bbox)
 {
-    MOUCA_PRE_CONDITION(!mesh.lock()->isNull());
+    MouCa::preCondition(!mesh.lock()->isNull());
 
     _mesh        = mesh;
     _boundingBox = bbox;
@@ -31,19 +31,19 @@ const Mesh& GeometryExternal::getMesh() const
 
 void GeometryInternal::initialize(const MeshSPtr& mesh, const BoundingBox& bbox)
 {
-    MOUCA_PRE_CONDITION(!mesh->isNull());
-    MOUCA_PRE_CONDITION(bbox.isValid());
+    MouCa::preCondition(!mesh->isNull());
+    MouCa::preCondition(bbox.isValid());
 
     _mesh = mesh;
     _boundingBox = bbox;
 
-    MOUCA_POST_CONDITION(!_mesh->isNull());
-    MOUCA_POST_CONDITION(_boundingBox.isValid());
+    MouCa::postCondition(!_mesh->isNull());
+    MouCa::postCondition(_boundingBox.isValid());
 }
 
 void GeometryInternal::release()
 {
-    MOUCA_PRE_CONDITION(_mesh.use_count() <= 1); // DEV issue: latest instance of ownership ?
+    MouCa::preCondition(_mesh.use_count() <= 1); // DEV issue: latest instance of ownership ?
     
     if(_mesh != nullptr)
     {
@@ -52,7 +52,7 @@ void GeometryInternal::release()
     }
     _images.clear();
 
-    MOUCA_POST_CONDITION(_mesh == nullptr);
+    MouCa::postCondition(_mesh == nullptr);
 }
 /*
 void Geometry::Export(const Core::Path& strFileName) const

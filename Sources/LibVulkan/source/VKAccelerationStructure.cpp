@@ -31,15 +31,15 @@ void AccelerationStructure::setCreateInfo(const VkAccelerationStructureCreateFla
     _type = type;
     _createFlags = createFlags;
 
-    MOUCA_POST_CONDITION(_type != VK_ACCELERATION_STRUCTURE_TYPE_MAX_ENUM_KHR);
+    MouCa::postCondition(_type != VK_ACCELERATION_STRUCTURE_TYPE_MAX_ENUM_KHR);
 }
 
 void AccelerationStructure::initialize(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!device.isNull());
-    MOUCA_PRE_CONDITION(_data.isNull());
-    MOUCA_PRE_CONDITION(isNull());
-    MOUCA_PRE_CONDITION(_type != VK_ACCELERATION_STRUCTURE_TYPE_MAX_ENUM_KHR); // DEV Issue: Missing call setCreateInfo
+    MouCa::preCondition(!device.isNull());
+    MouCa::preCondition(_data.isNull());
+    MouCa::preCondition(isNull());
+    MouCa::preCondition(_type != VK_ACCELERATION_STRUCTURE_TYPE_MAX_ENUM_KHR); // DEV Issue: Missing call setCreateInfo
 
     // Prepare Build Geometry: need valid buffer with data
     buildGeometry(device);
@@ -64,7 +64,7 @@ void AccelerationStructure::initialize(const Device& device)
 
     if(device.vkCreateAccelerationStructureKHR(device.getInstance(), &accelerationStructureCreate_info, nullptr, &_handle) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"CreateAccelerationStructureError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "CreateAccelerationStructureError"));
     }
 
     // AS device address
@@ -76,12 +76,12 @@ void AccelerationStructure::initialize(const Device& device)
     };
     _deviceAddress = device.vkGetAccelerationStructureDeviceAddressKHR(device.getInstance(), &accelerationDeviceAddressInfo);
 
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 }
 
 void AccelerationStructure::release(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
 
     _data.release(device);
 
@@ -89,7 +89,7 @@ void AccelerationStructure::release(const Device& device)
     _handle        = VK_NULL_HANDLE;
     _deviceAddress = 0;
     
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 AccelerationStructure::BuildGeometry::BuildGeometry() :
@@ -98,8 +98,8 @@ _geometryInfo({}), _buildInfo({})
 
 void AccelerationStructure::buildGeometry(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!device.isNull());
-    MOUCA_PRE_CONDITION(!_geometries.empty());
+    MouCa::preCondition(!device.isNull());
+    MouCa::preCondition(!_geometries.empty());
 
     // Compute latest info
     uint32_t count = 0;
@@ -117,7 +117,7 @@ void AccelerationStructure::buildGeometry(const Device& device)
             _buildGeometry._ranges.emplace_back(range);
         }
     }
-    MOUCA_ASSERT(count > 0); // DEV Issue: Check your buffer are properly configured !
+    MouCa::assertion(count > 0); // DEV Issue: Check your buffer are properly configured !
 
     _buildGeometry._geometryInfo =
     {
@@ -144,13 +144,13 @@ void AccelerationStructure::buildGeometry(const Device& device)
 
     
 
-    MOUCA_POST_CONDITION(_buildGeometry._buildInfo.accelerationStructureSize > 0);
+    MouCa::postCondition(_buildGeometry._buildInfo.accelerationStructureSize > 0);
 }
 
 void AccelerationStructure::createAccelerationStructure(const Device& device, std::vector<AccelerationStructureWPtr>& accelerationStructures)
 {
-    MOUCA_PRE_CONDITION(!device.isNull());
-    MOUCA_PRE_CONDITION(!accelerationStructures.empty());
+    MouCa::preCondition(!device.isNull());
+    MouCa::preCondition(!accelerationStructures.empty());
 
     // Create a small scratch buffer used during build of the bottom level acceleration structure
     const bool hostCommand = device.getPhysicalDeviceAccelerationStructureFeatures().accelerationStructureHostCommands;
@@ -166,8 +166,8 @@ void AccelerationStructure::createAccelerationStructure(const Device& device, st
     for (const auto& weakAS : accelerationStructures)
     {
         auto as = weakAS.lock();
-        MOUCA_ASSERT(!as->isNull());
-        MOUCA_ASSERT(!as->_buildGeometry._ranges.empty()); //DEV Issue: no data range
+        MouCa::assertion(!as->isNull());
+        MouCa::assertion(!as->_buildGeometry._ranges.empty()); //DEV Issue: no data range
 
         BufferUPtr scratchBuffer = std::make_unique<Buffer>(std::make_unique<MemoryBufferAllocate>(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT_KHR));
         scratchBuffer->initialize(device, 0, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT, as->_buildGeometry._buildInfo.buildScratchSize);
@@ -189,7 +189,7 @@ void AccelerationStructure::createAccelerationStructure(const Device& device, st
             static_cast<uint32_t>(buildGeometries.size()), buildGeometries.data(),
             accelerationBuildStructureRangeInfos.data()) != VK_SUCCESS)
         {
-            MOUCA_THROW_ERROR(u8"Vulkan", u8"BuildAccelerationStructureError");
+            throw Core::Exception(Core::ErrorData("Vulkan", "BuildAccelerationStructureError"));
         }
     }
     else

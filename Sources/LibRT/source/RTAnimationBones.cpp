@@ -10,21 +10,21 @@ namespace RT
 
 void AnimationImporter::initialize(AnimationBonesSPtr animation)
 {
-    MOUCA_PRE_CONDITION(!isNull() && !_animation);
+    MouCa::preCondition(!isNull() && !_animation);
 
     _animation = animation;
 
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
 }
 
 void AnimationImporter::release()
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
 
     _filename.clear();
     _animation.reset();
 
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 void AnimationBones::updateAnimation(AnimatedGeometry& geometry, const uint32_t idAnimation, const double time) const
@@ -37,7 +37,7 @@ void AnimationBones::updateAnimation(AnimatedGeometry& geometry, const uint32_t 
     auto itNext = std::find_if(animation.cbegin(), animation.cend(), [&](const BonesFrame& frame) {return frame._time > time; });
     auto itFrame = itNext;
     --itFrame;
-    MOUCA_ASSERT(itNext != animation.cbegin());
+    MouCa::assertion(itNext != animation.cbegin());
     if( itNext == animation.cend() )
     {
         if( !geometry.hasLoop() )
@@ -48,7 +48,7 @@ void AnimationBones::updateAnimation(AnimatedGeometry& geometry, const uint32_t 
     
     // Find interpolation factor
     const double interpolate = (time - itFrame->_time) / ( itNext->_time - itFrame->_time );
-    MOUCA_ASSERT(0.0 <= interpolate && interpolate <= 1.0);
+    MouCa::assertion(0.0 <= interpolate && interpolate <= 1.0);
 
     // Parsing all nodes
     computeNodeAnimation(buffer, geometry.getBones(), Transform(), *itFrame, *itNext, interpolate);

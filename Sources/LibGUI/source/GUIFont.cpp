@@ -10,7 +10,7 @@ namespace GUI
 
 void Font::CreateTextureFont(const Core::Path& strFontTTLUnicode, Core::FileWrapperBase& FileOutput)
 {
-    MOUCA_ASSERT(!strFontTTLUnicode.empty());
+    MouCa::assertion(!strFontTTLUnicode.empty());
 
     try
     {
@@ -24,19 +24,23 @@ void Font::CreateTextureFont(const Core::Path& strFontTTLUnicode, Core::FileWrap
 
         // Create And Initialize A FreeType Font Library.
         FT_Library FreeFontLibrary;
-        if(FT_Init_FreeType(&FreeFontLibrary))
-            MOUCA_THROW_ERROR(u8"ModuleError", u8"InitializeError");
- 
+        if (FT_Init_FreeType(&FreeFontLibrary))
+        {
+            throw Core::Exception(Core::ErrorData("ModuleError", "InitializeError"));
+        }
+
         // The Object In Which FreeType Holds Information On A Given
         // Font Is Called A "face".
         FT_Face face;
- 
+
         // This Is Where We Load In The Font Information From The File.
         // Of All The Places Where The Code Might Die, This Is The Most Likely,
         // As FT_New_Face Will Fail If The Font File Does Not Exist Or Is Somehow Broken.
         Core::String u8FontTTLUnicode = Core::convertToU8(strFontTTLUnicode);
-        if(FT_New_Face(FreeFontLibrary, u8FontTTLUnicode.c_str(), 0, &face))
-            MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FontFileMissingError", u8FontTTLUnicode);
+        if (FT_New_Face(FreeFontLibrary, u8FontTTLUnicode.c_str(), 0, &face))
+        {
+            throw Core::Exception(Core::ErrorData("ModuleError", "FontFileMissingError") << u8FontTTLUnicode);
+        }
  
         //Set size for face rendering
         FT_Set_Pixel_Sizes(face, 0, iHeightInPixel);
@@ -91,7 +95,7 @@ void Font::CreateTextureFont(const Core::Path& strFontTTLUnicode, Core::FileWrap
                     FT_Bitmap& bitmap = bitmap_glyph->bitmap;
 
                     //Add new glyph to symbols Map
-                    MOUCA_ASSERT(mapSymbols.find(iCharCode) == mapSymbols.cend());
+                    MouCa::assertion(mapSymbols.find(iCharCode) == mapSymbols.cend());
                     //mapSymbols[iCharCode] = STextureGlyph(iCharCode, );
 
                     if(szStartPointer[0] + bitmap.width > szTextureSize)
@@ -157,12 +161,16 @@ FT_Glyph Font::CreateGlyph(const FT_Face& face, unsigned int iCharCode)
 
     // Load The Glyph For Our Character.
     if(FT_Load_Glyph(face, FT_Get_Char_Index(face, iCharCode), FT_LOAD_DEFAULT))
-        MOUCA_THROW_ERROR_1(u8"ModuleError", u8"LoadGlyphError", std::to_string(iCharCode));
+    {
+        throw Core::Exception(Core::ErrorData("ModuleError", "LoadGlyphError") << std::to_string(iCharCode));
+    }
  
     // Move The Face's Glyph Into A Glyph Object.
     FT_Glyph glyph;
-    if(FT_Get_Glyph( face->glyph, &glyph ))
-        MOUCA_THROW_ERROR_1(u8"ModuleError", u8"GetGlyphError", std::to_string(iCharCode));
+    if (FT_Get_Glyph(face->glyph, &glyph))
+    {
+        throw Core::Exception(Core::ErrorData("ModuleError", "GetGlyphError") << std::to_string(iCharCode));
+    }
  
     // Convert The Glyph To A Bitmap.
     FT_Glyph_To_Bitmap(&glyph, ft_render_mode_normal, 0, 1);

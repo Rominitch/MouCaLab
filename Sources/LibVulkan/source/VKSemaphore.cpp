@@ -12,17 +12,17 @@ namespace Vulkan
 Semaphore::Semaphore():
 _semaphore(VK_NULL_HANDLE)
 {
-    MOUCA_ASSERT(isNull());
+    MouCa::assertion(isNull());
 }
 
 Semaphore::~Semaphore()
 {
-    MOUCA_ASSERT(isNull());
+    MouCa::assertion(isNull());
 }
 
 void Semaphore::initialize(const Device& device)
 {
-    MOUCA_ASSERT(isNull());
+    MouCa::assertion(isNull());
     VkSemaphoreCreateInfo semaphore_create_info =
     {
         VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,      // VkStructureType          sType
@@ -32,13 +32,13 @@ void Semaphore::initialize(const Device& device)
 
     if (vkCreateSemaphore(device.getInstance(), &semaphore_create_info, nullptr, &_semaphore) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"SemaphoreCreationError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "SemaphoreCreationError"));
     }
 }
 
 void Semaphore::release(const Device& device)
 {
-    MOUCA_ASSERT(!isNull());
+    MouCa::assertion(!isNull());
     vkDestroySemaphore(device.getInstance(), _semaphore, nullptr);
     _semaphore = VK_NULL_HANDLE;
 }

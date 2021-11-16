@@ -58,7 +58,7 @@ Engine3DXMLLoader::~Engine3DXMLLoader()
 
 void Engine3DXMLLoader::load(ContextLoading& context)
 {
-    MOUCA_PRE_CONDITION(context._parser.isLoaded()); //DEV Issue: Need a valid xml.
+    MouCa::preCondition(context._parser.isLoaded()); //DEV Issue: Need a valid xml.
 
     //Read Engine part
     auto result = context._parser.getNode(u8"Engine3D");
@@ -91,7 +91,7 @@ void Engine3DXMLLoader::load(ContextLoading& context)
     auto datas = context._parser.getNode(u8"GlobalData");
     if (datas->getNbElements() > 0)
     {
-        MOUCA_ASSERT(datas->getNbElements() == 1);
+        MouCa::assertion(datas->getNbElements() == 1);
         context._globalData = datas->getNode(0);
     }
 
@@ -108,7 +108,7 @@ void Engine3DXMLLoader::load(ContextLoading& context)
 
 void Engine3DXMLLoader::loadWindows(ContextLoading& context)
 {
-    MOUCA_PRE_CONDITION(_dialogs.empty());
+    MouCa::preCondition(_dialogs.empty());
 
     auto result = context._parser.getNode(u8"Window");
     for (size_t idWindow = 0; idWindow < result->getNbElements(); ++idWindow)
@@ -180,7 +180,7 @@ void Engine3DXMLLoader::loadWindows(ContextLoading& context)
             _dialogs[id] = context._engine.getRTPlatform().createWindow(viewport, title, mode);
         }
 
-        MOUCA_ASSERT(!_dialogs[id].expired());
+        MouCa::assertion(!_dialogs[id].expired());
 
         // Register dialog
         _manager.addRenderDialog(_dialogs[id]);
@@ -204,14 +204,14 @@ void Engine3DXMLLoader::loadVR(ContextLoading& context)
 
 void Engine3DXMLLoader::loadSurfaces(ContextLoading& context, Vulkan::ContextDeviceWPtr device)
 {
-    MOUCA_PRE_CONDITION(!device.expired()); //DEV Issue: Bad device !
+    MouCa::preCondition(!device.expired()); //DEV Issue: Bad device !
 
     // Read surfaces
     auto result = context._parser.getNode(u8"Surfaces");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(!_dialogs.empty());            //DEV Issue: Create surface/window without window ?
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(!_dialogs.empty());            //DEV Issue: Create surface/window without window ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
 
         auto aPushS = context._parser.autoPushNode(*result->getNode(0));
 
@@ -286,13 +286,13 @@ void Engine3DXMLLoader::loadSurfaces(ContextLoading& context, Vulkan::ContextDev
 
 void Engine3DXMLLoader::loadSemaphores(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
+    MouCa::preCondition(!deviceWeak.expired()); //DEV Issue: Bad device !
 
     // Read semaphores
     auto result = context._parser.getNode(u8"Semaphores");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
 
         // cppcheck-suppress unreadVariable // false positive
         auto aPush = context._parser.autoPushNode(*result->getNode(0));
@@ -320,13 +320,13 @@ void Engine3DXMLLoader::loadSemaphores(ContextLoading& context, Vulkan::ContextD
 
 void Engine3DXMLLoader::loadFences(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
+    MouCa::preCondition(!deviceWeak.expired()); //DEV Issue: Bad device !
 
     // Read semaphores
     auto result = context._parser.getNode(u8"Fences");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
 
         // cppcheck-suppress unreadVariable // false positive
         auto aPush = context._parser.autoPushNode(*result->getNode(0));
@@ -356,12 +356,12 @@ void Engine3DXMLLoader::loadFences(ContextLoading& context, Vulkan::ContextDevic
 
 void Engine3DXMLLoader::loadFrameBuffers(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
+    MouCa::preCondition(!deviceWeak.expired()); //DEV Issue: Bad device !
 
     auto result = context._parser.getNode(u8"FrameBuffers");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
 
         auto device = deviceWeak.lock();
 
@@ -425,7 +425,7 @@ void Engine3DXMLLoader::loadFrameBuffers(ContextLoading& context, Vulkan::Contex
             // Build SwapChain framebuffer
             if (frameBufferNode->hasAttribute(u8"surfaceId"))
             {
-                MOUCA_ASSERT(!frameBufferNode->hasAttribute(u8"id")); //DEV Issue: Not supported id !
+                MouCa::assertion(!frameBufferNode->hasAttribute(u8"id")); //DEV Issue: Not supported id !
 
                 // Get attached surface
                 const uint32_t surfaceId = LoaderHelper::getLinkedIdentifiant(frameBufferNode, u8"surfaceId", _renderPasses, context);
@@ -435,7 +435,7 @@ void Engine3DXMLLoader::loadFrameBuffers(ContextLoading& context, Vulkan::Contex
             }
             else // Build basic Framebuffer
             {
-                MOUCA_ASSERT(frameBufferNode->hasAttribute(u8"id")); //DEV Issue: New case ?
+                MouCa::assertion(frameBufferNode->hasAttribute(u8"id")); //DEV Issue: New case ?
 
                 Vulkan::FrameBuffer::Attachments allAttachments;
                 allAttachments.resize(attachments.size());
@@ -457,13 +457,13 @@ void Engine3DXMLLoader::loadFrameBuffers(ContextLoading& context, Vulkan::Contex
 
 void Engine3DXMLLoader::loadImagesAndView(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
+    MouCa::preCondition(!deviceWeak.expired()); //DEV Issue: Bad device !
 
     // Search Images
     auto result = context._parser.getNode(u8"Images");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         auto aPushI = context._parser.autoPushNode(*result->getNode(0));
@@ -502,7 +502,7 @@ void Engine3DXMLLoader::loadImagesAndView(ContextLoading& context, Vulkan::Conte
             else if (imageNode->hasAttribute("fromVRId"))
             {
                 const auto& vrPlatform = context._engine.getVRPlatform();
-                MOUCA_ASSERT(!vrPlatform.isNull());
+                MouCa::assertion(!vrPlatform.isNull());
                 //const uint32_t idSC = LoaderHelper::getLinkedIdentifiant(imageNode, u8"fromVRId", _surfaces, context);
 
 //                 auto surface = _surfaces[idSC].lock();
@@ -549,14 +549,14 @@ void Engine3DXMLLoader::loadImagesAndView(ContextLoading& context, Vulkan::Conte
                         type = VK_IMAGE_TYPE_3D;
                     }
                     break;
-                    default: MOUCA_ASSERT(false); // DEV Issue: Not implemented
+                    default: MouCa::assertion(false); // DEV Issue: Not implemented
                 }
             }
 
             // Search format/size if not properly define or override
             if( imageNode->hasAttribute(u8"extent") || !size.isValid() )
             {
-                MOUCA_ASSERT(context._globalData != nullptr);
+                MouCa::assertion(context._globalData != nullptr);
                 // Read name
                 Core::String name;
                 imageNode->getAttribute(u8"extent", name);
@@ -574,8 +574,8 @@ void Engine3DXMLLoader::loadImagesAndView(ContextLoading& context, Vulkan::Conte
                 type = LoaderHelper::readValue(imageNode, u8"imageType", imageTypes, false, context);
             }
             
-            MOUCA_ASSERT(format != VK_FORMAT_UNDEFINED);   // DEV Issue: Need a valid format.
-            MOUCA_ASSERT(size.isValid());                  // DEV Issue: Need a valid size.
+            MouCa::assertion(format != VK_FORMAT_UNDEFINED);   // DEV Issue: Need a valid format.
+            MouCa::assertion(size.isValid());                  // DEV Issue: Need a valid size.
 
             auto image = std::make_shared<Vulkan::Image>();
             image->initialize(device->getDevice(),
@@ -590,12 +590,12 @@ void Engine3DXMLLoader::loadImagesAndView(ContextLoading& context, Vulkan::Conte
             // Register + ownership
             device->insertImage(image);
             _images[id] = image;
-            MOUCA_DEBUG("Image: id=" << id << ", handle=" << image->getImage());
+            MouCa::logConsole(std::format("Image: id={}, handle={}", id, image->getImage()));
 
             // Build view
             auto aPush = context._parser.autoPushNode(*imageNode);
 
-            auto allViews = context._parser.getNode(u8"View");
+            auto allViews = context._parser.getNode("View");
             for(size_t idView = 0; idView <allViews->getNbElements(); ++idView)
             {
                 auto viewNode = allViews->getNode(idView);
@@ -625,7 +625,7 @@ void Engine3DXMLLoader::loadImagesAndView(ContextLoading& context, Vulkan::Conte
                 auto view = image->createView(device->getDevice(), typeV, formatV, mapping, subRessourceRange);
                 _view[idV] = view;
 
-                MOUCA_DEBUG("View: id=" << idV << ", handle=" << view.lock()->getInstance());
+                MouCa::logConsole(std::format("View: id={}, handle={}", idV, view.lock()->getInstance()));
             }
         }
     }
@@ -633,13 +633,13 @@ void Engine3DXMLLoader::loadImagesAndView(ContextLoading& context, Vulkan::Conte
 
 void Engine3DXMLLoader::loadSamplers(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
+    MouCa::preCondition(!deviceWeak.expired()); //DEV Issue: Bad device !
 
     // Search Buffers
     auto result = context._parser.getNode(u8"Samplers");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         auto aPushS = context._parser.autoPushNode(*result->getNode(0));
@@ -729,13 +729,13 @@ void Engine3DXMLLoader::loadSamplers(ContextLoading& context, Vulkan::ContextDev
 
 void Engine3DXMLLoader::loadBuffers(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
+    MouCa::preCondition(!deviceWeak.expired()); //DEV Issue: Bad device !
 
     // Search Buffers
     auto result = context._parser.getNode(u8"Buffers");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         auto aPushB = context._parser.autoPushNode(*result->getNode(0));
@@ -766,7 +766,7 @@ void Engine3DXMLLoader::loadBuffers(ContextLoading& context, Vulkan::ContextDevi
                 const uint32_t idE = LoaderHelper::getLinkedIdentifiant(bufferNode, u8"external", _cpuBuffers, context);
                 size = _cpuBuffers[idE].lock()->getByteSize();
             }
-            MOUCA_ASSERT(size > 0);
+            MouCa::assertion(size > 0);
 
             VkBufferCreateFlags createFlags = 0;
             if (bufferNode->hasAttribute(u8"create"))
@@ -822,7 +822,7 @@ void Engine3DXMLLoader::loadGraphicsPipelines(ContextLoading& context, Vulkan::C
     auto result = context._parser.getNode(u8"GraphicsPipelines");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         // cppcheck-suppress unreadVariable // false positive
@@ -859,13 +859,13 @@ void Engine3DXMLLoader::loadGraphicsPipelines(ContextLoading& context, Vulkan::C
 
 void Engine3DXMLLoader::loadQueueSequences(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
+    MouCa::preCondition(!deviceWeak.expired()); //DEV Issue: Bad device !
 
     // Search QueueSequences
     auto result = context._parser.getNode(u8"QueueSequences");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         // cppcheck-suppress unreadVariable // false positive
@@ -896,8 +896,8 @@ void Engine3DXMLLoader::loadQueueSequences(ContextLoading& context, Vulkan::Cont
 
 void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak, Vulkan::QueueSequenceWPtr queueSequenceWeak)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired());        //DEV Issue: Bad device !
-    MOUCA_PRE_CONDITION(!queueSequenceWeak.expired()); //DEV Issue: Bad container !
+    MouCa::preCondition(!deviceWeak.expired());        //DEV Issue: Bad device !
+    MouCa::preCondition(!queueSequenceWeak.expired()); //DEV Issue: Bad container !
 
     auto queueSequence = queueSequenceWeak.lock();
     // Parsing all images
@@ -1072,7 +1072,7 @@ void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDe
 
 void Engine3DXMLLoader::loadSubmitInfo(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak, Vulkan::SubmitInfos& submitInfos)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired());        //DEV Issue: Bad device !
+    MouCa::preCondition(!deviceWeak.expired());        //DEV Issue: Bad device !
 
     std::vector<Vulkan::WaitSemaphore>      waitSemaphores;
     std::vector<Vulkan::SemaphoreWPtr>      signalSemaphores;
@@ -1140,7 +1140,7 @@ void Engine3DXMLLoader::loadDescriptorSetLayouts(ContextLoading& context, Vulkan
     auto result = context._parser.getNode(u8"DescriptorSetLayouts");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         auto aPush = context._parser.autoPushNode(*result->getNode(0));
@@ -1191,7 +1191,7 @@ void Engine3DXMLLoader::loadDescriptorSetPools(ContextLoading& context, Vulkan::
     auto result = context._parser.getNode(u8"DescriptorPools");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         auto aPush = context._parser.autoPushNode(*result->getNode(0));
@@ -1246,7 +1246,7 @@ void Engine3DXMLLoader::loadDescriptorSets(ContextLoading& context, Vulkan::Cont
     auto result = context._parser.getNode(u8"DescriptorSets");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         auto aPush = context._parser.autoPushNode(*result->getNode(0));
@@ -1386,7 +1386,7 @@ void Engine3DXMLLoader::loadShaderModules(ContextLoading& context, Vulkan::Conte
     auto result = context._parser.getNode(u8"ShaderModules");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         // cppcheck-suppress unreadVariable // false positive
@@ -1426,7 +1426,7 @@ void Engine3DXMLLoader::loadShaderModules(ContextLoading& context, Vulkan::Conte
 
             // Build shader
             shaderFile->open();
-            MOUCA_ASSERT(shaderFile->isLoaded());
+            MouCa::assertion(shaderFile->isLoaded());
 
             auto shaderModule = std::make_shared<Vulkan::ShaderModule>();
             shaderModule->initialize(device->getDevice(), shaderFile->extractString(), u8"main", static_cast<VkShaderStageFlagBits>(stage));
@@ -1457,7 +1457,7 @@ void Engine3DXMLLoader::loadRayTracingPipelines(ContextLoading& context, Vulkan:
     auto result = context._parser.getNode(u8"RayTracingPipelines");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         // cppcheck-suppress unreadVariable // false positive
@@ -1506,7 +1506,7 @@ void Engine3DXMLLoader::loadRayTracingShaderGroup(ContextLoading& context, Vulka
     auto groups = context._parser.getNode(u8"Groups");
     if (groups->getNbElements() > 0)
     {
-        MOUCA_ASSERT(groups->getNbElements() == 1); //DEV Issue: Need to clean xml !
+        MouCa::assertion(groups->getNbElements() == 1); //DEV Issue: Need to clean xml !
 
         // cppcheck-suppress unreadVariable // false positive
         auto aPush = context._parser.autoPushNode(*groups->getNode(0));
@@ -1558,7 +1558,7 @@ void Engine3DXMLLoader::loadTracingRay(ContextLoading& context, Vulkan::ContextD
     auto tracingRays = context._parser.getNode(u8"TracingRays");
     if (tracingRays->getNbElements() > 0)
     {
-        MOUCA_ASSERT(tracingRays->getNbElements() == 1); //DEV Issue: Need to clean xml !
+        MouCa::assertion(tracingRays->getNbElements() == 1); //DEV Issue: Need to clean xml !
         auto device = deviceWeak.lock();
 
         // cppcheck-suppress unreadVariable // false positive
@@ -1599,7 +1599,7 @@ void Engine3DXMLLoader::loadAccelerationStructures(ContextLoading& context, Vulk
     auto accelerationStructures = context._parser.getNode(u8"AccelerationStructures");
     if (accelerationStructures->getNbElements() > 0)
     {
-        MOUCA_ASSERT(accelerationStructures->getNbElements() == 1); //DEV Issue: Need to clean xml !
+        MouCa::assertion(accelerationStructures->getNbElements() == 1); //DEV Issue: Need to clean xml !
         auto device = deviceWeak.lock();
 
         // cppcheck-suppress unreadVariable // false positive

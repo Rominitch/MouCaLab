@@ -13,12 +13,12 @@ namespace Media
             ImageFI() :
             _imageData(nullptr)
             {
-                MOUCA_PRE_CONDITION(isNull());
+                MouCa::preCondition(isNull());
             }
 
             ~ImageFI() override
             {
-                MOUCA_PRE_CONDITION(isNull());
+                MouCa::preCondition(isNull());
             }
 
             void initialize(const Core::Path& path);
@@ -50,7 +50,7 @@ namespace Media
 
             const HandlerMemory getRAWData(const uint32_t layer, const uint32_t level) const override
             {
-                MOUCA_PRE_CONDITION(level < getLevels());
+                MouCa::preCondition(level < getLevels());
                 MOUCA_UNUSED(layer);
                 MOUCA_UNUSED(level);
                 return FreeImage_GetBits(_imageData);

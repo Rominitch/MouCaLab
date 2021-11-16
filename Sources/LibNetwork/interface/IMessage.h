@@ -26,7 +26,7 @@ namespace Network
             IMessage(const void* buffer, const uint64_t sizeBuffer):
             _code(0)
             {
-                MOUCA_PRE_CONDITION(sizeBuffer >= 8); // DEV Issue: Message too small: need code.
+                MouCa::preCondition(sizeBuffer >= 8); // DEV Issue: Message too small: need code.
                 const char* data = reinterpret_cast<const char*>(buffer);
 
                 // Read code

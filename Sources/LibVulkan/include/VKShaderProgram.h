@@ -62,8 +62,8 @@ namespace Vulkan
             /// Note: Can source of bugs if memory is not consistent.
             void addDataInfo(const void* pointer, const size_t sizeByte)
             {
-                MOUCA_PRE_CONDITION(pointer != nullptr);   //Dev Issue: Impossible to send no data!
-                MOUCA_PRE_CONDITION(sizeByte > 0);         //Dev Issue: Impossible to send no data!
+                MouCa::preCondition(pointer != nullptr);   //Dev Issue: Impossible to send no data!
+                MouCa::preCondition(sizeByte > 0);         //Dev Issue: Impossible to send no data!
 
                 _pointer  = pointer;
                 _sizeByte = sizeByte;

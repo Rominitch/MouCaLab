@@ -49,7 +49,7 @@ class CrashThread final : public Core::Thread
 
         void run()
         {
-            MOUCA_THROW_ERROR("Crash", "Crash");
+            throw Core::Exception(Core::ErrorData("Crash", "Crash"));
         }
 
     public:

@@ -159,13 +159,13 @@ namespace RT
             AnimationImporter():
             Core::Resource()
             {
-                MOUCA_PRE_CONDITION(isNull());
+                MouCa::preCondition(isNull());
             }
 
             /// Destructor
             ~AnimationImporter()
             {
-                MOUCA_POST_CONDITION(isNull());
+                MouCa::postCondition(isNull());
             }
 
             //------------------------------------------------------------------------

@@ -30,7 +30,7 @@ namespace RT
         static float signedDistanceToLine(const glm::vec2& a, const glm::vec2& b, const glm::vec2& p)
         {
             const glm::vec2 lineDir(b - a);
-            MOUCA_ASSERT(glm::dot(lineDir, lineDir) > 0.0f); // DEV Issue: Check line exists !
+            MouCa::assertion(glm::dot(lineDir, lineDir) > 0.0f); // DEV Issue: Check line exists !
 
             // Compute normal (basic CCW 90deg rotation)
             const glm::vec2 normal = glm::normalize(glm::vec2(-lineDir.y, lineDir.x));

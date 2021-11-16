@@ -21,12 +21,12 @@ namespace Vulkan
 Image::Image() :
 _image(VK_NULL_HANDLE), _imageCreateInfo({})
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 Image::~Image()
 {
-    MOUCA_POST_CONDITION(isNull()); ///DEV Issue: you call initialize() but never release() !
+    MouCa::postCondition(isNull()); ///DEV Issue: you call initialize() but never release() !
 }
 
 void Image::initialize(const Device& device, 
@@ -39,9 +39,9 @@ void Image::initialize(const Device& device,
                        const VkImageLayout initialLayout,
                        const VkMemoryPropertyFlags memoryProperty)
 {
-    MOUCA_PRE_CONDITION(isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
-    MOUCA_PRE_CONDITION(size.isValid());
+    MouCa::preCondition(isNull());
+    MouCa::preCondition(!device.isNull());
+    MouCa::preCondition(size.isValid());
 
     _imageCreateInfo =
     {
@@ -65,19 +65,19 @@ void Image::initialize(const Device& device,
     // Create image
     if(vkCreateImage(device.getInstance(), &_imageCreateInfo, nullptr, &_image) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"ViewCreationError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "ViewCreationError"));
     }
 
     // Allocate memory (MANDATORY to create view)
     _memory.initialize(device, _image, memoryProperty);
 
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 }
 
 void Image::release(const Device& device, const bool removeView)
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(!device.isNull());
 
     // Remove all views
     for(auto& view : _views)
@@ -96,27 +96,27 @@ void Image::release(const Device& device, const bool removeView)
     vkDestroyImage(device.getInstance(), _image, nullptr);
     _image = VK_NULL_HANDLE;
 
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 void Image::readSubresourceLayout(const Device& device, const VkImageSubresource& subResource, VkSubresourceLayout& subResourceLayout) const
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
 
     vkGetImageSubresourceLayout(device.getInstance(), _image, &subResource, &subResourceLayout);
 }
 
 void Image::createSampler(const Device& device, Sampler& sampler) const
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(!device.isNull());
 
     sampler.initialize(device, static_cast<float>(_imageCreateInfo.mipLevels));
 }
 
 ImageViewWPtr Image::createView(const Device& device, const VkImageViewType viewType, const VkFormat format, const VkComponentMapping& components, const VkImageSubresourceRange& subresourceRange)
 {
-    MOUCA_PRE_CONDITION(!device.isNull());
+    MouCa::preCondition(!device.isNull());
 
     // Build + initialize
     auto view = std::make_shared<ImageView>();
@@ -129,14 +129,14 @@ ImageViewWPtr Image::createView(const Device& device, const VkImageViewType view
 
 void Image::removeView(const Device& device, ImageViewWPtr view)
 {
-    MOUCA_PRE_CONDITION(!device.isNull());
-    MOUCA_PRE_CONDITION(!view.expired());
+    MouCa::preCondition(!device.isNull());
+    MouCa::preCondition(!view.expired());
 
     // Search view into list
     auto itView = std::find_if(_views.begin(), _views.end(),
                                [&](const auto& currentView)
                                { return currentView.get() == view.lock().get(); });
-    MOUCA_ASSERT(itView != _views.end()); ///DEV Issue: Not existing ! Already delete ? Bad Image ?
+    MouCa::assertion(itView != _views.end()); ///DEV Issue: Not existing ! Already delete ? Bad Image ?
 
     // Release
     (*itView)->release(device);
@@ -146,11 +146,11 @@ void Image::removeView(const Device& device, ImageViewWPtr view)
 
 void Image::resize(const Device& device, const VkExtent3D& newSize)
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
 
     // Clean Vulkan memory
     release(device, false);
-    MOUCA_ASSERT(isNull());
+    MouCa::assertion(isNull());
 
     // Change size
     _imageCreateInfo.extent = newSize;
@@ -158,32 +158,32 @@ void Image::resize(const Device& device, const VkExtent3D& newSize)
     // Create image
     if (vkCreateImage(device.getInstance(), &_imageCreateInfo, nullptr, &_image) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"ViewCreationError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "ViewCreationError"));
     }
 
     // Allocate memory (MANDATORY to create view)
     _memory.initialize(device, _image, _memory.getFlags());
-    MOUCA_ASSERT(!isNull());
+    MouCa::assertion(!isNull());
 
     // Reallocation of view
     for (auto& view : _views)
     {
         view->initialize(device, *this, view->getInfo().viewType, view->getInfo().format, view->getInfo().components, view->getInfo().subresourceRange);
-        MOUCA_ASSERT(!view->isNull());
+        MouCa::assertion(!view->isNull());
     }
 
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 }
 
 ImageView::ImageView():
 _view(VK_NULL_HANDLE), _image(nullptr)
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 ImageView::~ImageView()
 {
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 void ImageView::initialize(const Device& device, const Image& image,
@@ -191,9 +191,9 @@ void ImageView::initialize(const Device& device, const Image& image,
                            const VkComponentMapping& components,
                            const VkImageSubresourceRange& subresourceRange)
 {
-    MOUCA_PRE_CONDITION(isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
-    MOUCA_PRE_CONDITION(!image.isNull());
+    MouCa::preCondition(isNull());
+    MouCa::preCondition(!device.isNull());
+    MouCa::preCondition(!image.isNull());
 
     _viewInfo = 
     {
@@ -209,7 +209,7 @@ void ImageView::initialize(const Device& device, const Image& image,
     //Generate View
     if (vkCreateImageView(device.getInstance(), &_viewInfo, nullptr, &_view) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"ViewCreationError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "ViewCreationError"));
     }
 
     _image = &image;
@@ -217,14 +217,14 @@ void ImageView::initialize(const Device& device, const Image& image,
 
 void ImageView::release(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(!device.isNull());
 
     //Release View
     vkDestroyImageView(device.getInstance(), _view, nullptr);
     _view = VK_NULL_HANDLE;
 
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 }

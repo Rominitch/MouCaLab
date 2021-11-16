@@ -33,7 +33,7 @@ namespace Core
                 return connect(reinterpret_cast<IdConnexion>(inst),
                                [=](Args... args)
                                {
-                                   MOUCA_ASSERT(inst != nullptr);
+                                   MouCa::assertion(inst != nullptr);
                                    (inst->*func)(args...);
                                });
             }
@@ -45,7 +45,7 @@ namespace Core
                 return connect(reinterpret_cast<IdConnexion>(inst.lock().get()),
                                [=](Args... args)
                                {
-                                   MOUCA_ASSERT(!inst.expired());
+                                   MouCa::assertion(!inst.expired());
                                    ( inst.lock().get()->*func )( args... );
                                });
             }
@@ -56,7 +56,7 @@ namespace Core
                 return connect(reinterpret_cast<IdConnexion>(inst.lock().get()),
                                [=](Args... args)
                                {
-                                   MOUCA_ASSERT(!inst.expired());
+                                   MouCa::assertion(!inst.expired());
                                    ( inst.lock().get()->*func )( args... );
                                });
             }
@@ -106,7 +106,7 @@ namespace Core
             /// \returns Current pointer added.
             IdConnexion connect(IdConnexion pointerID, std::function<void(Args...)> const& slot)
             {
-                MOUCA_PRE_CONDITION(_slots.find(pointerID) == _slots.cend()); // DEV Issue: Must be unique ! This issue can happens if old pointer never call disconnect before this add (by multithreading ?).
+                MouCa::preCondition(_slots.find(pointerID) == _slots.cend()); // DEV Issue: Must be unique ! This issue can happens if old pointer never call disconnect before this add (by multithreading ?).
 
                 _slots.insert(std::make_pair(pointerID, slot));
                 return pointerID;

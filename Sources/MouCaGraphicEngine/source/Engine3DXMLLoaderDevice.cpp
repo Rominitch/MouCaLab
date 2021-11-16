@@ -15,8 +15,8 @@ namespace MouCaGraphic
 
 void Engine3DXMLLoader::loadEnvironment(ContextLoading& context)
 {
-    MOUCA_PRE_CONDITION(context._parser.isLoaded());           //DEV Issue: Need a valid xml.
-    MOUCA_PRE_CONDITION(_manager.getEnvironment().isNull());    //DEV Issue: Environment MUST be not configured.
+    MouCa::preCondition(context._parser.isLoaded());           //DEV Issue: Need a valid xml.
+    MouCa::preCondition(_manager.getEnvironment().isNull());    //DEV Issue: Environment MUST be not configured.
 
     // Check node exists
     auto result = context._parser.getNode(u8"Environment");
@@ -53,7 +53,7 @@ void Engine3DXMLLoader::loadEnvironment(ContextLoading& context)
     // Build environment
     _manager.getEnvironment().initialize(context._info, cExtensions);
 
-    MOUCA_POST_CONDITION(!_manager.getEnvironment().isNull());  //DEV Issue: Environment MUST be configured.
+    MouCa::postCondition(!_manager.getEnvironment().isNull());  //DEV Issue: Environment MUST be configured.
 }
 
 void Engine3DXMLLoader::loadExtensions(ContextLoading& context, std::vector<Core::String>& extensions)
@@ -193,7 +193,7 @@ void Engine3DXMLLoader::loadPhysicalDeviceFeatures(ContextLoading& context, Vulk
 
 void Engine3DXMLLoader::loadDevices(ContextLoading& context)
 {
-    MOUCA_PRE_CONDITION(context._parser.isLoaded()); //DEV Issue: Need a valid xml.
+    MouCa::preCondition(context._parser.isLoaded()); //DEV Issue: Need a valid xml.
 
     auto result = context._parser.getNode(u8"Device");
     for (size_t idDevice = 0; idDevice < result->getNbElements(); ++idDevice)
@@ -251,7 +251,7 @@ void Engine3DXMLLoader::loadDevices(ContextLoading& context)
         {
             ctxDevice = _devices[id];
         }
-        MOUCA_ASSERT(!ctxDevice.expired()); // Bad creation/ bad transfer ?
+        MouCa::assertion(!ctxDevice.expired()); // Bad creation/ bad transfer ?
 
         // Load all device's data (order is important)
         loadShaderModules(context, ctxDevice);

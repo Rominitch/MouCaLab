@@ -19,13 +19,13 @@ namespace MouCaGraphic
 
 void Engine3DXMLLoader::loadCommandPools(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
+    MouCa::preCondition(!deviceWeak.expired()); //DEV Issue: Bad device !
 
     // Search CommandBuffer
     auto result = context._parser.getNode(u8"CommandPools");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         auto aPush = context._parser.autoPushNode(*result->getNode(0));
@@ -89,13 +89,13 @@ void Engine3DXMLLoader::loadCommandPools(ContextLoading& context, Vulkan::Contex
 
 void Engine3DXMLLoader::loadCommandsGroup(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
+    MouCa::preCondition(!deviceWeak.expired()); //DEV Issue: Bad device !
 
     // Search CommandBuffer
     auto result = context._parser.getNode(u8"CommandsGroups");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         auto aPush = context._parser.autoPushNode(*result->getNode(0));
@@ -131,13 +131,13 @@ void Engine3DXMLLoader::loadCommandsGroup(ContextLoading& context, Vulkan::Conte
 
 void Engine3DXMLLoader::loadCommandBuffers(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
+    MouCa::preCondition(!deviceWeak.expired()); //DEV Issue: Bad device !
 
     // Search CommandBuffer
     auto result = context._parser.getNode(u8"CommandBuffers");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         auto aPush = context._parser.autoPushNode(*result->getNode(0));
@@ -163,7 +163,7 @@ void Engine3DXMLLoader::loadCommandBuffers(ContextLoading& context, Vulkan::Cont
             {
                 const uint32_t surfaceId       = LoaderHelper::getLinkedIdentifiant(commandBufferNode, u8"surfaceId", _surfaces, context);
                 auto surface = _surfaces[surfaceId].lock();
-                MOUCA_ASSERT(surface->getSwapChain().getImages().size() == surface->getFrameBuffer().size());
+                MouCa::assertion(surface->getSwapChain().getImages().size() == surface->getFrameBuffer().size());
 
                 // Load commands
                 Vulkan::Commands allCommands;
@@ -235,7 +235,7 @@ void Engine3DXMLLoader::loadCommands(ContextLoading& context, Vulkan::ContextDev
             if(commandNode->hasAttribute(u8"height"))   { LoaderHelper::readAttribute(commandNode, u8"height", viewport.height, context); }
             if(commandNode->hasAttribute(u8"minDepth")) { commandNode->getAttribute(u8"minDepth", viewport.minDepth); }
             if(commandNode->hasAttribute(u8"maxDepth")) { commandNode->getAttribute(u8"maxDepth", viewport.maxDepth); }
-            MOUCA_ASSERT(viewport.width != 0 && viewport.height != 0);
+            MouCa::assertion(viewport.width != 0 && viewport.height != 0);
             
             // Build command
             command = std::make_unique<Vulkan::CommandViewport>(viewport);
@@ -250,7 +250,7 @@ void Engine3DXMLLoader::loadCommands(ContextLoading& context, Vulkan::ContextDev
             if(commandNode->hasAttribute(u8"width"))  { LoaderHelper::readAttribute(commandNode, u8"width",  rect.extent.width, context);  }
             if(commandNode->hasAttribute(u8"height")) { LoaderHelper::readAttribute(commandNode, u8"height", rect.extent.height, context); }
 
-            MOUCA_ASSERT(rect.extent.width > 0 && rect.extent.height > 0);
+            MouCa::assertion(rect.extent.width > 0 && rect.extent.height > 0);
             // Build command
             command = std::make_unique<Vulkan::CommandScissor>(rect);
         }
@@ -277,7 +277,7 @@ void Engine3DXMLLoader::loadCommands(ContextLoading& context, Vulkan::ContextDev
                 std::copy(fbs.cbegin(), fbs.cend(), frameBuffers.begin());
             }
 
-            MOUCA_ASSERT(renderArea.extent.width > 0 && renderArea.extent.height > 0);
+            MouCa::assertion(renderArea.extent.width > 0 && renderArea.extent.height > 0);
 
             if(commandNode->hasAttribute(u8"x"))      { commandNode->getAttribute(u8"x",      renderArea.offset.x); }
             if(commandNode->hasAttribute(u8"y"))      { commandNode->getAttribute(u8"y",      renderArea.offset.y); }

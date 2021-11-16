@@ -21,20 +21,20 @@ const std::array<RT::ShaderKind, static_cast<size_t>(RT::ShaderKind::NbShaders)>
 ShaderModule::ShaderModule() :
 _shaderModule(VK_NULL_HANDLE), _stage(static_cast<VkShaderStageFlagBits>(0))
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 ShaderModule::~ShaderModule()
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 void ShaderModule::initialize(const Device& device, const Core::String& shaderSource, const std::string& name, const VkShaderStageFlagBits stage)
 {
-    MOUCA_PRE_CONDITION(isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
-    MOUCA_PRE_CONDITION(!shaderSource.empty());
-    MOUCA_PRE_CONDITION(!name.empty());
+    MouCa::preCondition(isNull());
+    MouCa::preCondition(!device.isNull());
+    MouCa::preCondition(!shaderSource.empty());
+    MouCa::preCondition(!name.empty());
 
     _name  = name;
     _stage = stage;
@@ -52,16 +52,16 @@ void ShaderModule::initialize(const Device& device, const Core::String& shaderSo
     //Create shader
     if (vkCreateShaderModule(device.getInstance(), &shaderModuleCreateInfo, nullptr, &_shaderModule) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"ShaderCreationError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "ShaderCreationError"));
     }
 
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 }
 
 void ShaderModule::release(const Device& device)
 {
-    MOUCA_ASSERT(!isNull());
-    MOUCA_ASSERT(!device.isNull());
+    MouCa::assertion(!isNull());
+    MouCa::assertion(!device.isNull());
 
     vkDestroyShaderModule(device.getInstance(), _shaderModule, nullptr);
     _shaderModule = VK_NULL_HANDLE;
@@ -70,20 +70,20 @@ void ShaderModule::release(const Device& device)
 ShaderProgram::ShaderProgram():
 _shaderModule(VK_NULL_HANDLE)
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 ShaderProgram::~ShaderProgram()
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 void ShaderProgram::initialize(const Device& device, const Core::File& shaderSourceFile, const std::string& name)
 {
-    MOUCA_PRE_CONDITION(isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
-    MOUCA_PRE_CONDITION(shaderSourceFile.isExist());
-    MOUCA_PRE_CONDITION(!name.empty());
+    MouCa::preCondition(isNull());
+    MouCa::preCondition(!device.isNull());
+    MouCa::preCondition(shaderSourceFile.isExist());
+    MouCa::preCondition(!name.empty());
 
     _name = name;
 
@@ -91,7 +91,7 @@ void ShaderProgram::initialize(const Device& device, const Core::File& shaderSou
     const std::string code = shaderSourceFile.extractString();
     if(code.empty())
     {
-        MOUCA_THROW_ERROR_1(u8"Vulkan", u8"ShaderFileEmptyError", Core::convertToU8(shaderSourceFile.getFilePath()));
+        throw Core::Exception(Core::ErrorData("Vulkan", "ShaderFileEmptyError") << Core::convertToU8(shaderSourceFile.getFilePath()));
     }
 
     //Build info
@@ -107,14 +107,14 @@ void ShaderProgram::initialize(const Device& device, const Core::File& shaderSou
     //Create shader
     if(vkCreateShaderModule(device.getInstance(), &shaderModuleCreateInfo, nullptr, &_shaderModule) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR_1(u8"Vulkan", u8"ShaderCreationError", Core::convertToU8(shaderSourceFile.getFilePath()));
+        throw Core::Exception(Core::ErrorData("Vulkan", "ShaderCreationError") << Core::convertToU8(shaderSourceFile.getFilePath()));
     }
 }
 
 void ShaderProgram::release(const Device& device)
 {
-    MOUCA_ASSERT(!isNull());
-    MOUCA_ASSERT(!device.isNull());
+    MouCa::assertion(!isNull());
+    MouCa::assertion(!device.isNull());
     
     vkDestroyShaderModule(device.getInstance(), _shaderModule, nullptr);
     _shaderModule = VK_NULL_HANDLE;

@@ -70,7 +70,7 @@ namespace RT
 
             void setFaceOrder(const FaceOrder order)
             {
-                MOUCA_PRE_CONDITION(order < FaceOrder::NbFaceOrder);
+                MouCa::preCondition(order < FaceOrder::NbFaceOrder);
                 _faceOrder = order;
             }
 
@@ -109,7 +109,7 @@ namespace RT
                     {3, Type::Float, ComponentUsage::Tangent}
                 };
 
-                MOUCA_ASSERT(sizeof(Mesh::SGeometry) == descriptors[0].getSizeInByte() + descriptors[1].getSizeInByte() + descriptors[2].getSizeInByte() + descriptors[3].getSizeInByte());
+                MouCa::assertion(sizeof(Mesh::SGeometry) == descriptors[0].getSizeInByte() + descriptors[1].getSizeInByte() + descriptors[2].getSizeInByte() + descriptors[3].getSizeInByte());
 
                 //Buffer Descriptor
                 //static const size_t					                        szNbDescriptors = 2;
@@ -130,7 +130,7 @@ namespace RT
                     {3, Type::UnsignedInt, ComponentUsage::Index}
                 };
 
-                MOUCA_ASSERT_EQ(sizeof(Mesh::SIndex), descriptors[0].getSizeInByte());
+                MouCa::assertCompare(sizeof(Mesh::SIndex), descriptors[0].getSizeInByte());
 
                 BufferDescriptor BufferDescriptorIBO;
                 BufferDescriptorIBO.initialize(descriptors);
@@ -177,35 +177,35 @@ namespace RT
             MeshImport() :
             _flag( DefaultImport ), _mesh(std::make_shared<Mesh>())
             {
-                MOUCA_PRE_CONDITION( isNull() );
+                MouCa::preCondition( isNull() );
             }
 
             ~MeshImport() override
             {
-                MOUCA_PRE_CONDITION( !isLoaded() );
+                MouCa::preCondition( !isLoaded() );
             }
 
             void setFileInfo(const Core::Path& filename, const BufferDescriptor& descriptor, const Flag flag)
             {
-                MOUCA_PRE_CONDITION( isNull() );
+                MouCa::preCondition( isNull() );
                 
                 Core::Resource::setFileInfo(filename);
 
                 _descriptor = descriptor;
                 _flag       = flag;
 
-                MOUCA_POST_CONDITION( !isNull() );
+                MouCa::postCondition( !isNull() );
             }
 
             void release() override
             {
-                MOUCA_PRE_CONDITION( !isNull() );
+                MouCa::preCondition( !isNull() );
 
                 _filename.clear();
                 _mesh->release();
                 _mesh.reset();
 
-                MOUCA_PRE_CONDITION( isNull() );
+                MouCa::preCondition( isNull() );
             }
 
             bool isNull() const override

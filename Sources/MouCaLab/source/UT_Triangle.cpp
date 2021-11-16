@@ -133,7 +133,7 @@ class TriangleTest : public MouCaLabTest
         void updateUBO(const RT::RenderDialogWPtr dialog, const Vulkan::ContextDeviceSPtr context, const Vulkan::BufferWPtr& ubo)
         {
             const auto& resolution = dialog.lock()->getSize();
-            MOUCA_ASSERT(resolution.x > 0 && resolution.y > 0);
+            MouCa::assertion(resolution.x > 0 && resolution.y > 0);
             const float ratio = static_cast<float>(resolution.x) / static_cast<float>(resolution.y);
 
             // Update matrices

@@ -18,15 +18,15 @@ _instance( VK_NULL_HANDLE )
 
 Environment::~Environment()
 {
-    MOUCA_ASSERT(isNull());
+    MouCa::assertion(isNull());
 }
 
 void Environment::initialize(const RT::ApplicationInfo& info, const std::vector<const char*>& extensions)
 {
-    MOUCA_ASSERT(_graphicsDevices.empty());	//DEV Issue: second call ?
-    MOUCA_ASSERT(_rejectDevices.empty());		//DEV Issue: second call ?
-    MOUCA_ASSERT(_computeDevices.empty());		//DEV Issue: second call ?
-    MOUCA_ASSERT(isNull());	                //DEV Issue: second call ?
+    MouCa::assertion(_graphicsDevices.empty());	//DEV Issue: second call ?
+    MouCa::assertion(_rejectDevices.empty());		//DEV Issue: second call ?
+    MouCa::assertion(_computeDevices.empty());		//DEV Issue: second call ?
+    MouCa::assertion(isNull());	                //DEV Issue: second call ?
 
     VkApplicationInfo application_info =
     {
@@ -91,7 +91,7 @@ void Environment::initialize(const RT::ApplicationInfo& info, const std::vector<
     const VkResult error = vkCreateInstance(&instance_create_info, nullptr, &_instance);
     if( error != VK_SUCCESS )
     {
-        MOUCA_THROW_ERROR(u8"VulkanError", error == VK_ERROR_LAYER_NOT_PRESENT ? u8"InstanceLayoutError" : u8"InstanceError");
+        throw Core::Exception(Core::ErrorData("VulkanError", error == VK_ERROR_LAYER_NOT_PRESENT ? "InstanceLayoutError" : "InstanceError"));
     }
 
 #ifdef VULKAN_DEBUG
@@ -103,12 +103,12 @@ void Environment::initialize(const RT::ApplicationInfo& info, const std::vector<
     uint32_t nbLayersProperties = 0;
     if(vkEnumerateInstanceLayerProperties(&nbLayersProperties, nullptr) != VK_SUCCESS && nbLayersProperties > 0)
     {
-        MOUCA_THROW_ERROR(u8"VulkanError", u8"NbLayersError");
+        throw Core::Exception(Core::ErrorData("VulkanError", "NbLayersError"));
     }
     std::vector<VkLayerProperties> properties(nbLayersProperties);
     if(vkEnumerateInstanceLayerProperties(&nbLayersProperties, properties.data())  != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"VulkanError", u8"NbLayersError");
+        throw Core::Exception(Core::ErrorData("VulkanError", "NbLayersError"));
     }
     std::cout << "Vulkan - Layers:" << std::endl;
     for(const auto& layer: properties)
@@ -121,7 +121,7 @@ void Environment::initialize(const RT::ApplicationInfo& info, const std::vector<
     uint32_t nbPhysicalDevices = 0;
     if(vkEnumeratePhysicalDevices(_instance, &nbPhysicalDevices, nullptr) != VK_SUCCESS && nbPhysicalDevices > 0)
     {
-        MOUCA_THROW_ERROR(u8"VulkanError", u8"NbPhysicalDevicesError");
+        throw Core::Exception(Core::ErrorData("VulkanError", "NbPhysicalDevicesError"));
     }
 
     //Resize vector to keep each device info
@@ -130,7 +130,7 @@ void Environment::initialize(const RT::ApplicationInfo& info, const std::vector<
     //Search PhysicalDevices
     if(vkEnumeratePhysicalDevices(_instance, &nbPhysicalDevices, physicalDevices.data()) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"VulkanError", u8"PhysicalDevicesError");
+        throw Core::Exception(Core::ErrorData("VulkanError", "PhysicalDevicesError"));
     }
 
     //Parse device to sort between graphic/compute (quick classification)
@@ -181,13 +181,13 @@ void Environment::initialize(const RT::ApplicationInfo& info, const std::vector<
     }
 
     //Final check to see if we not loose data
-    MOUCA_POST_CONDITION(_rejectDevices.size() + _graphicsDevices.size() + _computeDevices.size() == physicalDevices.size());
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(_rejectDevices.size() + _graphicsDevices.size() + _computeDevices.size() == physicalDevices.size());
+    MouCa::postCondition(!isNull());
 }
 
 void Environment::release()
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
     //Clean context and associated device
 
     //Lost physical devices
@@ -200,27 +200,27 @@ void Environment::release()
 #endif
 
     //Release instance
-    MOUCA_ASSERT(_instance != VK_NULL_HANDLE); //DEV Issue: release before initialize ?
+    MouCa::assertion(_instance != VK_NULL_HANDLE); //DEV Issue: release before initialize ?
     vkDestroyInstance(_instance, nullptr);
     _instance = VK_NULL_HANDLE;
     
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 void Environment::checkExtensions(const std::vector<const char*>& extensions) const
 {
-    MOUCA_ASSERT(!extensions.empty()); //DEV Issue: need to check extension only if sent !
+    MouCa::assertion(!extensions.empty()); //DEV Issue: need to check extension only if sent !
 
     //Read extensions supported by all
     uint32_t nbExtensions = 0;
     if(vkEnumerateInstanceExtensionProperties(nullptr, &nbExtensions, nullptr) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"VulkanError", u8"ExtensionError");
+        throw Core::Exception(Core::ErrorData("VulkanError", "ExtensionError"));
     }
     std::vector<VkExtensionProperties> availableExtensions(nbExtensions);
     if(nbExtensions==0 || vkEnumerateInstanceExtensionProperties(nullptr, &nbExtensions, &availableExtensions[0]) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"VulkanError", u8"ExtensionError");
+        throw Core::Exception(Core::ErrorData("VulkanError", "ExtensionError"));
     }
 
     //Define lambda
@@ -242,7 +242,7 @@ void Environment::checkExtensions(const std::vector<const char*>& extensions) co
     {
         if(!compare(extension))
         {
-            MOUCA_THROW_ERROR_1(u8"VulkanError", u8"MissingExtensionError", extension);
+            throw Core::Exception(Core::ErrorData("VulkanError", "MissingExtensionError") << extension);
         }
     }
 }

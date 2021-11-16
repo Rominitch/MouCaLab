@@ -224,7 +224,7 @@ void MouCaLabTest::takeScreenshot(MouCaGraphic::VulkanManager& manager, const Co
 void MouCaLabTest::enableFileTracking(MouCaGraphic::VulkanManager& manager)
 {
     auto& fileTracker = _core.getResourceManager().getTracker();
-    MOUCA_PRE_CONDITION(!fileTracker.signalFileChanged().isConnected(&manager));
+    MouCa::preCondition(!fileTracker.signalFileChanged().isConnected(&manager));
 
     fileTracker.signalFileChanged().connectMember(&manager, &MouCaGraphic::VulkanManager::afterShaderEdition);
 
@@ -234,7 +234,7 @@ void MouCaLabTest::enableFileTracking(MouCaGraphic::VulkanManager& manager)
 void MouCaLabTest::disableFileTracking(MouCaGraphic::VulkanManager& manager)
 {
     auto& fileTracker = _core.getResourceManager().getTracker();
-    MOUCA_PRE_CONDITION(fileTracker.signalFileChanged().isConnected(&manager));
+    MouCa::preCondition(fileTracker.signalFileChanged().isConnected(&manager));
 
     fileTracker.stopTracking();
 

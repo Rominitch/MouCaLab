@@ -15,22 +15,22 @@ namespace Vulkan
 SwapChain::SwapChain():
 _swapChain(VK_NULL_HANDLE), _currentImage(0), _ready(false)
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 SwapChain::~SwapChain()
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 void SwapChain::initialize(const Device& device, const Surface& surface, const SurfaceFormat& format)
 {
-    MOUCA_PRE_CONDITION(isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
-    MOUCA_PRE_CONDITION(!surface.isNull());
+    MouCa::preCondition(isNull());
+    MouCa::preCondition(!device.isNull());
+    MouCa::preCondition(!surface.isNull());
 
     const SurfaceFormat::Configuration& configuration = format.getConfiguration();
-    MOUCA_ASSERT(format.isSupported());
+    MouCa::assertion(format.isSupported());
 
     // Mandatory for screenshot
     const VkImageUsageFlags imageUsage = static_cast<VkImageUsageFlags>( configuration._usage | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT);
@@ -60,33 +60,33 @@ void SwapChain::initialize(const Device& device, const Surface& surface, const S
     VkResult result = vkCreateSwapchainKHR(device.getInstance(), &swapChainCreateInfo, nullptr, &_swapChain);
     if(result != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR("Vulkan", "SwapChainError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "SwapChainError"));
     }
 
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 }
 
 void SwapChain::generateImages(const Device& device, const SurfaceFormat& format)
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
-    MOUCA_PRE_CONDITION(_images.empty());
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(!device.isNull());
+    MouCa::preCondition(_images.empty());
 
     const SurfaceFormat::Configuration& configuration = format.getConfiguration();
-    MOUCA_ASSERT(format.isSupported());
+    MouCa::assertion(format.isSupported());
 
     //Create images
     uint32_t imageCount = 0;
     if(vkGetSwapchainImagesKHR(device.getInstance(), _swapChain, &imageCount, nullptr) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"LinkCommandBufferToSwapChainError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "LinkCommandBufferToSwapChainError"));
     }
 
     std::vector<VkImage> swapChainImages;
     swapChainImages.resize(static_cast<size_t>(imageCount));
     if(vkGetSwapchainImagesKHR(device.getInstance(), _swapChain, &imageCount, swapChainImages.data()) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"LinkCommandBufferToSwapChainError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "LinkCommandBufferToSwapChainError"));
     }
 
     _images.resize(swapChainImages.size());
@@ -109,15 +109,15 @@ void SwapChain::generateImages(const Device& device, const SurfaceFormat& format
 
 void SwapChain::release(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(!device.isNull());
     
     /*
 #ifdef _DEBUG
     //DEV Issue: defined sequences but not anymore valid swapchain ???
     for(auto& sequence : _linkSequences)
     {
-        MOUCA_ASSERT(!sequence.expired());
+        MouCa::assertion(!sequence.expired());
     }
 #endif
     _linkSequences.clear();
@@ -134,13 +134,13 @@ void SwapChain::release(const Device& device)
 
     _ready = false;
 
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 
 void SwapChain::registerSequence(SequenceWPtr sequence)
 {
-    MOUCA_PRE_CONDITION(std::find_if(_linkSequences.cbegin(), _linkSequences.cend(),
+    MouCa::preCondition(std::find_if(_linkSequences.cbegin(), _linkSequences.cend(),
                     [&](const auto current)
                     {
                         return current.lock() == sequence.lock();
@@ -157,7 +157,7 @@ void SwapChain::unregisterSequence(SequenceWPtr sequence)
                                     {
                                         return current.lock() == sequence.lock();
                                     });
-    MOUCA_PRE_CONDITION(itSequence != _linkSequences.end());
+    MouCa::preCondition(itSequence != _linkSequences.end());
     // Remove item
     _linkSequences.erase(itSequence);
 }
@@ -166,20 +166,20 @@ SwapChainImage::SwapChainImage():
 _image(VK_NULL_HANDLE),
 _view(VK_NULL_HANDLE)
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 SwapChainImage::~SwapChainImage()
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 void SwapChainImage::initialize(const Device& device, const VkFormat& format, const VkImage& image)
 {
-    MOUCA_PRE_CONDITION(isNull());
-    MOUCA_PRE_CONDITION(image != VK_NULL_HANDLE);
-    MOUCA_PRE_CONDITION(!device.isNull());
-    MOUCA_PRE_CONDITION(format != VK_FORMAT_UNDEFINED);
+    MouCa::preCondition(isNull());
+    MouCa::preCondition(image != VK_NULL_HANDLE);
+    MouCa::preCondition(!device.isNull());
+    MouCa::preCondition(format != VK_FORMAT_UNDEFINED);
 
     _image = image;
 
@@ -208,22 +208,22 @@ void SwapChainImage::initialize(const Device& device, const VkFormat& format, co
 
     if(vkCreateImageView(device.getInstance(), &imageViewCreateInfo, nullptr, &_view) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"ImageViewCreationError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "ImageViewCreationError"));
     }
     
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 }
 
 void SwapChainImage::release(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
 
     vkDestroyImageView(device.getInstance(), _view, nullptr);
     _view = VK_NULL_HANDLE;
 
     _image = VK_NULL_HANDLE;
 
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 }

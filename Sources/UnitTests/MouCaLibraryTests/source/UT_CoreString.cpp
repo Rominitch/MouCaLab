@@ -34,4 +34,7 @@ TEST(CoreString, os)
 
     Core::StringCPP newString = Core::convertToU8(osString);
     EXPECT_EQ(string, newString);
+
+    //Core::StringUTF8 u8String(u8"My String génial");
+    //EXPECT_EQ(string, Core::StringCPP(u8String.begin(), u8String.end()));
 }

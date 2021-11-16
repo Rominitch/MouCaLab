@@ -67,7 +67,7 @@ TEST_F(ErrorManager, getError)
     // Without library registered
     {
         Core::ErrorData error;
-        const Core::String result = error.getLibraryLabel() + " " + error.getErrorLabel();
+        const Core::String result = std::format("{} {}", error.getLibraryLabel(), error.getErrorLabel());
         EXPECT_EQ( result, manager.getError(error) );
     }
 
@@ -75,7 +75,7 @@ TEST_F(ErrorManager, getError)
     {
         ASSERT_NO_THROW(manager.addErrorLibrary(demoLib, "DemoLibrary"));
 
-        Core::ErrorData error("DemoLibrary", "Hello", __FILE__, __LINE__);
+        Core::ErrorData error("DemoLibrary", "Hello");
         EXPECT_EQ("Hello World\r\nHello Solution", manager.getError(error));
     }
 }
@@ -87,7 +87,7 @@ struct TESTPrinter : public Core::ErrorPrinter
     void print(const Core::ErrorData& pError, const Core::ErrorLibrary* pLibrary) const override
     {
         Core::StringStream ssStream;
-        const Core::ErrorDescription* pDescription = pLibrary->getDescription(pError.getErrorLabel());
+        const Core::ErrorDescription* pDescription = pLibrary->getDescription(Core::String(pError.getErrorLabel()));
         ssStream << pError.convertMessage(pDescription->getMessage()) << "\r\n" << pError.convertMessage(pDescription->getSolution());
         const_cast<TESTPrinter*>(this)->message = ssStream.str();
     }
@@ -97,7 +97,7 @@ TEST_F(ErrorManager, show)
 {
     Core::ErrorManager manager;
 
-    Core::Exception myException(Core::ErrorData("DemoLibrary", "Hello", __FILE__, __LINE__));
+    Core::Exception myException(Core::ErrorData("DemoLibrary", "Hello"));
 
     // Valid printer
     {

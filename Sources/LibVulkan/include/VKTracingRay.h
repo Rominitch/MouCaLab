@@ -30,7 +30,7 @@ namespace Vulkan
 
             const BufferStrided& getBufferStrided(uint32_t id) const
             {
-                MOUCA_PRE_CONDITION(id < _bindings.size());
+                MouCa::preCondition(id < _bindings.size());
                 return _bindings[id];
             }
 

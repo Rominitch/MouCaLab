@@ -40,12 +40,12 @@ void ErrorManager::release()
 
 void ErrorManager::addErrorLibrary(XML::Parser& parser, const String& strLibraryName)
 {
-    MOUCA_PRE_CONDITION(!parser.isLoaded());
-    MOUCA_PRE_CONDITION(!strLibraryName.empty());
+    MouCa::preCondition(!parser.isLoaded());
+    MouCa::preCondition(!strLibraryName.empty());
 
     if(parser.getFilename().empty())
     {
-        MOUCA_THROW_ERROR_1("BasicError", "InvalidPathError", Core::convertToU8(parser.getFilename()))
+        throw Core::Exception(Core::ErrorData("BasicError", "InvalidPathError") << Core::convertToU8(parser.getFilename()));
     }
 
     //Search if library already exist
@@ -54,7 +54,7 @@ void ErrorManager::addErrorLibrary(XML::Parser& parser, const String& strLibrary
         ErrorLibrary* pLibrary = new ErrorLibrary();
         if(pLibrary==nullptr)
         {
-            MOUCA_THROW_ERROR_1("BasicError", "NULLPointerError", "pLibrary")
+            throw Core::Exception(Core::ErrorData("BasicError", "NULLPointerError") << "pLibrary");
         }
 
         //Try to load library
@@ -77,13 +77,13 @@ void ErrorManager::addErrorLibrary(XML::Parser& parser, const String& strLibrary
     }
     else
     {
-        MOUCA_THROW_ERROR("BasicError", "LibraryDoubleAddError")
+        throw Core::Exception(Core::ErrorData("BasicError", "LibraryDoubleAddError"));
     }
 }
 
 void ErrorManager::show(const Exception& Exception) const
 {
-    MOUCA_PRE_CONDITION(_printer != nullptr); //never happened
+    MouCa::preCondition(_printer != nullptr); //never happened
 
 #ifndef NDEBUG
     size_t iShow=Exception.getNbErrors()-1;
@@ -94,7 +94,7 @@ void ErrorManager::show(const Exception& Exception) const
         
     //Get library (is unique in array)
     ErrorLibrary* pLibrary=nullptr;
-    const auto it = _mapErrorsLibrary.find(error.getLibraryLabel());
+    const auto it = _mapErrorsLibrary.find(String(error.getLibraryLabel()));
     if(it != _mapErrorsLibrary.cend())
     {
         pLibrary = it->second;
@@ -110,13 +110,13 @@ String ErrorManager::getError(const ErrorData& error) const
 
     //Get library (is unique in array)
     ErrorLibrary* pLibrary = nullptr;
-    const auto it = _mapErrorsLibrary.find(error.getLibraryLabel());
+    const auto it = _mapErrorsLibrary.find(String(error.getLibraryLabel()));
     if (it != _mapErrorsLibrary.cend())
     {
         pLibrary = it->second;
         
-        MOUCA_ASSERT(pLibrary != nullptr);
-        const ErrorDescription* pDescription = pLibrary->getDescription(error.getErrorLabel());
+        MouCa::assertion(pLibrary != nullptr);
+        const ErrorDescription* pDescription = pLibrary->getDescription(String(error.getErrorLabel()));
         ssStream << error.convertMessage(pDescription->getMessage()) << "\r\n" << error.convertMessage(pDescription->getSolution());
     }
     else

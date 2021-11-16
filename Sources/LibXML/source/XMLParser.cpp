@@ -23,18 +23,18 @@ XercesPlatform::~XercesPlatform()
 
 XercesParser::XercesParser()
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 XercesParser::~XercesParser()
 {
-    MOUCA_PRE_CONDITION(!isLoaded());
+    MouCa::preCondition(!isLoaded());
 }
 
 void XercesParser::release()
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(_parseStack.empty()); // DEV Issue: you need to clean stack BEFORE call release: bad pair Push/Pop.
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(_parseStack.empty()); // DEV Issue: you need to clean stack BEFORE call release: bad pair Push/Pop.
 
     _parser.reset();
     _filename.clear();
@@ -42,8 +42,8 @@ void XercesParser::release()
 
 void XercesParser::openXMLFile(const Core::Path& strFilePath)
 {
-    MOUCA_PRE_CONDITION(!strFilePath.empty() || !_filename.empty());
-    MOUCA_PRE_CONDITION(_parser == nullptr);
+    MouCa::preCondition(!strFilePath.empty() || !_filename.empty());
+    MouCa::preCondition(_parser == nullptr);
 
     // Use best file (priority to given file then latest register)
     const Core::Path fileXML = !strFilePath.empty() ? strFilePath : _filename;
@@ -54,9 +54,9 @@ void XercesParser::openXMLFile(const Core::Path& strFilePath)
     }
     catch(const xercesc::XMLException&)
     {
-        MOUCA_THROW_ERROR_1("BasicError", "NULLPointerError", "_parser"); // DEV Issue: Missing XML::Platform !
+        throw Core::Exception(Core::ErrorData("BasicError", "NULLPointerError") << "_parser"); // DEV Issue: Missing XML::Platform !
     }
-    MOUCA_ASSERT(_parser != nullptr);
+    MouCa::assertion(_parser != nullptr);
 
     //Basic configuration
     _parser->setValidationScheme(xercesc::XercesDOMParser::Val_Never);
@@ -72,7 +72,7 @@ void XercesParser::openXMLFile(const Core::Path& strFilePath)
         if(_parser->getDocument()==nullptr)
         {
             _parser.reset();
-            MOUCA_THROW_ERROR_1("BasicError", "NULLPointerError", "_parser->getDocument()");
+            throw Core::Exception(Core::ErrorData("BasicError", "NULLPointerError") << "_parser->getDocument()");
         }
     }
     catch(const xercesc::XMLException&)
@@ -80,12 +80,12 @@ void XercesParser::openXMLFile(const Core::Path& strFilePath)
 
     _filename = fileXML;
 
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 }
 
 ResultUPtr XercesParser::getNode(const Core::String& strName) const
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
 
     xercesc::DOMNodeList* nodeList=nullptr;
     if(_parseStack.empty())
@@ -98,23 +98,58 @@ ResultUPtr XercesParser::getNode(const Core::String& strName) const
         }
         else
         {
-            MOUCA_THROW_ERROR("BasicError", "NULLPointerError");
+            throw Core::Exception(Core::ErrorData("BasicError", "NULLPointerError"));
         }
     }
     else
     {
-        MOUCA_ASSERT(_parseStack.top() != NULL);
+        MouCa::assertion(_parseStack.top() != NULL);
 
         nodeList=_parseStack.top()->getElementsByTagName(XercesString(strName).toXMLChar());
     }
 
     if(nodeList==nullptr)
     {
-        MOUCA_THROW_ERROR( "BasicError", "NULLPointerError" );
+        throw Core::Exception(Core::ErrorData("BasicError", "NULLPointerError"));
     }
 
     auto result = std::make_unique<XercesResult>();
     result->initialize( nullptr, nodeList );
+    return result;
+}
+
+ResultUPtr XercesParser::getNodeView(const Core::StringView& strName) const
+{
+    MouCa::preCondition(!isNull());
+
+    xercesc::DOMNodeList* nodeList = nullptr;
+    if (_parseStack.empty())
+    {
+        // no need to free this pointer - owned by the parent parser object
+        xercesc::DOMDocument* pXMLDoc = _parser->getDocument();
+        if (pXMLDoc != nullptr)
+        {
+            nodeList = pXMLDoc->getElementsByTagName(XercesString(strName).toXMLChar());
+        }
+        else
+        {
+            throw Core::Exception(Core::ErrorData("BasicError", "NULLPointerError"));
+        }
+    }
+    else
+    {
+        MouCa::assertion(_parseStack.top() != NULL);
+
+        nodeList = _parseStack.top()->getElementsByTagName(XercesString(strName).toXMLChar());
+    }
+
+    if (nodeList == nullptr)
+    {
+        throw Core::Exception(Core::ErrorData("BasicError", "NULLPointerError"));
+    }
+
+    auto result = std::make_unique<XercesResult>();
+    result->initialize(nullptr, nodeList);
     return result;
 }
 
@@ -126,18 +161,18 @@ XercesParser::AutoPop XercesParser::autoPushNode(const Node& node)
 
 void XercesParser::pushNode(const Node& node)
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(dynamic_cast<const XercesNode*>(&node) !=  nullptr);
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(dynamic_cast<const XercesNode*>(&node) !=  nullptr);
     const DOMElement* element = static_cast<const XercesNode*>(&node)->getNode();
-    MOUCA_PRE_CONDITION(element != nullptr);
+    MouCa::preCondition(element != nullptr);
 
     _parseStack.push(element);
 }
 
 void XercesParser::popNode()
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(!_parseStack.empty());
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(!_parseStack.empty());
     _parseStack.pop();
 }
 
@@ -169,29 +204,70 @@ NodeUPtr XercesParser::searchNodeGeneric(const ResultUPtr& result, const Core::S
         }
         else
         {
-            MOUCA_THROW_ERROR_1("XMLError", "XMLMissingNodeError", parameterLabel);
+            throw Core::Exception(Core::ErrorData("XMLError", "XMLMissingNodeError") << parameterLabel);
         }
     }
     return node;
 }
 
+NodeUPtr XercesParser::searchNodeGenericView(const ResultUPtr& result, const Core::StringView& parameterLabel, const Core::String& value) const
+{
+    NodeUPtr node;
+    if (result->getNbElements() > 0)
+    {
+        bool bFind = false;
+        size_t szSearch = 0;
+        Core::String read;
+        do
+        {
+            //Search attribute
+            result->getNode(szSearch)->getAttribute(Core::String(parameterLabel), read);
+
+            //Compare value and continue or quit
+            bFind = (value == read);
+            if (bFind == false)
+            {
+                szSearch++;
+            }
+        } while (bFind == false && szSearch < result->getNbElements());
+
+        //If find data we return node
+        if (szSearch < result->getNbElements())
+        {
+            node = result->getNode(szSearch);
+        }
+        else
+        {
+            throw Core::Exception(Core::ErrorData("XMLError", "XMLMissingNodeError") << Core::String(parameterLabel));
+        }
+    }
+    return node;
+}
+
+NodeUPtr XercesParser::searchNodeView(const Core::StringView& strNodeLabel, const Core::StringView& strParameterLabel, const Core::String& strValue) const
+{
+    MouCa::preCondition(!isNull());
+
+    return searchNodeGenericView(getNodeView(strNodeLabel), strParameterLabel, strValue);
+}
+
 NodeUPtr XercesParser::searchNode(const Core::String& strNodeLabel, const Core::String& strParameterLabel, const Core::String& strValue) const
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
 
     return searchNodeGeneric(getNode(strNodeLabel), strParameterLabel, strValue);
 }
 
 ResultUPtr XercesParser::getNodeFrom(const Node& node, const Core::String& strName) const
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
 
     xercesc::DOMNodeList* nodeList = nullptr;
     if (node.isNull())
     {
         // no need to free this pointer - owned by the parent parser object
         xercesc::DOMDocument* pXMLDoc = _parser->getDocument();
-        MOUCA_ASSERT(pXMLDoc != nullptr);
+        MouCa::assertion(pXMLDoc != nullptr);
         nodeList = pXMLDoc->getElementsByTagName(XercesString(strName).toXMLChar());
     }
     else
@@ -201,7 +277,7 @@ ResultUPtr XercesParser::getNodeFrom(const Node& node, const Core::String& strNa
 
     if (nodeList == nullptr)
     {
-        MOUCA_THROW_ERROR("BasicError", "NULLPointerError");
+        throw Core::Exception(Core::ErrorData("BasicError", "NULLPointerError"));
     }
 
     auto result = std::make_unique<XercesResult>();
@@ -211,7 +287,7 @@ ResultUPtr XercesParser::getNodeFrom(const Node& node, const Core::String& strNa
 
 NodeUPtr XercesParser::searchNodeFrom(const Node& node, const Core::String& nodeLabel, const Core::String& parameterLabel, const Core::String& value) const
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
 
     return searchNodeGeneric(getNodeFrom(node, nodeLabel), parameterLabel, value);
 }

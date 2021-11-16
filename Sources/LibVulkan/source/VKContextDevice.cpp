@@ -24,13 +24,13 @@ namespace Vulkan
 
 ContextDevice::~ContextDevice()
 {
-    MOUCA_POST_CONDITION(isNull());        //Dev Issue: Need to call release
+    MouCa::postCondition(isNull());        //Dev Issue: Need to call release
 }
 
 void ContextDevice::initialize(const Vulkan::Environment& environment, const std::vector<const char*>& deviceExtensions, const PhysicalDeviceFeatures& enabled, const Vulkan::Surface* surface)
 {
-    MOUCA_PRE_CONDITION(isNull());                 //DEV Issue: No re-entrance: call release before initialize again.
-    MOUCA_PRE_CONDITION(!environment.isNull());    //DEV Issue:  Environment is not ready.
+    MouCa::preCondition(isNull());                 //DEV Issue: No re-entrance: call release before initialize again.
+    MouCa::preCondition(!environment.isNull());    //DEV Issue:  Environment is not ready.
 
     // Create best device for rendering and adapted to surface.
     _device.initializeBestGPU(environment, deviceExtensions, surface, enabled);
@@ -38,12 +38,12 @@ void ContextDevice::initialize(const Vulkan::Environment& environment, const std
     // Create Pipeline Cache
     _pipelineCache.initialize(_device);
 
-    MOUCA_PRE_CONDITION(!isNull()); //DEV Issue: Something wrong ?
+    MouCa::preCondition(!isNull()); //DEV Issue: Something wrong ?
 }
 
 void ContextDevice::release()
 {
-    MOUCA_PRE_CONDITION(!isNull()); //DEV Issue: initialize() must be call before !
+    MouCa::preCondition(!isNull()); //DEV Issue: initialize() must be call before !
 
     // WARNING: Remove in invert order to declaration to avoid used memory !
 
@@ -151,46 +151,46 @@ void ContextDevice::release()
     // Finally Release device
     _device.release();
 
-    MOUCA_PRE_CONDITION(isNull()); //DEV Issue: Something wrong ?
+    MouCa::preCondition(isNull()); //DEV Issue: Something wrong ?
 }
 
 void ContextDevice::removeImage(ImageWPtr data)
 {
-    MOUCA_PRE_CONDITION(!data.expired()); //DEV Issue: Need valid data
+    MouCa::preCondition(!data.expired()); //DEV Issue: Need valid data
     auto itErase = std::find_if(_images.begin(), _images.end(), [&](const auto& image) { return image.get() == data.lock().get(); });
-    MOUCA_ASSERT(itErase != _images.end());
+    MouCa::assertion(itErase != _images.end());
     _images.erase(itErase);
 }
 
 void ContextDevice::removeSemaphore(SemaphoreWPtr semaphore)
 {
-    MOUCA_PRE_CONDITION(!semaphore.expired()); //DEV Issue: Need valid data
+    MouCa::preCondition(!semaphore.expired()); //DEV Issue: Need valid data
     auto itErase = std::find_if(_semaphores.begin(), _semaphores.end(), [&](const auto& s) { return s.get() == semaphore.lock().get(); });
-    MOUCA_ASSERT(itErase != _semaphores.end());
+    MouCa::assertion(itErase != _semaphores.end());
     _semaphores.erase(itErase);
 }
 
 void ContextDevice::removeFrameBuffer(FrameBufferWPtr framebuffer)
 {
-    MOUCA_PRE_CONDITION(!framebuffer.expired()); //DEV Issue: Need valid data
+    MouCa::preCondition(!framebuffer.expired()); //DEV Issue: Need valid data
     auto itErase = std::find_if(_frameBuffers.begin(), _frameBuffers.end(), [&](const auto& s) { return s.get() == framebuffer.lock().get(); });
-    MOUCA_ASSERT(itErase != _frameBuffers.end());
+    MouCa::assertion(itErase != _frameBuffers.end());
     _frameBuffers.erase(itErase);
 }
 
 void ContextDevice::removeRenderPass(RenderPassWPtr renderpass)
 {
-    MOUCA_PRE_CONDITION(!renderpass.expired()); //DEV Issue: Need valid data
+    MouCa::preCondition(!renderpass.expired()); //DEV Issue: Need valid data
     auto itErase = std::find_if(_renderPasses.begin(), _renderPasses.end(), [&](const auto& s) { return s.get() == renderpass.lock().get(); });
-    MOUCA_ASSERT(itErase != _renderPasses.end());
+    MouCa::assertion(itErase != _renderPasses.end());
     _renderPasses.erase(itErase);
 }
 
 void ContextDevice::removeFence(FenceWPtr fence)
 {
-    MOUCA_PRE_CONDITION(!fence.expired()); //DEV Issue: Need valid data
+    MouCa::preCondition(!fence.expired()); //DEV Issue: Need valid data
     auto itErase = std::find_if(_fences.begin(), _fences.end(), [&](const auto& s) { return s.get() == fence.lock().get(); });
-    MOUCA_ASSERT(itErase != _fences.end());
+    MouCa::assertion(itErase != _fences.end());
     _fences.erase(itErase);
 }
 
