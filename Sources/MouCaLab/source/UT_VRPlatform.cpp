@@ -64,7 +64,7 @@ TEST_F(VRTest, run)
     MouCaGraphic::VulkanManager manager;
 
     MouCaGraphic::Engine3DXMLLoader loader(manager);
-    ASSERT_NO_FATAL_FAILURE(loadEngine(loader, u8"VRTriangleScreenSpace.xml"));
+    ASSERT_NO_FATAL_FAILURE(loadEngine(loader, "VRTriangleScreenSpace.xml"));
 
     auto context = manager.getDevices().at(0);
 
@@ -91,7 +91,7 @@ TEST_F(VRTest, run)
         ASSERT_NO_THROW(vrEngine.pollControllerEvents());
         ASSERT_NO_THROW(vrEngine.updateTracked());
 
-        mainLoop(manager, u8"Triangle ScreenSpace Demo ", renderVRFrame);
+        mainLoop(manager, "Triangle ScreenSpace Demo ", renderVRFrame);
     }
     else
     {
@@ -106,7 +106,7 @@ TEST_F(VRTest, run)
 
         renderVRFrame(0.0);
 
-        takeScreenshot(manager, L"VRCompanionTriangle.png");
+        takeScreenshot(manager, "VRCompanionTriangle.png");
     }
 
     // Clean

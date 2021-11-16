@@ -18,13 +18,13 @@ namespace MouCaGraphic
 
 void loadStencilOp(Engine3DXMLLoader::ContextLoading& context, XML::NodeUPtr node, VkStencilOpState& state)
 {
-    state.failOp      = LoaderHelper::readValue(node, u8"failOp",      stencilOperations, false, context);
-    state.passOp      = LoaderHelper::readValue(node, u8"passOp",      stencilOperations, false, context);
-    state.depthFailOp = LoaderHelper::readValue(node, u8"depthFailOp", stencilOperations, false, context);
-    state.compareOp   = LoaderHelper::readValue(node, u8"compareOp",   compareOperations, false, context);
-    node->getAttribute(u8"compareMask", state.compareMask);
-    node->getAttribute(u8"writeMask",   state.writeMask);
-    node->getAttribute(u8"reference",   state.reference);
+    state.failOp      = LoaderHelper::readValue(node, "failOp",      stencilOperations, false, context);
+    state.passOp      = LoaderHelper::readValue(node, "passOp",      stencilOperations, false, context);
+    state.depthFailOp = LoaderHelper::readValue(node, "depthFailOp", stencilOperations, false, context);
+    state.compareOp   = LoaderHelper::readValue(node, "compareOp",   compareOperations, false, context);
+    node->getAttribute("compareMask", state.compareMask);
+    node->getAttribute("writeMask",   state.writeMask);
+    node->getAttribute("reference",   state.reference);
 }
 
 void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan::PipelineStateCreateInfo& info, const uint32_t graphicsPipelineId, const uint32_t renderPassId)
@@ -36,11 +36,11 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
 
     if(info.getStages().getNbShaders() <= 0)
     {
-        MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLMissingNodeError", context.getFileName(), u8"GraphicsPipeline" , u8"Stages/Stage");
+        throw Core::Exception(Core::ErrorData("Engine3D", "XMLMissingNodeError") << context.getFileName() << "GraphicsPipeline" << "Stages/Stage");
     }
 
     // Input Assembly
-    auto inputAssemblies = context._parser.getNode(u8"InputAssembly");
+    auto inputAssemblies = context._parser.getNode("InputAssembly");
     if (inputAssemblies->getNbElements() > 0)
     {
         MouCa::assertion(inputAssemblies->getNbElements() == 1); //DEV Issue: Need to clean xml !
@@ -48,10 +48,10 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
 
         // Build Input Assembly
         bool restart;
-        inputAssembly->getAttribute(u8"primitiveRestartEnable", restart);
+        inputAssembly->getAttribute("primitiveRestartEnable", restart);
 
         auto& state = info.getInputAssembly()._state;
-        state.topology = LoaderHelper::readValue(inputAssembly, u8"topology", primitiveTopologies, false, context);
+        state.topology = LoaderHelper::readValue(inputAssembly, "topology", primitiveTopologies, false, context);
         state.primitiveRestartEnable = restart ? VK_TRUE : VK_FALSE;
             
         // Activate state
@@ -59,7 +59,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
     }
 
     // Vertex Input Assembly
-    auto vertexInput = context._parser.getNode(u8"VertexInput");
+    auto vertexInput = context._parser.getNode("VertexInput");
     if (vertexInput->getNbElements() > 0)
     {
         MouCa::assertion(vertexInput->getNbElements() == 1); //DEV Issue: Need to clean xml !
@@ -69,7 +69,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
         auto pushV = context._parser.autoPushNode(*vertexInputNode);
 
         // Load binding
-        auto allBindings = context._parser.getNode(u8"BindingDescription");
+        auto allBindings = context._parser.getNode("BindingDescription");
         std::vector<VkVertexInputBindingDescription> bindings;
         bindings.reserve(allBindings->getNbElements());
         for (size_t idBinding = 0; idBinding < allBindings->getNbElements(); ++idBinding)
@@ -77,16 +77,16 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
             auto bindingNode = allBindings->getNode(idBinding);
 
             VkVertexInputBindingDescription bindingDescription;
-            bindingNode->getAttribute(u8"binding", bindingDescription.binding);
-            bindingDescription.inputRate = LoaderHelper::readValue(bindingNode, u8"inputRate", vertexInputRates, false, context);
+            bindingNode->getAttribute("binding", bindingDescription.binding);
+            bindingDescription.inputRate = LoaderHelper::readValue(bindingNode, "inputRate", vertexInputRates, false, context);
 
-            if (bindingNode->hasAttribute(u8"stride"))
+            if (bindingNode->hasAttribute("stride"))
             {
-                bindingNode->getAttribute(u8"stride", bindingDescription.stride);
+                bindingNode->getAttribute("stride", bindingDescription.stride);
             }
             else
             {
-                const uint32_t idM = LoaderHelper::getLinkedIdentifiant(bindingNode, u8"meshDescriptorId", _cpuMeshDescriptors, context);
+                const uint32_t idM = LoaderHelper::getLinkedIdentifiant(bindingNode, "meshDescriptorId", _cpuMeshDescriptors, context);
                 bindingDescription.stride = static_cast<uint32_t>(_cpuMeshDescriptors[idM].getByteSize());
             }
 
@@ -95,7 +95,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
         info.getVertexInput().setBindingDescriptions(std::move(bindings));
         
         // Load Attributs
-        auto allAttributs = context._parser.getNode(u8"AttributeDescription");
+        auto allAttributs = context._parser.getNode("AttributeDescription");
 
         std::vector<VkVertexInputAttributeDescription> attributs;
         attributs.reserve(allAttributs->getNbElements());
@@ -104,19 +104,19 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
             auto attributNode = allAttributs->getNode(idAttribute);
 
             VkVertexInputAttributeDescription attributDescription;
-            attributNode->getAttribute(u8"binding",  attributDescription.binding);
-            attributNode->getAttribute(u8"location", attributDescription.location);
-            if (attributNode->hasAttribute(u8"offset"))
+            attributNode->getAttribute("binding",  attributDescription.binding);
+            attributNode->getAttribute("location", attributDescription.location);
+            if (attributNode->hasAttribute("offset"))
             {
-                attributNode->getAttribute(u8"offset", attributDescription.offset);
-                attributDescription.format = LoaderHelper::readValue(attributNode, u8"format", formats, false, context);
+                attributNode->getAttribute("offset", attributDescription.offset);
+                attributDescription.format = LoaderHelper::readValue(attributNode, "format", formats, false, context);
 
                 attributs.emplace_back(attributDescription);
             }
             else
             {
                 // Get descriptor
-                const uint32_t idM = LoaderHelper::getLinkedIdentifiant(attributNode, u8"meshDescriptorId", _cpuMeshDescriptors, context);
+                const uint32_t idM = LoaderHelper::getLinkedIdentifiant(attributNode, "meshDescriptorId", _cpuMeshDescriptors, context);
                 const auto& descriptors = _cpuMeshDescriptors[idM].getDescriptors();
 
                 // Reallocate more
@@ -144,35 +144,35 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
     }
 
     // Rasterization
-    auto rasterizations = context._parser.getNode(u8"Rasterization");
+    auto rasterizations = context._parser.getNode("Rasterization");
     if (rasterizations->getNbElements() > 0)
     {
         MouCa::assertion(rasterizations->getNbElements() == 1); //DEV Issue: Need to clean xml !
         auto rasterization = rasterizations->getNode(0);
 
         auto& state = info.getRasterizer()._state;
-        state.cullMode    = LoaderHelper::readValue(rasterization, u8"cullMode",    cullModes,    true,  context);
-        state.polygonMode = LoaderHelper::readValue(rasterization, u8"polygonMode", polygonModes, false, context);
-        state.frontFace   = LoaderHelper::readValue(rasterization, u8"frontFace",   frontFaces,   false, context);
+        state.cullMode    = LoaderHelper::readValue(rasterization, "cullMode",    cullModes,    true,  context);
+        state.polygonMode = LoaderHelper::readValue(rasterization, "polygonMode", polygonModes, false, context);
+        state.frontFace   = LoaderHelper::readValue(rasterization, "frontFace",   frontFaces,   false, context);
         bool boolean;
-        rasterization->getAttribute(u8"depthClampEnable",         boolean);
+        rasterization->getAttribute("depthClampEnable",         boolean);
         state.depthClampEnable        = boolean ? VK_TRUE : VK_FALSE;
-        rasterization->getAttribute(u8"rasterizerDiscardEnable",  boolean);
+        rasterization->getAttribute("rasterizerDiscardEnable",  boolean);
         state.rasterizerDiscardEnable = boolean ? VK_TRUE : VK_FALSE;
-        rasterization->getAttribute(u8"depthBiasEnable",          boolean);
+        rasterization->getAttribute("depthBiasEnable",          boolean);
         state.depthBiasEnable         = boolean ? VK_TRUE : VK_FALSE;
         // Depth Bias
         if(state.depthBiasEnable)
         {
-            rasterization->getAttribute(u8"depthBiasClamp",          state.depthBiasClamp);
-            rasterization->getAttribute(u8"depthBiasConstantFactor", state.depthBiasConstantFactor);
-            rasterization->getAttribute(u8"depthBiasSlopeFactor",    state.depthBiasSlopeFactor);
+            rasterization->getAttribute("depthBiasClamp",          state.depthBiasClamp);
+            rasterization->getAttribute("depthBiasConstantFactor", state.depthBiasConstantFactor);
+            rasterization->getAttribute("depthBiasSlopeFactor",    state.depthBiasSlopeFactor);
         }
 
         // Optional
-        if(rasterization->hasAttribute(u8"lineWidth"))
+        if(rasterization->hasAttribute("lineWidth"))
         {
-            rasterization->getAttribute(u8"lineWidth", state.lineWidth);
+            rasterization->getAttribute("lineWidth", state.lineWidth);
         }
 
         // Activate state
@@ -180,7 +180,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
     }
 
     // Blend
-    auto blends = context._parser.getNode(u8"BlendState");
+    auto blends = context._parser.getNode("BlendState");
     if (blends->getNbElements() > 0)
     {
         MouCa::assertion(blends->getNbElements() == 1); //DEV Issue: Need to clean xml !
@@ -190,29 +190,29 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
 
         // Logic Operator
         bool enable;
-        blend->getAttribute(u8"logicOpEnable", enable);
+        blend->getAttribute("logicOpEnable", enable);
         state.logicOpEnable = enable ? VK_TRUE : VK_FALSE;
         state.logicOp       = VK_LOGIC_OP_CLEAR;
         if (state.logicOpEnable)
         {
-            state.logicOp = LoaderHelper::readValue(blend, u8"logicOp", logicOperators, false, context);
+            state.logicOp = LoaderHelper::readValue(blend, "logicOp", logicOperators, false, context);
         }
         
         // Blend constant
-        blend->getAttribute(u8"blendConstantsR", state.blendConstants[0]);
-        blend->getAttribute(u8"blendConstantsG", state.blendConstants[1]);
-        blend->getAttribute(u8"blendConstantsB", state.blendConstants[2]);
-        blend->getAttribute(u8"blendConstantsA", state.blendConstants[3]);
+        blend->getAttribute("blendConstantsR", state.blendConstants[0]);
+        blend->getAttribute("blendConstantsG", state.blendConstants[1]);
+        blend->getAttribute("blendConstantsB", state.blendConstants[2]);
+        blend->getAttribute("blendConstantsA", state.blendConstants[3]);
 
         // All attachments: must be equal to RenderPass/subpass/colorAttachment count (See doc)
         // cppcheck-suppress unreadVariable // false positive
         auto pushB = context._parser.autoPushNode(*blend);
-        auto allBlends = context._parser.getNode(u8"BlendAttachment");
+        auto allBlends = context._parser.getNode("BlendAttachment");
         
         const size_t nbColors = _renderPasses[renderPassId].lock()->getSubPasses()[0].colorAttachmentCount;
         if( nbColors != allBlends->getNbElements() )
         {
-            MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLBlendAttachmentSizeError", context.getFileName(), std::to_string(graphicsPipelineId), std::to_string(renderPassId));
+            throw Core::Exception(Core::ErrorData("Engine3D", "XMLBlendAttachmentSizeError") << context.getFileName() << std::to_string(graphicsPipelineId) << std::to_string(renderPassId));
         }
 
         std::vector<VkPipelineColorBlendAttachmentState> attachments;
@@ -220,7 +220,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
         for (size_t idBlend = 0; idBlend < allBlends->getNbElements(); ++idBlend)
         {
             auto blendAttachmentNode = allBlends->getNode(idBlend);
-            blendAttachmentNode->getAttribute(u8"blendEnable", enable);
+            blendAttachmentNode->getAttribute("blendEnable", enable);
             const VkColorComponentFlags flags = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
             VkPipelineColorBlendAttachmentState attachmentState
             {
@@ -235,15 +235,15 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
             };
             if(attachmentState.blendEnable)
             {
-                attachmentState.srcColorBlendFactor = LoaderHelper::readValue(blendAttachmentNode, u8"srcColorBlendFactor", blendFactors, false, context);
-                attachmentState.dstColorBlendFactor = LoaderHelper::readValue(blendAttachmentNode, u8"dstColorBlendFactor", blendFactors, false, context);
-                attachmentState.colorBlendOp        = LoaderHelper::readValue(blendAttachmentNode, u8"colorBlendOp",        blendOperations, false, context);
-                attachmentState.srcAlphaBlendFactor = LoaderHelper::readValue(blendAttachmentNode, u8"srcAlphaBlendFactor", blendFactors, false, context);
-                attachmentState.dstAlphaBlendFactor = LoaderHelper::readValue(blendAttachmentNode, u8"dstAlphaBlendFactor", blendFactors, false, context);
-                attachmentState.alphaBlendOp        = LoaderHelper::readValue(blendAttachmentNode, u8"alphaBlendOp",        blendOperations, false, context);
+                attachmentState.srcColorBlendFactor = LoaderHelper::readValue(blendAttachmentNode, "srcColorBlendFactor", blendFactors, false, context);
+                attachmentState.dstColorBlendFactor = LoaderHelper::readValue(blendAttachmentNode, "dstColorBlendFactor", blendFactors, false, context);
+                attachmentState.colorBlendOp        = LoaderHelper::readValue(blendAttachmentNode, "colorBlendOp",        blendOperations, false, context);
+                attachmentState.srcAlphaBlendFactor = LoaderHelper::readValue(blendAttachmentNode, "srcAlphaBlendFactor", blendFactors, false, context);
+                attachmentState.dstAlphaBlendFactor = LoaderHelper::readValue(blendAttachmentNode, "dstAlphaBlendFactor", blendFactors, false, context);
+                attachmentState.alphaBlendOp        = LoaderHelper::readValue(blendAttachmentNode, "alphaBlendOp",        blendOperations, false, context);
             }
 
-            attachmentState.colorWriteMask = LoaderHelper::readValue(blendAttachmentNode, u8"colorWriteMask", colorComponents, true, context);
+            attachmentState.colorWriteMask = LoaderHelper::readValue(blendAttachmentNode, "colorWriteMask", colorComponents, true, context);
 
             attachments.emplace_back(attachmentState);
         }
@@ -255,7 +255,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
     }
 
     // DepthStencil
-    auto depthStencils = context._parser.getNode(u8"DepthStencil");
+    auto depthStencils = context._parser.getNode("DepthStencil");
     if (depthStencils->getNbElements() > 0)
     {
         MouCa::assertion(depthStencils->getNbElements() == 1); //DEV Issue: Need to clean xml !
@@ -263,17 +263,17 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
 
         auto& state = info.getDepthStencil()._state;
         bool enable;
-        depthStencilNode->getAttribute(u8"depthTestEnable", enable);
+        depthStencilNode->getAttribute("depthTestEnable", enable);
         state.depthTestEnable  = enable ? VK_TRUE : VK_FALSE;
-        depthStencilNode->getAttribute(u8"depthWriteEnable", enable);
+        depthStencilNode->getAttribute("depthWriteEnable", enable);
         state.depthWriteEnable = enable ? VK_TRUE : VK_FALSE;
-        state.depthCompareOp   = LoaderHelper::readValue(depthStencilNode, u8"depthCompareOp", compareOperations, false, context);
+        state.depthCompareOp   = LoaderHelper::readValue(depthStencilNode, "depthCompareOp", compareOperations, false, context);
 
         // cppcheck-suppress unreadVariable // false positive
         auto pushD = context._parser.autoPushNode(*depthStencilNode);
 
-        auto stencilFront = context._parser.getNode(u8"StencilFront");
-        auto stencilBack  = context._parser.getNode(u8"StencilBack");
+        auto stencilFront = context._parser.getNode("StencilFront");
+        auto stencilBack  = context._parser.getNode("StencilBack");
         if (stencilFront->getNbElements() == 0 && stencilBack->getNbElements() == 0)
         {
             state.stencilTestEnable = VK_FALSE;
@@ -282,7 +282,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
         {
             if (stencilFront->getNbElements() != 1 || stencilBack->getNbElements() != 1)
             {
-                MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLMissingStencilFrontBackError", context.getFileName(), std::to_string(graphicsPipelineId));
+                throw Core::Exception(Core::ErrorData("Engine3D", "XMLMissingStencilFrontBackError") << context.getFileName() << std::to_string(graphicsPipelineId));
             }
 
             loadStencilOp(context, stencilFront->getNode(0), state.front);
@@ -291,7 +291,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
             state.stencilTestEnable = VK_TRUE;
         }
         
-        auto depthBound  = context._parser.getNode(u8"DepthBounds");
+        auto depthBound  = context._parser.getNode("DepthBounds");
         if (depthBound->getNbElements() > 0)
         {
             MouCa::assertion(depthBound->getNbElements() == 1); //DEV Issue: Need to clean xml !
@@ -299,8 +299,8 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
 
             state.stencilTestEnable = VK_TRUE;
 
-            depthBoundNode->getAttribute(u8"min", state.minDepthBounds);
-            depthBoundNode->getAttribute(u8"max", state.maxDepthBounds);
+            depthBoundNode->getAttribute("min", state.minDepthBounds);
+            depthBoundNode->getAttribute("max", state.maxDepthBounds);
         }
         else
         {
@@ -314,7 +314,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
     // Dynamic
     bool dynamicViewport = false;
     bool dynamicScissor  = false;
-    auto allDynamics = context._parser.getNode(u8"DynamicState");
+    auto allDynamics = context._parser.getNode("DynamicState");
     if (allDynamics->getNbElements() > 0)
     {
         for (size_t idDynamic = 0; idDynamic < allDynamics->getNbElements(); ++idDynamic)
@@ -322,7 +322,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
             auto dynamicNode   = allDynamics->getNode(idDynamic);
             
             // Read value
-            const auto dynamic = LoaderHelper::readValue(dynamicNode, u8"state", dynamics, false, context);
+            const auto dynamic = LoaderHelper::readValue(dynamicNode, "state", dynamics, false, context);
             info.getDynamic().addDynamicState(dynamic);
 
             dynamicViewport |= (dynamic == VK_DYNAMIC_STATE_VIEWPORT);
@@ -334,7 +334,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
     }
 
     // Viewport
-    auto allViewports = context._parser.getNode(u8"Viewport");
+    auto allViewports = context._parser.getNode("Viewport");
     if (allViewports->getNbElements() > 0)
     {
         MOUCA_TODO("Find best way to make Dynamic<->Viewport/Scissor and manage all cases");
@@ -351,19 +351,19 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
                 VkViewport viewport{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f };
                 VkRect2D   scissor { {0, 0}, {0, 0} };
 
-                viewportNode->getAttribute(u8"x", viewport.x);
-                viewportNode->getAttribute(u8"y", viewport.y);
-                if (viewportNode->hasAttribute(u8"surfaceId"))
+                viewportNode->getAttribute("x", viewport.x);
+                viewportNode->getAttribute("y", viewport.y);
+                if (viewportNode->hasAttribute("surfaceId"))
                 {
-                    const uint32_t surfaceId = LoaderHelper::getLinkedIdentifiant(viewportNode, u8"surfaceId", _surfaces, context);
+                    const uint32_t surfaceId = LoaderHelper::getLinkedIdentifiant(viewportNode, "surfaceId", _surfaces, context);
                     const VkExtent2D& resolution = _surfaces[surfaceId].lock()->getFormat().getConfiguration()._extent;
                     viewport.width  = static_cast<float>(resolution.width);
                     viewport.height = static_cast<float>(resolution.height);
                     scissor.extent  = resolution;
                 }
-                else if (viewportNode->hasAttribute(u8"imageId"))
+                else if (viewportNode->hasAttribute("imageId"))
                 {
-                    const uint32_t imageId = LoaderHelper::getLinkedIdentifiant(viewportNode, u8"imageId", _images, context);
+                    const uint32_t imageId = LoaderHelper::getLinkedIdentifiant(viewportNode, "imageId", _images, context);
                     const VkExtent3D& imageRes = _images[imageId].lock()->getExtent();
                     const VkExtent2D resolution = { imageRes.width, imageRes.height };
                     viewport.width  = static_cast<float>(resolution.width);
@@ -372,19 +372,19 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
                 }
                 else
                 {
-                    viewportNode->getAttribute(u8"width",  viewport.width);
-                    viewportNode->getAttribute(u8"height", viewport.height);
+                    viewportNode->getAttribute("width",  viewport.width);
+                    viewportNode->getAttribute("height", viewport.height);
                 }
                 
-                viewportNode->getAttribute(u8"minDepth", viewport.minDepth);
-                viewportNode->getAttribute(u8"maxDepth", viewport.maxDepth);
+                viewportNode->getAttribute("minDepth", viewport.minDepth);
+                viewportNode->getAttribute("maxDepth", viewport.maxDepth);
 
-                viewportNode->getAttribute(u8"scissorX",      scissor.offset.x);
-                viewportNode->getAttribute(u8"scissorY",      scissor.offset.y);
-                if (!viewportNode->hasAttribute(u8"surfaceId") && !viewportNode->hasAttribute(u8"imageId"))
+                viewportNode->getAttribute("scissorX",      scissor.offset.x);
+                viewportNode->getAttribute("scissorY",      scissor.offset.y);
+                if (!viewportNode->hasAttribute("surfaceId") && !viewportNode->hasAttribute("imageId"))
                 {
-                    viewportNode->getAttribute(u8"scissorWidth", scissor.extent.width);
-                    viewportNode->getAttribute(u8"scissorHeight", scissor.extent.height);
+                    viewportNode->getAttribute("scissorWidth", scissor.extent.width);
+                    viewportNode->getAttribute("scissorHeight", scissor.extent.height);
                 }
 
                 info.getViewport().addViewport(viewport, scissor);
@@ -396,7 +396,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
     }
 
     // Multisample
-    auto multisample = context._parser.getNode(u8"Multisample");
+    auto multisample = context._parser.getNode("Multisample");
     if (multisample->getNbElements() > 0)
     {
         MouCa::assertion(multisample->getNbElements() == 1); //DEV Issue: Need to clean xml !
@@ -404,12 +404,12 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
 
         auto& state = info.getMultisample()._state;
 
-        state.rasterizationSamples = LoaderHelper::readValue(multisampleNode, u8"rasterizationSamples", samples, false, context);
+        state.rasterizationSamples = LoaderHelper::readValue(multisampleNode, "rasterizationSamples", samples, false, context);
         
-        if (multisampleNode->hasAttribute(u8"minSampleShading"))
+        if (multisampleNode->hasAttribute("minSampleShading"))
         {
             state.sampleShadingEnable = VK_TRUE;
-            multisampleNode->getAttribute(u8"minSampleShading", state.minSampleShading);
+            multisampleNode->getAttribute("minSampleShading", state.minSampleShading);
         }
         else
         {
@@ -418,9 +418,9 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
 
         state.pSampleMask = nullptr;
         bool enable;
-        multisampleNode->getAttribute(u8"alphaToCoverageEnable", enable);
+        multisampleNode->getAttribute("alphaToCoverageEnable", enable);
         state.alphaToOneEnable = enable ? VK_TRUE : VK_FALSE;
-        multisampleNode->getAttribute(u8"alphaToOneEnable", enable);
+        multisampleNode->getAttribute("alphaToOneEnable", enable);
         state.alphaToOneEnable = enable ? VK_TRUE : VK_FALSE;
 
         // Activate state
@@ -428,7 +428,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
     }
 
     // Tessellation
-    auto tessellation = context._parser.getNode(u8"Tessellation");
+    auto tessellation = context._parser.getNode("Tessellation");
     if(tessellation->getNbElements() > 0)
     {
         MouCa::assertion(tessellation->getNbElements() == 1); //DEV Issue: Need to clean xml !
@@ -436,7 +436,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
         
         // Read data
         auto& state = info.getTessellation()._state;
-        tessellationNode->getAttribute(u8"patchControlPoints", state.patchControlPoints);
+        tessellationNode->getAttribute("patchControlPoints", state.patchControlPoints);
 
         // Activate state
         states |= Vulkan::PipelineStateCreateInfo::Tessellation;
@@ -449,7 +449,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
 void Engine3DXMLLoader::loadPipelineLayouts(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
     // Search Pipeline Layouts
-    auto result = context._parser.getNode(u8"PipelineLayouts");
+    auto result = context._parser.getNode("PipelineLayouts");
     if (result->getNbElements() > 0)
     {
         MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
@@ -459,13 +459,13 @@ void Engine3DXMLLoader::loadPipelineLayouts(ContextLoading& context, Vulkan::Con
         auto aPush = context._parser.autoPushNode(*result->getNode(0));
 
         // Parsing all PipelineLayouts
-        auto allPipelineLayouts = context._parser.getNode(u8"PipelineLayout");
+        auto allPipelineLayouts = context._parser.getNode("PipelineLayout");
         for (size_t idPipelineLayout = 0; idPipelineLayout < allPipelineLayouts->getNbElements(); ++idPipelineLayout)
         {
             auto pipelineLayoutNode = allPipelineLayouts->getNode(idPipelineLayout);
 
             bool existing;
-            const uint32_t id = LoaderHelper::getIdentifiant(pipelineLayoutNode, u8"PipelineLayout", _pipelineLayouts, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(pipelineLayoutNode, "PipelineLayout", _pipelineLayouts, context, existing);
 
             // Crate PipelineLayout
             auto pipelineLayout = std::make_shared<Vulkan::PipelineLayout>();
@@ -473,27 +473,27 @@ void Engine3DXMLLoader::loadPipelineLayouts(ContextLoading& context, Vulkan::Con
             auto aPushP = context._parser.autoPushNode(*pipelineLayoutNode);
 
             // Read DescriptorSetLayout
-            auto allDescriptorSetLayouts = context._parser.getNode(u8"DescriptorSetLayout");
+            auto allDescriptorSetLayouts = context._parser.getNode("DescriptorSetLayout");
             std::vector<VkDescriptorSetLayout> setLayouts;
             setLayouts.reserve(allDescriptorSetLayouts->getNbElements());
             for (size_t idDescriptorSetLayout = 0; idDescriptorSetLayout < allDescriptorSetLayouts->getNbElements(); ++idDescriptorSetLayout)
             {
                 auto DSLNode = allDescriptorSetLayouts->getNode(idDescriptorSetLayout);
-                const uint32_t idDSL = LoaderHelper::getLinkedIdentifiant(DSLNode, u8"descriptorSetId", _descriptorSetLayouts, context);
+                const uint32_t idDSL = LoaderHelper::getLinkedIdentifiant(DSLNode, "descriptorSetId", _descriptorSetLayouts, context);
                 // Get Vulkan ID
                 setLayouts.emplace_back(_descriptorSetLayouts[idDSL].lock()->getInstance());
             }
 
             // Read PushConstantRange
-            auto allPushConstantRanges = context._parser.getNode(u8"PushConstantRange");
+            auto allPushConstantRanges = context._parser.getNode("PushConstantRange");
             for (size_t idPushConstant = 0; idPushConstant < allPushConstantRanges->getNbElements(); ++idPushConstant)
             {
                 auto pushConstantNode = allPushConstantRanges->getNode(idPushConstant);
 
                 VkPushConstantRange pushConstant;
-                pushConstant.stageFlags = LoaderHelper::readValue(pushConstantNode, u8"shaderStageFlags", shaderStages, true, context);
-                pushConstantNode->getAttribute(u8"offset", pushConstant.offset);
-                pushConstantNode->getAttribute(u8"size",   pushConstant.size);
+                pushConstant.stageFlags = LoaderHelper::readValue(pushConstantNode, "shaderStageFlags", shaderStages, true, context);
+                pushConstantNode->getAttribute("offset", pushConstant.offset);
+                pushConstantNode->getAttribute("size",   pushConstant.size);
                 // Register
                 pipelineLayout->addPushConstant(pushConstant);
             }
@@ -510,7 +510,7 @@ void Engine3DXMLLoader::loadPipelineLayouts(ContextLoading& context, Vulkan::Con
 
 void Engine3DXMLLoader::loadPipelineStages(ContextLoading& context, Vulkan::PipelineStageShaders& stageShader)
 {
-    auto stages = context._parser.getNode(u8"Stages");
+    auto stages = context._parser.getNode("Stages");
     if (stages->getNbElements() > 0)
     {
         MouCa::assertion(stages->getNbElements() == 1); //DEV Issue: Need to clean xml !
@@ -519,22 +519,22 @@ void Engine3DXMLLoader::loadPipelineStages(ContextLoading& context, Vulkan::Pipe
         auto aPush = context._parser.autoPushNode(*stages->getNode(0));
 
         // Parsing all Graphics pipeline
-        auto allStages = context._parser.getNode(u8"Stage");
+        auto allStages = context._parser.getNode("Stage");
         for (size_t idStage = 0; idStage < allStages->getNbElements(); ++idStage)
         {
             auto stageNode = allStages->getNode(idStage);
 
-            const uint32_t idS = LoaderHelper::getLinkedIdentifiant(stageNode, u8"shaderModuleId", _shaderModules, context);
+            const uint32_t idS = LoaderHelper::getLinkedIdentifiant(stageNode, "shaderModuleId", _shaderModules, context);
 
             auto aPushShader = context._parser.autoPushNode(*stageNode);
 
             Vulkan::ShaderSpecialization specialization;
-            auto specializations = context._parser.getNode(u8"Specialization");
+            auto specializations = context._parser.getNode("Specialization");
             if (specializations->getNbElements() > 0)
             {
                 auto specializationNode = specializations->getNode(0);
                 // Read buffer
-                const uint32_t idB = LoaderHelper::getLinkedIdentifiant(specializationNode, u8"external", _cpuBuffers, context);
+                const uint32_t idB = LoaderHelper::getLinkedIdentifiant(specializationNode, "external", _cpuBuffers, context);
                 const auto& buffer = _cpuBuffers[idB].lock();
                 MouCa::assertion(buffer != nullptr && !buffer->isNull());
                 specialization.addDataInfo(buffer->getData(), buffer->getByteSize());
@@ -542,7 +542,7 @@ void Engine3DXMLLoader::loadPipelineStages(ContextLoading& context, Vulkan::Pipe
                 auto aPushS = context._parser.autoPushNode(*specializationNode);
 
                 // Add map entry
-                auto allEntries = context._parser.getNode(u8"Entry");
+                auto allEntries = context._parser.getNode("Entry");
 
                 std::vector<VkSpecializationMapEntry> entries;
                 entries.resize(allEntries->getNbElements());
@@ -551,9 +551,9 @@ void Engine3DXMLLoader::loadPipelineStages(ContextLoading& context, Vulkan::Pipe
                 {
                     auto entryNode = allEntries->getNode(idEntry);
 
-                    entryNode->getAttribute(u8"constantID", itEntry->constantID);
-                    entryNode->getAttribute(u8"offset", itEntry->offset);
-                    entryNode->getAttribute(u8"size", itEntry->size);
+                    entryNode->getAttribute("constantID", itEntry->constantID);
+                    entryNode->getAttribute("offset", itEntry->offset);
+                    entryNode->getAttribute("size", itEntry->size);
                     ++itEntry;
                 }
 

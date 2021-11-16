@@ -175,7 +175,7 @@ void LoadingQueue::doAction( LoadingItem& item )
         return;
     }
     
-    MOUCA_THROW_ERROR( "MouCaCore", "InvalidLoader" );
+    throw Core::Exception(Core::ErrorData( "MouCaCore", "InvalidLoader" ));
 }
 
 void LoadingQueue::run()

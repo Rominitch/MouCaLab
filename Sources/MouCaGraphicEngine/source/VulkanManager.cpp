@@ -359,7 +359,7 @@ void VulkanManager::afterShaderEdition(Core::Resource& resource)
 
         try
         {
-            MouCa::logConsole(std::format("Vulkan: Reload shader {}", shaderFile->getTrackedFilename()));
+            MouCa::logConsole(std::format("Vulkan: Reload shader {}", shaderFile->getTrackedFilename().string()));
 
             // Compile new version
             shaderFile->compile();

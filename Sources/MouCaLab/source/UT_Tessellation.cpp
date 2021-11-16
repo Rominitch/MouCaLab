@@ -285,7 +285,7 @@ public:
                 rpos /= glm::ivec2(scale);
 
                 const size_t idMem = (rpos.x + rpos.y * dim) * scale;
-                MouCa::assertion_BETWEEN(idMem, 0, dim * dim);
+                MouCa::assertion(0 <= idMem && idMem < dim * dim);
                 return *(heightdata + idMem) / 65535.0f;
             };
 
@@ -397,32 +397,32 @@ public:
 
         ImGuiIO& io = ImGui::GetIO();
         ImGui::SetNextWindowSize(io.DisplaySize, ImGuiCond_FirstUseEver);
-        ImGui::Begin(u8"Dynamic terrain tessellation", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+        ImGui::Begin("Dynamic terrain tessellation", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
         //ImGui::TextUnformatted(title.c_str());
         //ImGui::TextUnformatted(deviceProperties.deviceName);
         //ImGui::Text("%.2f ms/frame (%.1d fps)", (1000.0f / lastFPS), lastFPS);
 
         ImGui::PushItemWidth(110.0f * 1.0f);
 
-        if (ImGui::CollapsingHeader(u8"Settings", ImGuiTreeNodeFlags_DefaultOpen))
+        if (ImGui::CollapsingHeader("Settings", ImGuiTreeNodeFlags_DefaultOpen))
         {
-            if (ImGui::Checkbox(u8"Tessellation", &_tessellation))
+            if (ImGui::Checkbox("Tessellation", &_tessellation))
             {
                 update = true;
             }
-            if (ImGui::InputFloat(u8"Factor", &_tessellationFactor, 0.01f, 0.05f, "%.2f"))
+            if (ImGui::InputFloat("Factor", &_tessellationFactor, 0.01f, 0.05f, "%.2f"))
             {
                 update = true;
             }
-            if (ImGui::InputFloat(u8"Displacement", &_models._tessellationParameters.displacementFactor, 0.01f, 0.05f, "%.2f"))
+            if (ImGui::InputFloat("Displacement", &_models._tessellationParameters.displacementFactor, 0.01f, 0.05f, "%.2f"))
             {
                 update = true;
             }
-            if (ImGui::InputFloat(u8"Edge size", &_models._tessellationParameters.tessellatedEdgeSize, 0.01f, 0.05f, "%.2f"))
+            if (ImGui::InputFloat("Edge size", &_models._tessellationParameters.tessellatedEdgeSize, 0.01f, 0.05f, "%.2f"))
             {
                 update = true;
             }
-            if (ImGui::Checkbox(u8"Wireframe", &_wireframe))
+            if (ImGui::Checkbox("Wireframe", &_wireframe))
             {
                 update = true;
                 _switchWireframe->setIdNode(_wireframe ? 1 : 0);
@@ -475,7 +475,7 @@ TEST_F( TessellationTest, run )
     loader._cpuMeshDescriptors[0] = getMeshDescriptor();
 
     // Create Vulkan objects
-    ASSERT_NO_FATAL_FAILURE(loadEngine(loader, u8"Tessellation.xml"));
+    ASSERT_NO_FATAL_FAILURE(loadEngine(loader, "Tessellation.xml"));
 
     // Link event manager
     loader._dialogs[0].lock()->initialize(_eventManager, _resolution);
@@ -501,7 +501,7 @@ TEST_F( TessellationTest, run )
     loaderGUI._buffers[1] = GUI.getIndexBuffer();
 
     // Create Vulkan objects
-    ASSERT_NO_FATAL_FAILURE(loadEngine(loaderGUI, u8"ImGUI.xml"));
+    ASSERT_NO_FATAL_FAILURE(loadEngine(loaderGUI, "ImGUI.xml"));
 
     // Transfer commands
     {
@@ -606,7 +606,7 @@ TEST_F( TessellationTest, run )
                 updateCommandBuffersSurface(loader, 0);
             }
         };
-        mainLoop(manager, u8"Tessellation Demo ", demo);
+        mainLoop(manager, "Tessellation Demo ", demo);
 
         // EnableCodeCoverage
     }

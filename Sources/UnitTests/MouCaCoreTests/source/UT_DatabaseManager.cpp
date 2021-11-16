@@ -126,11 +126,11 @@ TEST_F(DatabaseTest, openMultiDB)
         // Read file and extract query data
         Core::File sqlMouca(MouCaEnvironment::getInputPath() / "libraries" / "creation.sql");
         ASSERT_NO_THROW(sqlMouca.open());
-        const Core::String query = sqlMouca.extractUTF8();
+        const auto query = sqlMouca.extractUTF8();
         ASSERT_NO_THROW(sqlMouca.close());
 
         // Launch creation on both db
-        EXPECT_NO_THROW(dbMouca->quickQuery(query));
+        EXPECT_NO_THROW(dbMouca->quickQuery(Core::String(query.begin(), query.end())));
 
         EXPECT_NO_THROW(releaseDatabase(dbMouca));
     }

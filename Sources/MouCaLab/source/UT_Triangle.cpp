@@ -161,7 +161,7 @@ TEST_F(TriangleTest, run)
     MouCaGraphic::VulkanManager manager;
 
     MouCaGraphic::Engine3DXMLLoader loader(manager);
-    ASSERT_NO_FATAL_FAILURE(loadEngine(loader, u8"Triangle.xml"));
+    ASSERT_NO_FATAL_FAILURE(loadEngine(loader, "Triangle.xml"));
     
     // Get allocated item
     auto context = manager.getDevices().at(0);
@@ -178,7 +178,7 @@ TEST_F(TriangleTest, run)
     // Execute rendering
     if (MouCaEnvironment::isDemonstrator())
     {
-        mainLoop(manager, u8"Triangle Demo ");
+        mainLoop(manager, "Triangle Demo ");
     }
     else
     {
@@ -192,7 +192,7 @@ TEST_F(TriangleTest, run)
             ASSERT_EQ(VK_SUCCESS, sequence->execute(context->getDevice()));
         }
     
-        takeScreenshot(manager, L"triangle.png");
+        takeScreenshot(manager, "triangle.png");
     }
 
     // Clean

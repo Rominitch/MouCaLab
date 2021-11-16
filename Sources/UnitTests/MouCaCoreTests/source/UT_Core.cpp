@@ -42,5 +42,5 @@ TEST(MouCaCore, printError)
     auto core = std::make_unique<MouCaCore::CoreSystem>();
     ASSERT_NO_THROW(core->getExceptionManager().setPrinter(output));
 
-    ASSERT_NO_THROW(core->printException(Core::Exception(Core::ErrorData("Test", "Test", __FILE__, __LINE__))));
+    ASSERT_NO_THROW(core->printException(Core::Exception(Core::ErrorData("Test", "Test"))));
 }
