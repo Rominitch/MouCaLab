@@ -3,6 +3,8 @@
 /// \license No license
 #pragma once
 
+#include <LibCore/include/CoreMaths.h>
+
 namespace RT
 {
     //----------------------------------------------------------------------------
@@ -124,8 +126,8 @@ namespace RT
                 }
                 else                                          // distinct real roots
                 {
-                    const float PI2_3 = 2.0f * Core::Maths::PI<float> / 3.0f;
-                    const float PI4_3 = 4.0f * Core::Maths::PI<float> / 3.0f;
+                    constexpr float PI2_3 = 2.0f * Core::Maths::PI<float> / 3.0f;
+                    constexpr float PI4_3 = 4.0f * Core::Maths::PI<float> / 3.0f;
                     const float sQ2 = 2.0f * std::sqrt(-Q);
                     const float th = std::acos(R/std::sqrt(-std::pow(Q, 3.0f)))/3.0f;
  

@@ -225,12 +225,8 @@ void FontFamilySVG::initialize(FT_Library library)
 
         executeFT(FT_Set_Char_Size(font._face, 0, 6400, 96, 96),                          "FreeType2NewFaceError");
 
-        FT_Palette_Data palette;
-        const auto error = FT_Palette_Data_Get(font._face, &palette);
-        if (error)
-        {
-            printf("%d", error);
-        }
+        //FT_Palette_Data palette;
+        //FT_Palette_Data_Get(font._face, &palette);
     }
 
     MouCa::postCondition(!isNull());

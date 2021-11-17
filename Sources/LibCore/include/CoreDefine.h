@@ -37,6 +37,18 @@ namespace MouCa
     }
 
     template<typename DataType>
+    void assertBetweenEq(const DataType& value, const DataType& min, const DataType& max, const std::source_location& location = std::source_location::current())
+    {
+        assertHeader(min <= value && value <= max, std::format("{} <= {} <= {}", std::to_string(min), std::to_string(value), std::to_string(max)), location);
+    }
+
+    template<typename DataType>
+    void assertBetween(const DataType& value, const DataType& min, const DataType& max, const std::source_location& location = std::source_location::current())
+    {
+        assertHeader(min <= value && value < max, std::format("{} <= {} < {}", std::to_string(min), std::to_string(value), std::to_string(max)), location);
+    }
+
+    template<typename DataType>
     void logConsole(const DataType& message, const std::source_location& location = std::source_location::current())
     {
 #ifdef MOUCA_ACTIVE_ASSERT
@@ -116,6 +128,10 @@ namespace Core
 inline int16_t operator "" _i16 (unsigned long long int number)
 {
     return static_cast<int16_t>(number);
+}
+inline uint16_t operator "" _u16(unsigned long long int number)
+{
+    return static_cast<uint16_t>(number);
 }
 
 #define BT_NOMOVE(ClassName)                                \
