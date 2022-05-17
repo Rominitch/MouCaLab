@@ -2,12 +2,15 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <BOOST_PATH>$(SolutionDir)..\SDK\Boost-1.76.0\</BOOST_PATH>
+    <BOOST_PATH>$(SolutionDir)..\SDK\Boost-1.79.0\</BOOST_PATH>
+    <BOOST_COMPILER>vc143</BOOST_COMPILER>
+    <BOOST_VERSION_C>1_79</BOOST_VERSION_C>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(BOOST_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BOOST_COMPILER=$(BOOST_COMPILER);BOOST_VERSION_C=$(BOOST_VERSION_C);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(BOOST_PATH)stage\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -16,6 +19,12 @@
   <ItemGroup>
     <BuildMacro Include="BOOST_PATH">
       <Value>$(BOOST_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="BOOST_COMPILER">
+      <Value>$(BOOST_COMPILER)</Value>
+    </BuildMacro>
+    <BuildMacro Include="BOOST_VERSION_C">
+      <Value>$(BOOST_VERSION_C)</Value>
     </BuildMacro>
   </ItemGroup>
 </Project>

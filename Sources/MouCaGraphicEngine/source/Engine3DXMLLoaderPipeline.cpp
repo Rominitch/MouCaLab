@@ -337,7 +337,7 @@ void Engine3DXMLLoader::loadPipelineStateCreate(ContextLoading& context, Vulkan:
     auto allViewports = context._parser.getNode("Viewport");
     if (allViewports->getNbElements() > 0)
     {
-        MOUCA_TODO("Find best way to make Dynamic<->Viewport/Scissor and manage all cases");
+        MOUCA_TODO("Find best way to make Dynamic<->Viewport/Scissor and manage all cases")
         if (dynamicViewport && dynamicScissor)
         {
             info.getViewport().addDynamicViewport();

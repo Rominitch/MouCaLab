@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <SQLITE_PATH>$(SolutionDir)..\SDK\sqlite-3.36\</SQLITE_PATH>
+    <SQLITE_PATH>$(SolutionDir)..\SDK\sqlite-3.38\</SQLITE_PATH>
     <SQLITE_INCLUDE>$(SQLITE_PATH)sqlite</SQLITE_INCLUDE>
   </PropertyGroup>
   <PropertyGroup />
@@ -12,7 +12,7 @@
       <AdditionalIncludeDirectories>$(SQLITE_INCLUDE);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SQLITE_PATH)libx64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SQLITE_PATH)lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

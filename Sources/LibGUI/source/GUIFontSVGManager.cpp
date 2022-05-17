@@ -10,7 +10,7 @@ namespace GUI
 {
 
 template<typename FUNCTION_DECLARATION>
-inline static void executeFT(FUNCTION_DECLARATION call, const Core::String& error)
+inline static void executeFT(FUNCTION_DECLARATION call, const Core::String& )
 {
 #ifdef _DEBUG
     const auto err = call;

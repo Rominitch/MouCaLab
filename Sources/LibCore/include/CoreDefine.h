@@ -13,6 +13,7 @@ namespace MouCa
 {
     void logVisualStudio(const Core::String& message);
 
+#ifdef MOUCA_ACTIVE_ASSERT
     void assertHeader(const bool condition, const Core::StringView& header, const std::source_location& location = std::source_location::current());
 
     void preCondition(const bool condition, const std::source_location& location = std::source_location::current());
@@ -24,7 +25,6 @@ namespace MouCa
     template<typename DataType>
     void assertCompare(const DataType& reference, const DataType& comparison, const std::source_location& location = std::source_location::current())
     {
-#ifdef MOUCA_ACTIVE_ASSERT
         if (reference != comparison)
         {
             auto message = std::format("{} ({}): [ERROR] Application assert into {} - Compare: \n {} != {} \n", location.file_name(), location.line(), location.function_name(), std::to_string(reference), std::to_string(comparison));
@@ -33,7 +33,6 @@ namespace MouCa
             logVisualStudio(message);
             assert(reference == comparison);
         }
-#endif
     }
 
     template<typename DataType>
@@ -51,25 +50,54 @@ namespace MouCa
     template<typename DataType>
     void logConsole(const DataType& message, const std::source_location& location = std::source_location::current())
     {
-#ifdef MOUCA_ACTIVE_ASSERT
         std::cout << message;
         logVisualStudio(message);
-#endif
     }
+#else 
+    // For MOUCA_ACTIVE_ASSERT: To avoid warning redeclare function
+
+    void assertHeader(const bool, const Core::StringView&, const std::source_location & = std::source_location::current());
+
+    void preCondition(const bool, const std::source_location & = std::source_location::current());
+
+    void postCondition(const bool, const std::source_location & = std::source_location::current());
+
+    void assertion(const bool, const std::source_location & = std::source_location::current());
+
+    template<typename DataType>
+    void assertCompare(const DataType& , const DataType& , const std::source_location&  = std::source_location::current())
+    {}
+
+    template<typename DataType>
+    void assertBetweenEq(const DataType& , const DataType& , const DataType& , const std::source_location&  = std::source_location::current())
+    {}
+
+    template<typename DataType>
+    void assertBetween(const DataType& , const DataType& , const DataType& , const std::source_location&  = std::source_location::current())
+    {}
+
+    template<typename DataType>
+    void logConsole(const DataType&, const std::source_location&  = std::source_location::current())
+    {}
+#endif
 }
 
+#define MOUCA_UNUSED(variable) variable;
 /// Assertion 
 #ifndef NDEBUG
 #   define MOUCA__STR(x)   #x
 #   define MOUCA_STR(x)    MOUCA__STR(x)
-#endif
-
-#define MOUCA_UNUSED(variable) variable;
 /// Allow to define all TODO into code and retrieve quickly
 #   define MOUCA_TODO(msg)                                                  \
     {                                                                       \
         __pragma(message(__FILE__ "(" MOUCA_STR(__LINE__) "): TODO: " msg)) \
     }
+#else
+#   define MOUCA_TODO(msg)
+#endif
+
+
+
 
 namespace Core
 {
