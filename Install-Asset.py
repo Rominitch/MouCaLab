@@ -16,7 +16,7 @@ zipProgram = os.path.join("C:\Program Files", "7-Zip", "7z.exe")
 # Current package description
 #             Package                GoogleDrive  ID                      Versionning file
 packages = [ ("Inputs-0.01.7z",      "1_VPuPHUGvjQSM6Vm5q5-RBBMD6QIjMz_", "IN_0.01"),
-             ("References-0.02.7z",  "1f1J3XGmIRARxSCBL4teO-kMhV4ZsZfwB", "REF_0.02"),
+             ("References-0.03.7z",  "1PzkeKdpYEJQ_QwCQurTWL2vDZ7n3H611", "REF_0.03"),
            ]
 
 # Extractor Program
