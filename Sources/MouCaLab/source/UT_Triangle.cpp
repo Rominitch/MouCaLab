@@ -133,7 +133,7 @@ class TriangleTest : public MouCaLabTest
         void updateUBO(const RT::RenderDialogWPtr dialog, const Vulkan::ContextDeviceSPtr context, const Vulkan::BufferWPtr& ubo)
         {
             const auto& resolution = dialog.lock()->getSize();
-            MOUCA_ASSERT(resolution.x > 0 && resolution.y > 0);
+            MouCa::assertion(resolution.x > 0 && resolution.y > 0);
             const float ratio = static_cast<float>(resolution.x) / static_cast<float>(resolution.y);
 
             // Update matrices
@@ -161,7 +161,7 @@ TEST_F(TriangleTest, run)
     MouCaGraphic::VulkanManager manager;
 
     MouCaGraphic::Engine3DXMLLoader loader(manager);
-    ASSERT_NO_FATAL_FAILURE(loadEngine(loader, u8"Triangle.xml"));
+    ASSERT_NO_FATAL_FAILURE(loadEngine(loader, "Triangle.xml"));
     
     // Get allocated item
     auto context = manager.getDevices().at(0);
@@ -178,7 +178,7 @@ TEST_F(TriangleTest, run)
     // Execute rendering
     if (MouCaEnvironment::isDemonstrator())
     {
-        mainLoop(manager, u8"Triangle Demo ");
+        mainLoop(manager, "Triangle Demo ");
     }
     else
     {
@@ -192,7 +192,7 @@ TEST_F(TriangleTest, run)
             ASSERT_EQ(VK_SUCCESS, sequence->execute(context->getDevice()));
         }
     
-        takeScreenshot(manager, L"triangle.png");
+        takeScreenshot(manager, "triangle.png");
     }
 
     // Clean

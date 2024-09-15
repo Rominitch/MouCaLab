@@ -13,18 +13,18 @@ namespace Vulkan
 RenderPass::RenderPass():
 _renderPass(VK_NULL_HANDLE)
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 RenderPass::~RenderPass()
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 void RenderPass::initialize(const Device& device, std::vector<VkAttachmentDescription>&& attachments, std::vector<VkSubpassDescription>&& subpasses, std::vector<VkSubpassDependency>&& dependencies)
 {
-    MOUCA_PRE_CONDITION(isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
+    MouCa::preCondition(isNull());
+    MouCa::preCondition(!device.isNull());
    
     _attachments    = std::move(attachments);
     _subpasses      = std::move(subpasses);
@@ -45,14 +45,14 @@ void RenderPass::initialize(const Device& device, std::vector<VkAttachmentDescri
 
     if(vkCreateRenderPass(device.getInstance(), &renderPassCreateInfo, nullptr, &_renderPass) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"RenderPassCreationError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "RenderPassCreationError"));
     }
 }
 
 void RenderPass::release(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(!device.isNull());
 
     vkDestroyRenderPass(device.getInstance(), _renderPass, nullptr);
     _renderPass = VK_NULL_HANDLE;

@@ -12,18 +12,18 @@ namespace Vulkan
 Fence::Fence():
 _fence(VK_NULL_HANDLE), _timeout(0)
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 Fence::~Fence()
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 void Fence::initialize(const Device& device, const VkFenceCreateFlags flag)
 {
-    MOUCA_PRE_CONDITION(isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
+    MouCa::preCondition(isNull());
+    MouCa::preCondition(!device.isNull());
 
     const VkFenceCreateInfo fenceCreateInfo =
     {
@@ -34,10 +34,10 @@ void Fence::initialize(const Device& device, const VkFenceCreateFlags flag)
 
     if(vkCreateFence(device.getInstance(), &fenceCreateInfo, nullptr, &_fence) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"FenceCreationError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "FenceCreationError"));
     }
 
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 }
 
 void Fence::initialize(const Device& device, uint64_t timeout, const VkFenceCreateFlags flag)
@@ -49,21 +49,21 @@ void Fence::initialize(const Device& device, uint64_t timeout, const VkFenceCrea
 
 VkResult Fence::wait(const Device& device) const
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(!device.isNull());
 
     return vkWaitForFences(device.getInstance(), 1, &_fence, VK_TRUE, _timeout);
 }
 
 void Fence::release(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(!device.isNull());
 
     vkDestroyFence(device.getInstance(), _fence, nullptr);
     _fence = VK_NULL_HANDLE;
 
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 }

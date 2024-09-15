@@ -21,17 +21,17 @@ namespace MouCaVR
 Platform::Platform():
 _system(nullptr), _renderModels(nullptr)
 {
-    MOUCA_PRE_CONDITION(isNull()); // DEV Issue: Bad constructor ?
+    MouCa::preCondition(isNull()); // DEV Issue: Bad constructor ?
 }
 
 Platform::~Platform()
 {
-    MOUCA_POST_CONDITION(isNull()); // DEV Issue: Missing call release() ?
+    MouCa::postCondition(isNull()); // DEV Issue: Missing call release() ?
 }
 
 void Platform::initialize()
 {
-    MOUCA_PRE_CONDITION(isNull()); // DEV Issue: Already initialized
+    MouCa::preCondition(isNull()); // DEV Issue: Already initialized
 
     // Loading the SteamVR Runtime
     vr::EVRInitError eError = vr::VRInitError_None;
@@ -39,7 +39,7 @@ void Platform::initialize()
 
     if(eError != vr::VRInitError_None)
     {
-        MOUCA_THROW_ERROR(u8"VRError", u8"VRInitializationError");
+        throw Core::Exception(Core::ErrorData("VRError", "VRInitializationError"));
     }
 
     _renderModels = (vr::IVRRenderModels*)vr::VR_GetGenericInterface(vr::IVRRenderModels_Version, &eError);
@@ -48,22 +48,22 @@ void Platform::initialize()
         vr::VR_Shutdown();
         _system = nullptr;
 
-        MOUCA_THROW_ERROR(u8"VRError", u8"VRRenderModelError");
+        throw Core::Exception(Core::ErrorData("VRError", "VRRenderModelError"));
     }
 
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 }
 
 void Platform::release()
 {
-    MOUCA_PRE_CONDITION(!isNull()); // DEV Issue: Missing call initialize() before ?
+    MouCa::preCondition(!isNull()); // DEV Issue: Missing call initialize() before ?
 
     _renderModels = nullptr;
 
     vr::VR_Shutdown();
     _system       = nullptr;
 
-    MOUCA_POST_CONDITION(isNull()); // DEV Issue: Bad destruction ?
+    MouCa::postCondition(isNull()); // DEV Issue: Bad destruction ?
 }
 
 bool Platform::isNull() const
@@ -73,8 +73,8 @@ bool Platform::isNull() const
 
 std::vector<Core::String> Platform::getInstanceExtensions() const
 {
-    MOUCA_PRE_CONDITION(!isNull());            // DEV Issue: Missing call initialize() before ?
-    MOUCA_PRE_CONDITION(vr::VRCompositor());   // DEV Issue: Internal error ?
+    MouCa::preCondition(!isNull());            // DEV Issue: Missing call initialize() before ?
+    MouCa::preCondition(vr::VRCompositor());   // DEV Issue: Internal error ?
 
     Core::String extensions;
 
@@ -92,8 +92,8 @@ std::vector<Core::String> Platform::getInstanceExtensions() const
 
 std::vector<Core::String> Platform::getPhysicalDeviceExtensions(uint64_t physicalDeviceHandle) const
 {
-    MOUCA_PRE_CONDITION(!isNull());            // DEV Issue: Missing call initialize() before ?
-    MOUCA_PRE_CONDITION(vr::VRCompositor());   // DEV Issue: Internal error ?
+    MouCa::preCondition(!isNull());            // DEV Issue: Missing call initialize() before ?
+    MouCa::preCondition(vr::VRCompositor());   // DEV Issue: Internal error ?
 
     VkPhysicalDevice_T* physicalId = reinterpret_cast<VkPhysicalDevice_T*>(physicalDeviceHandle);
 
@@ -113,7 +113,7 @@ std::vector<Core::String> Platform::getPhysicalDeviceExtensions(uint64_t physica
 
 void Platform::pollEvents()
 {
-    MOUCA_PRE_CONDITION(!isNull());            // DEV Issue: Missing call initialize() before ?
+    MouCa::preCondition(!isNull());            // DEV Issue: Missing call initialize() before ?
 
     // Process SteamVR events
     vr::VREvent_t event;
@@ -123,7 +123,7 @@ void Platform::pollEvents()
         {
             case vr::VREvent_TrackedDeviceActivated:
             {
-                MOUCA_ASSERT(event.trackedDeviceIndex < _trackedDevices.size());
+                MouCa::assertion(event.trackedDeviceIndex < _trackedDevices.size());
 #ifdef VR_VERBOSE
                 std::cout << "TrackDevice ON" << std::endl;
 #endif
@@ -139,7 +139,7 @@ void Platform::pollEvents()
             break;
             case vr::VREvent_TrackedDeviceDeactivated:
             {
-                MOUCA_ASSERT(event.trackedDeviceIndex < _trackedDevices.size());
+                MouCa::assertion(event.trackedDeviceIndex < _trackedDevices.size());
 #ifdef VR_VERBOSE
                 std::cout << "TrackDevice OFF" << std::endl;
 #endif
@@ -150,12 +150,12 @@ void Platform::pollEvents()
             break;
             case vr::VREvent_TrackedDeviceUpdated:
             {
-                MOUCA_ASSERT(event.trackedDeviceIndex < _trackedDevices.size());
+                MouCa::assertion(event.trackedDeviceIndex < _trackedDevices.size());
 #ifdef VR_VERBOSE
                 std::cout << "TrackDevice Update" << std::endl;
 #endif
 
-                auto& trackedDevice = _trackedDevices[event.trackedDeviceIndex];
+                //auto& trackedDevice = _trackedDevices[event.trackedDeviceIndex];
             }
             break;
 
@@ -180,7 +180,7 @@ void Platform::pollEvents()
 
 void Platform::pollControllerEvents()
 {
-    MOUCA_PRE_CONDITION(!isNull());            // DEV Issue: Missing call initialize() before ?
+    MouCa::preCondition(!isNull());            // DEV Issue: Missing call initialize() before ?
 
     // Process SteamVR controller state
     for (vr::TrackedDeviceIndex_t deviceId = 0; deviceId < vr::k_unMaxTrackedDeviceCount; deviceId++)
@@ -209,7 +209,7 @@ void Platform::getTrackedProperty(const vr::TrackedDeviceIndex_t deviceID, const
     
     if(error != vr::TrackedProp_Success)
     {
-        MOUCA_THROW_ERROR(u8"VRError", u8"VRTrackedPropertyError");
+        throw Core::Exception(Core::ErrorData("VRError", "VRTrackedPropertyError"));
     }
 }
 
@@ -238,12 +238,12 @@ void Platform::updateTracked()
 
         ++itDevice;
     }
-    MOUCA_POST_CONDITION(itDevice == _trackedDevices.end());
+    MouCa::postCondition(itDevice == _trackedDevices.end());
 }
 
 RT::Array2ui Platform::getRenderSize() const
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
     
     RT::Array2ui resolution;
     _system->GetRecommendedRenderTargetSize( &resolution.x, &resolution.y );
@@ -252,8 +252,8 @@ RT::Array2ui Platform::getRenderSize() const
 
 uint64_t Platform::getVulkanPhysicalDevice(const RT::Environment& environment) const
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(!environment.isNull());
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(!environment.isNull());
 
     VkInstance_T* vkInstance = const_cast<VkInstance_T*>(reinterpret_cast<const VkInstance_T*>(environment.getGenericInstance()));
     
@@ -295,8 +295,8 @@ _vrEyeBounds({ 0.0f, 0.0f, 1.0f, 1.0f })
 
 VkResult Platform::SequenceSubmitVR::execute(const Vulkan::Device&)
 {
-    MOUCA_PRE_CONDITION(vr::VRCompositor() != nullptr);
-    MOUCA_PRE_CONDITION(_vrEye.m_nImage != 0);
+    MouCa::preCondition(vr::VRCompositor() != nullptr);
+    MouCa::preCondition(_vrEye.m_nImage != 0);
 
     const vr::Texture_t texture
     {

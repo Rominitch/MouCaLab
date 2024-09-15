@@ -9,7 +9,7 @@ namespace Vulkan
         public:
             virtual ~Pipeline()
             {
-                MOUCA_POST_CONDITION(isNull());
+                MouCa::postCondition(isNull());
             }
 
             bool isNull() const

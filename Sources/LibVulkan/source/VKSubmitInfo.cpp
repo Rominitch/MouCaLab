@@ -14,29 +14,29 @@ namespace Vulkan
 
 void SubmitInfo::addSynchronization(const std::vector<WaitSemaphore>& waitSemaphores, const std::vector<SemaphoreWPtr>& signalSemaphores)
 {
-    MOUCA_PRE_CONDITION(_waitSemaphore.empty() && _waitStageFlag.empty()); //DEV Issue: Already call initialize !
+    MouCa::preCondition(_waitSemaphore.empty() && _waitStageFlag.empty()); //DEV Issue: Already call initialize !
 
     // Build array (keep memory alive)
     _waitSemaphore.reserve(waitSemaphores.size());
     _waitStageFlag.reserve(waitSemaphores.size());
     for (const auto& waitSemaphore : waitSemaphores)
     {
-        MOUCA_ASSERT(!waitSemaphore.first.lock()->isNull()); //DEV Issue: Bad semaphore: plesae call intialize() !
+        MouCa::assertion(!waitSemaphore.first.lock()->isNull()); //DEV Issue: Bad semaphore: plesae call intialize() !
         _waitSemaphore.emplace_back(waitSemaphore.first.lock()->getInstance());
         _waitStageFlag.emplace_back(waitSemaphore.second);
     }
     _signalSemaphore.reserve(signalSemaphores.size());
     for (const auto& signalSemaphore : signalSemaphores)
     {
-        MOUCA_ASSERT(!signalSemaphore.lock()->isNull()); //DEV Issue: Bad semaphore: plesae call intialize() !
+        MouCa::assertion(!signalSemaphore.lock()->isNull()); //DEV Issue: Bad semaphore: plesae call intialize() !
         _signalSemaphore.emplace_back(signalSemaphore.lock()->getInstance());
     }
 }
 
 void SubmitInfo::initialize(std::vector<ICommandBufferWPtr>&& commandBuffers)
 {
-    MOUCA_PRE_CONDITION(_commands.empty());        //DEV Issue: Already call initialize !
-    MOUCA_PRE_CONDITION(!commandBuffers.empty());  //DEV Issue : Need valid data
+    MouCa::preCondition(_commands.empty());        //DEV Issue: Already call initialize !
+    MouCa::preCondition(!commandBuffers.empty());  //DEV Issue : Need valid data
 
     _commandBuffers = std::move(commandBuffers);
 
@@ -46,7 +46,7 @@ void SubmitInfo::initialize(std::vector<ICommandBufferWPtr>&& commandBuffers)
 
 VkSubmitInfo SubmitInfo::buildSubmitInfo()
 {
-    MOUCA_PRE_CONDITION(!_commandBuffers.empty()); //DEV Issue: Missing call initialize !
+    MouCa::preCondition(!_commandBuffers.empty()); //DEV Issue: Missing call initialize !
 
     // Compute current state of CommandBuffer
     auto itCommand = _commands.begin();

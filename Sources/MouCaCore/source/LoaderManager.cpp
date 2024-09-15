@@ -21,7 +21,7 @@ namespace MouCaCore
 
 void LoaderManager::SynchonizeData::initialize(const uint32_t countThreadReady)
 {
-    MOUCA_PRE_CONDITION(countThreadReady < 32); //DEV Issue: we don't want more than 32 threads
+    MouCa::preCondition(countThreadReady < 32); //DEV Issue: we don't want more than 32 threads
 
     std::unique_lock<std::mutex> lock(_waitSync);
     _maskThread = (1 << countThreadReady) - 1;
@@ -32,10 +32,10 @@ void LoaderManager::SynchonizeData::initialize(const uint32_t countThreadReady)
     std::bitset<8> mask(_maskThread);
     std::stringstream ss;
     ss << "Initialize SyncData: " << countThreadReady << " with mask " << mask << std::endl;
-    BT_PRINT_MESSAGE(ss.str());
+    MouCa::logConsole(ss.str());
 #endif
 
-    MOUCA_POST_CONDITION(_maskThread > 0);
+    MouCa::postCondition(_maskThread > 0);
 }
 
 void LoaderManager::SynchonizeData::synchronize()
@@ -50,7 +50,7 @@ void LoaderManager::SynchonizeData::synchronize()
             std::bitset<8> mask(_countThreadReady);
             std::stringstream ss;
             ss << "  Synchronize: " << mask << " " << ((_countThreadReady & _maskThread) == _maskThread ? "SYNC" : "WAIT") << std::endl;
-            BT_PRINT_MESSAGE(ss.str());
+            MouCa::logConsole(ss.str());
             return (_countThreadReady & _maskThread) == _maskThread;
         });
 #else
@@ -67,7 +67,7 @@ void LoaderManager::SynchonizeData::threadWorking(const size_t idThread)
     std::bitset<8> mask(_countThreadReady);
     std::stringstream ss;
     ss << "  Working: " << idThread << " with mask " << mask << std::endl;
-    BT_PRINT_MESSAGE(ss.str());
+    MouCa::logConsole(ss.str());
 #endif
 }
 
@@ -82,7 +82,7 @@ void LoaderManager::SynchonizeData::threadReady(const size_t idThread)
             std::bitset<8> mask(countThreadReady);
             std::stringstream ss;
             ss << "  Done: " << idThread << " with mask " << mask << std::endl;
-            BT_PRINT_MESSAGE(ss.str());
+            MouCa::logConsole(ss.str());
         }
 #endif
         _countThreadReady |= (1 << idThread);
@@ -111,7 +111,7 @@ void LoadingQueue::demandToFinish()
 
 void LoadingQueue::addJob(const LoadingItems& items)
 {
-    MOUCA_PRE_CONDITION(_run);
+    MouCa::preCondition(_run);
 
     // Register job
     {
@@ -142,8 +142,8 @@ void LoadingQueue::doAction( LoadingItem& item )
     RT::ShaderFile* file = dynamic_cast<RT::ShaderFile*>(item._resource.get());
     if( file != nullptr )
     {
-        MOUCA_ASSERT( !file->getFilename().empty() );
-        MOUCA_ASSERT( std::filesystem::exists( file->getFilename() ) );
+        MouCa::assertion( !file->getFilename().empty() );
+        MouCa::assertion( std::filesystem::exists( file->getFilename() ) );
 
         file->open(L"rb");
         return;
@@ -152,8 +152,8 @@ void LoadingQueue::doAction( LoadingItem& item )
     RT::ImageImport* image = dynamic_cast<RT::ImageImport*>(item._resource.get());
     if( image != nullptr )
     {
-        MOUCA_ASSERT( !image->getFilename().empty() );
-        MOUCA_ASSERT( std::filesystem::exists( image->getFilename() ) );
+        MouCa::assertion( !image->getFilename().empty() );
+        MouCa::assertion( std::filesystem::exists( image->getFilename() ) );
         Media::ImageLoader loader;
         image->setImage(loader.openImage(image->getFilename()));
         return;
@@ -175,7 +175,7 @@ void LoadingQueue::doAction( LoadingItem& item )
         return;
     }
     
-    MOUCA_THROW_ERROR( "MouCaCore", "InvalidLoader" );
+    throw Core::Exception(Core::ErrorData( "MouCaCore", "InvalidLoader" ));
 }
 
 void LoadingQueue::run()
@@ -236,13 +236,13 @@ void LoadingQueue::run()
     _state = Stop;
 
     // Missing synchronize or strong shutdown !
-    MOUCA_POST_CONDITION(_resources.empty());
+    MouCa::postCondition(_resources.empty());
 }
 
 void LoaderManager::initialize(const uint32_t nbQueues)
 {
-    MOUCA_PRE_CONDITION(_queues.empty());  // DEV Issue: call initialize() both time.
-    MOUCA_PRE_CONDITION(nbQueues > 0);     // DEV Issue: Need minimum of queue !
+    MouCa::preCondition(_queues.empty());  // DEV Issue: call initialize() both time.
+    MouCa::preCondition(nbQueues > 0);     // DEV Issue: Need minimum of queue !
 
     // Allocate synchronizer
     _syncDirect.initialize( nbQueues );
@@ -264,12 +264,12 @@ void LoaderManager::initialize(const uint32_t nbQueues)
     // Avoid dead lock when thread don't receive wait signal.
     synchronize();
 
-    MOUCA_POST_CONDITION(!_queues.empty()); /// Operation Failed ?
+    MouCa::postCondition(!_queues.empty()); /// Operation Failed ?
 }
 
 void LoaderManager::release()
 {
-    MOUCA_PRE_CONDITION(!_queues.empty()); // DEV Issue: call release before initialize().
+    MouCa::preCondition(!_queues.empty()); // DEV Issue: call release before initialize().
 
     // Send order
     for(auto& queue : _queues)
@@ -287,13 +287,13 @@ void LoaderManager::release()
     // Remove all
     _queues.clear();
 
-    MOUCA_POST_CONDITION(_queues.empty()); /// Operation Failed ?
+    MouCa::postCondition(_queues.empty()); /// Operation Failed ?
 }
 
 void LoaderManager::loadResources(LoadingItems& items)
 {
-    MOUCA_PRE_CONDITION(!_queues.empty()); // DEV Issue: Missing call initialize() !
-    MOUCA_PRE_CONDITION(!items.empty());   // DEV Issue: No job ?
+    MouCa::preCondition(!_queues.empty()); // DEV Issue: Missing call initialize() !
+    MouCa::preCondition(!items.empty());   // DEV Issue: No job ?
 
     // Sort queue to have priority job first !
     std::sort(items.begin(), items.end());

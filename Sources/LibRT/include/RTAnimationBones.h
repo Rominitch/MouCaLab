@@ -159,13 +159,13 @@ namespace RT
             AnimationImporter():
             Core::Resource()
             {
-                MOUCA_PRE_CONDITION(isNull());
+                MouCa::preCondition(isNull());
             }
 
             /// Destructor
             ~AnimationImporter()
             {
-                MOUCA_POST_CONDITION(isNull());
+                MouCa::postCondition(isNull());
             }
 
             //------------------------------------------------------------------------
@@ -210,7 +210,7 @@ namespace RT
         MOUCA_NOCOPY_NOMOVE(AnimatedGeometry);
 
         public:
-            AnimatedGeometry(const Core::String& label = u8"Default animated geometry") :
+            AnimatedGeometry(const Core::String& label = "Default animated geometry") :
             GeometryExternal(TAnimatedGeometry, label), _loop(false)
             {}
 

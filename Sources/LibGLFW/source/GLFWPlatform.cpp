@@ -12,14 +12,14 @@ _initialize(false), _runLoop(false)
 
 Platform::~Platform()
 {
-    MOUCA_ASSERT(!_initialize); // DEV Issue: missing release call !
-    MOUCA_ASSERT(_windows.empty());
-    MOUCA_ASSERT(!_runLoop);
+    MouCa::assertion(!_initialize); // DEV Issue: missing release call !
+    MouCa::assertion(_windows.empty());
+    MouCa::assertion(!_runLoop);
 }
 
 void Platform::initialize()
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
     
     // Set error callback
     glfwSetErrorCallback(Platform::errorCallback);
@@ -27,7 +27,7 @@ void Platform::initialize()
     //Start GLFW
     if(glfwInit() == GLFW_FALSE)
     {
-        MOUCA_THROW_ERROR(u8"GLFWError", u8"InitializeError");
+        throw Core::Exception(Core::ErrorData("GLFWError", "InitializeError"));
     }
 
     //Default configuration (Vulkan config)
@@ -35,24 +35,24 @@ void Platform::initialize()
 
     _initialize = true;
 
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 }
 
 void Platform::release()
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(_windows.empty());
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(_windows.empty());
 
     //Stop GLFW
     glfwTerminate();
     _initialize = false;
 
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 WindowWPtr Platform::createWindow(const RT::ViewportInt32& viewport, const Core::String& windowsName, const RT::Window::Mode mode)
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
     WindowSPtr window(new Window(viewport, windowsName, mode, this));
     _windows.push_back(window);
     
@@ -65,7 +65,7 @@ WindowWPtr Platform::createWindow(const RT::ViewportInt32& viewport, const Core:
 
 WindowWPtr Platform::createWindow(const RT::Monitor& monitor, const Core::String& windowsName, const RT::Window::Mode mode)
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
     WindowSPtr window(new Window(monitor, windowsName, mode, this));
     _windows.push_back(window);
 
@@ -74,9 +74,9 @@ WindowWPtr Platform::createWindow(const RT::Monitor& monitor, const Core::String
 
 void Platform::releaseWindow(const Windows::iterator& itWindow)
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(itWindow->use_count() == 1); // Be sure we have latest element (current) !
-    MOUCA_PRE_CONDITION(itWindow != _windows.end());
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(itWindow->use_count() == 1); // Be sure we have latest element (current) !
+    MouCa::preCondition(itWindow != _windows.end());
 
     // Remove connection
     _mainMouse.onChangeMode().disconnect(itWindow->get());
@@ -91,8 +91,8 @@ void Platform::releaseWindow(const Windows::iterator& itWindow)
 
 void Platform::releaseWindow(Window*& window)
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_ASSERT(window != NULL);
+    MouCa::preCondition(!isNull());
+    MouCa::assertion(window != NULL);
     std::lock_guard<std::mutex> guard(_guardWindows);
 
     const auto itWindow = std::find_if(_windows.begin(), _windows.end(), [&](const WindowSPtr& SWindow) { return (SWindow.get() == window); });
@@ -104,8 +104,8 @@ void Platform::releaseWindow(Window*& window)
 
 void Platform::releaseWindow(const WindowWPtr& weakWindow)
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(!weakWindow.expired());
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(!weakWindow.expired());
 
     std::lock_guard<std::mutex> guard(_guardWindows);
 
@@ -115,7 +115,7 @@ void Platform::releaseWindow(const WindowWPtr& weakWindow)
 
 bool Platform::isWindowsActive()
 {
-    MOUCA_ASSERT(_initialize);
+    MouCa::assertion(_initialize);
     std::lock_guard<std::mutex> guard(_guardWindows);
     return !_windows.empty();
 }
@@ -127,14 +127,14 @@ void Platform::errorCallback(int error, const char* description)
 
 void Platform::pollEvents()
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
     glfwPollEvents();
 }
 
 void Platform::runMainLoop()
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_ASSERT(!_windows.empty());    //DEV Issue: launch loop without window !
+    MouCa::preCondition(!isNull());
+    MouCa::assertion(!_windows.empty());    //DEV Issue: launch loop without window !
     
     _runLoop = true;
 

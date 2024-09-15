@@ -14,7 +14,7 @@ namespace RT
             Matrix4 projectionMatrix;
 
         public:
-            Camera(const Core::String& label = u8"Default Camera"):
+            Camera(const Core::String& label = "Default Camera"):
             Object(TCamera, label)
             {}
 
@@ -22,8 +22,8 @@ namespace RT
 
             virtual void computePerspectiveCamera(const ViewportInt32& screenViewport)
             {
-                MOUCA_PRE_CONDITION(screenViewport.getWidth() > 0);
-                MOUCA_PRE_CONDITION(screenViewport.getHeight() > 0);
+                MouCa::preCondition(screenViewport.getWidth() > 0);
+                MouCa::preCondition(screenViewport.getHeight() > 0);
 
                 const float ratio = static_cast<float>(screenViewport.getWidth()) / static_cast<float>(screenViewport.getHeight());
                 projectionMatrix = glm::perspective(45.0f, ratio, 1.0f, 100000.0f);
@@ -31,9 +31,9 @@ namespace RT
 
             virtual void computePerspectiveCamera(const ViewportInt32& screenViewport, const RT::BoundingBox& scene)
             {
-                MOUCA_PRE_CONDITION(screenViewport.getWidth() > 0);
-                MOUCA_PRE_CONDITION(screenViewport.getHeight() > 0);
-                MOUCA_PRE_CONDITION(scene.isValid());
+                MouCa::preCondition(screenViewport.getWidth() > 0);
+                MouCa::preCondition(screenViewport.getHeight() > 0);
+                MouCa::preCondition(scene.isValid());
 
                 const float ratio = static_cast<float>(screenViewport.getWidth()) / static_cast<float>(screenViewport.getHeight());
 
@@ -45,7 +45,7 @@ namespace RT
                 //projectionMatrix = glm::perspective(45.0f, ratio, 0.0001f, 1000.0f);
                 const float nearC = std::max(0.00001f, middle - scene.getRadius());
                 const float farC  = std::max(0.00001f, middle + scene.getRadius());
-                MOUCA_ASSERT(nearC <= farC);
+                MouCa::assertion(nearC <= farC);
 
                 projectionMatrix = glm::perspective(45.0f, ratio, nearC, farC);
             }

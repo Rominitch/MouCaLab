@@ -36,7 +36,7 @@ namespace Vulkan
 
             virtual bool isNull() const
             {
-                MOUCA_PRE_CONDITION(_memory != nullptr);
+                MouCa::preCondition(_memory != nullptr);
                 return _memory->isNull() && _buffer == VK_NULL_HANDLE;
             }
 

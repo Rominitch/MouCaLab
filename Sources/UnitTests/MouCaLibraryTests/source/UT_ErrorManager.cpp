@@ -26,17 +26,17 @@ TEST_F(ErrorManager, addErrorLibrary)
 {
     Core::ErrorManager manager;
 
-    ASSERT_ANY_THROW(manager.addErrorLibrary(invalid, u8"Invalid"));
+    ASSERT_ANY_THROW(manager.addErrorLibrary(invalid, "Invalid"));
 
     // Can load it first time
-    ASSERT_NO_THROW(manager.addErrorLibrary(demoLib, u8"DemoLibrary"));
+    ASSERT_NO_THROW(manager.addErrorLibrary(demoLib, "DemoLibrary"));
     // Re-entrance is not possible
-    ASSERT_ANY_THROW(manager.addErrorLibrary(demoLib, u8"DemoLibrary"));
+    ASSERT_ANY_THROW(manager.addErrorLibrary(demoLib, "DemoLibrary"));
 
     {
         XML::XercesParser file;
         file.setFileInfo( MouCaEnvironment::getInputPath() / L"libraries" / L"ErrorXML" / L"unknowCountry.xml" );
-        ASSERT_NO_THROW(manager.addErrorLibrary(file, u8"unknowCountry"));
+        ASSERT_NO_THROW(manager.addErrorLibrary(file, "unknowCountry"));
     }
 }
 
@@ -46,15 +46,15 @@ TEST_F(ErrorManager, invalidFiles)
 
     const std::array<Core::String, 3> files
     {
-        u8"invalidBadName",
-        u8"invalidMissingMessage",
-        u8"invalidMissingSolution"
+        "invalidBadName",
+        "invalidMissingMessage",
+        "invalidMissingSolution"
     };
 
     for (const auto& fileName : files)
     {
         XML::XercesParser file;
-        file.setFileInfo(MouCaEnvironment::getInputPath() / L"libraries" / L"ErrorXML" / (fileName + u8".xml"));
+        file.setFileInfo(MouCaEnvironment::getInputPath() / L"libraries" / L"ErrorXML" / (fileName + ".xml"));
 
         ASSERT_ANY_THROW(manager.addErrorLibrary(file, fileName)) << fileName;
     }
@@ -67,16 +67,16 @@ TEST_F(ErrorManager, getError)
     // Without library registered
     {
         Core::ErrorData error;
-        const Core::String result = error.getLibraryLabel() + u8" " + error.getErrorLabel();
+        const Core::String result = std::format("{} {}", error.getLibraryLabel(), error.getErrorLabel());
         EXPECT_EQ( result, manager.getError(error) );
     }
 
     // With library registered
     {
-        ASSERT_NO_THROW(manager.addErrorLibrary(demoLib, u8"DemoLibrary"));
+        ASSERT_NO_THROW(manager.addErrorLibrary(demoLib, "DemoLibrary"));
 
-        Core::ErrorData error(u8"DemoLibrary", u8"Hello", __FILE__, __LINE__);
-        EXPECT_EQ(u8"Hello World\r\nHello Solution", manager.getError(error));
+        Core::ErrorData error("DemoLibrary", "Hello");
+        EXPECT_EQ("Hello World\r\nHello Solution", manager.getError(error));
     }
 }
 
@@ -87,8 +87,8 @@ struct TESTPrinter : public Core::ErrorPrinter
     void print(const Core::ErrorData& pError, const Core::ErrorLibrary* pLibrary) const override
     {
         Core::StringStream ssStream;
-        const Core::ErrorDescription* pDescription = pLibrary->getDescription(pError.getErrorLabel());
-        ssStream << pError.convertMessage(pDescription->getMessage()) << u8"\r\n" << pError.convertMessage(pDescription->getSolution());
+        const Core::ErrorDescription* pDescription = pLibrary->getDescription(Core::String(pError.getErrorLabel()));
+        ssStream << pError.convertMessage(pDescription->getMessage()) << "\r\n" << pError.convertMessage(pDescription->getSolution());
         const_cast<TESTPrinter*>(this)->message = ssStream.str();
     }
 };
@@ -97,7 +97,7 @@ TEST_F(ErrorManager, show)
 {
     Core::ErrorManager manager;
 
-    Core::Exception myException(Core::ErrorData(u8"DemoLibrary", u8"Hello", __FILE__, __LINE__));
+    Core::Exception myException(Core::ErrorData("DemoLibrary", "Hello"));
 
     // Valid printer
     {
@@ -105,10 +105,10 @@ TEST_F(ErrorManager, show)
         Core::ErrorPrinterPtr printerPtr(printer);
 
         ASSERT_NO_THROW(manager.setPrinter(printerPtr));
-        ASSERT_NO_THROW(manager.addErrorLibrary(demoLib, u8"DemoLibrary"));
+        ASSERT_NO_THROW(manager.addErrorLibrary(demoLib, "DemoLibrary"));
 
         ASSERT_NO_THROW(manager.show(myException));
 
-        EXPECT_EQ(u8"Hello World\r\nHello Solution", printer->message);
+        EXPECT_EQ("Hello World\r\nHello Solution", printer->message);
     }
 }

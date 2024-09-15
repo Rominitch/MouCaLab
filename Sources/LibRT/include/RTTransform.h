@@ -14,7 +14,7 @@ namespace RT
         alignas(16) glm::vec3 _position;
         alignas(16) glm::vec3 _homothetie;
 
-        Transform(const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& homothetie = glm::vec3(1.0f), const glm::quat& rotation = glm::quat()) :
+        Transform(const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& homothetie = glm::vec3(1.0f), const glm::quat& rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f)) :
         _position(position), _homothetie(homothetie), _rotation(rotation)
         {}
 

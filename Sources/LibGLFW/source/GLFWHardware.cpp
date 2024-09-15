@@ -11,10 +11,10 @@ void Hardware::readHardware()
     GLFWmonitor** monitors = glfwGetMonitors(&count);
     if(count == 0)
     {
-        MOUCA_THROW_ERROR(u8"GLFWError", u8"NoMonitorError");
+        throw Core::Exception(Core::ErrorData("GLFWError", "NoMonitorError"));
     }
     
-    MOUCA_ASSERT(monitors !=nullptr);
+    MouCa::assertion(monitors !=nullptr);
     _monitors.resize(static_cast<size_t>(count));
 
     GLFWmonitor** itMonitor = monitors;

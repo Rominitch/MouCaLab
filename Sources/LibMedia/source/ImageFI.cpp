@@ -12,7 +12,7 @@ namespace Media
 
 void ImageFI::initialize(const Core::Path& path)
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
     
     //Get file format
     FREE_IMAGE_FORMAT imageFormat = FreeImage_GetFileTypeU(path.c_str(), 0);
@@ -22,7 +22,7 @@ void ImageFI::initialize(const Core::Path& path)
         imageFormat = FreeImage_GetFIFFromFilenameU(path.c_str());
         if (imageFormat == FIF_UNKNOWN)
         {
-            MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FIUnknownFileError", path.u8string());
+            throw Core::Exception(Core::ErrorData("ModuleError", "FIUnknownFileError") << path.string());
         }
     }
 
@@ -30,37 +30,55 @@ void ImageFI::initialize(const Core::Path& path)
     if (FreeImage_FIFSupportsReading(imageFormat))
     {
         FIBITMAP* imageData = FreeImage_LoadU(imageFormat, path.c_str(), 0);
-        MOUCA_ASSERT(imageData != nullptr); // DEV Issue: file is not exist !
+        MouCa::assertion(imageData != nullptr); // DEV Issue: file is not exist !
         _imageData = FreeImage_ConvertTo32Bits(imageData);
         FreeImage_Unload(imageData);
     }
     else
     {
-        MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FIReadFileError", path.u8string());
+        throw Core::Exception(Core::ErrorData("ModuleError", "FIReadFileError") << path.string());
     }
 
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
 }
 
 void ImageFI::createFill(const RT::BufferCPUBase& imageBuffer, const uint32_t width, const uint32_t height)
 {
-    MOUCA_PRE_CONDITION( isNull() );
-    MOUCA_PRE_CONDITION(imageBuffer.getData() != nullptr);
-    MOUCA_PRE_CONDITION(width > 0 && height > 0);
-    MOUCA_PRE_CONDITION(width * height == imageBuffer.getNbElements());
+    MouCa::preCondition( isNull() );
+    MouCa::preCondition(imageBuffer.getData() != nullptr);
+    MouCa::preCondition(width > 0 && height > 0);
+    MouCa::preCondition(width * height == imageBuffer.getNbElements());
 
     const RT::BufferDescriptor& descriptor = imageBuffer.getDescriptor();
-    MOUCA_PRE_CONDITION(descriptor.getNbDescriptors() == 1 && descriptor.getComponentDescriptor(0).getNbComponents() == 4); //DEV: We support only rgba component
+    MouCa::preCondition(descriptor.getNbDescriptors() == 1 ); //DEV: We support one descriptor
 
-    //Create new buffer
-    _imageData = FreeImage_Allocate(static_cast<int>(width), static_cast<int>(height), 8 * static_cast<int>(descriptor.getByteSize()));
-    if (_imageData == nullptr)
+    //Create new buffer RGB or mono float
+    static const int byteToBit = 8;
+    if(descriptor.getComponentDescriptor(0).getNbComponents() >= 3)
     {
-        MOUCA_THROW_ERROR_1(u8"BasicError", u8"NULLPointerError", u8"_imageData");
+        _imageData = FreeImage_Allocate(static_cast<int>(width), static_cast<int>(height), byteToBit * static_cast<int>(descriptor.getByteSize()));
+    }
+    else
+    {
+        if(descriptor.getComponentDescriptor(0).getFormatType() == RT::Type::UInt16)
+        {
+            _imageData = FreeImage_AllocateT(FIT_UINT16, static_cast<int>(width), static_cast<int>(height), 16);
+        }
+        else
+        {
+            MouCa::preCondition(descriptor.getComponentDescriptor(0).getFormatType() == RT::Type::Float);
+            MouCa::preCondition(byteToBit * static_cast<int>(descriptor.getByteSize()) == 32);
+            _imageData = FreeImage_AllocateT(FIT_FLOAT, static_cast<int>(width), static_cast<int>(height), 32);
+        }
     }
 
-    const char* pSource = reinterpret_cast<const char*>(imageBuffer.getData());
-    char* pPixel = reinterpret_cast<char*>(FreeImage_GetBits(_imageData));
+    if (_imageData == nullptr)
+    {
+        throw Core::Exception(Core::ErrorData("BasicError", "NULLPointerError") << "_imageData");
+    }
+
+    const uint8_t* pSource = reinterpret_cast<const uint8_t*>(imageBuffer.getData());
+    uint8_t* pPixel = FreeImage_GetBits(_imageData);
 
     //Copy the picture
     const uint64_t pitchRow = imageBuffer.getPitchRow();
@@ -81,56 +99,60 @@ void ImageFI::createFill(const RT::BufferCPUBase& imageBuffer, const uint32_t wi
     // Change orientation to Y down
     FreeImage_FlipVertical(_imageData);
 
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 }
 
 void ImageFI::release()
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
     FreeImage_Unload(_imageData);
     _imageData = nullptr;
 
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 RT::Array3ui ImageFI::getExtents(const uint32_t level) const
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(level < getLevels());
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(level < getLevels());
     return { FreeImage_GetWidth(_imageData), FreeImage_GetHeight(_imageData), 1 };
 }
 
 void ImageFI::saveImage(const Core::Path& filename)
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(!filename.empty());
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(!filename.empty());
 
     //Check we have a picture
     if(_imageData == nullptr)
     {
-        MOUCA_THROW_ERROR_1(u8"BasicError", u8"NULLPointerError", u8"m_pImageData");
+        throw Core::Exception(Core::ErrorData("BasicError", "NULLPointerError") << "m_pImageData");
     }
 
     //Try to guess the file format from the file extension
     const FREE_IMAGE_FORMAT imageFormat = FreeImage_GetFIFFromFilenameU(filename.c_str());
     if(imageFormat == FIF_UNKNOWN)
     {
-        MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FIUnknownFileError", filename.u8string());
+        throw Core::Exception(Core::ErrorData("ModuleError", "FIUnknownFileError") << filename.string());
     }
 
     //Check that the plugin has sufficient writing and export capabilities ...
     const unsigned int bpp = FreeImage_GetBPP(_imageData);
-    if(FreeImage_FIFSupportsWriting(imageFormat) && FreeImage_FIFSupportsExportBPP(imageFormat, bpp))
+    const bool supportWriteFormat = FreeImage_FIFSupportsWriting(imageFormat);
+    const bool supportBPP         = FreeImage_FIFSupportsExportBPP(imageFormat, bpp);
+    const bool supportType        = FreeImage_FIFSupportsExportType(imageFormat, FreeImage_GetImageType(_imageData));
+
+    if( supportWriteFormat && supportBPP && supportType)
     {
         // ok, we can save the file
         if(FreeImage_SaveU(imageFormat, _imageData, filename.c_str(), 0) == FALSE)
         {
-            MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FISaveFileError", filename.u8string());
+            throw Core::Exception(Core::ErrorData("ModuleError", "FISaveFileError") << filename.string());
         }
     }
     else
     {
-        MOUCA_THROW_ERROR_1(u8"ModuleError", u8"FISaveFileError", filename.u8string());
+        throw Core::Exception(Core::ErrorData("ModuleError", "FISaveFileError") << filename.string());
     }
 }
 
@@ -142,7 +164,7 @@ void ImageFI::export2D(const Core::Path& filename)
 bool ImageFI::compare(const RT::Image& reference, const size_t nbMaxDefectPixels, const double maxDistance4D,
                       size_t* nbDefectPixels, double* distance) const
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
 
     const uint32_t layer = 0;
     const uint32_t level = 0;
@@ -152,11 +174,11 @@ bool ImageFI::compare(const RT::Image& reference, const size_t nbMaxDefectPixels
     {
 #ifndef NDEBUG
         const RT::Array3ui refExtents = reference.getExtents(level);
-        Core::String message = Core::String(u8"Comparison image: different size: ") + std::to_string(extents.x) + Core::String(u8"x") + std::to_string(extents.y)
-            + Core::String(u8" != ")
-            + std::to_string(refExtents.x) + Core::String(u8"x") + std::to_string(refExtents.y)
-            + Core::String(u8"\nComparison: FAILURE");
-        BT_PRINT_MESSAGE(message);
+        Core::String message = Core::String("Comparison image: different size: ") + std::to_string(extents.x) + Core::String("x") + std::to_string(extents.y)
+            + Core::String(" != ")
+            + std::to_string(refExtents.x) + Core::String("x") + std::to_string(refExtents.y)
+            + Core::String("\nComparison: FAILURE");
+        MouCa::logConsole(message);
 #endif
         return equal;
     }
@@ -189,19 +211,19 @@ bool ImageFI::compare(const RT::Image& reference, const size_t nbMaxDefectPixels
     }
 
 #ifndef NDEBUG
-    const Core::String state = (nbMaxDefectPixels >= nbDefect) ? Core::String(u8"SUCCESS\n") : Core::String(u8"FAILURE\n");
-    Core::String message = Core::String(u8"Comparison image: max defect distance: ") + std::to_string(max) + Core::String(u8" < ") + std::to_string(maxDistance4D)
-        + Core::String(u8"\n                  pixel count: ") + std::to_string(nbDefect) + Core::String(u8" < ") + std::to_string(nbMaxDefectPixels)
-        + Core::String(u8"\nComparison: ") + state;
-    BT_PRINT_MESSAGE(message);
+    const Core::String state = (nbMaxDefectPixels >= nbDefect) ? Core::String("SUCCESS\n") : Core::String("FAILURE\n");
+    Core::String message = Core::String("Comparison image: max defect distance: ") + std::to_string(max) + Core::String(" < ") + std::to_string(maxDistance4D)
+        + Core::String("\n                  pixel count: ") + std::to_string(nbDefect) + Core::String(" < ") + std::to_string(nbMaxDefectPixels)
+        + Core::String("\nComparison: ") + state;
+    MouCa::logConsole(message);
 #endif
     return nbMaxDefectPixels >= nbDefect;
 }
 
 size_t ImageFI::getMemoryOffset(const uint32_t layer, const uint32_t level) const
 {
-    MOUCA_PRE_CONDITION(layer < getLayers());
-    MOUCA_PRE_CONDITION(level < getLevels());
+    MouCa::preCondition(layer < getLayers());
+    MouCa::preCondition(level < getLevels());
     
     // Just a single buffer with one image (no layer or mip-mapping)
     return 0;

@@ -120,21 +120,21 @@ namespace RT
             BufferDescriptor(const size_t memorySize) :
             _descriptors({ ComponentDescriptor(memorySize, RT::Type::Char) }), _totalSizeInByte(memorySize)
             {
-                MOUCA_PRE_CONDITION(_totalSizeInByte > 0);
+                MouCa::preCondition(_totalSizeInByte > 0);
             }
 
             /// Void memory descriptor
             BufferDescriptor(const ComponentDescriptor& descriptor) :
             _descriptors({ descriptor }), _totalSizeInByte(descriptor.getSizeInByte())
             {
-                MOUCA_PRE_CONDITION(_totalSizeInByte > 0);
+                MouCa::preCondition(_totalSizeInByte > 0);
             }
 
             ~BufferDescriptor() = default;
 
             void initialize(const DescriptorArray& descriptorArray)
             {
-                MOUCA_PRE_CONDITION(!descriptorArray.empty());
+                MouCa::preCondition(!descriptorArray.empty());
                 release();
 
                 //Copy
@@ -144,16 +144,16 @@ namespace RT
                 {
                     _totalSizeInByte += descriptor.getSizeInByte();
                 }
-                MOUCA_POST_CONDITION(!_descriptors.empty());
-                MOUCA_POST_CONDITION(_totalSizeInByte > 0);
+                MouCa::postCondition(!_descriptors.empty());
+                MouCa::postCondition(_totalSizeInByte > 0);
             }
 
             void initialize(const size_t szNbDescriptors, const size_t* pNbComponentsArray, const Type* pFormatTypeArray, const ComponentUsage* pComponentTypeArray, const bool* pNormalized)
             {
-                MOUCA_PRE_CONDITION(pNbComponentsArray != nullptr);
-                MOUCA_PRE_CONDITION(pFormatTypeArray != nullptr);
-                MOUCA_PRE_CONDITION(pComponentTypeArray != nullptr);
-                MOUCA_PRE_CONDITION(szNbDescriptors > 0);
+                MouCa::preCondition(pNbComponentsArray != nullptr);
+                MouCa::preCondition(pFormatTypeArray != nullptr);
+                MouCa::preCondition(pComponentTypeArray != nullptr);
+                MouCa::preCondition(szNbDescriptors > 0);
 
                 release();
 
@@ -166,8 +166,8 @@ namespace RT
                     addDescriptor(ComponentDescriptor(pNbComponentsArray[szDescriptor], pFormatTypeArray[szDescriptor], pComponentTypeArray[szDescriptor], pNormalized[szDescriptor]));
                 }
 
-                MOUCA_POST_CONDITION(!_descriptors.empty());
-                MOUCA_POST_CONDITION(_totalSizeInByte > 0);
+                MouCa::postCondition(!_descriptors.empty());
+                MouCa::postCondition(_totalSizeInByte > 0);
             }
 
             void addDescriptor(const ComponentDescriptor& descriptor)
@@ -192,7 +192,7 @@ namespace RT
 
             const ComponentDescriptor& getComponentDescriptor(const size_t szDescriptor) const
             {
-                MOUCA_ASSERT(szDescriptor < _descriptors.size());
+                MouCa::assertion(szDescriptor < _descriptors.size());
                 return _descriptors[szDescriptor];
             }
 

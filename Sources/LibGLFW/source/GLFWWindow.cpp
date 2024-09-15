@@ -13,8 +13,8 @@ namespace GLFW
 Window::Window(const RT::Monitor& monitor, const std::string& windowName, const Mode mode, Platform* manager):
 _window(nullptr), _manager(manager)
 {
-    MOUCA_PRE_CONDITION(monitor.getHandle() != nullptr);
-    //MOUCA_PRE_CONDITION(isMode(mode, Visible) == GLFW_TRUE);
+    MouCa::preCondition(monitor.getHandle() != nullptr);
+    //MouCa::preCondition(isMode(mode, Visible) == GLFW_TRUE);
 
     auto* handleMonitor = reinterpret_cast<GLFWmonitor*>(monitor.getHandle());
     const GLFWvidmode* videoMode = glfwGetVideoMode(handleMonitor);
@@ -34,7 +34,7 @@ _window(nullptr), _manager(manager)
     {
         _window = glfwCreateWindow(videoMode->width, videoMode->height, windowName.c_str(), handleMonitor, nullptr);
     }    
-    MOUCA_ASSERT(_window != nullptr);
+    MouCa::assertion(_window != nullptr);
 
     finalizeWindowHandler();
 }
@@ -52,7 +52,7 @@ _window(nullptr), _manager(manager)
 
     //Build window
     _window = glfwCreateWindow(viewport.getWidth(), viewport.getHeight(), windowName.c_str(), nullptr, nullptr);
-    MOUCA_ASSERT(_window != nullptr);
+    MouCa::assertion(_window != nullptr);
     
     glfwSetWindowPos(_window, viewport.getX(), viewport.getY());
 
@@ -82,7 +82,7 @@ void Window::setVisibility(bool visible)
 
 void Window::finalizeWindowHandler()
 {
-    MOUCA_PRE_CONDITION(_window != nullptr);
+    MouCa::preCondition(_window != nullptr);
 
     //Read and save handle
     _handler = glfwGetWin32Window(_window);
@@ -108,7 +108,7 @@ void Window::finalizeWindowHandler()
 
 bool Window::needClose() const
 {
-    MOUCA_ASSERT(_window != nullptr);
+    MouCa::assertion(_window != nullptr);
     return glfwWindowShouldClose(_window) != GLFW_FALSE;
 }
 
@@ -118,10 +118,10 @@ void Window::onDemandClose(GLFWwindow* glfwWindow)
     Window* window = getWindow(glfwWindow);
     
     //Demand to manager to remove window = close.
-    MOUCA_ASSERT(window->_manager != nullptr);
+    MouCa::assertion(window->_manager != nullptr);
     window->_manager->releaseWindow(window);
     // Check window is properly remove
-    MOUCA_ASSERT(window == nullptr);
+    MouCa::assertion(window == nullptr);
 }
 
 void Window::onIconify(GLFWwindow* glfwWindow, int iconified)
@@ -146,9 +146,9 @@ void Window::onMaximized(GLFWwindow* glfwWindow, int maximized)
 
 void Window::onResize(GLFWwindow* glfwWindow, int width, int height)
 {
-    MOUCA_PRE_CONDITION(glfwWindow != nullptr);
-    MOUCA_PRE_CONDITION(width >= 0);
-    MOUCA_PRE_CONDITION(height >= 0);
+    MouCa::preCondition(glfwWindow != nullptr);
+    MouCa::preCondition(width >= 0);
+    MouCa::preCondition(height >= 0);
     //Get user data (with security)
     Window* window = getWindow(glfwWindow);
     
@@ -157,16 +157,16 @@ void Window::onResize(GLFWwindow* glfwWindow, int width, int height)
 
 void Window::setSize(const uint32_t width, const uint32_t height)
 {
-    MOUCA_PRE_CONDITION(_window != nullptr);
-    MOUCA_PRE_CONDITION(width != 0);
-    MOUCA_PRE_CONDITION(height != 0);
+    MouCa::preCondition(_window != nullptr);
+    MouCa::preCondition(width != 0);
+    MouCa::preCondition(height != 0);
     
     glfwSetWindowSize(_window, width, height);
 }
 
 RT::Array2i Window::getSize() const
 {
-    MOUCA_PRE_CONDITION(_window != nullptr);
+    MouCa::preCondition(_window != nullptr);
     RT::Array2i size;
 
     glfwGetWindowSize(_window, &size.x, &size.y);
@@ -176,7 +176,7 @@ RT::Array2i Window::getSize() const
 
 Window::StateSize Window::getStateSize() const
 {
-    MOUCA_PRE_CONDITION(_window != nullptr);
+    MouCa::preCondition(_window != nullptr);
 
     return glfwGetWindowAttrib(_window, GLFW_ICONIFIED) 
          ? Iconified
@@ -187,7 +187,7 @@ Window::StateSize Window::getStateSize() const
 
 RT::Point2 Window::getPixelScaling() const
 {
-    MOUCA_PRE_CONDITION(_window != nullptr);
+    MouCa::preCondition(_window != nullptr);
 
     RT::Point2 scale;
     glfwGetWindowContentScale(_window, &scale.x, &scale.y);
@@ -197,8 +197,8 @@ RT::Point2 Window::getPixelScaling() const
 
 void Window::setStateSize(const StateSize state)
 {
-    MOUCA_PRE_CONDITION(_window != nullptr);
-    MOUCA_PRE_CONDITION(state < NbStateSize);
+    MouCa::preCondition(_window != nullptr);
+    MouCa::preCondition(state < NbStateSize);
 
     if( state == Normal )
     {
@@ -232,7 +232,7 @@ void Window::onMouseMove(GLFWwindow* glfwWindow, double xpos, double ypos)
 
     if( !window->_eventManager.expired() )
     {
-        MOUCA_PRE_CONDITION(window->getResolution().x > 0 && window->getResolution().y > 0);
+        MouCa::preCondition(window->getResolution().x > 0 && window->getResolution().y > 0);
         // Invert Y
         double yposI = static_cast<double>(window->getResolution().y) - 1.0 - ypos;
         // Half resolution
@@ -294,7 +294,7 @@ void Window::onMouseWheelEvents(GLFWwindow* glfwWindow, double /*xoffset*/, doub
 
 void Window::changeMode( const RT::VirtualMouse& mouse ) const
 {
-    MOUCA_PRE_CONDITION(dynamic_cast<const GLFW::VirtualMouse*>(&mouse) != nullptr);
+    MouCa::preCondition(dynamic_cast<const GLFW::VirtualMouse*>(&mouse) != nullptr);
 
     static_cast<const GLFW::VirtualMouse*>(&mouse)->applyMode( *this );
 }
@@ -306,7 +306,7 @@ RT::Platform& Window::getPlatform() const
 
 void Window::setWindowTitle(const Core::String& title)
 {
-    MOUCA_PRE_CONDITION(_window != nullptr);
+    MouCa::preCondition(_window != nullptr);
 
     glfwSetWindowTitle(_window, title.c_str());
 }

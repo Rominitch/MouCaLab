@@ -28,14 +28,14 @@ void CameraTrackBall::attachCamera(const ObjectSPtr& camera)
 
 void CameraTrackBall::attachSupport(ObjectWPtr support)
 {
-    MOUCA_PRE_CONDITION(_linkCamera.get() != nullptr);
-    MOUCA_PRE_CONDITION(!support.expired() );
+    MouCa::preCondition(_linkCamera.get() != nullptr);
+    MouCa::preCondition(!support.expired() );
 
     _support = support;
 
     updateSupportMatrix();
 
-    MOUCA_POST_CONDITION(!_support.expired());
+    MouCa::postCondition(!_support.expired());
 }
 
 void CameraTrackBall::updateSupportMatrix()
@@ -55,7 +55,7 @@ void CameraTrackBall::updateSupportMatrix()
 
 void CameraTrackBall::rotate(const Vector2& angleRad)
 {
-    MOUCA_ASSERT(_linkCamera != nullptr);
+    MouCa::assertion(_linkCamera != nullptr);
 
     //Add angle
     _movement[ThetaRad] = Core::Maths::angleCyclic(_movement[ThetaRad] + angleRad.x);
@@ -69,7 +69,7 @@ void CameraTrackBall::rotate(const Vector2& angleRad)
 
 void CameraTrackBall::zoom(const float& fZoom)
 {
-    MOUCA_ASSERT(_linkCamera != nullptr);
+    MouCa::assertion(_linkCamera != nullptr);
     _movement[Depth] = glm::clamp(_movement[Depth] + fZoom, _limit[MinDepth], _limit[MaxDepth]);
 
     //Compute matrix
@@ -86,8 +86,8 @@ void CameraTrackBall::moveTo(const CameraOrientation& orientation)
 
 void CameraTrackBall::setDepthRange( const GeoFloat minDepth, const GeoFloat maxDepth )
 {
-    MOUCA_PRE_CONDITION( 0 < minDepth );
-    MOUCA_PRE_CONDITION( minDepth <= maxDepth );
+    MouCa::preCondition( 0 < minDepth );
+    MouCa::preCondition( minDepth <= maxDepth );
     _limit[MinDepth] = minDepth;
     _limit[MaxDepth] = maxDepth;
 }

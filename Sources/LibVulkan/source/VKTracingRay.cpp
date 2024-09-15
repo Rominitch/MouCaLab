@@ -24,8 +24,8 @@ _bindings
 void TracingRay::initialize(const Device& device, const RayTracingPipelineWPtr pipelineW, 
                             const uint32_t firstGroup, const std::array<VkDeviceSize, _nbInputs>& bindings)
 {
-    MOUCA_PRE_CONDITION(!device.isNull());
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(!device.isNull());
+    MouCa::preCondition(isNull());
 
     const auto& properties = device.getPhysicalDeviceRayTracingPipelineProperties();
     const auto& pipeline = pipelineW.lock();
@@ -39,7 +39,7 @@ void TracingRay::initialize(const Device& device, const RayTracingPipelineWPtr p
     if(device.vkGetRayTracingShaderGroupHandlesKHR(device.getInstance(), pipeline->getInstance(), firstGroup, static_cast<uint32_t>(groupCount), 
         static_cast<uint32_t>(_shaderHandleStorage.size()), _shaderHandleStorage.data()) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"ShaderGroupHandlesError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "ShaderGroupHandlesError"));
     }
     
     auto pointer = _shaderHandleStorage.data();
@@ -61,13 +61,13 @@ void TracingRay::initialize(const Device& device, const RayTracingPipelineWPtr p
         ++itBinding;
     }
     
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 }
 
 void TracingRay::release(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!device.isNull());
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!device.isNull());
+    MouCa::preCondition(!isNull());
 
     // Clean buffers
     for(auto& bindings : _bindings)
@@ -77,7 +77,7 @@ void TracingRay::release(const Device& device)
     }
     _shaderHandleStorage.clear();
     
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 }

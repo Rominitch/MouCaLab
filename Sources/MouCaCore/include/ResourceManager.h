@@ -45,7 +45,7 @@ namespace MouCaCore
 
             const Core::Path& getResourceFolder(const size_t idFolder) const
             {
-                MOUCA_ASSERT(_mapFolders.find(idFolder) != _mapFolders.cend()); // DEV Issue: never instantiate folder ID !
+                MouCa::assertion(_mapFolders.find(idFolder) != _mapFolders.cend()); // DEV Issue: never instantiate folder ID !
                 return _mapFolders.at(idFolder);
             }
 
@@ -61,7 +61,7 @@ namespace MouCaCore
             void unregisterResource(Core::Resource* resource)
             {
                 auto itResource = std::find_if(_resources.begin(), _resources.cend(), [&](const Core::ResourceSPtr& item){ return resource == item.get(); });
-                MOUCA_PRE_CONDITION(itResource != _resources.cend());
+                MouCa::preCondition(itResource != _resources.cend());
                 _resources.erase(itResource);
             }
 
@@ -94,7 +94,7 @@ namespace MouCaCore
         //--------------------------------------------------------------------------
         //						    Readable only resources
         //--------------------------------------------------------------------------
-            RT::ShaderFileSPtr openShader( const Core::Path& filename, const RT::ShaderKind kind, const Core::StringOS& sourceShader = Core::StringOS() );
+            RT::ShaderFileSPtr openShader( const Core::Path& filename, const RT::ShaderKind kind, const Core::Path& sourceShader = Core::Path() );
 
             Core::FileSPtr openFile(const Core::Path& filename);
 

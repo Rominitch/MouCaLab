@@ -17,38 +17,38 @@ namespace Vulkan
 GraphicsPipeline::GraphicsPipeline() :
 Pipeline()
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 GraphicsPipeline::~GraphicsPipeline()
 {
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 void GraphicsPipeline::initialize(const Device& device, const RenderPass& renderPass, const PipelineLayout& layout, const PipelineCache& pipelineCache)
 {
-    MOUCA_PRE_CONDITION(isNull());                                 // DEV Issue: Must be never initialize !
-    MOUCA_PRE_CONDITION(!device.isNull());                         // DEV Issue: 
-    MOUCA_PRE_CONDITION(!renderPass.isNull());                     // DEV Issue: 
-    MOUCA_PRE_CONDITION(!layout.isNull());                         // DEV Issue: 
-    MOUCA_PRE_CONDITION(_infos.getStages().getNbShaders() > 0);    // DEV Issue: Need at least one shader program linked !
+    MouCa::preCondition(isNull());                                 // DEV Issue: Must be never initialize !
+    MouCa::preCondition(!device.isNull());                         // DEV Issue: 
+    MouCa::preCondition(!renderPass.isNull());                     // DEV Issue: 
+    MouCa::preCondition(!layout.isNull());                         // DEV Issue: 
+    MouCa::preCondition(_infos.getStages().getNbShaders() > 0);    // DEV Issue: Need at least one shader program linked !
 
     const std::array<VkGraphicsPipelineCreateInfo, 1> infos{ _infos.buildInfo(renderPass, layout) };
 
     if (vkCreateGraphicsPipelines(device.getInstance(), pipelineCache.getInstance(), static_cast<uint32_t>(infos.size()), infos.data(), nullptr, &_pipeline) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"PipelineGraphicCreationError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "PipelineGraphicCreationError"));
     }
-    MOUCA_POST_CONDITION(!isNull()); //Dev Issue: Must be initialize !
+    MouCa::postCondition(!isNull()); //Dev Issue: Must be initialize !
 }
 
 void GraphicsPipeline::initialize(const Device& device, RenderPassWPtr renderPass, PipelineLayoutWPtr layout, PipelineCacheWPtr pipelineCache)
 {
-    MOUCA_PRE_CONDITION(isNull());                                 // DEV Issue: Must be never initialize !
-    MOUCA_PRE_CONDITION(!device.isNull());                         // DEV Issue: 
-    MOUCA_PRE_CONDITION(!renderPass.lock()->isNull());              // DEV Issue: 
-    MOUCA_PRE_CONDITION(!layout.lock()->isNull());                  // DEV Issue: 
-    MOUCA_PRE_CONDITION(_infos.getStages().getNbShaders() > 0);    // DEV Issue: Need at least one shader program linked !
+    MouCa::preCondition(isNull());                                 // DEV Issue: Must be never initialize !
+    MouCa::preCondition(!device.isNull());                         // DEV Issue: 
+    MouCa::preCondition(!renderPass.lock()->isNull());              // DEV Issue: 
+    MouCa::preCondition(!layout.lock()->isNull());                  // DEV Issue: 
+    MouCa::preCondition(_infos.getStages().getNbShaders() > 0);    // DEV Issue: Need at least one shader program linked !
     
     // Keep data
     _renderPass     = renderPass;
@@ -60,19 +60,19 @@ void GraphicsPipeline::initialize(const Device& device, RenderPassWPtr renderPas
 
     if(vkCreateGraphicsPipelines(device.getInstance(), cache, static_cast<uint32_t>(infos.size()), infos.data(), nullptr, &_pipeline) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"PipelineGraphicCreationError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "PipelineGraphicCreationError"));
     }
-    MOUCA_POST_CONDITION(!isNull()); //Dev Issue: Must be initialize !
+    MouCa::postCondition(!isNull()); //Dev Issue: Must be initialize !
 }
 
 void GraphicsPipeline::release(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!isNull()); //Dev Issue: Must be initialize !
+    MouCa::preCondition(!isNull()); //Dev Issue: Must be initialize !
 
     vkDestroyPipeline(device.getInstance(), _pipeline, nullptr);
     _pipeline = VK_NULL_HANDLE;
 
-    MOUCA_POST_CONDITION(isNull()); //Dev Issue: Must be clean !
+    MouCa::postCondition(isNull()); //Dev Issue: Must be clean !
 }
 
 }

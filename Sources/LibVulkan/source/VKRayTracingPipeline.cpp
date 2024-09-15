@@ -13,8 +13,8 @@ namespace Vulkan
 
 void RayTracingPipeline::initialize(const Device& device, PipelineLayoutWPtr layout, uint32_t maxPipelineRayRecursionDepth)
 {
-    MOUCA_PRE_CONDITION(!device.isNull());
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(!device.isNull());
+    MouCa::preCondition(isNull());
 
     _layout = layout;
     _maxPipelineRayRecursionDepth = maxPipelineRayRecursionDepth;
@@ -29,10 +29,10 @@ void RayTracingPipeline::initialize(const Device& device, PipelineLayoutWPtr lay
         nullptr,        // VkAllocationCallbacks*
         &_pipeline) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"RayTracingPipelineCreationError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "RayTracingPipelineCreationError"));
     }
 
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 }
 
 VkRayTracingPipelineCreateInfoKHR RayTracingPipeline::getInfo() const
@@ -58,14 +58,14 @@ VkRayTracingPipelineCreateInfoKHR RayTracingPipeline::getInfo() const
 
 void RayTracingPipeline::release(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!device.isNull());
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!device.isNull());
+    MouCa::preCondition(!isNull());
 
     vkDestroyPipeline(device.getInstance(), _pipeline, nullptr);
 
     _pipeline = VK_NULL_HANDLE;
 
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 

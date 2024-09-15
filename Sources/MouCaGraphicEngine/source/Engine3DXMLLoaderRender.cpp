@@ -23,7 +23,7 @@ struct SubPassAttachment
 
     void buildAttachments(std::vector<VkAttachmentReference>& attachmentReferences)
     {
-        MOUCA_PRE_CONDITION(!colorAttachmentReferences.empty());
+        MouCa::preCondition(!colorAttachmentReferences.empty());
         if (attachmentReferences.empty())
         {
             attachmentReferences.resize(colorAttachmentReferences.size());
@@ -54,24 +54,24 @@ struct SubPassAttachment
 
 void Engine3DXMLLoader::loadRenderPasses(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
+    MouCa::preCondition(!deviceWeak.expired()); //DEV Issue: Bad device !
 
-    auto result = context._parser.getNode(u8"RenderPasses");
+    auto result = context._parser.getNode("RenderPasses");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
 
         auto aPushR = context._parser.autoPushNode(*result->getNode(0));
 
         auto device = deviceWeak.lock();
 
-        auto allRenderPasses = context._parser.getNode(u8"RenderPass");
+        auto allRenderPasses = context._parser.getNode("RenderPass");
         for (size_t idRenderPass = 0; idRenderPass < allRenderPasses->getNbElements(); ++idRenderPass)
         {
             auto renderPassNode = allRenderPasses->getNode(idRenderPass);
             // Mandatory attribute
             bool existing;
-            const uint32_t id = LoaderHelper::getIdentifiant(renderPassNode, u8"RenderPass", _renderPasses, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(renderPassNode, "RenderPass", _renderPasses, context, existing);
             if (existing)
                 continue;
 
@@ -102,7 +102,7 @@ void Engine3DXMLLoader::loadRenderPasses(ContextLoading& context, Vulkan::Contex
 
 void Engine3DXMLLoader::loadRenderPassAttachment(ContextLoading& context, const uint32_t id, std::vector<VkAttachmentDescription>& attachments)
 {
-    auto allAttachments = context._parser.getNode(u8"Attachment");
+    auto allAttachments = context._parser.getNode("Attachment");
 
     attachments.resize(allAttachments->getNbElements());
     for (size_t idAttachment = 0; idAttachment < allAttachments->getNbElements(); ++idAttachment)
@@ -111,51 +111,51 @@ void Engine3DXMLLoader::loadRenderPassAttachment(ContextLoading& context, const 
 
         auto& attachment = attachments[idAttachment];
         // Extract VKImage format (from swapchain image or image)
-        if (attachmentNode->hasAttribute(u8"surfaceId"))
+        if (attachmentNode->hasAttribute("surfaceId"))
         {
-            const uint32_t surfaceId = LoaderHelper::getLinkedIdentifiant(attachmentNode, u8"surfaceId", _surfaces, context);
+            const uint32_t surfaceId = LoaderHelper::getLinkedIdentifiant(attachmentNode, "surfaceId", _surfaces, context);
 
             // Use format of swapchain
             attachment.format = _surfaces[surfaceId].lock()->getFormat().getConfiguration()._format.format;
         }
-        else if (attachmentNode->hasAttribute(u8"imageId"))
+        else if (attachmentNode->hasAttribute("imageId"))
         {
-            const uint32_t imageId = LoaderHelper::getLinkedIdentifiant(attachmentNode, u8"imageId", _images, context);
+            const uint32_t imageId = LoaderHelper::getLinkedIdentifiant(attachmentNode, "imageId", _images, context);
 
             // Use format of image
             attachment.format = _images[imageId].lock()->getFormat();
         }
         else
         {
-            MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLRenderPassFormatError", context.getFileName(), std::to_string(id));
+            throw Core::Exception(Core::ErrorData("Engine3D", "XMLRenderPassFormatError") << context.getFileName().string() << std::to_string(id));
         }
-        MOUCA_ASSERT(attachment.format != VK_FORMAT_UNDEFINED);
+        MouCa::assertion(attachment.format != VK_FORMAT_UNDEFINED);
 
         // Read sampler
-        attachment.samples = LoaderHelper::readValue(attachmentNode, u8"samples", samples, false, context);
-        MOUCA_ASSERT(Core::Maths::isPowerOfTwo(static_cast<uint32_t>(attachment.samples)));
+        attachment.samples = LoaderHelper::readValue(attachmentNode, "samples", samples, false, context);
+        MouCa::assertion(Core::Maths::isPowerOfTwo(static_cast<uint32_t>(attachment.samples)));
 
         // Read load/store
-        attachment.loadOp = LoaderHelper::readValue(attachmentNode, u8"loadOp", attachmentLoads, false, context);
-        attachment.storeOp = LoaderHelper::readValue(attachmentNode, u8"storeOp", attachmentStores, false, context);
-        attachment.stencilLoadOp = LoaderHelper::readValue(attachmentNode, u8"stencilLoadOp", attachmentLoads, false, context);
-        attachment.stencilStoreOp = LoaderHelper::readValue(attachmentNode, u8"stencilSaveOp", attachmentStores, false, context);
+        attachment.loadOp = LoaderHelper::readValue(attachmentNode, "loadOp", attachmentLoads, false, context);
+        attachment.storeOp = LoaderHelper::readValue(attachmentNode, "storeOp", attachmentStores, false, context);
+        attachment.stencilLoadOp = LoaderHelper::readValue(attachmentNode, "stencilLoadOp", attachmentLoads, false, context);
+        attachment.stencilStoreOp = LoaderHelper::readValue(attachmentNode, "stencilSaveOp", attachmentStores, false, context);
 
         // Read layout
-        attachment.initialLayout = LoaderHelper::readValue(attachmentNode, u8"initialLayout", imageLayouts, false, context);
-        attachment.finalLayout = LoaderHelper::readValue(attachmentNode, u8"finalLayout", imageLayouts, false, context);
+        attachment.initialLayout = LoaderHelper::readValue(attachmentNode, "initialLayout", imageLayouts, false, context);
+        attachment.finalLayout = LoaderHelper::readValue(attachmentNode, "finalLayout", imageLayouts, false, context);
     }
 
     // Manage errors
     if (attachments.empty())
     {
-        MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLRenderPassMissAttachmentError", context.getFileName(), std::to_string(id));
+        throw Core::Exception(Core::ErrorData("Engine3D", "XMLRenderPassMissAttachmentError") << context.getFileName().string() << std::to_string(id));
     }
 }
 
 void Engine3DXMLLoader::loadRenderPassSubPass(ContextLoading& context, const uint32_t id, std::vector<VkSubpassDescription>& subPasses, std::vector<SubPassAttachment>& attachmentReferences)
 {
-    auto allSubPasses = context._parser.getNode(u8"SubPass");
+    auto allSubPasses = context._parser.getNode("SubPass");
 
     // Allocated memory
     subPasses.resize(allSubPasses->getNbElements());
@@ -168,12 +168,12 @@ void Engine3DXMLLoader::loadRenderPassSubPass(ContextLoading& context, const uin
         auto& attachments = attachmentReferences[idSubPass];
 
         // Read data
-        subPass.pipelineBindPoint = LoaderHelper::readValue(subPassNode, u8"bindPoint", bindPoints, false, context);
+        subPass.pipelineBindPoint = LoaderHelper::readValue(subPassNode, "bindPoint", bindPoints, false, context);
 
         auto aPush = context._parser.autoPushNode(*subPassNode);
 
         // Read color attachment
-        auto allColorAttachments = context._parser.getNode(u8"ColorAttachment");
+        auto allColorAttachments = context._parser.getNode("ColorAttachment");
         attachments.buildColorAttachments(allColorAttachments->getNbElements());
         for (size_t idAttachment = 0; idAttachment < allColorAttachments->getNbElements(); ++idAttachment)
         {
@@ -182,42 +182,42 @@ void Engine3DXMLLoader::loadRenderPassSubPass(ContextLoading& context, const uin
             // Read color Attachment
             attachments.colorAttachmentReferences[idAttachment] =
             {
-                LoaderHelper::readValue(colorAttachmentNode, u8"colorAttachment", subPassAttachmentHelper, false, context),
-                LoaderHelper::readValue(colorAttachmentNode, u8"colorLayout", imageLayouts, false, context)
+                LoaderHelper::readValue(colorAttachmentNode, "colorAttachment", subPassAttachmentHelper, false, context),
+                LoaderHelper::readValue(colorAttachmentNode, "colorLayout", imageLayouts, false, context)
             };
 
             // Read depth/stencil Attachment
-            if (colorAttachmentNode->hasAttribute(u8"depthStencilAttachment"))
+            if (colorAttachmentNode->hasAttribute("depthStencilAttachment"))
             {
                 attachments.buildDepthAttachments();
 
                 attachments.depthAttachmentReferences[idAttachment] =
                 {
-                    LoaderHelper::readValue(colorAttachmentNode, u8"depthStencilAttachment", subPassAttachmentHelper, false, context),
-                    LoaderHelper::readValue(colorAttachmentNode, u8"depthStencilLayout", imageLayouts, false, context)
+                    LoaderHelper::readValue(colorAttachmentNode, "depthStencilAttachment", subPassAttachmentHelper, false, context),
+                    LoaderHelper::readValue(colorAttachmentNode, "depthStencilLayout", imageLayouts, false, context)
                 };
             }
             // Read resolve Attachment (optional)
-            if (colorAttachmentNode->hasAttribute(u8"resolveAttachment"))
+            if (colorAttachmentNode->hasAttribute("resolveAttachment"))
             {
                 // Allocate now buffer (re-entrance do nothing)
                 attachments.buildResolveAttachments();
 
                 attachments.colorAttachmentReferences[idAttachment] =
                 {
-                    LoaderHelper::readValue(colorAttachmentNode, u8"resolveAttachment", subPassAttachmentHelper, false, context),
-                    LoaderHelper::readValue(colorAttachmentNode, u8"resolveLayout", imageLayouts, false, context)
+                    LoaderHelper::readValue(colorAttachmentNode, "resolveAttachment", subPassAttachmentHelper, false, context),
+                    LoaderHelper::readValue(colorAttachmentNode, "resolveLayout", imageLayouts, false, context)
                 };
             }
         }
 
         if (attachments.colorAttachmentReferences.empty())
         {
-            MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLRenderPassMissColorAttachmentError", context.getFileName(), std::to_string(idSubPass));
+            throw Core::Exception(Core::ErrorData("Engine3D", "XMLRenderPassMissColorAttachmentError") << context.getFileName().string() << std::to_string(idSubPass));
         }
 
         // Read color attachment
-        auto allInputAttachments = context._parser.getNode(u8"InputAttachment");
+        auto allInputAttachments = context._parser.getNode("InputAttachment");
         attachments.inputAttachmentReferences.resize(allInputAttachments->getNbElements());
         for (size_t idAttachment = 0; idAttachment < allInputAttachments->getNbElements(); ++idAttachment)
         {
@@ -226,18 +226,18 @@ void Engine3DXMLLoader::loadRenderPassSubPass(ContextLoading& context, const uin
             // Read depth/stencil Attachment
             attachments.inputAttachmentReferences[idAttachment] =
             {
-                LoaderHelper::readValue(inputAttachmentNode, u8"attachment", subPassAttachmentHelper, false, context),
-                LoaderHelper::readValue(inputAttachmentNode, u8"layout",     imageLayouts, false, context)
+                LoaderHelper::readValue(inputAttachmentNode, "attachment", subPassAttachmentHelper, false, context),
+                LoaderHelper::readValue(inputAttachmentNode, "layout",     imageLayouts, false, context)
             };
         }
 
         // Read preserve attachment
-        auto allPreserveAttachments = context._parser.getNode(u8"PreserveAttachment");
+        auto allPreserveAttachments = context._parser.getNode("PreserveAttachment");
         attachments.preserveAttachmentReferences.resize(allPreserveAttachments->getNbElements());
         for (size_t idAttachment = 0; idAttachment < allPreserveAttachments->getNbElements(); ++idAttachment)
         {
             auto preserveAttachmentNode = allPreserveAttachments->getNode(idAttachment);
-            attachments.preserveAttachmentReferences[idAttachment] = LoaderHelper::readValue(preserveAttachmentNode, u8"attachment", subPassAttachmentHelper, false, context);
+            attachments.preserveAttachmentReferences[idAttachment] = LoaderHelper::readValue(preserveAttachmentNode, "attachment", subPassAttachmentHelper, false, context);
         }
 
         // Link array to data
@@ -259,13 +259,13 @@ void Engine3DXMLLoader::loadRenderPassSubPass(ContextLoading& context, const uin
 
     if (subPasses.empty())
     {
-        MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLRenderPassMissSubpassError", context.getFileName(), std::to_string(id));
+        throw Core::Exception(Core::ErrorData("Engine3D", "XMLRenderPassMissSubpassError") << context.getFileName().string() << std::to_string(id));
     }
 }
 
 void Engine3DXMLLoader::loadRenderPassDependency(ContextLoading& context, const uint32_t id, std::vector<VkSubpassDependency>& dependencies, const std::vector<VkSubpassDescription>& subPass)
 {
-    auto allDependencies = context._parser.getNode(u8"Dependency");
+    auto allDependencies = context._parser.getNode("Dependency");
 
     dependencies.reserve(allDependencies->getNbElements());
     for (size_t idDependency = 0; idDependency < allDependencies->getNbElements(); ++idDependency)
@@ -273,22 +273,22 @@ void Engine3DXMLLoader::loadRenderPassDependency(ContextLoading& context, const 
         auto dependencyNode = allDependencies->getNode(idDependency);
         const VkSubpassDependency subDependency
         {
-            LoaderHelper::readValue(dependencyNode, u8"srcSubpass",      subPassHelper,      false, context),
-            LoaderHelper::readValue(dependencyNode, u8"dstSubpass",      subPassHelper,      false, context),
-            LoaderHelper::readValue(dependencyNode, u8"srcStageMask",    pipelineStageFlags, true,  context),
-            LoaderHelper::readValue(dependencyNode, u8"dstStageMask",    pipelineStageFlags, true,  context),
-            LoaderHelper::readValue(dependencyNode, u8"srcAccessMask",   accessFlags,        true,  context),
-            LoaderHelper::readValue(dependencyNode, u8"dstAccessMask",   accessFlags,        true,  context),
-            LoaderHelper::readValue(dependencyNode, u8"dependencyFlags", dependencyFlags,    true,  context),
+            LoaderHelper::readValue(dependencyNode, "srcSubpass",      subPassHelper,      false, context),
+            LoaderHelper::readValue(dependencyNode, "dstSubpass",      subPassHelper,      false, context),
+            LoaderHelper::readValue(dependencyNode, "srcStageMask",    pipelineStageFlags, true,  context),
+            LoaderHelper::readValue(dependencyNode, "dstStageMask",    pipelineStageFlags, true,  context),
+            LoaderHelper::readValue(dependencyNode, "srcAccessMask",   accessFlags,        true,  context),
+            LoaderHelper::readValue(dependencyNode, "dstAccessMask",   accessFlags,        true,  context),
+            LoaderHelper::readValue(dependencyNode, "dependencyFlags", dependencyFlags,    true,  context),
         };
 
         if (subDependency.dstSubpass != VK_SUBPASS_EXTERNAL && subDependency.dstSubpass >= subPass.size())
         {
-            MOUCA_THROW_ERROR_4(u8"Engine3D", u8"XMLRenderPassUnknownSubpassError", context.getFileName(), std::to_string(id), u8"dstSubpass", std::to_string(subDependency.dstSubpass));
+            throw Core::Exception(Core::ErrorData("Engine3D", "XMLRenderPassUnknownSubpassError") << context.getFileName().string() << std::to_string(id) << "dstSubpass" << std::to_string(subDependency.dstSubpass));
         }
         if (subDependency.srcSubpass != VK_SUBPASS_EXTERNAL && subDependency.srcSubpass >= subPass.size())
         {
-            MOUCA_THROW_ERROR_4(u8"Engine3D", u8"XMLRenderPassUnknownSubpassError", context.getFileName(), std::to_string(id), u8"srcSubpass", std::to_string(subDependency.srcSubpass));
+            throw Core::Exception(Core::ErrorData("Engine3D", "XMLRenderPassUnknownSubpassError") << context.getFileName().string() << std::to_string(id) << "srcSubpass" << std::to_string(subDependency.srcSubpass));
         }
         dependencies.emplace_back(subDependency);
     }

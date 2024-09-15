@@ -46,12 +46,12 @@ namespace Core
 
             void setFileInfo(const Path& filename, const Mode eMode = Mode::NoRefresh)
             {
-                MOUCA_PRE_CONDITION(isNull()); //DEV Issue: Need unload resource
+                MouCa::preCondition(isNull()); //DEV Issue: Need unload resource
 
                 _filename = filename;
                 _eMode    = eMode;
 
-                MOUCA_POST_CONDITION(!isNull()); //DEV Issue: Don't change resource
+                MouCa::postCondition(!isNull()); //DEV Issue: Don't change resource
             }
 
             virtual void release() = 0;

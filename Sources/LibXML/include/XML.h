@@ -28,15 +28,15 @@ namespace XML
 
             virtual bool isNull() const = 0;
 
-            virtual bool hasAttribute(const Core::String& label) const = 0;
+            virtual bool hasAttribute(const Core::StringView& label) const = 0;
 
-            virtual void getAttribute(const Core::String& label, bool& value) const = 0;
-            virtual void getAttribute(const Core::String& label, Core::String& value) const = 0;
-            virtual void getAttribute(const Core::String& label, uint32_t& value) const = 0;
-            virtual void getAttribute(const Core::String& label, int32_t& value) const = 0;
-            virtual void getAttribute(const Core::String& label, uint64_t& value) const = 0;
-            virtual void getAttribute(const Core::String& label, int64_t& value) const = 0;
-            virtual void getAttribute(const Core::String& label, float& value) const = 0;
+            virtual void getAttribute(const Core::StringView& label, bool& value) const = 0;
+            virtual void getAttribute(const Core::StringView& label, Core::String& value) const = 0;
+            virtual void getAttribute(const Core::StringView& label, uint32_t& value) const = 0;
+            virtual void getAttribute(const Core::StringView& label, int32_t& value) const = 0;
+            virtual void getAttribute(const Core::StringView& label, uint64_t& value) const = 0;
+            virtual void getAttribute(const Core::StringView& label, int64_t& value) const = 0;
+            virtual void getAttribute(const Core::StringView& label, float& value) const = 0;
     };
     using NodeUPtr = std::unique_ptr<Node>;
 
@@ -87,15 +87,14 @@ namespace XML
         //-----------------------------------------------------------------------------------------
         //                                  Parsing with stack
         //-----------------------------------------------------------------------------------------
-            virtual ResultUPtr getNode(const Core::String& name) const = 0;
+            virtual ResultUPtr getNode(const Core::StringView& strName) const = 0;
 
             virtual AutoPop autoPushNode(const Node& node) = 0;
 
             virtual void pushNode(const Node& node) = 0;
             virtual void popNode() = 0;
 
-            virtual NodeUPtr searchNode(const Core::String& nodeLabel, const Core::String& parameterLabel, const Core::String& strValue) const = 0;
-
+            virtual NodeUPtr searchNode(const Core::StringView& strNodeLabel, const Core::StringView& strParameterLabel, const Core::String& strValue) const = 0;
         //-----------------------------------------------------------------------------------------
         //                                 Parsing without stack
         //-----------------------------------------------------------------------------------------

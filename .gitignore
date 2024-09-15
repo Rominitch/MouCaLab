@@ -7,3 +7,5 @@ __pycache__/
 *.user
 CodeCoverage.cov
 imgui.ini
+*.json
+*.json.command

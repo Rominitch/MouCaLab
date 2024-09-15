@@ -143,6 +143,7 @@ namespace MouCaGraphic
             const Vulkan::WindowSurfaces& getSurfaces() const       { return _surfaces; }
             const Vulkan::Environment&    getEnvironment() const    { return _environment; }
             const Vulkan::ContextWindows& getContextWindows() const { return _windows; }
+            Vulkan::ContextWindows& getContextWindows() { return _windows; }
 
         //-----------------------------------------------------------------------------------------
         //                                      Build item

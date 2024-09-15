@@ -180,7 +180,7 @@ namespace RT
 
             RT::Array3ui getExtents(const uint32_t level) const override
             {
-                MOUCA_PRE_CONDITION(level < getLevels());
+                MouCa::preCondition(level < getLevels());
                 MOUCA_UNUSED(level);
                 return _extents;
             }
@@ -211,16 +211,16 @@ namespace RT
 
             void release() override
             {
-                MOUCA_PRE_CONDITION(!isNull());
+                MouCa::preCondition(!isNull());
                 if (_image != nullptr)
                 {
-                    MOUCA_PRE_CONDITION(_image.use_count() == 1); // DEV Issue: Not latest instance ?
+                    MouCa::preCondition(_image.use_count() == 1); // DEV Issue: Not latest instance ?
                     _image->release();
                     _image.reset();
                 }
                 _filename.clear();
 
-                MOUCA_POST_CONDITION(isNull());
+                MouCa::postCondition(isNull());
             }
 
             //------------------------------------------------------------------------

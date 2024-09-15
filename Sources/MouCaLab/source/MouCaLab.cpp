@@ -79,7 +79,7 @@ void MouCaLabTest::loadEngine(MouCaGraphic::Engine3DXMLLoader& loader, const Cor
     XML::ParserSPtr xmlFile;
     ASSERT_NO_THROW(xmlFile = _core.getResourceManager().openXML(pathFile));
     ASSERT_NO_THROW(xmlFile->openXMLFile());
-    ASSERT_TRUE(xmlFile->isLoaded()) << u8"Impossible to read XML";
+    ASSERT_TRUE(xmlFile->isLoaded()) << "Impossible to read XML";
 
     // Let go !!
     MouCaGraphic::Engine3DXMLLoader::ContextLoading context(_graphic, *xmlFile, _core.getResourceManager());
@@ -96,20 +96,19 @@ void MouCaLabTest::loadEngine(MouCaGraphic::Engine3DXMLLoader& loader, const Cor
         for (size_t id = 0; id < exception.getNbErrors(); ++id)
         {
             const auto& error = exception.read(id);
-            message += error.getLibraryLabel() + u8" " + error.getErrorLabel() + u8":\n"
-                + _core.getExceptionManager().getError(error) + u8"\n\n";
+            message += std::format("{} {}:\n{}\n\n", error.getLibraryLabel(), error.getErrorLabel(),_core.getExceptionManager().getError(error));
         }
 
         // Release resource (no needed anymore)
         _core.getResourceManager().releaseResource(std::move(xmlFile));
 
-        FAIL() << u8"XML loading error:\n" << message << u8"\nXML file: " << pathFile;
+        FAIL() << "XML loading error:\n" << message << "\nXML file: " << pathFile;
     }
     catch (...)
     {
         // Release resource (no needed anymore)
         _core.getResourceManager().releaseResource(std::move(xmlFile));
-        FAIL() << u8"XML loading error - Unknown error - XML file: " << pathFile;
+        FAIL() << "XML loading error - Unknown error - XML file: " << pathFile;
     }
 }
 
@@ -161,7 +160,7 @@ void MouCaLabTest::mainLoop(MouCaGraphic::VulkanManager& manager, const Core::St
             if (window->getStateSize() == RT::Window::Normal)
             {
                 std::stringstream ss;
-                ss << title << lastFPS << u8" FPS";
+                ss << title << lastFPS << " FPS";
                 window->setWindowTitle(ss.str());
             }
         }
@@ -203,18 +202,18 @@ void MouCaLabTest::takeScreenshot(MouCaGraphic::VulkanManager& manager, const Co
     const bool compare = diskImage->getImage().lock()->compare(*refImage->getImage().lock(), nbMaxDefectPixels, maxDistance4D, &nbDefect, &maxFoundDistance);
     if (!compare) // Have you update the reference ? Or bug ?
     {
-        const std::filesystem::path sourceFile(MouCaEnvironment::getOutputPath() / imageFile);
-        const std::filesystem::path targetParent(MouCaEnvironment::getOutputPath() / L".." / L".." / L".." / L"Report");
-        const std::filesystem::path targetFile(targetParent / imageFile);
+        const Core::Path sourceFile(MouCaEnvironment::getOutputPath() / imageFile);
+        const Core::Path targetParent(MouCaEnvironment::getOutputPath() / L".." / L".." / L".." / L"Report");
+        const Core::Path targetFile(targetParent / imageFile);
 
         // Duplicate result into failure folder
         if (!std::filesystem::exists(targetParent))
             ASSERT_NO_THROW(std::filesystem::create_directories(targetParent)); // Recursively create target directory if not existing.
         ASSERT_NO_THROW(std::filesystem::copy_file(sourceFile, targetFile, std::filesystem::copy_options::overwrite_existing));
 
-        EXPECT_TRUE(compare) << u8"Image comparison failed: " << imageFile << u8"\n"
-            << u8"Defect pixel: " << nbDefect << " > " << nbMaxDefectPixels << u8"\n"
-            << u8"With tolerance of " << maxDistance4D << u8"(max found: " << maxFoundDistance << u8")";
+        EXPECT_TRUE(compare) << "Image comparison failed: " << imageFile << "\n"
+            << "Defect pixel: " << nbDefect << " > " << nbMaxDefectPixels << "\n"
+            << "With tolerance of " << maxDistance4D << "(max found: " << maxFoundDistance << ")";
     }
 
     _core.getResourceManager().releaseResource(std::move(diskImage));
@@ -224,7 +223,7 @@ void MouCaLabTest::takeScreenshot(MouCaGraphic::VulkanManager& manager, const Co
 void MouCaLabTest::enableFileTracking(MouCaGraphic::VulkanManager& manager)
 {
     auto& fileTracker = _core.getResourceManager().getTracker();
-    MOUCA_PRE_CONDITION(!fileTracker.signalFileChanged().isConnected(&manager));
+    MouCa::preCondition(!fileTracker.signalFileChanged().isConnected(&manager));
 
     fileTracker.signalFileChanged().connectMember(&manager, &MouCaGraphic::VulkanManager::afterShaderEdition);
 
@@ -234,7 +233,7 @@ void MouCaLabTest::enableFileTracking(MouCaGraphic::VulkanManager& manager)
 void MouCaLabTest::disableFileTracking(MouCaGraphic::VulkanManager& manager)
 {
     auto& fileTracker = _core.getResourceManager().getTracker();
-    MOUCA_PRE_CONDITION(fileTracker.signalFileChanged().isConnected(&manager));
+    MouCa::preCondition(fileTracker.signalFileChanged().isConnected(&manager));
 
     fileTracker.stopTracking();
 

@@ -8,7 +8,7 @@ namespace GUI
 TEST(GUIWidget, API)
 {
     Widget widget;
-    widget.setName(Core::String(u8"MyWidget"));
+    widget.setName(Core::String("MyWidget"));
 
     // Default state after build
     EXPECT_TRUE(widget.isState(Widget::State::Visible));

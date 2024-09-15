@@ -12,9 +12,11 @@ namespace Core
 
     //----------------------------------------------------------------------------
     /// \brief Compute time elapse tick.
+    template<class Precision>
     class Elapser
     {
         MOUCA_NOCOPY_NOMOVE(Elapser);
+
         public:
             /// Constructor
             Elapser() :
@@ -39,13 +41,24 @@ namespace Core
             int64_t tick()
             {
                 _afterFrameTimer = ChronoClock::now();
-                int64_t elapse = std::chrono::duration_cast<ChronoPrecision>(_afterFrameTimer - _beforeFrameTimer).count();
+                int64_t elapse = std::chrono::duration_cast<Precision>(_afterFrameTimer - _beforeFrameTimer).count();
                 _beforeFrameTimer = _afterFrameTimer;
 
                 return elapse;
             }
+
+            //------------------------------------------------------------------------
+            /// \brief
+            ///
+            int64_t elapse()
+            {
+                _afterFrameTimer = ChronoClock::now();
+                return std::chrono::duration_cast<Precision>(_afterFrameTimer - _beforeFrameTimer).count();
+            }
+
         private:
             ChronoTimePoint _beforeFrameTimer;
             ChronoTimePoint _afterFrameTimer;
     };
+    using ElapserCP = Elapser<std::chrono::milliseconds>;
 }

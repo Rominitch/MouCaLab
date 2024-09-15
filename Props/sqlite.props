@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <SQLITE_PATH>$(SolutionDir)..\SDK\sqlite-3.36\</SQLITE_PATH>
+    <SQLITE_PATH>$(MOUCA_SDK)sqlite-3.46\</SQLITE_PATH>
     <SQLITE_INCLUDE>$(SQLITE_PATH)sqlite</SQLITE_INCLUDE>
   </PropertyGroup>
   <PropertyGroup />

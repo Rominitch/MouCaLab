@@ -44,9 +44,22 @@
 
 namespace MouCaGraphic
 {
+
+Core::ErrorData Engine3DXMLLoader::makeLoaderError(const ContextLoading& context, const Core::StringView& idError) const
+{
+    return Core::ErrorData("Engine3D", idError) << context.getFileName().string();
+}
+
+template<>
+static void LoaderHelper::readData(const XML::NodeUPtr& node, VkExtent3D& extent)
+{
+    node->getAttribute("width", extent.width);
+    node->getAttribute("height", extent.height);
+    node->getAttribute("depth", extent.depth);
+}
     
 Engine3DXMLLoader::ContextLoading::ContextLoading(GraphicEngine& engine, XML::Parser& parser, MouCaCore::ResourceManager& resources):
-_engine(engine), _parser(parser), _resources(resources), _xmlFileName(Core::convertToU8(parser.getFilename()))
+_engine(engine), _parser(parser), _resources(resources), _xmlFileName(parser.getFilename())
 {}
 
 //-----------------------------------------------------------------------------------------
@@ -58,23 +71,23 @@ Engine3DXMLLoader::~Engine3DXMLLoader()
 
 void Engine3DXMLLoader::load(ContextLoading& context)
 {
-    MOUCA_PRE_CONDITION(context._parser.isLoaded()); //DEV Issue: Need a valid xml.
+    MouCa::preCondition(context._parser.isLoaded()); //DEV Issue: Need a valid xml.
 
     //Read Engine part
-    auto result = context._parser.getNode(u8"Engine3D");
+    auto result = context._parser.getNode("Engine3D");
     if (result->getNbElements() == 0)
     {
-        MOUCA_THROW_ERROR_2(u8"Engine3D", u8"LoadingXMLCorruptError", context.getFileName(), u8"Engine3D");
+        throw Core::Exception(makeLoaderError(context, "LoadingXMLCorruptError") << "Engine3D");
     }
 
     XML::NodeUPtr engineNode = result->getNode(0);
     float version;
-    engineNode->getAttribute(u8"version", version);
+    engineNode->getAttribute("version", version);
 
     // Check version before continue
     if (VulkanManager::_version < version)
     {
-        MOUCA_THROW_ERROR_2(u8"Engine3D", u8"LoadingXMLVersionError", context.getFileName(), std::to_string(version));
+        throw Core::Exception(makeLoaderError(context, "LoadingXMLVersionError") << std::to_string(version));
     }
 
     //Go to node
@@ -88,10 +101,10 @@ void Engine3DXMLLoader::load(ContextLoading& context)
     }
 
     // Prepare global data node
-    auto datas = context._parser.getNode(u8"GlobalData");
+    auto datas = context._parser.getNode("GlobalData");
     if (datas->getNbElements() > 0)
     {
-        MOUCA_ASSERT(datas->getNbElements() == 1);
+        MouCa::assertion(datas->getNbElements() == 1);
         context._globalData = datas->getNode(0);
     }
 
@@ -108,37 +121,37 @@ void Engine3DXMLLoader::load(ContextLoading& context)
 
 void Engine3DXMLLoader::loadWindows(ContextLoading& context)
 {
-    MOUCA_PRE_CONDITION(_dialogs.empty());
+    MouCa::preCondition(_dialogs.empty());
 
-    auto result = context._parser.getNode(u8"Window");
+    auto result = context._parser.getNode("Window");
     for (size_t idWindow = 0; idWindow < result->getNbElements(); ++idWindow)
     {
         auto window = result->getNode(idWindow);
         bool existing;
-        const uint32_t id = LoaderHelper::getIdentifiant(window, u8"Window", _dialogs, context, existing);
+        const uint32_t id = LoaderHelper::getIdentifiant(window, "Window", _dialogs, context, existing);
         if (existing)
             continue;
 
         // Title
         Core::String title;
-        window->getAttribute(u8"title", title);
+        window->getAttribute("title", title);
 
         // Mode
         bool state = false;
-        window->getAttribute(u8"visible", state);
+        window->getAttribute("visible", state);
         auto mode = (state ? RT::Window::Visible : RT::Window::Unknown);
 
         // Viewport
-        if (window->hasAttribute(u8"monitor"))
+        if (window->hasAttribute("monitor"))
         {
             size_t idMonitor = 0;
-            window->getAttribute(u8"monitor", idMonitor);
+            window->getAttribute("monitor", idMonitor);
             if (idMonitor >= context._engine.getMonitors().size())
             {
-                MOUCA_THROW_ERROR_2(u8"Engine3D", u8"WindowUnknownMonitorError", context.getFileName(), std::to_string(idMonitor));
+                throw Core::Exception(makeLoaderError(context, "WindowUnknownMonitorError") << std::to_string(idMonitor));
             }
 
-            window->getAttribute(u8"fullscreen", state);
+            window->getAttribute("fullscreen", state);
             mode = static_cast<RT::Window::Mode>(mode | (state ? RT::Window::Resizable : RT::Window::Unknown));
 
             // Build dialog
@@ -148,12 +161,12 @@ void Engine3DXMLLoader::loadWindows(ContextLoading& context)
         {
             int32_t posX = 0, posY = 0;
             RT::ViewportInt32 viewport;
-            window->getAttribute(u8"positionX", posX);
-            window->getAttribute(u8"positionY", posY);
+            window->getAttribute("positionX", posX);
+            window->getAttribute("positionY", posY);
             viewport.setOffset(posX, posY);
 
-            LoaderHelper::readAttribute(window, u8"width",  posX, context);
-            LoaderHelper::readAttribute(window, u8"height", posY, context);
+            LoaderHelper::readAttribute(window, "width",  posX, context);
+            LoaderHelper::readAttribute(window, "height", posY, context);
             viewport.setSize(posX, posY);
 
             // Validate window
@@ -167,20 +180,20 @@ void Engine3DXMLLoader::loadWindows(ContextLoading& context)
 
             if (!valid)
             {
-                MOUCA_THROW_ERROR_2(u8"Engine3D", u8"WindowCreationOutsideError", context.getFileName(), u8"La position de la fenêtre n'est pas dans un écran.");
+                throw Core::Exception(makeLoaderError(context, "WindowCreationOutsideError") << "Current windows is not on a screen.");
             }
 
             // Mode
-            window->getAttribute(u8"resizable", state);
+            window->getAttribute("resizable", state);
             mode = static_cast<RT::Window::Mode>(mode | (state ? RT::Window::Resizable : RT::Window::Unknown));
-            window->getAttribute(u8"border", state);
+            window->getAttribute("border", state);
             mode = static_cast<RT::Window::Mode>(mode | (state ? RT::Window::Border : RT::Window::Unknown));
 
             // Build dialog
             _dialogs[id] = context._engine.getRTPlatform().createWindow(viewport, title, mode);
         }
 
-        MOUCA_ASSERT(!_dialogs[id].expired());
+        MouCa::assertion(!_dialogs[id].expired());
 
         // Register dialog
         _manager.addRenderDialog(_dialogs[id]);
@@ -189,7 +202,7 @@ void Engine3DXMLLoader::loadWindows(ContextLoading& context)
 
 void Engine3DXMLLoader::loadVR(ContextLoading& context)
 {
-    auto result = context._parser.getNode(u8"VRHeadset");
+    auto result = context._parser.getNode("VRHeadset");
 
     // Initialize VR
     if(result->getNbElements()==1)
@@ -204,35 +217,35 @@ void Engine3DXMLLoader::loadVR(ContextLoading& context)
 
 void Engine3DXMLLoader::loadSurfaces(ContextLoading& context, Vulkan::ContextDeviceWPtr device)
 {
-    MOUCA_PRE_CONDITION(!device.expired()); //DEV Issue: Bad device !
+    MouCa::preCondition(!device.expired()); //DEV Issue: Bad device !
 
     // Read surfaces
-    auto result = context._parser.getNode(u8"Surfaces");
+    auto result = context._parser.getNode("Surfaces");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(!_dialogs.empty());            //DEV Issue: Create surface/window without window ?
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(!_dialogs.empty());            //DEV Issue: Create surface/window without window ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
 
         auto aPushS = context._parser.autoPushNode(*result->getNode(0));
 
-        auto allSurfaces = context._parser.getNode(u8"Surface");
+        auto allSurfaces = context._parser.getNode("Surface");
         for (size_t idSurface = 0; idSurface < allSurfaces->getNbElements(); ++idSurface)
         {
             auto surface = allSurfaces->getNode(idSurface);
 
             // Mandatory attribute
             bool existing;
-            const uint32_t id = LoaderHelper::getIdentifiant(surface, u8"Surface", _surfaces, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(surface, "Surface", _surfaces, context, existing);
             if (existing)
             {
                 continue;
             }
 
             uint32_t windowId = 0;
-            surface->getAttribute(u8"windowId", windowId);
+            surface->getAttribute("windowId", windowId);
             if (_dialogs.find(windowId) == _dialogs.cend()) //DEV Issue: Must exist
             {
-                MOUCA_THROW_ERROR_1(u8"Engine3D", u8"UnknownSurfaceError", context.getFileName());
+                throw Core::Exception(makeLoaderError(context, "UnknownSurfaceError"));
             }
 
             // Read user preferences
@@ -241,7 +254,7 @@ void Engine3DXMLLoader::loadSurfaces(ContextLoading& context, Vulkan::ContextDev
             {
                 auto aPush = context._parser.autoPushNode(*surface);
 
-                auto allPreferences = context._parser.getNode(u8"UserPreferences");                
+                auto allPreferences = context._parser.getNode("UserPreferences");                
                 for(size_t idPreference = 0; idPreference < allPreferences->getNbElements(); ++idPreference)
                 {
                     auto preferences = allPreferences->getNode(idPreference);
@@ -255,25 +268,25 @@ void Engine3DXMLLoader::loadSurfaces(ContextLoading& context, Vulkan::ContextDev
                             continue;
                     }
                     
-                    if(preferences->hasAttribute(u8"presentationMode"))
+                    if(preferences->hasAttribute("presentationMode"))
                     {   
-                        configuration._presentMode = LoaderHelper::readValue(preferences, u8"presentationMode", presentModes, false, context);
+                        configuration._presentMode = LoaderHelper::readValue(preferences, "presentationMode", presentModes, false, context);
                     }
-                    if(preferences->hasAttribute(u8"usage"))
+                    if(preferences->hasAttribute("usage"))
                     {
-                        configuration._usage = LoaderHelper::readValue(preferences, u8"usage", imageUsages, true, context);
+                        configuration._usage = LoaderHelper::readValue(preferences, "usage", imageUsages, true, context);
                     }
-                    if (preferences->hasAttribute(u8"transform"))
+                    if (preferences->hasAttribute("transform"))
                     {
-                        configuration._transform = LoaderHelper::readValue(preferences, u8"transform", surfaceTransforms, true, context);
+                        configuration._transform = LoaderHelper::readValue(preferences, "transform", surfaceTransforms, true, context);
                     }
-                    if (preferences->hasAttribute(u8"format"))
+                    if (preferences->hasAttribute("format"))
                     {
-                        configuration._format.format = LoaderHelper::readValue(preferences, u8"format", formats, false, context);
+                        configuration._format.format = LoaderHelper::readValue(preferences, "format", formats, false, context);
                     }
-                    if (preferences->hasAttribute(u8"colorSpace"))
+                    if (preferences->hasAttribute("colorSpace"))
                     {
-                        configuration._format.colorSpace = LoaderHelper::readValue(preferences, u8"colorSpace", colorSpaces, false, context);
+                        configuration._format.colorSpace = LoaderHelper::readValue(preferences, "colorSpace", colorSpaces, false, context);
                     }
                 }
             }
@@ -286,26 +299,26 @@ void Engine3DXMLLoader::loadSurfaces(ContextLoading& context, Vulkan::ContextDev
 
 void Engine3DXMLLoader::loadSemaphores(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
+    MouCa::preCondition(!deviceWeak.expired()); //DEV Issue: Bad device !
 
     // Read semaphores
-    auto result = context._parser.getNode(u8"Semaphores");
+    auto result = context._parser.getNode("Semaphores");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
 
         // cppcheck-suppress unreadVariable // false positive
         auto aPush = context._parser.autoPushNode(*result->getNode(0));
 
         auto device = deviceWeak.lock();
 
-        auto allSemaphores = context._parser.getNode(u8"Semaphore");
+        auto allSemaphores = context._parser.getNode("Semaphore");
         for (size_t idSemaphore = 0; idSemaphore < allSemaphores->getNbElements(); ++idSemaphore)
         {
             auto semaphoreNode = allSemaphores->getNode(idSemaphore);
             // Mandatory attribute
             bool existing;
-            const uint32_t id = LoaderHelper::getIdentifiant(semaphoreNode, u8"Semaphore", _semaphores, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(semaphoreNode, "Semaphore", _semaphores, context, existing);
 
             auto semaphore = std::make_shared<Vulkan::Semaphore>();
             semaphore->initialize(device->getDevice());
@@ -320,28 +333,28 @@ void Engine3DXMLLoader::loadSemaphores(ContextLoading& context, Vulkan::ContextD
 
 void Engine3DXMLLoader::loadFences(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
+    MouCa::preCondition(!deviceWeak.expired()); //DEV Issue: Bad device !
 
     // Read semaphores
-    auto result = context._parser.getNode(u8"Fences");
+    auto result = context._parser.getNode("Fences");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
 
         // cppcheck-suppress unreadVariable // false positive
         auto aPush = context._parser.autoPushNode(*result->getNode(0));
 
         auto device = deviceWeak.lock();
 
-        auto allFences = context._parser.getNode(u8"Fence");
+        auto allFences = context._parser.getNode("Fence");
         for (size_t idFence = 0; idFence < allFences->getNbElements(); ++idFence)
         {
             auto semaphoreNode = allFences->getNode(idFence);
             // Mandatory attribute
             bool existing;
-            const uint32_t id = LoaderHelper::getIdentifiant(semaphoreNode, u8"Fence", _fences, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(semaphoreNode, "Fence", _fences, context, existing);
 
-            const VkFenceCreateFlags flag = LoaderHelper::readValue(semaphoreNode, u8"flag", fenceCreates, true, context);
+            const VkFenceCreateFlags flag = LoaderHelper::readValue(semaphoreNode, "flag", fenceCreates, true, context);
 
             auto fence = std::make_shared<Vulkan::Fence>();
             fence->initialize(device->getDevice(), flag);
@@ -356,27 +369,27 @@ void Engine3DXMLLoader::loadFences(ContextLoading& context, Vulkan::ContextDevic
 
 void Engine3DXMLLoader::loadFrameBuffers(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
+    MouCa::preCondition(!deviceWeak.expired()); //DEV Issue: Bad device !
 
-    auto result = context._parser.getNode(u8"FrameBuffers");
+    auto result = context._parser.getNode("FrameBuffers");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
 
         auto device = deviceWeak.lock();
 
         auto aPush = context._parser.autoPushNode(*result->getNode(0));
 
-        auto allFrameBuffers = context._parser.getNode(u8"FrameBuffer");
+        auto allFrameBuffers = context._parser.getNode("FrameBuffer");
         for (size_t idFrameBuffer = 0; idFrameBuffer < allFrameBuffers->getNbElements(); ++idFrameBuffer)
         {
             auto frameBufferNode = allFrameBuffers->getNode(idFrameBuffer);
             // Search if FrameBuffer is existing before try to load
             uint32_t id=0;
-            if (frameBufferNode->hasAttribute(u8"id") || frameBufferNode->hasAttribute(u8"externalId"))
+            if (frameBufferNode->hasAttribute("id") || frameBufferNode->hasAttribute("externalId"))
             {
                 bool existing;
-                id = LoaderHelper::getIdentifiant(frameBufferNode, u8"FrameBuffer", _frameBuffers, context, existing);
+                id = LoaderHelper::getIdentifiant(frameBufferNode, "FrameBuffer", _frameBuffers, context, existing);
                 if (existing)
                 {
                     continue;
@@ -390,13 +403,13 @@ void Engine3DXMLLoader::loadFrameBuffers(ContextLoading& context, Vulkan::Contex
             {
                 auto aPushA = context._parser.autoPushNode(*frameBufferNode);
 
-                auto allAttachments = context._parser.getNode(u8"Attachment");
+                auto allAttachments = context._parser.getNode("Attachment");
                 for (size_t idAttachment = 0; idAttachment < allAttachments->getNbElements(); ++idAttachment)
                 {
                     auto attachmentNode = allAttachments->getNode(idAttachment);
-                    if (attachmentNode->hasAttribute(u8"viewImageId"))
+                    if (attachmentNode->hasAttribute("viewImageId"))
                     {
-                        const uint32_t viewImageId = LoaderHelper::getLinkedIdentifiant(attachmentNode, u8"viewImageId", _view, context);
+                        const uint32_t viewImageId = LoaderHelper::getLinkedIdentifiant(attachmentNode, "viewImageId", _view, context);
 
                         // Read view information
                         auto view = _view[viewImageId].lock();
@@ -416,26 +429,26 @@ void Engine3DXMLLoader::loadFrameBuffers(ContextLoading& context, Vulkan::Contex
 
             if (attachments.empty())
             {
-                MOUCA_THROW_ERROR_1(u8"Engine3D", u8"XMLFrameBufferMissAttachmentError", context.getFileName());
+                throw Core::Exception(makeLoaderError(context, "XMLFrameBufferMissAttachmentError"));
             }
 
             // Mandatory attribute
-            const uint32_t renderPassId = LoaderHelper::getLinkedIdentifiant(frameBufferNode, u8"renderPassId", _renderPasses, context);
+            const uint32_t renderPassId = LoaderHelper::getLinkedIdentifiant(frameBufferNode, "renderPassId", _renderPasses, context);
             
             // Build SwapChain framebuffer
-            if (frameBufferNode->hasAttribute(u8"surfaceId"))
+            if (frameBufferNode->hasAttribute("surfaceId"))
             {
-                MOUCA_ASSERT(!frameBufferNode->hasAttribute(u8"id")); //DEV Issue: Not supported id !
+                MouCa::assertion(!frameBufferNode->hasAttribute("id")); //DEV Issue: Not supported id !
 
                 // Get attached surface
-                const uint32_t surfaceId = LoaderHelper::getLinkedIdentifiant(frameBufferNode, u8"surfaceId", _renderPasses, context);
+                const uint32_t surfaceId = LoaderHelper::getLinkedIdentifiant(frameBufferNode, "surfaceId", _renderPasses, context);
 
                 // Build FrameBuffer inside surface
                 _surfaces[surfaceId].lock()->createFrameBuffer(_renderPasses[renderPassId], attachments);
             }
             else // Build basic Framebuffer
             {
-                MOUCA_ASSERT(frameBufferNode->hasAttribute(u8"id")); //DEV Issue: New case ?
+                MouCa::assertion(frameBufferNode->hasAttribute("id")); //DEV Issue: New case ?
 
                 Vulkan::FrameBuffer::Attachments allAttachments;
                 allAttachments.resize(attachments.size());
@@ -457,36 +470,36 @@ void Engine3DXMLLoader::loadFrameBuffers(ContextLoading& context, Vulkan::Contex
 
 void Engine3DXMLLoader::loadImagesAndView(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
+    MouCa::preCondition(!deviceWeak.expired()); //DEV Issue: Bad device !
 
     // Search Images
-    auto result = context._parser.getNode(u8"Images");
+    auto result = context._parser.getNode("Images");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         auto aPushI = context._parser.autoPushNode(*result->getNode(0));
 
         // Parsing all images
-        auto allImages = context._parser.getNode(u8"Image");
+        auto allImages = context._parser.getNode("Image");
         for (size_t idImages = 0; idImages < allImages->getNbElements(); ++idImages)
         {
             auto imageNode = allImages->getNode(idImages);
 
             // Mandatory attribute
             bool existing;
-            const uint32_t id = LoaderHelper::getIdentifiant(imageNode, u8"Image", _images, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(imageNode, "Image", _images, context, existing);
 
             Vulkan::Image::Size size;
             VkFormat format = VK_FORMAT_UNDEFINED;
             VkImageType type = VK_IMAGE_TYPE_MAX_ENUM;
-            VkImageUsageFlags usage = LoaderHelper::readValue(imageNode, u8"usage", imageUsages , true, context);
+            VkImageUsageFlags usage = LoaderHelper::readValue(imageNode, "usage", imageUsages , true, context);
 
             // Build image from surface/swapchain size/format
             if (imageNode->hasAttribute("fromSurfaceId"))
             {
-                const uint32_t idSC = LoaderHelper::getLinkedIdentifiant(imageNode, u8"fromSurfaceId", _surfaces, context);
+                const uint32_t idSC = LoaderHelper::getLinkedIdentifiant(imageNode, "fromSurfaceId", _surfaces, context);
 
                 auto surface = _surfaces[idSC].lock();
                 const auto& config = surface->getFormat().getConfiguration();
@@ -502,8 +515,8 @@ void Engine3DXMLLoader::loadImagesAndView(ContextLoading& context, Vulkan::Conte
             else if (imageNode->hasAttribute("fromVRId"))
             {
                 const auto& vrPlatform = context._engine.getVRPlatform();
-                MOUCA_ASSERT(!vrPlatform.isNull());
-                //const uint32_t idSC = LoaderHelper::getLinkedIdentifiant(imageNode, u8"fromVRId", _surfaces, context);
+                MouCa::assertion(!vrPlatform.isNull());
+                //const uint32_t idSC = LoaderHelper::getLinkedIdentifiant(imageNode, "fromVRId", _surfaces, context);
 
 //                 auto surface = _surfaces[idSC].lock();
 //                 const auto& config = surface->getFormat().getConfiguration();
@@ -519,7 +532,7 @@ void Engine3DXMLLoader::loadImagesAndView(ContextLoading& context, Vulkan::Conte
             }
             else if (imageNode->hasAttribute("external"))
             {
-                const uint32_t idSC = LoaderHelper::getLinkedIdentifiant(imageNode, u8"external", _cpuImages, context);
+                const uint32_t idSC = LoaderHelper::getLinkedIdentifiant(imageNode, "external", _cpuImages, context);
                 auto image = _cpuImages[idSC].lock();
 
                 size._extent =
@@ -549,83 +562,83 @@ void Engine3DXMLLoader::loadImagesAndView(ContextLoading& context, Vulkan::Conte
                         type = VK_IMAGE_TYPE_3D;
                     }
                     break;
-                    default: MOUCA_ASSERT(false); // DEV Issue: Not implemented
+                    default: MouCa::assertion(false); // DEV Issue: Not implemented
                 }
             }
 
             // Search format/size if not properly define or override
-            if( imageNode->hasAttribute(u8"extent") || !size.isValid() )
+            if( imageNode->hasAttribute("extent") || !size.isValid() )
             {
-                MOUCA_ASSERT(context._globalData != nullptr);
+                MouCa::assertion(context._globalData != nullptr);
                 // Read name
                 Core::String name;
-                imageNode->getAttribute(u8"extent", name);
+                imageNode->getAttribute("extent", name);
 
                 // Extract data
-                auto resultExt = context._parser.searchNodeFrom(*context._globalData, u8"Data", u8"name", name.substr(1));
+                auto resultExt = context._parser.searchNodeFrom(*context._globalData, "Data", "name", name.substr(1));
                 LoaderHelper::readData(resultExt, size._extent);
             }
-            if (imageNode->hasAttribute(u8"format") || format == VK_FORMAT_UNDEFINED)
+            if (imageNode->hasAttribute("format") || format == VK_FORMAT_UNDEFINED)
             {
-                format = LoaderHelper::readValue(imageNode, u8"format", formats, false, context);
+                format = LoaderHelper::readValue(imageNode, "format", formats, false, context);
             }
-            if (imageNode->hasAttribute(u8"imageType") || type == VK_IMAGE_TYPE_MAX_ENUM)
+            if (imageNode->hasAttribute("imageType") || type == VK_IMAGE_TYPE_MAX_ENUM)
             {
-                type = LoaderHelper::readValue(imageNode, u8"imageType", imageTypes, false, context);
+                type = LoaderHelper::readValue(imageNode, "imageType", imageTypes, false, context);
             }
             
-            MOUCA_ASSERT(format != VK_FORMAT_UNDEFINED);   // DEV Issue: Need a valid format.
-            MOUCA_ASSERT(size.isValid());                  // DEV Issue: Need a valid size.
+            MouCa::assertion(format != VK_FORMAT_UNDEFINED);   // DEV Issue: Need a valid format.
+            MouCa::assertion(size.isValid());                  // DEV Issue: Need a valid size.
 
             auto image = std::make_shared<Vulkan::Image>();
             image->initialize(device->getDevice(),
                               size, type, format,
-                              LoaderHelper::readValue(imageNode, u8"samples",       samples, false, context),
-                              LoaderHelper::readValue(imageNode, u8"tiling",        tilings, false, context),
+                              LoaderHelper::readValue(imageNode, "samples",       samples, false, context),
+                              LoaderHelper::readValue(imageNode, "tiling",        tilings, false, context),
                               usage,
-                              LoaderHelper::readValue(imageNode, u8"sharingMode",   sharingModes, false, context),
-                              LoaderHelper::readValue(imageNode, u8"initialLayout", imageLayouts, false, context),
-                              LoaderHelper::readValue(imageNode, u8"memoryProperty", memoryProperties, true, context)
+                              LoaderHelper::readValue(imageNode, "sharingMode",   sharingModes, false, context),
+                              LoaderHelper::readValue(imageNode, "initialLayout", imageLayouts, false, context),
+                              LoaderHelper::readValue(imageNode, "memoryProperty", memoryProperties, true, context)
                              );
             // Register + ownership
             device->insertImage(image);
             _images[id] = image;
-            MOUCA_DEBUG("Image: id=" << id << ", handle=" << image->getImage());
+            MouCa::logConsole(std::format("Image: id={}, handle={:#08x}", id, reinterpret_cast<size_t>(image->getImage())));
 
             // Build view
             auto aPush = context._parser.autoPushNode(*imageNode);
 
-            auto allViews = context._parser.getNode(u8"View");
+            auto allViews = context._parser.getNode("View");
             for(size_t idView = 0; idView <allViews->getNbElements(); ++idView)
             {
                 auto viewNode = allViews->getNode(idView);
 
                 // Mandatory attribute
-                const uint32_t idV = LoaderHelper::getIdentifiant(viewNode, u8"View", _view, context, existing);
+                const uint32_t idV = LoaderHelper::getIdentifiant(viewNode, "View", _view, context, existing);
 
                 // Read parameter
-                const VkImageViewType typeV   = LoaderHelper::readValue(viewNode, u8"viewType", viewTypes, false, context);
-                const VkFormat        formatV = LoaderHelper::readValue(viewNode, u8"format",   formats, false, context);
+                const VkImageViewType typeV   = LoaderHelper::readValue(viewNode, "viewType", viewTypes, false, context);
+                const VkFormat        formatV = LoaderHelper::readValue(viewNode, "format",   formats, false, context);
 
                 const VkComponentMapping mapping
                 {
-                    LoaderHelper::readValue(viewNode, u8"componentSwizzleRed",   componentSwizzles, false, context),
-                    LoaderHelper::readValue(viewNode, u8"componentSwizzleGreen", componentSwizzles, false, context),
-                    LoaderHelper::readValue(viewNode, u8"componentSwizzleBlue",  componentSwizzles, false, context),
-                    LoaderHelper::readValue(viewNode, u8"componentSwizzleAlpha", componentSwizzles, false, context)
+                    LoaderHelper::readValue(viewNode, "componentSwizzleRed",   componentSwizzles, false, context),
+                    LoaderHelper::readValue(viewNode, "componentSwizzleGreen", componentSwizzles, false, context),
+                    LoaderHelper::readValue(viewNode, "componentSwizzleBlue",  componentSwizzles, false, context),
+                    LoaderHelper::readValue(viewNode, "componentSwizzleAlpha", componentSwizzles, false, context)
                 };
                 VkImageSubresourceRange subRessourceRange;
-                subRessourceRange.aspectMask = LoaderHelper::readValue(viewNode, u8"aspectMask", aspectFlags, true, context);
-                viewNode->getAttribute(u8"baseMipLevel",   subRessourceRange.baseMipLevel);
-                viewNode->getAttribute(u8"levelCount",     subRessourceRange.levelCount);
-                viewNode->getAttribute(u8"baseArrayLayer", subRessourceRange.baseArrayLayer);
-                viewNode->getAttribute(u8"layerCount",     subRessourceRange.layerCount);
+                subRessourceRange.aspectMask = LoaderHelper::readValue(viewNode, "aspectMask", aspectFlags, true, context);
+                viewNode->getAttribute("baseMipLevel",   subRessourceRange.baseMipLevel);
+                viewNode->getAttribute("levelCount",     subRessourceRange.levelCount);
+                viewNode->getAttribute("baseArrayLayer", subRessourceRange.baseArrayLayer);
+                viewNode->getAttribute("layerCount",     subRessourceRange.layerCount);
 
                 // Build View
                 auto view = image->createView(device->getDevice(), typeV, formatV, mapping, subRessourceRange);
                 _view[idV] = view;
 
-                MOUCA_DEBUG("View: id=" << idV << ", handle=" << view.lock()->getInstance());
+                MouCa::logConsole(std::format("View: id={}, handle={:#08x}", idV, reinterpret_cast<size_t>(view.lock()->getInstance())));
             }
         }
     }
@@ -633,26 +646,26 @@ void Engine3DXMLLoader::loadImagesAndView(ContextLoading& context, Vulkan::Conte
 
 void Engine3DXMLLoader::loadSamplers(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
+    MouCa::preCondition(!deviceWeak.expired()); //DEV Issue: Bad device !
 
     // Search Buffers
-    auto result = context._parser.getNode(u8"Samplers");
+    auto result = context._parser.getNode("Samplers");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         auto aPushS = context._parser.autoPushNode(*result->getNode(0));
 
         // Parsing all samplers
-        auto allSamplers = context._parser.getNode(u8"Sampler");
+        auto allSamplers = context._parser.getNode("Sampler");
         for (size_t idSampler = 0; idSampler < allSamplers->getNbElements(); ++idSampler)
         {
             auto samplerNode = allSamplers->getNode(idSampler);
 
             // Mandatory attribute
             bool existing;
-            const uint32_t id = LoaderHelper::getIdentifiant(samplerNode, u8"Sampler", _samplers, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(samplerNode, "Sampler", _samplers, context, existing);
             if (existing)
             {
                 continue;
@@ -660,41 +673,41 @@ void Engine3DXMLLoader::loadSamplers(ContextLoading& context, Vulkan::ContextDev
 
             // Read max LOD from image
             float maxLod = 0.0f;
-            if (samplerNode->hasAttribute(u8"imageId"))
+            if (samplerNode->hasAttribute("imageId"))
             {
-                const uint32_t idI = LoaderHelper::getLinkedIdentifiant(samplerNode, u8"imageId", _images, context);
+                const uint32_t idI = LoaderHelper::getLinkedIdentifiant(samplerNode, "imageId", _images, context);
                 maxLod = static_cast<float>(_images[idI].lock()->getMaxMipLevels());
             }
 
             float mipLodBias;
-            samplerNode->getAttribute(u8"mipLodBias", mipLodBias);
+            samplerNode->getAttribute("mipLodBias", mipLodBias);
             float minLod = 0.0f;
-            samplerNode->getAttribute(u8"minLod", minLod);
-            if(samplerNode->hasAttribute(u8"maxLod"))
+            samplerNode->getAttribute("minLod", minLod);
+            if(samplerNode->hasAttribute("maxLod"))
             {
-                samplerNode->getAttribute(u8"maxLod", maxLod);
+                samplerNode->getAttribute("maxLod", maxLod);
             }            
             bool unnormalizedCoordinates;
-            samplerNode->getAttribute(u8"unnormalizedCoordinates", unnormalizedCoordinates);
+            samplerNode->getAttribute("unnormalizedCoordinates", unnormalizedCoordinates);
 
             // Read compare
             bool compareEnable = false;
             VkCompareOp compareOp = VK_COMPARE_OP_NEVER;
-            if (samplerNode->hasAttribute(u8"compareOp"))
+            if (samplerNode->hasAttribute("compareOp"))
             {
                 compareEnable = true;
-                compareOp = LoaderHelper::readValue(samplerNode, u8"compareOp", compareOperations, false, context);
+                compareOp = LoaderHelper::readValue(samplerNode, "compareOp", compareOperations, false, context);
             }            
             
             //Read anisotropy
             bool anisotropyEnable = false;
             float maxAnisotropy = 1.0f;
-            if (samplerNode->hasAttribute(u8"maxAnisotropy"))
+            if (samplerNode->hasAttribute("maxAnisotropy"))
             {
                 anisotropyEnable = true;
 
                 Core::String isDevice;
-                samplerNode->getAttribute(u8"maxAnisotropy", isDevice);
+                samplerNode->getAttribute("maxAnisotropy", isDevice);
                 if (isDevice == "device")
                 {
                     // Use device limits
@@ -702,21 +715,21 @@ void Engine3DXMLLoader::loadSamplers(ContextLoading& context, Vulkan::ContextDev
                 }
                 else
                 {
-                    samplerNode->getAttribute(u8"maxAnisotropy", maxAnisotropy);
+                    samplerNode->getAttribute("maxAnisotropy", maxAnisotropy);
                 }
             }
 
             auto sampler = std::make_shared<Vulkan::Sampler>();
             sampler->initialize(device->getDevice(),
-                LoaderHelper::readValue(samplerNode, u8"magFilter", filters, false, context),
-                LoaderHelper::readValue(samplerNode, u8"minFilter", filters, false, context),
-                LoaderHelper::readValue(samplerNode, u8"mipmapMode", samplerMipmaps, false, context),
-                LoaderHelper::readValue(samplerNode, u8"addressModeU", samplerAdresses, false, context),
-                LoaderHelper::readValue(samplerNode, u8"addressModeV", samplerAdresses, false, context),
-                LoaderHelper::readValue(samplerNode, u8"addressModeW", samplerAdresses, false, context),
+                LoaderHelper::readValue(samplerNode, "magFilter", filters, false, context),
+                LoaderHelper::readValue(samplerNode, "minFilter", filters, false, context),
+                LoaderHelper::readValue(samplerNode, "mipmapMode", samplerMipmaps, false, context),
+                LoaderHelper::readValue(samplerNode, "addressModeU", samplerAdresses, false, context),
+                LoaderHelper::readValue(samplerNode, "addressModeV", samplerAdresses, false, context),
+                LoaderHelper::readValue(samplerNode, "addressModeW", samplerAdresses, false, context),
                 mipLodBias, anisotropyEnable, maxAnisotropy, compareEnable, compareOp,
                 minLod, maxLod,
-                LoaderHelper::readValue(samplerNode, u8"borderColor", borderColors, false, context),
+                LoaderHelper::readValue(samplerNode, "borderColor", borderColors, false, context),
                 unnormalizedCoordinates
                 );
 
@@ -729,19 +742,19 @@ void Engine3DXMLLoader::loadSamplers(ContextLoading& context, Vulkan::ContextDev
 
 void Engine3DXMLLoader::loadBuffers(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
+    MouCa::preCondition(!deviceWeak.expired()); //DEV Issue: Bad device !
 
     // Search Buffers
-    auto result = context._parser.getNode(u8"Buffers");
+    auto result = context._parser.getNode("Buffers");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         auto aPushB = context._parser.autoPushNode(*result->getNode(0));
 
         // Parsing all buffers
-        auto allBuffers = context._parser.getNode(u8"Buffer");
+        auto allBuffers = context._parser.getNode("Buffer");
         for (size_t idBuffer = 0; idBuffer < allBuffers->getNbElements(); ++idBuffer)
         {
             auto bufferNode = allBuffers->getNode(idBuffer);
@@ -749,29 +762,29 @@ void Engine3DXMLLoader::loadBuffers(ContextLoading& context, Vulkan::ContextDevi
 
             // Mandatory attribute
             bool existing;
-            const uint32_t id = LoaderHelper::getIdentifiant(bufferNode, u8"Buffer", _buffers, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(bufferNode, "Buffer", _buffers, context, existing);
             if (existing)
             {
                 continue;
             }
 
-            const auto usage          = LoaderHelper::readValue(bufferNode, u8"usage", bufferUsages, true, context);
+            const auto usage          = LoaderHelper::readValue(bufferNode, "usage", bufferUsages, true, context);
             VkDeviceSize size=0;
-            if(bufferNode->hasAttribute(u8"size"))
+            if(bufferNode->hasAttribute("size"))
             {
-                bufferNode->getAttribute(u8"size", size);
+                bufferNode->getAttribute("size", size);
             }
-            else if(bufferNode->hasAttribute(u8"external"))
+            else if(bufferNode->hasAttribute("external"))
             {
-                const uint32_t idE = LoaderHelper::getLinkedIdentifiant(bufferNode, u8"external", _cpuBuffers, context);
+                const uint32_t idE = LoaderHelper::getLinkedIdentifiant(bufferNode, "external", _cpuBuffers, context);
                 size = _cpuBuffers[idE].lock()->getByteSize();
             }
-            MOUCA_ASSERT(size > 0);
+            MouCa::assertion(size > 0);
 
             VkBufferCreateFlags createFlags = 0;
-            if (bufferNode->hasAttribute(u8"create"))
+            if (bufferNode->hasAttribute("create"))
             {
-                createFlags = LoaderHelper::readValue(bufferNode, u8"create", bufferCreates, true, context);
+                createFlags = LoaderHelper::readValue(bufferNode, "create", bufferCreates, true, context);
             }
 
             Vulkan::MemoryBufferUPtr memoryBuffer;
@@ -791,26 +804,26 @@ void Engine3DXMLLoader::loadBuffers(ContextLoading& context, Vulkan::ContextDevi
 
 void Engine3DXMLLoader::loadMemoryBuffer(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak, Vulkan::MemoryBufferUPtr& memoryBuffer)
 {
-    auto result = context._parser.getNode(u8"MemoryBuffer");
+    auto result = context._parser.getNode("MemoryBuffer");
     if (result->getNbElements() > 0)
     {
         auto memoryNode = result->getNode(0);
-        const auto memoryProperty = LoaderHelper::readValue(memoryNode, u8"property", memoryProperties, true, context);
+        const auto memoryProperty = LoaderHelper::readValue(memoryNode, "property", memoryProperties, true, context);
         memoryBuffer = std::make_unique<Vulkan::MemoryBuffer>(memoryProperty);
     }
     else
     {
-        auto resultAllo = context._parser.getNode(u8"MemoryBufferAllocate");
+        auto resultAllo = context._parser.getNode("MemoryBufferAllocate");
         if (resultAllo->getNbElements() > 0)
         {
             auto memoryNode = resultAllo->getNode(0);
-            const auto memoryProperty = LoaderHelper::readValue(memoryNode, u8"property", memoryProperties, true, context);
-            const auto memoryAllocate = LoaderHelper::readValue(memoryNode, u8"allocate", memoryAllocates, true, context);
+            const auto memoryProperty = LoaderHelper::readValue(memoryNode, "property", memoryProperties, true, context);
+            const auto memoryAllocate = LoaderHelper::readValue(memoryNode, "allocate", memoryAllocates, true, context);
             memoryBuffer = std::make_unique<Vulkan::MemoryBufferAllocate>(memoryProperty, memoryAllocate);
         }
         else
         {
-            MOUCA_THROW_ERROR(u8"Engine3D", u8"UnknownMemoryError");
+            throw Core::Exception(Core::ErrorData("Engine3D", "UnknownMemoryError"));
         }
     }
 }
@@ -819,27 +832,27 @@ void Engine3DXMLLoader::loadMemoryBuffer(ContextLoading& context, Vulkan::Contex
 void Engine3DXMLLoader::loadGraphicsPipelines(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
     // Search Graphics Pipeline
-    auto result = context._parser.getNode(u8"GraphicsPipelines");
+    auto result = context._parser.getNode("GraphicsPipelines");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         // cppcheck-suppress unreadVariable // false positive
         auto aPush = context._parser.autoPushNode(*result->getNode(0));
 
         // Parsing all Graphics pipeline
-        auto allGraphicsPipelines = context._parser.getNode(u8"GraphicsPipeline");
+        auto allGraphicsPipelines = context._parser.getNode("GraphicsPipeline");
         for (size_t idGraphicsPipeline = 0; idGraphicsPipeline < allGraphicsPipelines->getNbElements(); ++idGraphicsPipeline)
         {
             auto graphicsPipelineNode = allGraphicsPipelines->getNode(idGraphicsPipeline);
 
             // Mandatory attribute
             bool existing;
-            const uint32_t id  = LoaderHelper::getIdentifiant(graphicsPipelineNode, u8"GraphicsPipeline", _graphicsPipelines, context, existing);
+            const uint32_t id  = LoaderHelper::getIdentifiant(graphicsPipelineNode, "GraphicsPipeline", _graphicsPipelines, context, existing);
 
-            const uint32_t idR = LoaderHelper::getLinkedIdentifiant(graphicsPipelineNode, u8"renderPassId", _renderPasses, context);
-            const uint32_t idL = LoaderHelper::getLinkedIdentifiant(graphicsPipelineNode, u8"pipelineLayoutId", _pipelineLayouts, context);
+            const uint32_t idR = LoaderHelper::getLinkedIdentifiant(graphicsPipelineNode, "renderPassId", _renderPasses, context);
+            const uint32_t idL = LoaderHelper::getLinkedIdentifiant(graphicsPipelineNode, "pipelineLayoutId", _pipelineLayouts, context);
 
             auto aPushG = context._parser.autoPushNode(*graphicsPipelineNode);
 
@@ -859,27 +872,27 @@ void Engine3DXMLLoader::loadGraphicsPipelines(ContextLoading& context, Vulkan::C
 
 void Engine3DXMLLoader::loadQueueSequences(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired()); //DEV Issue: Bad device !
+    MouCa::preCondition(!deviceWeak.expired()); //DEV Issue: Bad device !
 
     // Search QueueSequences
-    auto result = context._parser.getNode(u8"QueueSequences");
+    auto result = context._parser.getNode("QueueSequences");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         // cppcheck-suppress unreadVariable // false positive
         auto aPush = context._parser.autoPushNode(*result->getNode(0));
 
         // Parsing all images
-        auto allQueueSequences = context._parser.getNode(u8"QueueSequence");
+        auto allQueueSequences = context._parser.getNode("QueueSequence");
         for (size_t idQueueSequences = 0; idQueueSequences < allQueueSequences->getNbElements(); ++idQueueSequences)
         {
             auto queueSequenceNode = allQueueSequences->getNode(idQueueSequences);
 
             // Mandatory attribute
             bool existing;
-            const uint32_t id = LoaderHelper::getIdentifiant(queueSequenceNode, u8"View", _queueSequences, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(queueSequenceNode, "View", _queueSequences, context, existing);
 
             auto aPushQ = context._parser.autoPushNode(*queueSequenceNode);
 
@@ -896,98 +909,98 @@ void Engine3DXMLLoader::loadQueueSequences(ContextLoading& context, Vulkan::Cont
 
 void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak, Vulkan::QueueSequenceWPtr queueSequenceWeak)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired());        //DEV Issue: Bad device !
-    MOUCA_PRE_CONDITION(!queueSequenceWeak.expired()); //DEV Issue: Bad container !
+    MouCa::preCondition(!deviceWeak.expired());        //DEV Issue: Bad device !
+    MouCa::preCondition(!queueSequenceWeak.expired()); //DEV Issue: Bad container !
 
     auto queueSequence = queueSequenceWeak.lock();
     // Parsing all images
-    auto allSequences = context._parser.getNode(u8"Sequence");
+    auto allSequences = context._parser.getNode("Sequence");
     for (size_t idSequences = 0; idSequences < allSequences->getNbElements(); ++idSequences)
     {
         auto sequenceNode = allSequences->getNode(idSequences);
 
         // Get type of Sequence
         Core::String type;
-        sequenceNode->getAttribute(u8"type", type);
+        sequenceNode->getAttribute("type", type);
 
         // Build and initialize each sequence
-        if(type == u8"acquire")
+        if(type == "acquire")
         {
             Vulkan::FenceWPtr     fence;
             Vulkan::SemaphoreWPtr semaphore;
             uint64_t timeout = std::numeric_limits<uint64_t>::max();
 
             // Read optional data
-            if( sequenceNode->hasAttribute(u8"fenceId") )
+            if( sequenceNode->hasAttribute("fenceId") )
             {
-                const uint32_t idF = LoaderHelper::getLinkedIdentifiant(sequenceNode, u8"fenceId", _fences, context);
+                const uint32_t idF = LoaderHelper::getLinkedIdentifiant(sequenceNode, "fenceId", _fences, context);
                 fence = _fences[idF];
             }
-            if(sequenceNode->hasAttribute(u8"timeout")) { sequenceNode->getAttribute(u8"timeout", timeout); }
-            if(sequenceNode->hasAttribute(u8"semaphoreId"))
+            if(sequenceNode->hasAttribute("timeout")) { sequenceNode->getAttribute("timeout", timeout); }
+            if(sequenceNode->hasAttribute("semaphoreId"))
             {
-                const uint32_t idSem = LoaderHelper::getLinkedIdentifiant(sequenceNode, u8"semaphoreId", _semaphores, context);
+                const uint32_t idSem = LoaderHelper::getLinkedIdentifiant(sequenceNode, "semaphoreId", _semaphores, context);
                 semaphore = _semaphores[idSem];
             }
 
             // Build Sequence
-            const uint32_t idS = LoaderHelper::getLinkedIdentifiant(sequenceNode, u8"surfaceId", _surfaces, context);
+            const uint32_t idS = LoaderHelper::getLinkedIdentifiant(sequenceNode, "surfaceId", _surfaces, context);
             queueSequence->emplace_back(std::make_shared<Vulkan::SequenceAcquire>(_surfaces[idS].lock()->getEditSwapChain(), semaphore, fence, timeout));
         }
-        else if (type == u8"waitFence")
+        else if (type == "waitFence")
         {
             uint64_t timeout = std::numeric_limits<uint64_t>::max();
 
             // Read optional data
-            if(sequenceNode->hasAttribute(u8"timeout")) { sequenceNode->getAttribute(u8"timeout", timeout); }
+            if(sequenceNode->hasAttribute("timeout")) { sequenceNode->getAttribute("timeout", timeout); }
             
             bool waitAll;
-            sequenceNode->getAttribute(u8"waitAll", waitAll);
+            sequenceNode->getAttribute("waitAll", waitAll);
 
             // Read all fences associated
             std::vector<Vulkan::FenceWPtr> fences;
             auto aPush     = context._parser.autoPushNode(*sequenceNode);
-            auto allFences = context._parser.getNode(u8"Fence");
+            auto allFences = context._parser.getNode("Fence");
             for (size_t idFence = 0; idFence < allFences->getNbElements(); ++idFence)
             {
                 auto fenceNode = allFences->getNode(idFence);
-                const uint32_t idF = LoaderHelper::getLinkedIdentifiant(fenceNode, u8"fenceId", _fences, context);
+                const uint32_t idF = LoaderHelper::getLinkedIdentifiant(fenceNode, "fenceId", _fences, context);
                 fences.emplace_back(_fences[idF]);
             }
             if (fences.empty())
             {
-                MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLMissingNodeError", context.getFileName(), u8"Sequence type=waitFence", u8"Fence");
+                throw Core::Exception(makeLoaderError(context, "XMLMissingNodeError") << "Sequence type=waitFence" << "Fence");
             }
 
             // Build Sequence
             queueSequence->emplace_back(std::make_shared<Vulkan::SequenceWaitFence>(fences, timeout, (waitAll ? VK_TRUE : VK_FALSE)));
         }
-        else if (type == u8"resetFence")
+        else if (type == "resetFence")
         {
             // Read all fences associated
             std::vector<Vulkan::FenceWPtr> fences;
             auto aPush = context._parser.autoPushNode(*sequenceNode);
-            auto allFences = context._parser.getNode(u8"Fence");
+            auto allFences = context._parser.getNode("Fence");
             for (size_t idFence = 0; idFence < allFences->getNbElements(); ++idFence)
             {
                 auto fenceNode = allFences->getNode(idFence);
-                const uint32_t idF = LoaderHelper::getLinkedIdentifiant(fenceNode, u8"fenceId", _fences, context);
+                const uint32_t idF = LoaderHelper::getLinkedIdentifiant(fenceNode, "fenceId", _fences, context);
                 fences.emplace_back(_fences[idF]);
             }
             if (fences.empty())
             {
-                MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLMissingNodeError", context.getFileName(), u8"Sequence type=waitFence", u8"Fence");
+                throw Core::Exception(makeLoaderError(context, "XMLMissingNodeError") << "Sequence type=waitFence" << "Fence");
             }
 
             // Build Sequence
             queueSequence->emplace_back(std::make_shared<Vulkan::SequenceResetFence>(fences));
         }
-        else if (type == u8"submit")
+        else if (type == "submit")
         {
             Vulkan::FenceWPtr fence;
-            if (sequenceNode->hasAttribute(u8"fenceId"))
+            if (sequenceNode->hasAttribute("fenceId"))
             {
-                const uint32_t idF = LoaderHelper::getLinkedIdentifiant(sequenceNode, u8"fenceId", _fences, context);
+                const uint32_t idF = LoaderHelper::getLinkedIdentifiant(sequenceNode, "fenceId", _fences, context);
                 fence = _fences[idF];
             }
 
@@ -999,31 +1012,31 @@ void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDe
             // Build Sequence
             queueSequence->emplace_back(std::make_shared<Vulkan::SequenceSubmit>(std::move(submitInfos), fence));
         }
-        else if (type == u8"submitVR")
+        else if (type == "submitVR")
         {
             auto& vrPlatform = context._engine.getVRPlatform();
             if (vrPlatform.isNull())
             {
-                MOUCA_THROW_ERROR_1(u8"Engine3D", u8"VRNotReadyError", u8"Sequence");
+                throw Core::Exception(Core::ErrorData("Engine3D", "VRNotReadyError") << "Sequence");
             }
             // Read parameters
             Core::String eye;
-            sequenceNode->getAttribute(u8"eye", eye);
-            const bool isLeftEye = (eye == u8"left");
+            sequenceNode->getAttribute("eye", eye);
+            const bool isLeftEye = (eye == "left");
 
-            const uint32_t idI = LoaderHelper::getLinkedIdentifiant(sequenceNode, u8"imageId", _images, context);
+            const uint32_t idI = LoaderHelper::getLinkedIdentifiant(sequenceNode, "imageId", _images, context);
             auto image = _images[idI].lock();
 
             // Build Sequence
             const auto& device = deviceWeak.lock()->getDevice();
             queueSequence->emplace_back(std::make_shared <MouCaVR::Platform::SequenceSubmitVR>(vrPlatform, isLeftEye, _manager.getEnvironment(), device.getInstance(), device.getPhysicalDevice(), device.getQueue(), device.getQueueFamilyGraphicId(), image->getImage(), image->getSamples()));
         }
-        else if (type == u8"presentKHR")
+        else if (type == "presentKHR")
         {
             Vulkan::FenceWPtr fence;
-            if (sequenceNode->hasAttribute(u8"fenceId"))
+            if (sequenceNode->hasAttribute("fenceId"))
             {
-                const uint32_t idF = LoaderHelper::getLinkedIdentifiant(sequenceNode, u8"fenceId", _fences, context);
+                const uint32_t idF = LoaderHelper::getLinkedIdentifiant(sequenceNode, "fenceId", _fences, context);
                 fence = _fences[idF];
             }
 
@@ -1033,28 +1046,28 @@ void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDe
             std::vector<Vulkan::SwapChainWPtr> swapChains;
 
             // Parsing all Swapchain
-            auto allSwapchains = context._parser.getNode(u8"Swapchain");
+            auto allSwapchains = context._parser.getNode("Swapchain");
             for (size_t idSwapchain = 0; idSwapchain < allSwapchains->getNbElements(); ++idSwapchain)
             {
                 auto swapChainNode = allSwapchains->getNode(idSwapchain);
 
                 // Read info
-                const uint32_t idS = LoaderHelper::getLinkedIdentifiant(swapChainNode, u8"surfaceId", _surfaces, context);
+                const uint32_t idS = LoaderHelper::getLinkedIdentifiant(swapChainNode, "surfaceId", _surfaces, context);
                 swapChains.emplace_back(_surfaces[idS].lock()->getEditSwapChain());
             }
 
             if( swapChains.empty() )
             {
-                MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLMissingNodeError", context.getFileName(), u8"Sequence type=presentKHR", u8"Swapchain");
+                throw Core::Exception(makeLoaderError(context, "XMLMissingNodeError") << "Sequence type=presentKHR" << "Swapchain");
             }
 
             // Parsing all Signal Semaphore
-            auto allSemaphores = context._parser.getNode(u8"Semaphore");
+            auto allSemaphores = context._parser.getNode("Semaphore");
             for (size_t idSemaphore = 0; idSemaphore < allSemaphores->getNbElements(); ++idSemaphore)
             {
                 auto semaphoreNode = allSemaphores->getNode(idSemaphore);
                 // Read info
-                const uint32_t idSem = LoaderHelper::getLinkedIdentifiant(semaphoreNode, u8"semaphoreId", _semaphores, context);
+                const uint32_t idSem = LoaderHelper::getLinkedIdentifiant(semaphoreNode, "semaphoreId", _semaphores, context);
                 // Store
                 semaphores.emplace_back(_semaphores[idSem]);
             }
@@ -1065,54 +1078,54 @@ void Engine3DXMLLoader::loadSequences(ContextLoading& context, Vulkan::ContextDe
         }
         else
         {
-            MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLUnknownSequenceError", context.getFileName(), type);
+            throw Core::Exception(makeLoaderError(context, "XMLUnknownSequenceError") << type);
         }
     }
 }
 
 void Engine3DXMLLoader::loadSubmitInfo(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak, Vulkan::SubmitInfos& submitInfos)
 {
-    MOUCA_PRE_CONDITION(!deviceWeak.expired());        //DEV Issue: Bad device !
+    MouCa::preCondition(!deviceWeak.expired());        //DEV Issue: Bad device !
 
     std::vector<Vulkan::WaitSemaphore>      waitSemaphores;
     std::vector<Vulkan::SemaphoreWPtr>      signalSemaphores;
     std::vector<Vulkan::ICommandBufferWPtr> commandBuffers;
 
     // Parsing all WaitSync
-    auto allWaitSyncs = context._parser.getNode(u8"WaitSync");
+    auto allWaitSyncs = context._parser.getNode("WaitSync");
     for (size_t idWaitSync = 0; idWaitSync < allWaitSyncs->getNbElements(); ++idWaitSync)
     {
         auto waitSyncNode = allWaitSyncs->getNode(idWaitSync);
 
         // Read info
-        const uint32_t idSem  = LoaderHelper::getLinkedIdentifiant(waitSyncNode, u8"semaphoreId", _semaphores, context);
-        const auto pipelineFlag = LoaderHelper::readValue(waitSyncNode, u8"pipelineFlag", pipelineStageFlags, true, context);
+        const uint32_t idSem  = LoaderHelper::getLinkedIdentifiant(waitSyncNode, "semaphoreId", _semaphores, context);
+        const auto pipelineFlag = LoaderHelper::readValue(waitSyncNode, "pipelineFlag", pipelineStageFlags, true, context);
         // Store
         waitSemaphores.emplace_back(Vulkan::WaitSemaphore(_semaphores[idSem], pipelineFlag));
     }
 
     // Parsing all Signal Semaphore
-    auto allSignalSyncs = context._parser.getNode(u8"SignalSync");
+    auto allSignalSyncs = context._parser.getNode("SignalSync");
     for (size_t idSignalSync = 0; idSignalSync < allSignalSyncs->getNbElements(); ++idSignalSync)
     {
         auto signalSyncNode = allSignalSyncs->getNode(idSignalSync);
 
         // Read info
-        const uint32_t idSem  = LoaderHelper::getLinkedIdentifiant(signalSyncNode, u8"semaphoreId", _semaphores, context);
+        const uint32_t idSem  = LoaderHelper::getLinkedIdentifiant(signalSyncNode, "semaphoreId", _semaphores, context);
         // Store
         signalSemaphores.emplace_back(_semaphores[idSem]);
     }
 
     // Parsing all Signal Semaphore
-    auto allCommandBuffers = context._parser.getNode(u8"CommandBuffer");
+    auto allCommandBuffers = context._parser.getNode("CommandBuffer");
     for (size_t idCommandBuffer = 0; idCommandBuffer < allCommandBuffers->getNbElements(); ++idCommandBuffer)
     {
         auto commandBufferNode = allCommandBuffers->getNode(idCommandBuffer);
 
-        if(commandBufferNode->hasAttribute(u8"surfaceId"))
+        if(commandBufferNode->hasAttribute("surfaceId"))
         {
             // Get surface associated
-            const uint32_t idS = LoaderHelper::getLinkedIdentifiant(commandBufferNode, u8"surfaceId", _surfaces, context);
+            const uint32_t idS = LoaderHelper::getLinkedIdentifiant(commandBufferNode, "surfaceId", _surfaces, context);
             
             // Prepare data
             auto surface = _surfaces[idS].lock();
@@ -1121,7 +1134,7 @@ void Engine3DXMLLoader::loadSubmitInfo(ContextLoading& context, Vulkan::ContextD
         else
         {
             // Get surface associated
-            const uint32_t idC = LoaderHelper::getLinkedIdentifiant(commandBufferNode, u8"id", _commandBuffers, context);
+            const uint32_t idC = LoaderHelper::getLinkedIdentifiant(commandBufferNode, "id", _commandBuffers, context);
             commandBuffers.emplace_back(_commandBuffers[idC]);
         }
     }
@@ -1137,23 +1150,23 @@ void Engine3DXMLLoader::loadSubmitInfo(ContextLoading& context, Vulkan::ContextD
 void Engine3DXMLLoader::loadDescriptorSetLayouts(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
     // Search DescriptorSetLayouts
-    auto result = context._parser.getNode(u8"DescriptorSetLayouts");
+    auto result = context._parser.getNode("DescriptorSetLayouts");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         auto aPush = context._parser.autoPushNode(*result->getNode(0));
 
         // Parsing all DescriptorSetLayout
-        auto allDescriptorSetLayouts = context._parser.getNode(u8"DescriptorSetLayout");
+        auto allDescriptorSetLayouts = context._parser.getNode("DescriptorSetLayout");
         for (size_t idDescriptorSetLayout = 0; idDescriptorSetLayout < allDescriptorSetLayouts->getNbElements(); ++idDescriptorSetLayout)
         {
             auto descriptorSetLayoutNode = allDescriptorSetLayouts->getNode(idDescriptorSetLayout);
 
             // Load mandatory 
             bool existing;
-            const uint32_t id = LoaderHelper::getIdentifiant(descriptorSetLayoutNode, u8"DescriptorSetLayout", _descriptorSetLayouts, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(descriptorSetLayoutNode, "DescriptorSetLayout", _descriptorSetLayouts, context, existing);
             if (existing)
             {
                 continue;
@@ -1163,15 +1176,15 @@ void Engine3DXMLLoader::loadDescriptorSetLayouts(ContextLoading& context, Vulkan
 
             // Parsing binding
             auto aPushD = context._parser.autoPushNode(*descriptorSetLayoutNode);
-            auto allBindings = context._parser.getNode(u8"Binding");
+            auto allBindings = context._parser.getNode("Binding");
             for (size_t idBinding = 0; idBinding < allBindings->getNbElements(); ++idBinding)
             {
                 auto bindingNode = allBindings->getNode(idBinding);
                 
                 uint32_t count;
-                bindingNode->getAttribute(u8"count", count);
-                const auto flags = LoaderHelper::readValue(bindingNode, u8"shaderStageFlags", shaderStages, true, context);
-                const auto type  = LoaderHelper::readValue(bindingNode, u8"type", descriptorTypes, false, context);
+                bindingNode->getAttribute("count", count);
+                const auto flags = LoaderHelper::readValue(bindingNode, "shaderStageFlags", shaderStages, true, context);
+                const auto type  = LoaderHelper::readValue(bindingNode, "type", descriptorTypes, false, context);
                 descriptorSetLayout->addBinding(type, count, flags);
             }
             
@@ -1188,33 +1201,33 @@ void Engine3DXMLLoader::loadDescriptorSetLayouts(ContextLoading& context, Vulkan
 void Engine3DXMLLoader::loadDescriptorSetPools(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
     // Search DescriptorSetPool
-    auto result = context._parser.getNode(u8"DescriptorPools");
+    auto result = context._parser.getNode("DescriptorPools");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         auto aPush = context._parser.autoPushNode(*result->getNode(0));
 
         // Parsing all DescriptorSetLayout
-        auto allDescriptorPools = context._parser.getNode(u8"DescriptorPool");
+        auto allDescriptorPools = context._parser.getNode("DescriptorPool");
         for (size_t idDescriptorPool = 0; idDescriptorPool < allDescriptorPools->getNbElements(); ++idDescriptorPool)
         {
             auto descriptorPoolNode = allDescriptorPools->getNode(idDescriptorPool);
 
             // Mandatory data
             bool existing;
-            const uint32_t id = LoaderHelper::getIdentifiant(descriptorPoolNode, u8"DescriptorPool", _descriptorPools, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(descriptorPoolNode, "DescriptorPool", _descriptorPools, context, existing);
             if(existing)
             {
                 continue;
             }
             uint32_t maxSets;
-            descriptorPoolNode->getAttribute(u8"maxSets", maxSets);
+            descriptorPoolNode->getAttribute("maxSets", maxSets);
 
             // Parse Size
             auto aPushS = context._parser.autoPushNode(*descriptorPoolNode);
-            auto allSizes = context._parser.getNode(u8"Size");
+            auto allSizes = context._parser.getNode("Size");
 
             std::vector<VkDescriptorPoolSize> sizes;
             sizes.reserve(allSizes->getNbElements());
@@ -1223,8 +1236,8 @@ void Engine3DXMLLoader::loadDescriptorSetPools(ContextLoading& context, Vulkan::
                 auto sizeNode = allSizes->getNode(idSize);
                 VkDescriptorPoolSize poolSize;
                 
-                poolSize.type = LoaderHelper::readValue(sizeNode, u8"type", descriptorTypes, false, context);
-                sizeNode->getAttribute(u8"descriptorCount", poolSize.descriptorCount);
+                poolSize.type = LoaderHelper::readValue(sizeNode, "type", descriptorTypes, false, context);
+                sizeNode->getAttribute("descriptorCount", poolSize.descriptorCount);
 
                 sizes.emplace_back(poolSize);
             }
@@ -1243,33 +1256,33 @@ void Engine3DXMLLoader::loadDescriptorSetPools(ContextLoading& context, Vulkan::
 void Engine3DXMLLoader::loadDescriptorSets(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
     // Search DescriptorSets
-    auto result = context._parser.getNode(u8"DescriptorSets");
+    auto result = context._parser.getNode("DescriptorSets");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         auto aPush = context._parser.autoPushNode(*result->getNode(0));
 
         // Parsing all DescriptorSetLayout
-        auto allDescriptorSets = context._parser.getNode(u8"DescriptorSet");
+        auto allDescriptorSets = context._parser.getNode("DescriptorSet");
         for (size_t idDescriptorSet = 0; idDescriptorSet < allDescriptorSets->getNbElements(); ++idDescriptorSet)
         {
             auto descriptorSetNode = allDescriptorSets->getNode(idDescriptorSet);
 
             // Load mandatory 
             bool existing;
-            const uint32_t id = LoaderHelper::getIdentifiant(descriptorSetNode, u8"DescriptorSet", _descriptorSets, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(descriptorSetNode, "DescriptorSet", _descriptorSets, context, existing);
             if (existing)
             {
                 continue;
             }
 
-            const uint32_t idPool = LoaderHelper::getLinkedIdentifiant(descriptorSetNode, u8"descriptorPoolId", _descriptorPools, context);
+            const uint32_t idPool = LoaderHelper::getLinkedIdentifiant(descriptorSetNode, "descriptorPoolId", _descriptorPools, context);
             
             // Parse SetLayout
             auto aPushS = context._parser.autoPushNode(*descriptorSetNode);
-            auto allSetLayouts = context._parser.getNode(u8"SetLayout");
+            auto allSetLayouts = context._parser.getNode("SetLayout");
 
             // Allocate array
             std::vector<VkDescriptorSetLayout> dSetLayouts;
@@ -1283,27 +1296,27 @@ void Engine3DXMLLoader::loadDescriptorSets(ContextLoading& context, Vulkan::Cont
             {
                 auto dSetLayoutNode = allSetLayouts->getNode(idDSetLayout);
 
-                const uint32_t idS = LoaderHelper::getLinkedIdentifiant(dSetLayoutNode, u8"descriptorSetLayoutId", _descriptorSetLayouts, context);
+                const uint32_t idS = LoaderHelper::getLinkedIdentifiant(dSetLayoutNode, "descriptorSetLayoutId", _descriptorSetLayouts, context);
                 dSetLayouts.emplace_back(_descriptorSetLayouts[idS].lock()->getInstance());
 
                 // Parse WriteDescriptor
                 auto aPushSL = context._parser.autoPushNode(*dSetLayoutNode);
                 
-                auto allWriteDescriptors = context._parser.getNode(u8"WriteDescriptor");
+                auto allWriteDescriptors = context._parser.getNode("WriteDescriptor");
                 for (size_t idWriteDescriptor = 0; idWriteDescriptor < allWriteDescriptors->getNbElements(); ++idWriteDescriptor)
                 {
                     auto writeDescriptorNode = allWriteDescriptors->getNode(idWriteDescriptor);
 
                     // Read attribute
-                    const auto     type    = LoaderHelper::readValue(writeDescriptorNode, u8"descriptorType", descriptorTypes, false, context);
+                    const auto     type    = LoaderHelper::readValue(writeDescriptorNode, "descriptorType", descriptorTypes, false, context);
                     uint32_t binding;
-                    writeDescriptorNode->getAttribute(u8"binding", binding);
+                    writeDescriptorNode->getAttribute("binding", binding);
 
                     // Parse WriteDescriptor
                     auto aPushW = context._parser.autoPushNode(*writeDescriptorNode);
 
                     // Build Buffer info
-                    auto allBufferInfos = context._parser.getNode(u8"BufferInfo");
+                    auto allBufferInfos = context._parser.getNode("BufferInfo");
                     if(allBufferInfos->getNbElements() > 0)
                     {
                         Vulkan::DescriptorBufferInfos buffers;
@@ -1311,14 +1324,14 @@ void Engine3DXMLLoader::loadDescriptorSets(ContextLoading& context, Vulkan::Cont
                         {
                             auto bufferInfoNode = allBufferInfos->getNode(idBufferInfo);
 
-                            const auto idBuffer = LoaderHelper::getLinkedIdentifiant(bufferInfoNode, u8"bufferId", _buffers, context);
+                            const auto idBuffer = LoaderHelper::getLinkedIdentifiant(bufferInfoNode, "bufferId", _buffers, context);
 
-                            if (bufferInfoNode->hasAttribute(u8"offset"))
+                            if (bufferInfoNode->hasAttribute("offset"))
                             {
                                 VkDeviceSize offset;
-                                bufferInfoNode->getAttribute(u8"offset", offset);
+                                bufferInfoNode->getAttribute("offset", offset);
                                 VkDeviceSize range;
-                                bufferInfoNode->getAttribute(u8"range", range);
+                                bufferInfoNode->getAttribute("range", range);
 
                                 // Copy full descriptor
                                 Vulkan::DescriptorBufferInfo info
@@ -1337,7 +1350,7 @@ void Engine3DXMLLoader::loadDescriptorSets(ContextLoading& context, Vulkan::Cont
                         itWriteDescriptor->emplace_back(Vulkan::WriteDescriptorSet(binding, type, std::move(buffers)));
                     }
                     
-                    auto allImageInfos = context._parser.getNode(u8"ImageInfo");
+                    auto allImageInfos = context._parser.getNode("ImageInfo");
                     if(allImageInfos->getNbElements() > 0)
                     {
                         Vulkan::DescriptorImageInfos images;
@@ -1345,14 +1358,14 @@ void Engine3DXMLLoader::loadDescriptorSets(ContextLoading& context, Vulkan::Cont
                         {
                             auto imageInfoNode = allImageInfos->getNode(idImageInfo);
 
-                            const auto idSampler = LoaderHelper::getLinkedIdentifiant(imageInfoNode, u8"samplerId", _samplers, context);
-                            const auto idView    = LoaderHelper::getLinkedIdentifiant(imageInfoNode, u8"viewId",    _view, context);
+                            const auto idSampler = LoaderHelper::getLinkedIdentifiant(imageInfoNode, "samplerId", _samplers, context);
+                            const auto idView    = LoaderHelper::getLinkedIdentifiant(imageInfoNode, "viewId",    _view, context);
 
                             Vulkan::DescriptorImageInfo info
                             {
                                 _samplers[idSampler].lock(),
                                 _view[idView].lock(),
-                                LoaderHelper::readValue(imageInfoNode, u8"layout", imageLayouts, false, context)
+                                LoaderHelper::readValue(imageInfoNode, "layout", imageLayouts, false, context)
                             };
                             images.emplace_back(std::move(info));
                         }
@@ -1383,39 +1396,39 @@ void Engine3DXMLLoader::loadDescriptorSets(ContextLoading& context, Vulkan::Cont
 void Engine3DXMLLoader::loadShaderModules(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
     // Search DescriptorSetLayouts
-    auto result = context._parser.getNode(u8"ShaderModules");
+    auto result = context._parser.getNode("ShaderModules");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         // cppcheck-suppress unreadVariable // false positive
         auto aPush = context._parser.autoPushNode(*result->getNode(0));
 
         // Parsing all ShaderModule
-        auto allShaderModules = context._parser.getNode(u8"ShaderModule");
+        auto allShaderModules = context._parser.getNode("ShaderModule");
         for (size_t idShaderModule = 0; idShaderModule < allShaderModules->getNbElements(); ++idShaderModule)
         {
             auto shaderModuleNode = allShaderModules->getNode(idShaderModule);
 
             bool existing;
-            const uint32_t id = LoaderHelper::getIdentifiant(shaderModuleNode, u8"ShaderModule", _shaderModules, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(shaderModuleNode, "ShaderModule", _shaderModules, context, existing);
 
             // Read info
             Core::String filename;
-            shaderModuleNode->getAttribute(u8"spirv", filename);
+            shaderModuleNode->getAttribute("spirv", filename);
 
             Core::String source;
-            if(shaderModuleNode->hasAttribute(u8"code"))
+            if(shaderModuleNode->hasAttribute("code"))
             {
-                shaderModuleNode->getAttribute(u8"code", source);
+                shaderModuleNode->getAttribute("code", source);
             }
 
             // Create shader resources
             auto& resourceManager = context._resources;
-            const auto stage = LoaderHelper::readValue(shaderModuleNode, u8"stage", shaderStages, false, context);
+            const auto stage = LoaderHelper::readValue(shaderModuleNode, "stage", shaderStages, false, context);
 
-            auto shaderFile = resourceManager.openShader(Core::convertToOS(filename), shaderKinds[stage], Core::convertToOS(source));
+            auto shaderFile = resourceManager.openShader(filename, shaderKinds[stage], source);
 
             // If code source: enable tracking
             if(!source.empty())
@@ -1426,10 +1439,10 @@ void Engine3DXMLLoader::loadShaderModules(ContextLoading& context, Vulkan::Conte
 
             // Build shader
             shaderFile->open();
-            MOUCA_ASSERT(shaderFile->isLoaded());
+            MouCa::assertion(shaderFile->isLoaded());
 
             auto shaderModule = std::make_shared<Vulkan::ShaderModule>();
-            shaderModule->initialize(device->getDevice(), shaderFile->extractString(), u8"main", static_cast<VkShaderStageFlagBits>(stage));
+            shaderModule->initialize(device->getDevice(), shaderFile->extractString(), "main", static_cast<VkShaderStageFlagBits>(stage));
             
             // Register
             device->insertShaderModule(shaderModule);
@@ -1454,23 +1467,23 @@ void Engine3DXMLLoader::loadShaderModules(ContextLoading& context, Vulkan::Conte
 void Engine3DXMLLoader::loadRayTracingPipelines(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
     // Search DescriptorSetLayouts
-    auto result = context._parser.getNode(u8"RayTracingPipelines");
+    auto result = context._parser.getNode("RayTracingPipelines");
     if (result->getNbElements() > 0)
     {
-        MOUCA_ASSERT(result->getNbElements() == 1); //DEV Issue: please clean xml ?
+        MouCa::assertion(result->getNbElements() == 1); //DEV Issue: please clean xml ?
         auto device = deviceWeak.lock();
 
         // cppcheck-suppress unreadVariable // false positive
         auto aPush = context._parser.autoPushNode(*result->getNode(0));
 
         // Parsing all ShaderModule
-        auto allRayPipelines = context._parser.getNode(u8"RayTracingPipeline");
+        auto allRayPipelines = context._parser.getNode("RayTracingPipeline");
         for (size_t idPipeline = 0; idPipeline < allRayPipelines->getNbElements(); ++idPipeline)
         {
             auto pipelineNode = allRayPipelines->getNode(idPipeline);
 
             bool existing;
-            const uint32_t id = LoaderHelper::getIdentifiant(pipelineNode, u8"RayTracingPipeline", _rayTracingPipelines, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(pipelineNode, "RayTracingPipeline", _rayTracingPipelines, context, existing);
             if(existing)
             {
                 continue;
@@ -1483,15 +1496,15 @@ void Engine3DXMLLoader::loadRayTracingPipelines(ContextLoading& context, Vulkan:
             loadPipelineStages(context, pipeline->getShadersStage());
             if (pipeline->getShadersStage().getNbShaders() == 0)
             {
-                MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLMissingNodeError", context.getFileName(), u8"RayTracingPipeline", u8"Stages/Stage");
+                throw Core::Exception(makeLoaderError(context, "XMLMissingNodeError") << "RayTracingPipeline" << "Stages/Stage");
             }
 
             // Groups
             loadRayTracingShaderGroup(context, deviceWeak, *pipeline);
 
-            const uint32_t idL = LoaderHelper::getLinkedIdentifiant(pipelineNode, u8"pipelineLayoutId", _pipelineLayouts, context);
+            const uint32_t idL = LoaderHelper::getLinkedIdentifiant(pipelineNode, "pipelineLayoutId", _pipelineLayouts, context);
             uint32_t maxRecursive = 0;
-            pipelineNode->getAttribute(u8"maxPipelineRayRecursionDepth", maxRecursive);
+            pipelineNode->getAttribute("maxPipelineRayRecursionDepth", maxRecursive);
             
             pipeline->initialize(device->getDevice(), _pipelineLayouts[idL], maxRecursive);
 
@@ -1503,16 +1516,16 @@ void Engine3DXMLLoader::loadRayTracingPipelines(ContextLoading& context, Vulkan:
 
 void Engine3DXMLLoader::loadRayTracingShaderGroup(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak, Vulkan::RayTracingPipeline& pipeline)
 {
-    auto groups = context._parser.getNode(u8"Groups");
+    auto groups = context._parser.getNode("Groups");
     if (groups->getNbElements() > 0)
     {
-        MOUCA_ASSERT(groups->getNbElements() == 1); //DEV Issue: Need to clean xml !
+        MouCa::assertion(groups->getNbElements() == 1); //DEV Issue: Need to clean xml !
 
         // cppcheck-suppress unreadVariable // false positive
         auto aPush = context._parser.autoPushNode(*groups->getNode(0));
 
         // Parsing all Graphics pipeline
-        auto allGroups = context._parser.getNode(u8"Group");
+        auto allGroups = context._parser.getNode("Group");
         for (size_t idGroup = 0; idGroup < allGroups->getNbElements(); ++idGroup)
         {
             auto groupNode = allGroups->getNode(idGroup);
@@ -1529,23 +1542,23 @@ void Engine3DXMLLoader::loadRayTracingShaderGroup(ContextLoading& context, Vulka
                 nullptr,                                                        //const void* pShaderGroupCaptureReplayHandle;
             };
 
-            group.type = LoaderHelper::readValue(groupNode, u8"type", rayTracingGroupTypes, false, context);
+            group.type = LoaderHelper::readValue(groupNode, "type", rayTracingGroupTypes, false, context);
 
-            if(groupNode->hasAttribute(u8"generalShader"))
+            if(groupNode->hasAttribute("generalShader"))
             {
-                groupNode->getAttribute(u8"generalShader", group.generalShader);
+                groupNode->getAttribute("generalShader", group.generalShader);
             }
-            if (groupNode->hasAttribute(u8"closestHitShader"))
+            if (groupNode->hasAttribute("closestHitShader"))
             {
-                groupNode->getAttribute(u8"closestHitShader", group.closestHitShader);
+                groupNode->getAttribute("closestHitShader", group.closestHitShader);
             }
-            if (groupNode->hasAttribute(u8"anyHitShader"))
+            if (groupNode->hasAttribute("anyHitShader"))
             {
-                groupNode->getAttribute(u8"anyHitShader", group.anyHitShader);
+                groupNode->getAttribute("anyHitShader", group.anyHitShader);
             }
-            if (groupNode->hasAttribute(u8"intersectionShader"))
+            if (groupNode->hasAttribute("intersectionShader"))
             {
-                groupNode->getAttribute(u8"intersectionShader", group.intersectionShader);
+                groupNode->getAttribute("intersectionShader", group.intersectionShader);
             }
 
             pipeline.addGroup(std::move(group));
@@ -1555,35 +1568,35 @@ void Engine3DXMLLoader::loadRayTracingShaderGroup(ContextLoading& context, Vulka
 
 void Engine3DXMLLoader::loadTracingRay(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
-    auto tracingRays = context._parser.getNode(u8"TracingRays");
+    auto tracingRays = context._parser.getNode("TracingRays");
     if (tracingRays->getNbElements() > 0)
     {
-        MOUCA_ASSERT(tracingRays->getNbElements() == 1); //DEV Issue: Need to clean xml !
+        MouCa::assertion(tracingRays->getNbElements() == 1); //DEV Issue: Need to clean xml !
         auto device = deviceWeak.lock();
 
         // cppcheck-suppress unreadVariable // false positive
         auto aPush = context._parser.autoPushNode(*tracingRays->getNode(0));
 
         // Parsing all Graphics pipeline
-        auto allTracingRays = context._parser.getNode(u8"TracingRay");
+        auto allTracingRays = context._parser.getNode("TracingRay");
         for (size_t idTracingRay = 0; idTracingRay < allTracingRays->getNbElements(); ++idTracingRay)
         {
             auto tracingRayNode = allTracingRays->getNode(idTracingRay);
 
             bool existing;
-            const uint32_t id = LoaderHelper::getIdentifiant(tracingRayNode, u8"RayTracingPipeline", _tracingRays, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(tracingRayNode, "RayTracingPipeline", _tracingRays, context, existing);
             if (existing)
             {
                 continue;
             }
 
-            const uint32_t idPipeline = LoaderHelper::getLinkedIdentifiant(tracingRayNode, u8"rayTracingPipelines", _rayTracingPipelines, context);
+            const uint32_t idPipeline = LoaderHelper::getLinkedIdentifiant(tracingRayNode, "rayTracingPipelines", _rayTracingPipelines, context);
             Vulkan::TracingRay::BufferSizes sizes{ 0, 0, 0, 0 };
             
-            tracingRayNode->getAttribute(u8"raygenSize",   sizes[0]);
-            tracingRayNode->getAttribute(u8"missSize",     sizes[1]);
-            tracingRayNode->getAttribute(u8"hitSize",      sizes[2]);
-            tracingRayNode->getAttribute(u8"callableSize", sizes[3]);
+            tracingRayNode->getAttribute("raygenSize",   sizes[0]);
+            tracingRayNode->getAttribute("missSize",     sizes[1]);
+            tracingRayNode->getAttribute("hitSize",      sizes[2]);
+            tracingRayNode->getAttribute("callableSize", sizes[3]);
 
             auto tracingRay = std::make_shared<Vulkan::TracingRay>();
             tracingRay->initialize(device->getDevice(), _rayTracingPipelines[idPipeline], 0, sizes);
@@ -1596,23 +1609,23 @@ void Engine3DXMLLoader::loadTracingRay(ContextLoading& context, Vulkan::ContextD
 
 void Engine3DXMLLoader::loadAccelerationStructures(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak)
 {
-    auto accelerationStructures = context._parser.getNode(u8"AccelerationStructures");
+    auto accelerationStructures = context._parser.getNode("AccelerationStructures");
     if (accelerationStructures->getNbElements() > 0)
     {
-        MOUCA_ASSERT(accelerationStructures->getNbElements() == 1); //DEV Issue: Need to clean xml !
+        MouCa::assertion(accelerationStructures->getNbElements() == 1); //DEV Issue: Need to clean xml !
         auto device = deviceWeak.lock();
 
         // cppcheck-suppress unreadVariable // false positive
         auto aPush = context._parser.autoPushNode(*accelerationStructures->getNode(0));
 
         // Parsing all Graphics pipeline
-        auto allAccelerationStructures = context._parser.getNode(u8"AccelerationStructure");
+        auto allAccelerationStructures = context._parser.getNode("AccelerationStructure");
         for (size_t idAccelerationStructure = 0; idAccelerationStructure < allAccelerationStructures->getNbElements(); ++idAccelerationStructure)
         {
             auto accelerationStructureNode = allAccelerationStructures->getNode(idAccelerationStructure);
 
             bool existing;
-            const uint32_t id = LoaderHelper::getIdentifiant(accelerationStructureNode, u8"AccelerationStructure", _accelerationStructures, context, existing);
+            const uint32_t id = LoaderHelper::getIdentifiant(accelerationStructureNode, "AccelerationStructure", _accelerationStructures, context, existing);
             if (existing)
             {
                 continue;
@@ -1620,44 +1633,44 @@ void Engine3DXMLLoader::loadAccelerationStructures(ContextLoading& context, Vulk
 
             auto as = std::make_shared<Vulkan::AccelerationStructure>();
 
-            const auto type = LoaderHelper::readValue(accelerationStructureNode, u8"type", accelerationStructureTypes, false, context);
+            const auto type = LoaderHelper::readValue(accelerationStructureNode, "type", accelerationStructureTypes, false, context);
 
             auto aPushA = context._parser.autoPushNode(*accelerationStructureNode);
 
             {
-                auto allGeometries = context._parser.getNode(u8"Geometry");
+                auto allGeometries = context._parser.getNode("Geometry");
                 for (size_t idGeometry = 0; idGeometry < allGeometries->getNbElements(); ++idGeometry)
                 {
                     auto geometryNode = allGeometries->getNode(idGeometry);
 
-                    const auto flag = LoaderHelper::readValue(geometryNode, u8"flag", geometryFlags, true, context );
+                    const auto flag = LoaderHelper::readValue(geometryNode, "flag", geometryFlags, true, context );
                     Core::String typeG;
                     geometryNode->getAttribute("type", typeG);
-                    if(typeG == u8"triangle")
+                    if(typeG == "triangle")
                     {
-                        const uint32_t idMesh = LoaderHelper::getLinkedIdentifiant(geometryNode, u8"meshId", _cpuMesh, context);
+                        const uint32_t idMesh = LoaderHelper::getLinkedIdentifiant(geometryNode, "meshId", _cpuMesh, context);
 
-                        const uint32_t idVBO = LoaderHelper::getLinkedIdentifiant(geometryNode, u8"vboBufferId", _buffers, context);
-                        const uint32_t idIBO = LoaderHelper::getLinkedIdentifiant(geometryNode, u8"iboBufferId", _buffers, context);
+                        const uint32_t idVBO = LoaderHelper::getLinkedIdentifiant(geometryNode, "vboBufferId", _buffers, context);
+                        const uint32_t idIBO = LoaderHelper::getLinkedIdentifiant(geometryNode, "iboBufferId", _buffers, context);
                         
                         auto triangle = std::make_unique<Vulkan::AccelerationStructureGeometryTriangles>();
                         triangle->initialize(_cpuMesh[idMesh], _buffers[idIBO], _buffers[idVBO], flag);
 
                         as->addGeometry(std::move(triangle));
                     }
-                    else if (typeG == u8"instance")
+                    else if (typeG == "instance")
                     {
                         auto aPushGI = context._parser.autoPushNode(*geometryNode);
 
                         auto allInstances = std::make_unique<Vulkan::AccelerationStructureGeometryInstance>();
 
-                        auto allInstancesNode = context._parser.getNode(u8"Instance");
+                        auto allInstancesNode = context._parser.getNode("Instance");
                         for (size_t idInstance = 0; idInstance < allInstancesNode->getNbElements(); ++idInstance)
                         {
                             auto instanceNode = allInstancesNode->getNode(idInstance);
-                            const uint32_t idAS = LoaderHelper::getLinkedIdentifiant(instanceNode, u8"accelerationStructureId", _accelerationStructures, context);
+                            const uint32_t idAS = LoaderHelper::getLinkedIdentifiant(instanceNode, "accelerationStructureId", _accelerationStructures, context);
 
-                            const auto flagI = LoaderHelper::readValue(instanceNode, u8"flag", geometryInstanceFlags, true, context );
+                            const auto flagI = LoaderHelper::readValue(instanceNode, "flag", geometryInstanceFlags, true, context );
 
                             VkTransformMatrixKHR transformMatrix =
                             {
@@ -1678,7 +1691,7 @@ void Engine3DXMLLoader::loadAccelerationStructures(ContextLoading& context, Vulk
                     }
                     else
                     {
-                        MOUCA_THROW_ERROR_3(u8"Engine3D", u8"UnknownASGeometryError", context.getFileName(), u8"Geometry", typeG);
+                        throw Core::Exception(makeLoaderError(context, "UnknownASGeometryError") << "Geometry" << typeG);
                     }
                 }
                 //bgs[0]->initialize(*device);

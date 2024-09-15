@@ -18,11 +18,11 @@ namespace RT
             };
 
             /// Constructor
-            Light(const Core::String& label = u8"Default Light"):
+            Light(const Core::String& label = "Default Light"):
             Object(TLight, label), _form(Form::Point), _color(1.0, 1.0, 1.0), _radius(100.0)
             {}
 
-            Light(const Form form, const Point3& color, const float radius, const Core::String& label = u8"Default Light"):
+            Light(const Form form, const Point3& color, const float radius, const Core::String& label = "Default Light"):
             Object(TLight, label), _form(form), _color(color), _radius(radius)
             {}
 

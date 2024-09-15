@@ -317,28 +317,28 @@ class DeferredTest : public MouCaLabTest
             
             ImGuiIO& io = ImGui::GetIO();
             ImGui::SetNextWindowSize(io.DisplaySize, ImGuiCond_FirstUseEver);
-            ImGui::Begin(u8"Vulkan Example", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+            ImGui::Begin("Vulkan Example", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
             //ImGui::TextUnformatted(title.c_str());
             //ImGui::TextUnformatted(deviceProperties.deviceName);
             //ImGui::Text("%.2f ms/frame (%.1d fps)", (1000.0f / lastFPS), lastFPS);
 
             ImGui::PushItemWidth(110.0f * 1.0f);
 
-            if (ImGui::CollapsingHeader(u8"Settings", ImGuiTreeNodeFlags_DefaultOpen))
+            if (ImGui::CollapsingHeader("Settings", ImGuiTreeNodeFlags_DefaultOpen))
             {
-                if (ImGui::Checkbox(u8"Display render targets", &debugDisplay))
+                if (ImGui::Checkbox("Display render targets", &debugDisplay))
                 {
                     update = true;
 
                     _switchScreen->setIdNode(debugDisplay ? 2 : (useMSAA ? 0 : 1));
                 }
-                if (ImGui::Checkbox(u8"MSAA",  &useMSAA))
+                if (ImGui::Checkbox("MSAA",  &useMSAA))
                 {
                     update = true;
 
                     _switchScreen->setIdNode(debugDisplay ? 2 : (useMSAA ? 0 : 1));
                 }
-                if (ImGui::Checkbox(u8"Sample rate shading", &useSampleShading))
+                if (ImGui::Checkbox("Sample rate shading", &useSampleShading))
                 {
                     update = true;
                     _switchScreen->setIdNode(useSampleShading ? 0 : 1);
@@ -391,15 +391,15 @@ TEST_F(DeferredTest, run)
     loader._cpuMeshDescriptors[0] = getMeshDescriptor();
 
     // Create Vulkan objects
-    ASSERT_NO_FATAL_FAILURE(loadEngine(loader, u8"Deferred.xml"));
+    ASSERT_NO_FATAL_FAILURE(loadEngine(loader, "Deferred.xml"));
 
     // Link event manager
     loader._dialogs[0].lock()->initialize(_eventManager, _resolution);
 
     _switchScreen     = dynamic_cast<Vulkan::CommandSwitch*>(loader._commandLinks[1]);
-    MOUCA_ASSERT(_switchScreen != nullptr);
+    MouCa::assertion(_switchScreen != nullptr);
     _switchOffScreeen = dynamic_cast<Vulkan::CommandSwitch*>(loader._commandLinks[2]);
-    MOUCA_ASSERT(_switchOffScreeen != nullptr);
+    MouCa::assertion(_switchOffScreeen != nullptr);
 
     ASSERT_NO_FATAL_FAILURE(GUI.initialize(_resolution));
 
@@ -419,12 +419,12 @@ TEST_F(DeferredTest, run)
     loaderGUI._buffers[1] = GUI.getIndexBuffer();
 
     // Create Vulkan objects
-    ASSERT_NO_FATAL_FAILURE(loadEngine(loaderGUI, u8"ImGUI.xml"));
+    ASSERT_NO_FATAL_FAILURE(loadEngine(loaderGUI, "ImGUI.xml"));
 
     // Transfer commands
     {
         Vulkan::CommandContainer* container = dynamic_cast<Vulkan::CommandContainer*>(loader._commandLinks[0]);
-        MOUCA_ASSERT(container != nullptr);
+        MouCa::assertion(container != nullptr);
         container->transfer(std::move(*loaderGUI._commandsGroup[0].get()));
     }
 
@@ -521,7 +521,7 @@ TEST_F(DeferredTest, run)
                 updateCommandBuffersSurface(loader);
             }
         };
-        mainLoop(manager, u8"Deferred Demo ", demo);     
+        mainLoop(manager, "Deferred Demo ", demo);     
 
         // EnableCodeCoverage
     }
@@ -532,7 +532,7 @@ TEST_F(DeferredTest, run)
         updateUIOverlay();
         ASSERT_NO_THROW(GUI.prepareBuffer(*context));
         Vulkan::CommandContainer* container = dynamic_cast<Vulkan::CommandContainer*>(loaderGUI._commandLinks[0]);
-        MOUCA_ASSERT(container != nullptr);
+        MouCa::assertion(container != nullptr);
         ASSERT_NO_THROW(GUI.buildCommands(container->getCommands()));
 
         // Refresh Command Buffer with new command

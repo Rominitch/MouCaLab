@@ -3,7 +3,7 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
     <STEAMWORKS_VERSION>146</STEAMWORKS_VERSION>
-    <STEAMWORKS_PATH>$(SolutionDir)..\SDK\SteamWorksSDK-$(STEAMWORKS_VERSION)\</STEAMWORKS_PATH>
+    <STEAMWORKS_PATH>$(MOUCA_SDK)SteamWorksSDK-$(STEAMWORKS_VERSION)\</STEAMWORKS_PATH>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>

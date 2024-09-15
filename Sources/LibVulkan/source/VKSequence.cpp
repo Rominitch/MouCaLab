@@ -21,12 +21,12 @@ _semaphore(semaphore.expired() ? VK_NULL_HANDLE : semaphore.lock()->getInstance(
 _fence(fence.expired() ? VK_NULL_HANDLE : fence.lock()->getInstance()),
 _timeout(timeout)
 {
-    MOUCA_PRE_CONDITION(!_swapChain.expired()); //DEV Issue: Bad swapchain !
+    MouCa::preCondition(!_swapChain.expired()); //DEV Issue: Bad swapchain !
 }
 
 VkResult SequenceAcquire::execute(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!_swapChain.expired()); //DEV Issue: Never call initialized !
+    MouCa::preCondition(!_swapChain.expired()); //DEV Issue: Never call initialized !
 
     auto sw = _swapChain.lock();
     if (!sw->isReady())
@@ -44,12 +44,12 @@ VkResult SequenceAcquire::execute(const Device& device)
 SequenceWaitFence::SequenceWaitFence(const std::vector<FenceWPtr>& fences, const uint64_t timeout, const VkBool32 waitAll):
 _timeout(timeout), _all(waitAll)
 {
-    MOUCA_PRE_CONDITION(!fences.empty());
+    MouCa::preCondition(!fences.empty());
 
     _fences.reserve(fences.size());
     for (auto& fence : fences)
     {
-        MOUCA_ASSERT(!fence.lock()->isNull());
+        MouCa::assertion(!fence.lock()->isNull());
         _fences.emplace_back(fence.lock()->getInstance());
     }
 }
@@ -61,12 +61,12 @@ VkResult SequenceWaitFence::execute(const Device& device)
 
 SequenceResetFence::SequenceResetFence(const std::vector<FenceWPtr>& fences)
 {
-    MOUCA_PRE_CONDITION(!fences.empty());
+    MouCa::preCondition(!fences.empty());
 
     _fences.reserve(fences.size());
     for (auto& fence : fences)
     {
-        MOUCA_ASSERT(!fence.lock()->isNull());
+        MouCa::assertion(!fence.lock()->isNull());
         _fences.emplace_back(fence.lock()->getInstance());
     }
 }
@@ -79,7 +79,7 @@ VkResult SequenceResetFence::execute(const Device& device)
 SequenceSubmit::SequenceSubmit(SubmitInfos&& submitInfos, FenceWPtr fence):
 _fence(fence.expired() ? VK_NULL_HANDLE : fence.lock()->getInstance())
 {
-    MOUCA_PRE_CONDITION(!submitInfos.empty()); //DEV Issue: Need valid data !
+    MouCa::preCondition(!submitInfos.empty()); //DEV Issue: Need valid data !
     
     _submitInfos = std::move(submitInfos);
     _vkSubmitInfos.reserve(submitInfos.size());
@@ -88,12 +88,12 @@ _fence(fence.expired() ? VK_NULL_HANDLE : fence.lock()->getInstance())
         _vkSubmitInfos.emplace_back(submitInfo->buildSubmitInfo());
     }
 
-    MOUCA_POST_CONDITION(!_vkSubmitInfos.empty()); //DEV Issue: Not ready ?
+    MouCa::postCondition(!_vkSubmitInfos.empty()); //DEV Issue: Not ready ?
 }
 
 VkResult SequenceSubmit::execute(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!_vkSubmitInfos.empty()); //DEV Issue: nothing to submit ?
+    MouCa::preCondition(!_vkSubmitInfos.empty()); //DEV Issue: nothing to submit ?
 
     // Update SubmitInfo (possibly based on changing SwapChain CommandBuffer)
     auto itSubmitInfo = _vkSubmitInfos.begin();
@@ -102,7 +102,7 @@ VkResult SequenceSubmit::execute(const Device& device)
         *itSubmitInfo = submitInfo->buildSubmitInfo();
         ++itSubmitInfo;
     }
-    MOUCA_ASSERT(itSubmitInfo == _vkSubmitInfos.end());
+    MouCa::assertion(itSubmitInfo == _vkSubmitInfos.end());
 
     return vkQueueSubmit(device.getQueue(), static_cast<uint32_t>(_vkSubmitInfos.size()), _vkSubmitInfos.data(), _fence);
 }
@@ -110,7 +110,7 @@ VkResult SequenceSubmit::execute(const Device& device)
 SequencePresentKHR::SequencePresentKHR(const std::vector<SemaphoreWPtr>& semaphores, const std::vector<SwapChainWPtr>& swapChains):
 _swapChains(swapChains)
 {
-    MOUCA_PRE_CONDITION(!swapChains.empty());
+    MouCa::preCondition(!swapChains.empty());
 
     _semaphores.reserve(semaphores.size());
     for (const auto& semaphore : semaphores)
@@ -173,8 +173,8 @@ SequencePresentKHR::~SequencePresentKHR()
 
 VkResult SequencePresentKHR::execute(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!device.isNull());
-    MOUCA_PRE_CONDITION(device.getQueue() != VK_NULL_HANDLE);
+    MouCa::preCondition(!device.isNull());
+    MouCa::preCondition(device.getQueue() != VK_NULL_HANDLE);
 
     // Update with current ID (memory don't change so don't touch to _presentInfo)
     auto itImageID = _imageId.begin();
@@ -201,7 +201,7 @@ void SequencePresentKHR::update()
         *itSwap = swapChain.lock()->getInstance();
         ++itSwap;
     }
-    MOUCA_POST_CONDITION(_swapChainIDs.end() == itSwap);
+    MouCa::postCondition(_swapChainIDs.end() == itSwap);
 }
 
 }

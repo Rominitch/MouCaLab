@@ -12,12 +12,12 @@ namespace Vulkan
 Sampler::Sampler():
 _sampler(VK_NULL_HANDLE)
 {
-    MOUCA_ASSERT(isNull());
+    MouCa::assertion(isNull());
 }
 
 Sampler::~Sampler()
 {
-    MOUCA_ASSERT(isNull());
+    MouCa::assertion(isNull());
 }
 
 void Sampler::initialize(const Device& device, VkFilter magFilter, VkFilter minFilter, VkSamplerMipmapMode mipmapMode,
@@ -27,8 +27,8 @@ void Sampler::initialize(const Device& device, VkFilter magFilter, VkFilter minF
                          float  minLod, float maxLod,
                          VkBorderColor borderColor, VkBool32 unnormalizedCoordinates)
 {
-    MOUCA_PRE_CONDITION(isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
+    MouCa::preCondition(isNull());
+    MouCa::preCondition(!device.isNull());
 
     // Create sampler
     const VkSamplerCreateInfo samplerInfo
@@ -55,14 +55,14 @@ void Sampler::initialize(const Device& device, VkFilter magFilter, VkFilter minF
 
     if (vkCreateSampler(device.getInstance(), &samplerInfo, nullptr, &_sampler) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"SamplerCreationError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "SamplerCreationError"));
     }
 }
 
 void Sampler::initialize(const Device& device, const float& maxLOD, const VkSamplerAddressMode addressModeUVW, float anisotropy, const VkFilter filter)
 {
-    MOUCA_ASSERT(isNull());
-    MOUCA_ASSERT(!device.isNull());
+    MouCa::assertion(isNull());
+    MouCa::assertion(!device.isNull());
 
     // Create sampler
     VkSamplerCreateInfo samplerInfo =
@@ -89,14 +89,14 @@ void Sampler::initialize(const Device& device, const float& maxLOD, const VkSamp
 
     if(vkCreateSampler(device.getInstance(), &samplerInfo, nullptr, &_sampler) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"SamplerCreationError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "SamplerCreationError"));
     }
 }
 
 void Sampler::release(const Device& device)
 {
-    MOUCA_ASSERT(!isNull());
-    MOUCA_ASSERT(!device.isNull());
+    MouCa::assertion(!isNull());
+    MouCa::assertion(!device.isNull());
 
     vkDestroySampler(device.getInstance(), _sampler, nullptr);
     _sampler = VK_NULL_HANDLE;

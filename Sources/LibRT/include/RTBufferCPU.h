@@ -46,7 +46,7 @@ namespace RT
         uint64_t _pitchRow;
 
     public:
-        BufferLinkedCPU(const Core::String& strLabel = u8"CPU Linked Buffer"):
+        BufferLinkedCPU(const Core::String& strLabel = "CPU Linked Buffer"):
         BufferCPUBase(strLabel), _pitchRow(0)
         {}
 
@@ -54,18 +54,18 @@ namespace RT
 
         void create(const RT::BufferDescriptor& descriptor, const size_t szNbElementBuffer, const HandleBuffer linkedPointer, const size_t pitch = 0)
         {
-            MOUCA_PRE_CONDITION(_handle == nullptr);
-            MOUCA_PRE_CONDITION(szNbElementBuffer > 0);
-            MOUCA_PRE_CONDITION(linkedPointer != nullptr);
-            MOUCA_PRE_CONDITION(descriptor.getByteSize() > 0);
+            MouCa::preCondition(_handle == nullptr);
+            MouCa::preCondition(szNbElementBuffer > 0);
+            MouCa::preCondition(linkedPointer != nullptr);
+            MouCa::preCondition(descriptor.getByteSize() > 0);
 
             _handle     = linkedPointer;
             _nbElements = szNbElementBuffer;
             _descriptor = descriptor;
             _pitchRow   = pitch;
 
-            MOUCA_POST_CONDITION(_handle != nullptr);
-            MOUCA_POST_CONDITION(&static_cast<char*>(_handle)[(szNbElementBuffer-1) * descriptor.getByteSize()] != nullptr); //DEV Issue: access to last elements.
+            MouCa::postCondition(_handle != nullptr);
+            MouCa::postCondition(&static_cast<char*>(_handle)[(szNbElementBuffer-1) * descriptor.getByteSize()] != nullptr); //DEV Issue: access to last elements.
         }
 
         void release() override
@@ -96,7 +96,7 @@ namespace RT
     class BufferCPU : public BufferCPUBase
     {
         public:
-            BufferCPU(const Core::String& strLabel = u8"CPU Buffer") :
+            BufferCPU(const Core::String& strLabel = "CPU Buffer") :
             BufferCPUBase( strLabel )
             {}
 
@@ -109,8 +109,8 @@ namespace RT
             {
                 release();
 
-                MOUCA_ASSERT( descriptor.getByteSize() > 0 );
-                MOUCA_ASSERT( nbElementsBuffer > 0 );
+                MouCa::assertion( descriptor.getByteSize() > 0 );
+                MouCa::assertion( nbElementsBuffer > 0 );
 
                 _nbElements	= nbElementsBuffer;
                 _descriptor	= descriptor;

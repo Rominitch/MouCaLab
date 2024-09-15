@@ -19,7 +19,7 @@ namespace MouCaGraphic
 Engine3DTransfer::Engine3DTransfer(const Vulkan::ContextDevice& context):
 _context(context)
 {
-    MOUCA_PRE_CONDITION(!context.isNull());        //DEV Issue: Need a valid context
+    MouCa::preCondition(!context.isNull());        //DEV Issue: Need a valid context
 }
 
 Engine3DTransfer::~Engine3DTransfer()
@@ -34,8 +34,8 @@ Engine3DTransfer::~Engine3DTransfer()
 
 void Engine3DTransfer::immediatCopyCPUToGPU(const RT::BufferCPUBase& from, Vulkan::Buffer& to)
 {
-    MOUCA_PRE_CONDITION(from.getByteSize() > 0);   //DEV Issue: Need allocated buffer
-    MOUCA_PRE_CONDITION(!to.isNull());             //DEV Issue: Need allocated buffer
+    MouCa::preCondition(from.getByteSize() > 0);   //DEV Issue: Need allocated buffer
+    MouCa::preCondition(!to.isNull());             //DEV Issue: Need allocated buffer
 
     to.getMemory().copy(_context.getDevice(), from.getByteSize(), from.getData());
 }
@@ -109,14 +109,14 @@ void Engine3DTransfer::indirectCopyCPUToGPU(Vulkan::CommandBufferWPtr commandBuf
 
 void Engine3DTransfer::image2DArrayCPUToGPU(Vulkan::CommandBuffer& commandBuffer, const RT::Image& from, Vulkan::Image& to)
 {
-    MOUCA_PRE_CONDITION(!commandBuffer.isNull());
+    MouCa::preCondition(!commandBuffer.isNull());
 
     const auto& device = _context.getDevice();
 
     const auto& size = to.getExtent();
-    MOUCA_PRE_CONDITION(size.width        == static_cast<uint32_t>(from.getExtents(0).x));
-    MOUCA_PRE_CONDITION(size.height       == static_cast<uint32_t>(from.getExtents(0).y));
-    MOUCA_PRE_CONDITION(to.getArraySize() == static_cast<uint32_t>(from.getLayers()));
+    MouCa::preCondition(size.width        == static_cast<uint32_t>(from.getExtents(0).x));
+    MouCa::preCondition(size.height       == static_cast<uint32_t>(from.getExtents(0).y));
+    MouCa::preCondition(to.getArraySize() == static_cast<uint32_t>(from.getLayers()));
 
     //Create a buffer with data
     auto stagingBuffer = std::make_unique<Vulkan::Buffer>(std::make_unique<Vulkan::MemoryBuffer>(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
@@ -199,12 +199,12 @@ void Engine3DTransfer::image2DArrayCPUToGPU(Vulkan::CommandBuffer& commandBuffer
 
 void Engine3DTransfer::image2DCPUToGPU(Vulkan::CommandBuffer& commandBuffer, const RT::Image& from, Vulkan::Image& to)
 {
-    MOUCA_PRE_CONDITION(!commandBuffer.isNull());
+    MouCa::preCondition(!commandBuffer.isNull());
 
     const auto& device = _context.getDevice();
 
-    MOUCA_PRE_CONDITION(to.getExtent().width  == from.getExtents(0).x);
-    MOUCA_PRE_CONDITION(to.getExtent().height == from.getExtents(0).y);
+    MouCa::preCondition(to.getExtent().width  == from.getExtents(0).x);
+    MouCa::preCondition(to.getExtent().height == from.getExtents(0).y);
 
     //Create a buffer with data
     auto stagingBuffer = std::make_unique<Vulkan::Buffer>(std::make_unique<Vulkan::MemoryBuffer>(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));

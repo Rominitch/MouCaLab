@@ -15,21 +15,21 @@ namespace Vulkan
 FrameBuffer::FrameBuffer():
 _resolution({ 0,0 }), _frameBuffer(VK_NULL_HANDLE)
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 FrameBuffer::~FrameBuffer()
 {
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 void FrameBuffer::initialize(const Device& device, RenderPassWPtr renderPass, const VkExtent2D& resolution, const Attachments& attachments)
 {
-    MOUCA_PRE_CONDITION(isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
-    MOUCA_PRE_CONDITION(!attachments.empty());
-    MOUCA_PRE_CONDITION(!renderPass.expired() && !renderPass.lock()->isNull());
-    MOUCA_PRE_CONDITION(resolution.width > 0 && resolution.height > 0);
+    MouCa::preCondition(isNull());
+    MouCa::preCondition(!device.isNull());
+    MouCa::preCondition(!attachments.empty());
+    MouCa::preCondition(!renderPass.expired() && !renderPass.lock()->isNull());
+    MouCa::preCondition(resolution.width > 0 && resolution.height > 0);
 
     _renderPass = renderPass;
     _resolution = resolution;
@@ -49,16 +49,16 @@ void FrameBuffer::initialize(const Device& device, RenderPassWPtr renderPass, co
 
     if (vkCreateFramebuffer(device.getInstance(), &frameBufferInfo, nullptr, &_frameBuffer) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"FrameBufferCreationError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "FrameBufferCreationError"));
     }
 
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 }
 
 void FrameBuffer::release(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(!device.isNull());
 
     // Destroy
     vkDestroyFramebuffer(device.getInstance(), _frameBuffer, nullptr);
@@ -67,7 +67,7 @@ void FrameBuffer::release(const Device& device)
     _frameBuffer = VK_NULL_HANDLE;
     _resolution = { 0,0 };
 
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 }

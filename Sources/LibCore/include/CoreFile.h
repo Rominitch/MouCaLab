@@ -179,7 +179,7 @@ namespace Core
             /// \brief  Extract all whole file into string buffer.
             /// 
             /// \returns Buffer with all file data.
-            std::string extractString() const;
+            StringCPP extractString() const;
 
             //------------------------------------------------------------------------
             /// \brief  Check if current file exists on disk.

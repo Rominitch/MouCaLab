@@ -22,7 +22,7 @@ void VirtualMouse::applyMode(const Window& window) const
 
 size_t VirtualMouse::createNewCursor( const RT::Image& image, const RT::Point2i& center )
 {
-    MOUCA_PRE_CONDITION(!image.isNull());
+    MouCa::preCondition(!image.isNull());
 
     const uint32_t layer = 0;
     const uint32_t level = 0;
@@ -36,17 +36,17 @@ size_t VirtualMouse::createNewCursor( const RT::Image& image, const RT::Point2i&
     };
 
     GLFWcursor* cursor = glfwCreateCursor(&glfwImage, center.x, center.y);
-    MOUCA_ASSERT( cursor != NULL );
+    MouCa::assertion( cursor != NULL );
 
     const size_t id = _cursors.size();
     _cursors.emplace_back( cursor );
-    MOUCA_POST_CONDITION(id < _cursors.size());
+    MouCa::postCondition(id < _cursors.size());
     return id;
 }
 
 void VirtualMouse::deleteCursor( const size_t id )
 {
-    MOUCA_PRE_CONDITION(id < _cursors.size());
+    MouCa::preCondition(id < _cursors.size());
     auto it = _cursors.begin();
     std::advance(it, id);
 
@@ -56,7 +56,7 @@ void VirtualMouse::deleteCursor( const size_t id )
 
 void VirtualMouse::applyCursor( const RT::Window& window, const size_t id )
 {
-    MOUCA_PRE_CONDITION( id < _cursors.size() );
+    MouCa::preCondition( id < _cursors.size() );
     auto it = _cursors.begin();
     std::advance( it, id );
 

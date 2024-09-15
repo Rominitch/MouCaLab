@@ -19,8 +19,8 @@ void ByteBuffer::readBuffer(const void* buffer, const size_t sizeInByte)
 
 size_t ByteBuffer::read(File& file, const size_t size)
 {
-    MOUCA_ASSERT(file.isExist());
-    MOUCA_ASSERT(file.getFilePosition() + size <= file.getSizeOfFile());
+    MouCa::assertion(file.isExist());
+    MouCa::assertion(file.getFilePosition() + size <= file.getSizeOfFile());
 
     _buffer.clear();
     _buffer.resize(size);
@@ -32,8 +32,8 @@ size_t ByteBuffer::read(File& file, const size_t size)
 
 size_t ByteBuffer::write(File& file) const
 {
-    MOUCA_ASSERT(file.isExist());
-    MOUCA_ASSERT(!_buffer.empty());
+    MouCa::assertion(file.isExist());
+    MouCa::assertion(!_buffer.empty());
     return file.write(_buffer.data(), _buffer.size());
 }
 

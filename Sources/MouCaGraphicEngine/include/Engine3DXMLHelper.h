@@ -23,7 +23,7 @@ namespace MouCaGraphic
 
             if (value.empty())
             {
-                MOUCA_THROW_ERROR_2(u8"Engine3D", u8"XMLEmptyAttributeStringError", context.getFileName(), attribute);
+                throw Core::Exception(Core::ErrorData("Engine3D", "XMLEmptyAttributeStringError") << context.getFileName().string() << attribute);
             }
 
             auto data = static_cast<VulkanEnum>(0); // Set to 0 to make | operator
@@ -40,11 +40,11 @@ namespace MouCaGraphic
                 {
                     if (context._globalData == nullptr)
                     {
-                        MOUCA_THROW_ERROR_1(u8"Engine3D", u8"XMLMissingGlobalData", context.getFileName());
+                        throw Core::Exception(Core::ErrorData("Engine3D", "XMLMissingGlobalData") << context.getFileName().string());
                     }
 
                     // Search global data
-                    auto result = context._parser.searchNodeFrom(*context._globalData, u8"Data", u8"name", value.substr(1));
+                    auto result = context._parser.searchNodeFrom(*context._globalData, "Data", "name", value.substr(1));
                     // Make same job on another node
                     data = readValue(result, attribute, literalEnum, bitMode, context);
                 }
@@ -54,7 +54,7 @@ namespace MouCaGraphic
                     // Possibly | inside
                     if (bitMode)
                     {
-                        boost::split(results, value, [](const auto& c) {return c == u8'|'; });
+                        boost::split(results, value, [](const auto& c) {return c == '|'; });
                     }
                     else
                     {
@@ -65,7 +65,7 @@ namespace MouCaGraphic
                         auto itLiteral = literalEnum.find(part);
                         if (itLiteral == literalEnum.cend())
                         {
-                            MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLUnknownAttributeStringError", context.getFileName(), attribute, part);
+                            throw Core::Exception(Core::ErrorData("Engine3D", "XMLUnknownAttributeStringError") << context.getFileName().string() << attribute << part);
                         }
                         data = static_cast<VulkanEnum>(data | itLiteral->second);
                     }
@@ -84,11 +84,11 @@ namespace MouCaGraphic
             {
                 if (context._globalData == nullptr)
                 {
-                    MOUCA_THROW_ERROR_1(u8"Engine3D", u8"XMLMissingGlobalData", context.getFileName());
+                    throw Core::Exception(Core::ErrorData("Engine3D", "XMLMissingGlobalData") << context.getFileName().string());
                 }
 
                 // Search global data
-                auto result = context._parser.searchNodeFrom(*context._globalData, u8"Data", u8"name", data.substr(1));
+                auto result = context._parser.searchNodeFrom(*context._globalData, "Data", "name", data.substr(1));
                 // Make same job on another node
                 result->getAttribute(attribute, value);
             }
@@ -99,37 +99,29 @@ namespace MouCaGraphic
         template<typename DataType>
         static void readData(const XML::NodeUPtr& node, DataType& value)
         {
-            MOUCA_THROW_ERROR(u8"BasicError", u8"DevImplementationMissing");
-        }
-
-        template<>
-        static void readData(const XML::NodeUPtr& node, VkExtent3D& extent)
-        {
-            node->getAttribute(u8"width", extent.width);
-            node->getAttribute(u8"height", extent.height);
-            node->getAttribute(u8"depth", extent.depth);
+            throw Core::Exception(Core::ErrorData("BasicError", "DevImplementationMissing"));
         }
 
         template<typename VulkanTypeWeak>
         static uint32_t getIdentifiant(const XML::NodeUPtr& node, const Core::String& nodeName, const std::map<uint32_t, VulkanTypeWeak>& container, Engine3DXMLLoader::ContextLoading& context, bool& existing)
         {
             uint32_t id = 0;
-            if (node->hasAttribute(u8"externalId"))
+            if (node->hasAttribute("externalId"))
             {
                 existing = true;
-                node->getAttribute(u8"externalId", id);
+                node->getAttribute("externalId", id);
                 if (container.find(id) == container.cend()) //DEV Issue: Must not exist
                 {
-                    MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLUnknownIdentifiantError", context.getFileName(), nodeName + u8":externalId", std::to_string(id));
+                    throw Core::Exception(Core::ErrorData("Engine3D", "XMLUnknownIdentifiantError") << context.getFileName().string() << nodeName << ":externalId" << std::to_string(id));
                 }
             }
             else
             {
                 existing = false;
-                node->getAttribute(u8"id", id);
+                node->getAttribute("id", id);
                 if (container.find(id) != container.cend()) //DEV Issue: Must not exist
                 {
-                    MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLAlreadyExistingIdError", context.getFileName(), std::to_string(id), u8"id");
+                    throw Core::Exception(Core::ErrorData("Engine3D", "XMLAlreadyExistingIdError") << context.getFileName().string() << std::to_string(id) << "id");
                 }
             }
             return id;
@@ -142,7 +134,7 @@ namespace MouCaGraphic
             node->getAttribute(idName, id);
             if (container.find(id) == container.cend()) //DEV Issue: Must exist
             {
-                MOUCA_THROW_ERROR_3(u8"Engine3D", u8"XMLUnknownIdentifiantError", context.getFileName(), idName, std::to_string(id));
+                throw Core::Exception(Core::ErrorData("Engine3D", "XMLUnknownIdentifiantError") << context.getFileName().string() << idName << std::to_string(id));
             }
             return id;
         }

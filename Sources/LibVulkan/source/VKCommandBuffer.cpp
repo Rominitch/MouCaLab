@@ -24,13 +24,13 @@ _usage(0)
 
 void ICommandBuffer::executeCommand(const ExecuteCommands& executer, const VkCommandBufferResetFlags reset) const
 {
-    MOUCA_PRE_CONDITION(!isNull());            //DEV Issue: missing to call initialize;
-    MOUCA_PRE_CONDITION(!_commands.empty());   //DEV Issue: missing to call registerCommands;
+    MouCa::preCondition(!isNull());            //DEV Issue: missing to call initialize;
+    MouCa::preCondition(!_commands.empty());   //DEV Issue: missing to call registerCommands;
 
     // Reset
     if (vkResetCommandBuffer(executer.commandBuffer, reset) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"CommandBufferResetError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "CommandBufferResetError"));
     }
 
     const VkCommandBufferBeginInfo cmdBufferBeginInfo
@@ -44,7 +44,7 @@ void ICommandBuffer::executeCommand(const ExecuteCommands& executer, const VkCom
     // Begin 
     if (vkBeginCommandBuffer(executer.commandBuffer, &cmdBufferBeginInfo) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"CommandBufferBeginError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "CommandBufferBeginError"));
     }
 
     // Execute all commands
@@ -56,26 +56,26 @@ void ICommandBuffer::executeCommand(const ExecuteCommands& executer, const VkCom
     // End
     if (vkEndCommandBuffer(executer.commandBuffer) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"CommandBufferEndError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "CommandBufferEndError"));
     }
 }
 
 CommandBuffer::CommandBuffer():
 _commandBuffer(VK_NULL_HANDLE)
 {
-    MOUCA_ASSERT(isNull());
+    MouCa::assertion(isNull());
 }
 
 CommandBuffer::~CommandBuffer()
 {
-    MOUCA_ASSERT(isNull());
+    MouCa::assertion(isNull());
 }
 
 void CommandBuffer::initialize(const Device& device, const CommandPoolSPtr pool, const VkCommandBufferLevel level, const VkCommandBufferUsageFlags usage)
 {
-    MOUCA_PRE_CONDITION(isNull());         //DEV Issue: Already initialize ?
-    MOUCA_PRE_CONDITION(!device.isNull()); //DEV Issue: Bad device ?
-    MOUCA_PRE_CONDITION(!pool->isNull());  //DEV Issue: Bad pool ?
+    MouCa::preCondition(isNull());         //DEV Issue: Already initialize ?
+    MouCa::preCondition(!device.isNull()); //DEV Issue: Bad device ?
+    MouCa::preCondition(!pool->isNull());  //DEV Issue: Bad pool ?
 
     // Copy data
     _usage = usage;
@@ -94,16 +94,16 @@ void CommandBuffer::initialize(const Device& device, const CommandPoolSPtr pool,
     // Allocate
     if (vkAllocateCommandBuffers(device.getInstance(), &cmdBufferAllocateInfo, &_commandBuffer) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"CommandBufferCreationError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "CommandBufferCreationError"));
     }
 
-    MOUCA_POST_CONDITION(!isNull());    //DEV Issue: Not initialize ?
+    MouCa::postCondition(!isNull());    //DEV Issue: Not initialize ?
 }
 
 void CommandBuffer::release(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!isNull());        //DEV Issue: Not initialize ?
-    MOUCA_PRE_CONDITION(!_pool.expired()); //DEV Issue: Pool was delete before command.
+    MouCa::preCondition(!isNull());        //DEV Issue: Not initialize ?
+    MouCa::preCondition(!_pool.expired()); //DEV Issue: Pool was delete before command.
 
     // Delete command buffer
     vkFreeCommandBuffers(device.getInstance(), _pool.lock()->getInstance(), 1, &_commandBuffer);
@@ -114,25 +114,25 @@ void CommandBuffer::release(const Device& device)
 
     _pool.reset();
 
-    MOUCA_POST_CONDITION(isNull());    //DEV Issue: Still alive ?
+    MouCa::postCondition(isNull());    //DEV Issue: Still alive ?
 }
 
 void CommandBuffer::registerCommands(Commands&& commands)
 {
-    MOUCA_PRE_CONDITION(!commands.empty());    //DEV Issue: insert no command ?
+    MouCa::preCondition(!commands.empty());    //DEV Issue: insert no command ?
     _commands = std::move(commands);
 }
 
 void CommandBuffer::addCommands(Commands&& commands)
 {
-    MOUCA_PRE_CONDITION(!commands.empty());    //DEV Issue: insert no command ?
+    MouCa::preCondition(!commands.empty());    //DEV Issue: insert no command ?
 
     _commands.insert(_commands.end(), std::make_move_iterator(commands.begin()), std::make_move_iterator(commands.end()));
 }
 
 void CommandBuffer::addCommand(CommandUPtr&& command)
 {
-    MOUCA_PRE_CONDITION(command != nullptr);    //DEV Issue: insert no command ?
+    MouCa::preCondition(command != nullptr);    //DEV Issue: insert no command ?
 
     _commands.emplace_back(std::move(command));
 }

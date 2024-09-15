@@ -121,7 +121,7 @@ namespace Core
             template<typename DataType>
             ByteBuffer& operator>>(DataType& data)
             {
-                MOUCA_ASSERT(_readPointer + sizeof(DataType) <= _buffer.size());
+                MouCa::assertion(_readPointer + sizeof(DataType) <= _buffer.size());
 
                 memcpy(&data, reinterpret_cast<const MemoryByte*>(&_buffer[_readPointer]), sizeof(DataType));
                 _readPointer += sizeof(DataType);
@@ -139,7 +139,7 @@ namespace Core
                 size_t sizeS = 0;
                 *this >> sizeS;
 
-                MOUCA_ASSERT(_readPointer + sizeS * sizeof(char) <= _buffer.size());
+                MouCa::assertion(_readPointer + sizeS * sizeof(char) <= _buffer.size());
                 data.resize(sizeS);
                 memcpy(data.data(), reinterpret_cast<const MemoryByte*>(&_buffer[_readPointer]), sizeS);
                 _readPointer += sizeS;
@@ -205,7 +205,7 @@ namespace Core
 
             void importHex(const String& in)
             {
-                MOUCA_PRE_CONDITION((in.length() % 2) == 0);
+                MouCa::preCondition((in.length() % 2) == 0);
 
                 std::string output;
                 size_t cnt = in.length() / 2;

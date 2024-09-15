@@ -7,8 +7,8 @@
 
 namespace Core
 {
-    const String Locale::defaultLanguage(u8"fr");
-	const String Locale::defaultCountry(u8"FR");
+    const String Locale::defaultLanguage("fr");
+	const String Locale::defaultCountry("FR");
 
 Locale::Locale():
 _language(defaultLanguage), _country(defaultCountry)
@@ -22,7 +22,7 @@ _language(defaultLanguage), _country(defaultCountry)
 	{
 		std::vector<Core::String> results;
 		boost::split(results, Core::convertToU8(localeName), [](const auto& c) {return c == u8'-'; });
-		MOUCA_ASSERT(results.size() >= 2);
+		MouCa::assertion(results.size() >= 2);
 
 		_language = results[0];
 		_country  = results[1];

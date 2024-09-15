@@ -3,8 +3,7 @@
 /// \license No license
 #include "Dependencies.h"
 
-#include "LibCore/include/CoreProcess.h"
-#include "LibCore/include/CoreStandardOS.h"
+#include <LibCore/include/CoreStandardOS.h>
 
 #include "LibRT/include/RTShaderFile.h"
 
@@ -14,49 +13,38 @@ namespace RT
 ShaderFile::ShaderFile(const Core::Path& compiledPath, const ShaderKind kind, const Core::Path& filepath) :
 Core::File(compiledPath, filepath.empty() ? Core::Resource::Mode::Critical : Core::Resource::Mode::AutoRefreshCritical), _kind(kind), _sourceFilepath(filepath)
 {
-    MOUCA_PRE_CONDITION(_sourceFilepath.empty() || std::filesystem::exists(_sourceFilepath) ); // DEV Issue: Need valid file if wanted.
-    MOUCA_ASSERT_BETWEEN(_kind, RT::ShaderKind::Vertex, RT::ShaderKind::NbShaders);
-
-    MOUCA_POST_CONDITION(!isNull() && !isLoaded());
+    MouCa::preCondition(_sourceFilepath.empty() || std::filesystem::exists(_sourceFilepath) ); // DEV Issue: Need valid file if wanted.
+    MouCa::preCondition(RT::ShaderKind::Vertex <= _kind && _kind < RT::ShaderKind::NbShaders);
+    MouCa::postCondition(!isNull() && !isLoaded());
 }
 
 ShaderFile::~ShaderFile()
 {
-    MOUCA_POST_CONDITION(!isLoaded());
+    MouCa::postCondition(!isLoaded());
 }
 
 void ShaderFile::compile()
 {
-    MOUCA_PRE_CONDITION( !_sourceFilepath.empty() ); // DEV Issue: Need valid source file: API is consider like disabled.
+    MouCa::preCondition(!_sourceFilepath.empty()); // DEV Issue: Need valid source file: API is consider like disabled.
+    MouCa::preCondition(std::filesystem::exists(_sourceFilepath));
+    MouCa::preCondition((std::filesystem::status(_sourceFilepath).permissions() & std::filesystem::perms::owner_read) != std::filesystem::perms::none);
 
-    const Core::Path executable = Core::Path(Core::getEnvironmentVariable("VULKAN_SDK")) / u8"bin" / u8"glslangValidator.exe";
+    const Core::Path executable = Core::Path(Core::getEnvironmentVariable("VULKAN_SDK")) / u8"Bin" / u8"glslangValidator.exe";
+    MouCa::preCondition(std::filesystem::exists(executable)); // DEV Issue: Not a valid path to glslangValidator, check VULKAN_SDK env.
 
-    // Prepare task
-    Core::Process processCompile(executable);
-    Core::Process::Arguments arguments;
-    arguments.emplace_back(L"-H");
-    arguments.emplace_back(L"-V");
-    arguments.emplace_back(L"-o");
-    arguments.emplace_back(_filename);
-    arguments.emplace_back(_sourceFilepath);
+    // Use basic command system: May be standard Process will be implemented soon (avoid boost::process to be light).
+    const Core::String cmd = executable.string() + " -V -o " + _filename.string() + " " + _sourceFilepath.string();
+    //const Core::String cmd = std::format("{} -V -o {} {}", executable, _filename, _sourceFilepath);
+    const int rc = system(cmd.c_str());
 
-    // Execute
-    processCompile.execute(arguments);
-
-    // Wait task is done
-    bool done = processCompile.waitForFinish(30000);
-
-    const Core::String message = processCompile.readStdOutput() + u8" " + processCompile.readStdError();
-    
-    // Check timeout
-    if (!done)
-    {
-        MOUCA_THROW_ERROR_1(u8"Vulkan", u8"ShaderCompilationError", message);
-    }
     // Check rc code
-    if (processCompile.getReturnCode() != 0)
+    if (rc != 0)
     {
-        MOUCA_THROW_ERROR_1(u8"Vulkan", u8"ShaderCompilationError", message);
+        throw Core::Exception(Core::ErrorData("Vulkan", "ShaderCompilationError") << std::format("Command: {}\nError code: {}", cmd, std::to_string(rc)));
+    }
+    else
+    {
+        MouCa::logConsole(std::format("GLSL compilation Success: {}", _sourceFilepath.filename().string()));
     }
 }
 

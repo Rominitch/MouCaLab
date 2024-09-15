@@ -26,16 +26,16 @@ namespace RT
         public:
             virtual ~CameraComportement()
             {
-                MOUCA_POST_CONDITION( _linkCamera.use_count() != 1 ); // DEV Issue: We are not ownership !!!
+                MouCa::postCondition( _linkCamera.use_count() != 1 ); // DEV Issue: We are not ownership !!!
             }
 
             virtual void attachCamera(const ObjectSPtr& support)
             {
-                MOUCA_PRE_CONDITION(support.get() != nullptr);
+                MouCa::preCondition(support.get() != nullptr);
 
                 _linkCamera = support;
 
-                MOUCA_POST_CONDITION(_linkCamera.get() != nullptr);
+                MouCa::postCondition(_linkCamera.get() != nullptr);
             }
      };
 

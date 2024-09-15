@@ -31,7 +31,7 @@ TEST(CoreFileTracker, api)
     auto editFile = [&]( Core::FileSPtr localFile )
     {
         ASSERT_NO_THROW( localFile->open( L"w+" ) );
-        ASSERT_NO_THROW( localFile->writeText( u8"Hello World !" ) );
+        ASSERT_NO_THROW( localFile->writeText( "Hello World !" ) );
         ASSERT_NO_THROW( localFile->close() );
 
         // Dummy sync just to let OS make job

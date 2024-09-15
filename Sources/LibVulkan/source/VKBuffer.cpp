@@ -19,19 +19,19 @@ _createFlags(0),
 _currentSize(0),
 _memory(std::move(memory))
 {
-    MOUCA_ASSERT(isNull());
+    MouCa::assertion(isNull());
 }
 
 Buffer::~Buffer()
 {
-    MOUCA_ASSERT(isNull());
+    MouCa::assertion(isNull());
 }
 
 void Buffer::initialize(const Device& device, const VkBufferCreateFlags createFlag, const VkBufferUsageFlags usageFlags, VkDeviceSize size, const void *data)
 {
-    MOUCA_ASSERT(isNull());
-    MOUCA_ASSERT(!device.isNull());
-    MOUCA_ASSERT(size > 0);
+    MouCa::assertion(isNull());
+    MouCa::assertion(!device.isNull());
+    MouCa::assertion(size > 0);
 
     //Create the buffer handle
     VkBufferCreateInfo bufferCreateInfo =
@@ -49,7 +49,7 @@ void Buffer::initialize(const Device& device, const VkBufferCreateFlags createFl
     //Build GPU Buffer
     if(vkCreateBuffer(device.getInstance(), &bufferCreateInfo, nullptr, &_buffer) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"BufferCreationError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "BufferCreationError"));
     }
 
     //Create memory
@@ -72,9 +72,9 @@ void Buffer::initialize(const Device& device, const VkBufferCreateFlags createFl
 
 void Buffer::release(const Device& device)
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(!device.isNull()); 
-    MOUCA_PRE_CONDITION(!_memory->isNull());
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(!device.isNull()); 
+    MouCa::preCondition(!_memory->isNull());
 
     vkDestroyBuffer(device.getInstance(), _buffer, nullptr);
     _buffer = VK_NULL_HANDLE;
@@ -84,14 +84,14 @@ void Buffer::release(const Device& device)
 
 void Buffer::resize(const Device& device, VkDeviceSize size)
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
-    MOUCA_PRE_CONDITION(size > 0);
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(!device.isNull());
+    MouCa::preCondition(size > 0);
 
     release(device);
     initialize(device, _createFlags, _usageFlags, size);
 
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 }
 
 const VkDescriptorBufferInfo& Buffer::getDescriptor() const

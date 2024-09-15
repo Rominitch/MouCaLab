@@ -23,9 +23,9 @@ namespace Vulkan
 
 static const RT::ApplicationInfo g_info
 {
-    u8"MouCaUnitTest",
+    "MouCaUnitTest",
     0x00000001,
-    u8"MouCaEngine",
+    "MouCaEngine",
     0x00000001
 };
 

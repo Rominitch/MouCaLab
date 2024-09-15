@@ -29,7 +29,7 @@ TEST_F(MathematicalRenderingTest, run)
     MouCaGraphic::VulkanManager manager;
 
     MouCaGraphic::Engine3DXMLLoader loader(manager);
-    ASSERT_NO_FATAL_FAILURE(loadEngine(loader, u8"MathematicalRendering.xml"));
+    ASSERT_NO_FATAL_FAILURE(loadEngine(loader, "MathematicalRendering.xml"));
 
     auto context = manager.getDevices().at(0);
 
@@ -52,7 +52,7 @@ TEST_F(MathematicalRenderingTest, run)
                 }
             });
 
-        mainLoop(manager, u8"Triangle ScreenSpace Demo ");
+        mainLoop(manager, "Triangle ScreenSpace Demo ");
 
         thread.join();
     }
@@ -70,7 +70,7 @@ TEST_F(MathematicalRenderingTest, run)
             ASSERT_EQ(VK_SUCCESS, sequence->execute(context->getDevice()));
         }
 
-        takeScreenshot(manager, L"MathematicalRendering.png");
+        takeScreenshot(manager, "MathematicalRendering.png");
     }
 
     // Clean

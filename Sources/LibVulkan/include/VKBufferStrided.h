@@ -11,7 +11,7 @@ namespace Vulkan
             BufferStrided(MemoryBufferUPtr memory):
             Buffer(std::move(memory)), _strided({0,0,0})
             {
-                MOUCA_PRE_CONDITION(isNull());
+                MouCa::preCondition(isNull());
             }
 
             ~BufferStrided() override = default;
@@ -33,12 +33,12 @@ namespace Vulkan
 
             void release(const Device& device) override
             {
-                MOUCA_PRE_CONDITION(!isNull());
+                MouCa::preCondition(!isNull());
 
                 _strided = { 0,0,0 };
                 Buffer::release(device);
 
-                MOUCA_POST_CONDITION(isNull());
+                MouCa::postCondition(isNull());
             }
 
             bool isNull() const override

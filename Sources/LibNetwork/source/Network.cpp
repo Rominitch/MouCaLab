@@ -32,7 +32,7 @@ ConnectionTCP::~ConnectionTCP()
 
 void ConnectionTCP::bind(const Core::String& ip, const uint16_t port)
 {
-    MOUCA_PRE_CONDITION(shared_from_this());             // Dev Issue: Not created by make_shared !
+    MouCa::preCondition(shared_from_this().get() != nullptr);             // Dev Issue: Not created by make_shared !
 
     // Build end point
     auto endpoint = boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(ip), port);
@@ -42,8 +42,9 @@ void ConnectionTCP::bind(const Core::String& ip, const uint16_t port)
 
 void ConnectionTCP::send(IMessage& messageByte)
 {
-    MOUCA_PRE_CONDITION(shared_from_this());             // Dev Issue: Not created by make_shared !
-    MOUCA_PRE_CONDITION(!_linkIOService.stopped());
+    MouCa::preCondition(shared_from_this().get() != nullptr);             // Dev Issue: Not created by make_shared !
+
+    MouCa::preCondition(!_linkIOService.stopped());
 
     boost::asio::async_write(_socketTCP, boost::asio::buffer(messageByte.getBuffer().getData(), messageByte.getBuffer().size()),
                              [&](const boost::system::error_code& error, const size_t transfered)
@@ -54,7 +55,7 @@ void ConnectionTCP::send(IMessage& messageByte)
 
 void ConnectionTCP::receive()
 {
-    MOUCA_PRE_CONDITION(shared_from_this());             // Dev Issue: Not created by make_shared !
+    MouCa::preCondition(shared_from_this().get() != nullptr);             // Dev Issue: Not created by make_shared !
 
     LOG_MESSAGE("Receive: Start");
 
@@ -82,8 +83,6 @@ void ConnectionTCP::receive()
 
 void ConnectionTCP::accept()
 {
-    MOUCA_PRE_CONDITION(shared_from_this());
-
     receive();
 }
 
@@ -92,7 +91,7 @@ void ConnectionTCP::handleWrite(const boost::system::error_code& error, const si
     if (error)
     {
         LOG_MESSAGE(error.message());
-        MOUCA_THROW_ERROR(u8"Network", u8"WriteError");
+        throw Core::Exception(Core::ErrorData("Network", "WriteError"));
     }
 }
 
@@ -105,13 +104,13 @@ void ConnectionTCP::handleRead(const boost::system::error_code& error, const siz
         if (error)
         {
             LOG_MESSAGE(error.message());
-            MOUCA_THROW_ERROR(u8"Network", u8"ReadError");
+            throw Core::Exception(Core::ErrorData("Network", "ReadError"));
         }
 
         // Block: To delete IMessage and release lock before launch another receive
         {
             auto messagesManager = _messagesManager.lock();
-            MOUCA_PRE_CONDITION(messagesManager != nullptr); // DEV Issue: need manager to make something of message.
+            MouCa::preCondition(messagesManager != nullptr); // DEV Issue: need manager to make something of message.
 
 #ifdef BUFFER_MODE
             IMessage message(_inPacket.data().data(), _inPacket.data().size());
@@ -169,13 +168,13 @@ void Network::handleAccept(AcceptorWPtr acceptorWeak, IMessagesManagerWPtr manag
     LOG_MESSAGE("handleAccept: Start");
 
     auto acceptor = acceptorWeak.lock();
-    MOUCA_PRE_CONDITION(acceptor != nullptr);
-    MOUCA_PRE_CONDITION(manager.lock() != nullptr);
+    MouCa::preCondition(acceptor != nullptr);
+    MouCa::preCondition(manager.lock() != nullptr);
 
     if (!_IOService.stopped())
     {
         if (error)
-            MOUCA_THROW_ERROR(u8"Network", u8"AcceptError");
+            throw Core::Exception(Core::ErrorData("Network", "AcceptError"));
 
         // When valid connection
         if (connect != nullptr && connect->getSocket().is_open())

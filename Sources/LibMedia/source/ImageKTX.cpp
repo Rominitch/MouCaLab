@@ -9,8 +9,8 @@ namespace Media
 
 void ImageKTX::initialize(const Core::Path& path)
 {
-    MOUCA_PRE_CONDITION(isNull());
-    MOUCA_PRE_CONDITION(!path.empty());
+    MouCa::preCondition(isNull());
+    MouCa::preCondition(!path.empty());
 
     ktxResult result = KTX_SUCCESS;
 #if defined(__ANDROID__)
@@ -30,43 +30,43 @@ void ImageKTX::initialize(const Core::Path& path)
 #endif
     if(result != KTX_SUCCESS)
     {
-        MOUCA_THROW_ERROR_1("LibMedia", "KTXReadError", path.string());
+        throw Core::Exception(Core::ErrorData("LibMedia", "KTXReadError") << path.string());
     }
 
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
 }
 
 void ImageKTX::createFill(const RT::BufferCPUBase& imageBuffer, const uint32_t width, const uint32_t height)
 {
-    MOUCA_THROW_ERROR(u8"BasicError", u8"ImageNoneImplemented");
+    throw Core::Exception(Core::ErrorData("BasicError", "ImageNoneImplemented"));
 }
 
 void ImageKTX::release()
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
 
     ktxTexture_Destroy(_images);
     _images = nullptr;
 
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 uint32_t ImageKTX::getLayers() const
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
 
     return _images->numLayers;
 }
 
 uint32_t ImageKTX::getLevels() const
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
     return _images->numLevels;
 }
 
 RT::Array3ui ImageKTX::getExtents(const uint32_t level) const
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
     return
     {
         std::max(1u, _images->baseWidth  >> level),
@@ -77,38 +77,38 @@ RT::Array3ui ImageKTX::getExtents(const uint32_t level) const
 
 const ImageKTX::HandlerMemory ImageKTX::getRAWData(const uint32_t layer, const uint32_t level) const
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
 
     ktx_size_t offset;
     auto result = ktxTexture_GetImageOffset(_images, level, layer, 0, &offset);
-    MOUCA_ASSERT(result == KTX_SUCCESS);
+    MouCa::assertion(result == KTX_SUCCESS);
     return ktxTexture_GetData(_images) + offset;
 }
 
 size_t ImageKTX::getMemoryOffset(const uint32_t layer, const uint32_t level) const
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
 
     size_t offset = 0;
     auto result = ktxTexture_GetImageOffset(_images, level, layer, 0, &offset);
-    MOUCA_ASSERT(result == KTX_SUCCESS);
+    MouCa::assertion(result == KTX_SUCCESS);
     return offset;
 }
 
 size_t ImageKTX::getMemorySize() const
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
     return _images->dataSize;
 }
 
 void ImageKTX::saveImage(const Core::Path& filename)
 {
-    MOUCA_PRE_CONDITION(!isNull());
-    MOUCA_PRE_CONDITION(!filename.empty());
+    MouCa::preCondition(!isNull());
+    MouCa::preCondition(!filename.empty());
 
     if(ktxTexture_WriteToNamedFile(_images, filename.string().c_str()))
     {
-        MOUCA_THROW_ERROR_1(u8"BasicError", u8"ImageKTXSave", filename.u8string());
+        throw Core::Exception(Core::ErrorData("BasicError", "ImageKTXSave") << filename.string());
     }
 }
 
@@ -120,12 +120,12 @@ void ImageKTX::export2D(const Core::Path& filename)
 bool ImageKTX::compare(const RT::Image& reference, const size_t nbMaxDefectPixels, const double maxDistance4D,
                        size_t* nbDefectPixels, double* distance4D) const
 {
-    MOUCA_THROW_ERROR(u8"BasicError", u8"ImageNoneImplemented");
+    throw Core::Exception(Core::ErrorData("BasicError", "ImageNoneImplemented"));
 }
 
 ImageKTX::Target ImageKTX::getTarget() const
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
     
     Image::Target target = Target::Type1D;
 

@@ -27,9 +27,9 @@ _manager(manager), _renderer(renderer), _lightBuffer(std::make_shared<Vulkan::Li
 
 SceneSynchronizer::~SceneSynchronizer()
 {
-    MOUCA_PRE_CONDITION(_dictionary.empty());
-    MOUCA_PRE_CONDITION(_images.empty());
-    MOUCA_PRE_CONDITION(_lightBuffer.get() == nullptr);
+    MouCa::preCondition(_dictionary.empty());
+    MouCa::preCondition(_images.empty());
+    MouCa::preCondition(_lightBuffer.get() == nullptr);
 }
 
 void SceneSynchronizer::initialize()
@@ -55,14 +55,14 @@ void SceneSynchronizer::release()
 
 void SceneSynchronizer::registerBuilder(GenericBuilderUPtr&& builder)
 {
-    MOUCA_PRE_CONDITION(_builders.find(builder->getType()) == _builders.cend());
+    MouCa::preCondition(_builders.find(builder->getType()) == _builders.cend());
     _builders[builder->getType()] = std::move(builder);
 }
 
 void SceneSynchronizer::synchronizeScene(const RT::Scene& scene, const Mode)
 {
-    MOUCA_PRE_CONDITION(!_renderer.isNull());
-    MOUCA_PRE_CONDITION(!_builders.empty());                       // DEV Issue: Nothing to build !
+    MouCa::preCondition(!_renderer.isNull());
+    MouCa::preCondition(!_builders.empty());                       // DEV Issue: Nothing to build !
     
     _renderer.lockRendering();
 
@@ -98,12 +98,12 @@ void SceneSynchronizer::synchronizeScene(const RT::Scene& scene, const Mode)
 
     _state = IsUpdated;
     _renderer.unlockRendering();
-    MOUCA_POST_CONDITION( !_renderer.isNull() );
+    MouCa::postCondition( !_renderer.isNull() );
 }
 
 void SceneSynchronizer::synchronize( const RT::ObjectSPtr& object )
 {
-    MOUCA_PRE_CONDITION(!_renderer.isNull());
+    MouCa::preCondition(!_renderer.isNull());
 
     // Search builder
     auto builder = _builders.find(object->getType());

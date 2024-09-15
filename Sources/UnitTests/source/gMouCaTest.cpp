@@ -6,6 +6,8 @@
 Core::Path MouCaEnvironment::g_inputPath;
 Core::Path MouCaEnvironment::g_outputPath;
 Core::Path MouCaEnvironment::g_workingPath;
+Core::Path MouCaEnvironment::g_assetsPath;
+
 bool       MouCaEnvironment::_isDemonstrator = false;
 
 #ifdef RT_AVAILABLE

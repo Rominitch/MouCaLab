@@ -289,7 +289,7 @@ TEST_F(RaytracingTest, DISABLED_run)
 
     loader._cpuMesh[0] = _models._armor->getWeakMesh();
 
-    ASSERT_NO_FATAL_FAILURE(loadEngine(loader, u8"Raytracing.xml"));
+    ASSERT_NO_FATAL_FAILURE(loadEngine(loader, "Raytracing.xml"));
 
     MouCaGraphic::Engine3DXMLLoader loaderGUI(manager);
     // Transfer Device/Framebuffer/RenderPass from first model
@@ -416,7 +416,7 @@ TEST_F(RaytracingTest, DISABLED_run)
                 }
             });
 
-        mainLoop(manager, u8"Raytracing Demo ");
+        mainLoop(manager, "Raytracing Demo ");
 
         thread.join();
     }

@@ -17,15 +17,15 @@ namespace MouCaCore
 
 void ResourceManager::addResourceFolder(const Core::Path& folder, const size_t idFolder)
 {
-    MOUCA_PRE_CONDITION(std::filesystem::exists(folder)); // DEV Issue: Dev must create manually folder.
-    MOUCA_PRE_CONDITION(_mapFolders.find(idFolder) == _mapFolders.cend());
+    MouCa::preCondition(std::filesystem::exists(folder)); // DEV Issue: Dev must create manually folder.
+    MouCa::preCondition(_mapFolders.find(idFolder) == _mapFolders.cend());
 
     _mapFolders[idFolder] = folder;
 }
 
 void ResourceManager::registerResource(Core::ResourceSPtr resource)
 {
-    MOUCA_PRE_CONDITION(_resources.find(resource) == _resources.cend());
+    MouCa::preCondition(_resources.find(resource) == _resources.cend());
     _resources.insert(resource);
 }
 
@@ -33,7 +33,7 @@ void ResourceManager::releaseResources()
 {
     for(auto& resource : _resources)
     {
-        MOUCA_PRE_CONDITION( resource.use_count() == 1 );
+        MouCa::preCondition( resource.use_count() == 1 );
         resource->release();
     }
 
@@ -43,7 +43,7 @@ void ResourceManager::releaseResources()
 void ResourceManager::releaseResource(Core::ResourceSPtr&& resource)
 {
     const auto instance = resource.use_count();
-    MOUCA_ASSERT(instance >= 2); // DEV Issue: Need this instance + manager !
+    MouCa::assertion(instance >= 2); // DEV Issue: Need this instance + manager !
 
     // Keep pointer
     Core::Resource* data = resource.get(); // If error here: Do you forget include ?
@@ -108,15 +108,15 @@ DatabaseSPtr ResourceManager::createDatabase()
 template<typename BuildClass>
 std::shared_ptr<BuildClass> ResourceManager::genericOpen( const Core::Path& filename )
 {
-    MOUCA_PRE_CONDITION( !filename.empty() );
-    MOUCA_PRE_CONDITION( std::filesystem::exists( filename ) );
+    MouCa::preCondition( !filename.empty() );
+    MouCa::preCondition( std::filesystem::exists( filename ) );
 
     std::shared_ptr<BuildClass> file;
     Core::ResourceSPtr res = searchResources<BuildClass>( filename );
     if( res != nullptr )
     {
         file = std::static_pointer_cast<BuildClass>(res);
-        MOUCA_ASSERT(file != nullptr);
+        MouCa::assertion(file != nullptr);
     }
     else
     {
@@ -144,15 +144,15 @@ RT::ImageImportSPtr ResourceManager::openImage(const Core::Path& filename)
 
 RT::MeshImportSPtr ResourceManager::openMeshImport(const Core::Path& filename, const RT::BufferDescriptor& descriptor, const RT::MeshImport::Flag flag)
 {
-    MOUCA_PRE_CONDITION(!filename.empty());
-    MOUCA_PRE_CONDITION(std::filesystem::exists(filename));
+    MouCa::preCondition(!filename.empty());
+    MouCa::preCondition(std::filesystem::exists(filename));
 
     RT::MeshImportSPtr file;
     Core::ResourceSPtr res = searchResources<RT::MeshImport>(filename);
     if (res != nullptr)
     {
         file = std::static_pointer_cast<RT::MeshImport>(res);
-        MOUCA_ASSERT(file != nullptr);
+        MouCa::assertion(file != nullptr);
     }
     else
     {
@@ -163,28 +163,28 @@ RT::MeshImportSPtr ResourceManager::openMeshImport(const Core::Path& filename, c
     return file;
 }
 
-RT::ShaderFileSPtr ResourceManager::openShader( const Core::Path& filePath, const RT::ShaderKind kind, const Core::StringOS& sourceShader )
+RT::ShaderFileSPtr ResourceManager::openShader( const Core::Path& filePath, const RT::ShaderKind kind, const Core::Path& sourceShader )
 {
-    MOUCA_PRE_CONDITION( !filePath.empty() );
+    MouCa::preCondition( !filePath.empty() );
 
     // Build default Spir-V filepath
     const Core::Path realFilePath = std::filesystem::absolute(
                                     std::filesystem::exists( filePath ) 
                                     ? filePath
-                                    : std::filesystem::path(getResourceFolder(ResourceFolder::Shaders) / std::filesystem::path(filePath)));
+                                    : Core::Path(getResourceFolder(ResourceFolder::Shaders) / Core::Path(filePath)));
     
-    MOUCA_PRE_CONDITION( std::filesystem::exists( realFilePath ) );
+    MouCa::preCondition( std::filesystem::exists( realFilePath ) );
 
     // Build source default path
-    Core::StringOS realSourcePath;
+    Core::Path realSourcePath;
     if (!sourceShader.empty())
     {
         realSourcePath = std::filesystem::absolute(
                        std::filesystem::exists(sourceShader)
                        ? sourceShader
-                       : std::filesystem::path(getResourceFolder(ResourceFolder::ShadersSource) / std::filesystem::path(sourceShader)));
+                       : Core::Path(getResourceFolder(ResourceFolder::ShadersSource) / Core::Path(sourceShader)));
 
-        MOUCA_PRE_CONDITION(std::filesystem::exists(realSourcePath));
+        MouCa::preCondition(std::filesystem::exists(realSourcePath));
     }
 
     RT::ShaderFileSPtr file;
@@ -192,7 +192,7 @@ RT::ShaderFileSPtr ResourceManager::openShader( const Core::Path& filePath, cons
     if( res != nullptr )
     {
         file = std::static_pointer_cast<RT::ShaderFile>(res);
-        MOUCA_ASSERT(file != nullptr);
+        MouCa::assertion(file != nullptr);
     }
     else
     {
@@ -210,8 +210,8 @@ RT::AnimationImporterSPtr ResourceManager::openAnimation(const Core::Path& filen
 template<typename ResourceType>
 Core::ResourceSPtr ResourceManager::searchResources(const Core::Path& filename) const
 {
-    MOUCA_PRE_CONDITION(!filename.empty());
-    MOUCA_PRE_CONDITION(std::filesystem::exists(filename));
+    MouCa::preCondition(!filename.empty());
+    MouCa::preCondition(std::filesystem::exists(filename));
 
     // Find resource by name
     const auto& itResource = std::find_if(_resources.cbegin(), _resources.cend(),

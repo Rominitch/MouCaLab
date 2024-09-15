@@ -10,11 +10,11 @@ namespace RT
 
 void Copy1D::copy(void* pDestination, const void* pSource) const
 {
-	MOUCA_ASSERT(pDestination != NULL);
-	MOUCA_ASSERT(pSource != NULL);
+	MouCa::assertion(pDestination != NULL);
+	MouCa::assertion(pSource != NULL);
 
-	MOUCA_ASSERT(m_szInformation[DestinationOffset] < m_szInformation[DestinationSize]);
-	MOUCA_ASSERT(m_szInformation[SourceOffset] < m_szInformation[SourceSize]);
+	MouCa::assertion(m_szInformation[DestinationOffset] < m_szInformation[DestinationSize]);
+	MouCa::assertion(m_szInformation[SourceOffset] < m_szInformation[SourceSize]);
 
 #ifndef NDEBUG
 	size_t szDestinationTrueSizeCopy = m_szInformation[CopySize];
@@ -29,7 +29,7 @@ void Copy1D::copy(void* pDestination, const void* pSource) const
 		szSourceTrueSizeCopy = m_szInformation[SourceSize] - m_szInformation[SourceOffset];
 	}
 
-	MOUCA_ASSERT(std::min<size_t>(szDestinationTrueSizeCopy, szSourceTrueSizeCopy) == m_szInformation[CopySize]);
+	MouCa::assertion(std::min<size_t>(szDestinationTrueSizeCopy, szSourceTrueSizeCopy) == m_szInformation[CopySize]);
 #endif
 
 	char* pDstPtr = &((char*)pDestination)[m_szInformation[DestinationOffset]];

@@ -55,7 +55,7 @@ namespace RT
             }
 
         protected:
-            TypeInfo(const Type type = TObject, const Core::String& strLabel = u8"Default Object"):
+            TypeInfo(const Type type = TObject, const Core::String& strLabel = "Default Object"):
             _type(type), _label(strLabel)
             {}
 

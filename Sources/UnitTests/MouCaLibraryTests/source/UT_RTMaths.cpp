@@ -1,6 +1,8 @@
 #include "Dependencies.h"
 
-#include "LibRT/include/RTMaths.h"
+#include <LibCore/include/CoreElapser.h>
+
+#include <LibRT/include/RTMaths.h>
 
 namespace RT
 {
@@ -71,6 +73,120 @@ TEST(RTMaths, upperPowOfTwo)
     EXPECT_EQ(65536u,   RT::Maths::upperPowOfTwo<uint32_t>(45123));
 
     EXPECT_EQ(65536ull, RT::Maths::upperPowOfTwo<uint64_t>(45123));
+}
+
+
+TEST(Bezier3, intersectionX)
+{
+    const std::array<glm::vec2, 2> line { glm::vec2(-1.0f, 0.0f), glm::vec2(4.0f, 0.0f) };
+    uint32_t nbSolutions;
+    
+    std::array<glm::vec2, 4> bezierPts{ glm::vec2(0.0f, 0.5f), glm::vec2(1.0f, 2.0f), glm::vec2(2.0f, 2.0f), glm::vec2(3.0f, 0.5f) };
+    auto i = RT::Maths::Bezier3::computeIntersections(bezierPts, line, nbSolutions);
+    EXPECT_EQ(0ul, nbSolutions);
+    EXPECT_VEC2_NEAR(glm::vec2(), i[0], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(), i[1], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(), i[2], 1e-5f);
+
+    // 1 sol
+    bezierPts[1].y = -2.0f; bezierPts[2].y = -2.0f; bezierPts[3].y = -0.5f;
+    i = RT::Maths::Bezier3::computeIntersections(bezierPts, line, nbSolutions);
+    EXPECT_EQ(1ul, nbSolutions);
+    EXPECT_VEC2_NEAR(glm::vec2(),                i[0], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(0.215302f, 0.0f), i[1], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(),                i[2], 1e-5f);
+
+    // 2 sol
+    bezierPts[1].y = -2.0f; bezierPts[2].y = 2.0f; bezierPts[3].y = 0.5f;
+    i = RT::Maths::Bezier3::computeIntersections(bezierPts, line, nbSolutions);
+    EXPECT_EQ(2ul, nbSolutions);
+    EXPECT_VEC2_NEAR(glm::vec2(),                i[0], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(0.252321f, 0.0f), i[1], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(1.371291f, 0.0f), i[2], 1e-5f);
+
+    // 3 sol
+    bezierPts[3].y = -0.5f;
+    i = RT::Maths::Bezier3::computeIntersections(bezierPts, line, nbSolutions);
+    EXPECT_EQ(3ul, nbSolutions);
+    EXPECT_VEC2_NEAR(glm::vec2(2.748075f, 0.0f), i[0], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(0.251924f, 0.0f), i[1], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(1.5f,      0.0f), i[2], 1e-5f);
+}
+
+TEST(Bezier3, intersectionY)
+{
+    const std::array<glm::vec2, 2> line { glm::vec2(0.0f, -1.0f), glm::vec2(0.0f, 4.0f) };
+    std::array<float, 4> y{0.0f, 1.0f, 2.0f, 3.0f};
+    uint32_t nbSolutions;
+    
+    std::array<glm::vec2, 4> bezierPts{ glm::vec2(0.5f, 0.0f), glm::vec2(2.0f, 1.0f), glm::vec2(2.0f, 2.0f), glm::vec2(0.5f, 3.0f) };
+    auto i = RT::Maths::Bezier3::computeIntersections(bezierPts, line, nbSolutions);
+    EXPECT_EQ(0ul, nbSolutions);
+    EXPECT_VEC2_NEAR(glm::vec2(), i[0], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(), i[1], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(), i[2], 1e-5f);
+
+    // 1 sol
+    bezierPts[1].x = -2.0f; bezierPts[2].x = -2.0f; bezierPts[3].x = -0.5f;
+    i = RT::Maths::Bezier3::computeIntersections(bezierPts, line, nbSolutions);
+    EXPECT_EQ(1ul, nbSolutions);
+    EXPECT_VEC2_NEAR(glm::vec2(),                i[0], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(0.0f, 0.215302f), i[1], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(),                i[2], 1e-5f);
+
+    // 2 sol
+    bezierPts[1].x = -2.0f; bezierPts[2].x = 2.0f; bezierPts[3].x = 0.5f;
+    i = RT::Maths::Bezier3::computeIntersections(bezierPts, line, nbSolutions);
+    EXPECT_EQ(2ul, nbSolutions);
+    EXPECT_VEC2_NEAR(glm::vec2(),                i[0], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(0.0f, 0.252321f), i[1], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(0.0f, 1.371291f), i[2], 1e-5f);
+
+    // 3 sol
+    bezierPts[3].x = -0.5f;
+    i = RT::Maths::Bezier3::computeIntersections(bezierPts, line, nbSolutions);
+    EXPECT_EQ(3ul, nbSolutions);
+    EXPECT_VEC2_NEAR(glm::vec2(0.0f, 2.748075f), i[0], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(0.0f, 0.251924f), i[1], 1e-5f);
+    EXPECT_VEC2_NEAR(glm::vec2(0.0f, 1.5f),      i[2], 1e-5f);
+}
+
+TEST(Bezier3, PERFORMANCE_1000)
+{
+    const uint32_t nbLoop  = 1000;
+    const uint32_t nbCases = 16;
+
+    const std::array<glm::vec2, 2> line { glm::vec2(0.0f, -1.0f), glm::vec2(0.0f, 4.0f) };
+    const std::array<float, 4> y{0.0f, 1.0f, 2.0f, 3.0f};
+    std::array<int64_t, 4> timeCumulate{ 0,0,0,0 };
+    std::array<int64_t, 4> count{ 0,0,0,0 };
+
+    for( uint32_t loop = 0; loop < nbLoop; ++loop)
+    {
+        for (uint32_t cases=0; cases < nbCases; ++cases)
+        {
+            std::array<glm::vec2, 4> bezierPts{ glm::vec2(-0.5f, 0.0f), glm::vec2(-2.0f, 1.0f), glm::vec2(-2.0f, 2.0f), glm::vec2(-0.5f, 3.0f) };
+            bezierPts[0].x *= cases & 0x1 ? 1.0f : -1.0f;
+            bezierPts[1].x *= cases & 0x2 ? 1.0f : -1.0f;
+            bezierPts[2].x *= cases & 0x4 ? 1.0f : -1.0f;
+            bezierPts[3].x *= cases & 0x8 ? 1.0f : -1.0f;
+            
+            uint32_t sol;        
+            Core::Elapser<std::chrono::microseconds> t;
+            RT::Maths::Bezier3::computeIntersections(bezierPts, line, sol);
+            timeCumulate[sol] += t.tick();
+            ++count[sol];
+        }
+    }
+    const std::array<uint32_t, 4> verif{ 4000, 6000, 4000, 2000 };
+    const int64_t total = std::accumulate(timeCumulate.begin(), timeCumulate.end(), 0ull);
+    std::cout << "Performance mean: " << static_cast<double>(total) / static_cast<double>(nbLoop * nbCases) << " \xE6s" << std::endl;
+    for(uint32_t sol = 0; sol < timeCumulate.size(); ++sol)
+    {
+        EXPECT_EQ(verif[sol], count[sol]);
+        const double time = static_cast<double>(timeCumulate[sol]) / static_cast<double>(count[sol]);
+        std::cout << "   "<<sol<<" Solution: "<< count[sol] << " cases, mean time:" << time << " \xE6s" << std::endl;
+    }    
 }
 
 }

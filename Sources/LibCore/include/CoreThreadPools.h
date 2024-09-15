@@ -44,23 +44,23 @@ class ThreadPools final
             _threadList.push_back(pThread);
 
             //Add thread to group
-            MOUCA_ASSERT(groupID < _groupList.size());
+            MouCa::assertion(groupID < _groupList.size());
             _groupList[groupID].push_back(pThread);
         }
 
         size_t sizeOfGroup(const size_t groupID) const
         {
-            MOUCA_PRE_CONDITION(groupID < _groupList.size());
+            MouCa::preCondition(groupID < _groupList.size());
             return _groupList[groupID].size();
         }
 
         void waitGroup(const size_t groupID) const
         {
-            MOUCA_PRE_CONDITION(groupID < _groupList.size());
+            MouCa::preCondition(groupID < _groupList.size());
 
             for(const Core::ThreadWPtr& pWThread : _groupList[groupID])
             {
-                MOUCA_PRE_CONDITION(!pWThread.expired());	//DEV Issue: impossible to delete thread and call group !!
+                MouCa::preCondition(!pWThread.expired());	//DEV Issue: impossible to delete thread and call group !!
 
                 //Try to read weak
                 Core::ThreadSPtr pThread = pWThread.lock();
@@ -70,7 +70,7 @@ class ThreadPools final
                     pThread->join();
                 }
 
-                MOUCA_POST_CONDITION(pThread->isTerminated());
+                MouCa::postCondition(pThread->isTerminated());
             }
         }
 
@@ -80,10 +80,10 @@ class ThreadPools final
         /// \param[in,out] pThread: Thread to release (MUST be terminated).
         void release(Core::ThreadWPtr pThread)
         {
-            MOUCA_PRE_CONDITION(!pThread.expired()); ///DEV Issue: Impossible to delete empty thread.
+            MouCa::preCondition(!pThread.expired()); ///DEV Issue: Impossible to delete empty thread.
 
             auto thread = pThread.lock();
-            MOUCA_PRE_CONDITION(thread.use_count() == 2);
+            MouCa::preCondition(thread.use_count() == 2);
             // Search item
             const auto itDelete = std::find(_threadList.begin(), _threadList.end(), thread);
             // Release it

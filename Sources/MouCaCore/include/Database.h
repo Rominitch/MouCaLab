@@ -52,7 +52,7 @@ namespace MouCaCore
             ///	\throw	BTException: Can't open DB.
             /// \pre	filePath is not empty
             ///         m_database is empty
-            virtual void open(const Core::StringOS& filePath) = 0;
+            virtual void open(const Core::Path& filePath) = 0;
 
             bool isNull() const override = 0;
 

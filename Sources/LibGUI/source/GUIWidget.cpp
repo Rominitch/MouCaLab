@@ -14,18 +14,18 @@ _sizeRatio(1.0f, 1.0f), _anchor(Widget2D::CornerLeftTop)
 
 void Widget2D::initialize(const RT::Point3& positionRatio, const RT::Point2& sizeRatio, const Anchor anchor)
 {
-    MOUCA_PRE_CONDITION(sizeRatio.x > 0.0f);
-    MOUCA_PRE_CONDITION(sizeRatio.y > 0.0f);
+    MouCa::preCondition(sizeRatio.x > 0.0f);
+    MouCa::preCondition(sizeRatio.y > 0.0f);
     
-    MOUCA_PRE_CONDITION((anchor & MaskHorizontal) == HLeft || (anchor & MaskHorizontal) == HCenter || (anchor & MaskHorizontal) == HRight);
-    MOUCA_PRE_CONDITION((anchor & MaskVertical) == VBottom || (anchor & MaskVertical)   == VCenter || (anchor & MaskVertical)   == VTop);
+    MouCa::preCondition((anchor & MaskHorizontal) == HLeft || (anchor & MaskHorizontal) == HCenter || (anchor & MaskHorizontal) == HRight);
+    MouCa::preCondition((anchor & MaskVertical) == VBottom || (anchor & MaskVertical)   == VCenter || (anchor & MaskVertical)   == VTop);
     
     _positionRatio  = positionRatio;
     _sizeRatio      = sizeRatio;
     _anchor         = anchor;
 
-    MOUCA_POST_CONDITION(_sizeRatio.x > 0.0f);
-    MOUCA_POST_CONDITION(_sizeRatio.y > 0.0f);
+    MouCa::postCondition(_sizeRatio.x > 0.0f);
+    MouCa::postCondition(_sizeRatio.y > 0.0f);
 }
 
 }

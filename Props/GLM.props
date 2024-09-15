@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <GLM_PATH>$(SolutionDir)..\SDK\glm-0.9.9.8\</GLM_PATH>
+    <GLM_PATH>$(MOUCA_SDK)glm-0.9.9.8\</GLM_PATH>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>

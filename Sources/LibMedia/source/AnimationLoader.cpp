@@ -14,7 +14,7 @@ namespace Media
 
 const aiNodeAnim* findNodeAnim(const aiAnimation* animation, const std::string& nodeName)
 {
-    MOUCA_PRE_CONDITION(animation != nullptr);
+    MouCa::preCondition(animation != nullptr);
 
     for( uint32_t i = 0; i < animation->mNumChannels; i++ )
     {
@@ -45,7 +45,7 @@ void loadAnimation(RT::AnimationBones::Animation& currentAnimation, RT::Animatio
 
     RT::Transform nodeTransform;// = parentTransform * toTransform(pNode->mTransformation);
     //glm::mat4 mat = nodeTransform.convert();
-    //MOUCA_ASSERT(mat != glm::mat4());
+    //MouCa::assertion(mat != glm::mat4());
 
     const aiNodeAnim* pNodeAnim = findNodeAnim(animation, NodeName);
 
@@ -54,11 +54,11 @@ void loadAnimation(RT::AnimationBones::Animation& currentAnimation, RT::Animatio
     {
         RT::BonesHierarchy& newNode = node->createChild();
         current = &newNode;
-        MOUCA_ASSERT(pNodeAnim->mNumRotationKeys == pNodeAnim->mNumPositionKeys && pNodeAnim->mNumPositionKeys == pNodeAnim->mNumScalingKeys);
+        MouCa::assertion(pNodeAnim->mNumRotationKeys == pNodeAnim->mNumPositionKeys && pNodeAnim->mNumPositionKeys == pNodeAnim->mNumScalingKeys);
 
         for( uint32_t id = 0; id < pNodeAnim->mNumRotationKeys; ++id )
         {
-            MOUCA_ASSERT(pNodeAnim->mRotationKeys[id].mTime == pNodeAnim->mPositionKeys[id].mTime
+            MouCa::assertion(pNodeAnim->mRotationKeys[id].mTime == pNodeAnim->mPositionKeys[id].mTime
                    && pNodeAnim->mPositionKeys[id].mTime == pNodeAnim->mScalingKeys[id].mTime);
 
             nodeTransform = RT::Transform(glm::make_vec3(&pNodeAnim->mPositionKeys[id].mValue.x),
@@ -113,9 +113,9 @@ void loadAnimation(RT::AnimationBones::Animation& currentAnimation, RT::Animatio
 //-------------------------------------------------------------------------------------------------
 void AnimationLoader::createAnimation(RT::AnimationImporter& animationImport) const
 {
-    MOUCA_PRE_CONDITION(!animationImport.getFilename().empty());
+    MouCa::preCondition(!animationImport.getFilename().empty());
     Assimp::Importer    importer;
-    const aiScene*      scene = importer.ReadFile(Core::convertToU8(animationImport.getFilename()), 0);
+    const aiScene*      scene = importer.ReadFile(animationImport.getFilename().string(), 0);
 
     auto bones = std::make_shared<RT::AnimationBones>();
 
@@ -127,7 +127,7 @@ void AnimationLoader::createAnimation(RT::AnimationImporter& animationImport) co
     for( uint32_t animationIndex = 0; animationIndex < scene->mNumAnimations; ++animationIndex )
     {
         aiAnimation* animation = scene->mAnimations[animationIndex];
-        MOUCA_ASSERT(animation != nullptr);
+        MouCa::assertion(animation != nullptr);
         
         // Extract animation
         loadAnimation(bones->_animations[animationIndex], *bones, &bones->_hierarchy, animation, scene->mRootNode, RT::Transform());
@@ -138,7 +138,7 @@ void AnimationLoader::createAnimation(RT::AnimationImporter& animationImport) co
 
 void AnimationLoader::loadBones(const aiMesh* pMesh, RT::AnimationBones& bones)
 {
-    MOUCA_ASSERT(pMesh->mNumBones <= RT::VertexBoneData::_maxBones);
+    MouCa::assertion(pMesh->mNumBones <= RT::VertexBoneData::_maxBones);
 
     // Save for all vertices, the relationship between Bones/Weights
     bones._bones.resize(pMesh->mNumVertices);

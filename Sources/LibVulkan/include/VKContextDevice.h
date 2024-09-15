@@ -142,7 +142,7 @@ namespace Vulkan
 
             void insertImage(ImageSPtr data)
             {
-                MOUCA_PRE_CONDITION(data); //DEV Issue: Need valid data
+                MouCa::preCondition(data.get()); //DEV Issue: Need valid data
                 _images.emplace_back(data);
             }
 
@@ -150,13 +150,13 @@ namespace Vulkan
 
             void insertBuffer(BufferSPtr data)
             {
-                MOUCA_PRE_CONDITION(data); //DEV Issue: Need valid data
+                MouCa::preCondition(data.get()); //DEV Issue: Need valid data
                 _buffers.emplace_back(data);
             }
 
             void insertSemaphore(SemaphoreSPtr semaphore)
             {
-                MOUCA_PRE_CONDITION(semaphore); //DEV Issue: Need valid data
+                MouCa::preCondition(semaphore.get()); //DEV Issue: Need valid data
                 _semaphores.emplace_back(semaphore);
             }
 
@@ -164,7 +164,7 @@ namespace Vulkan
 
             void insertFrameBuffer(FrameBufferSPtr framebuffer)
             {
-                MOUCA_PRE_CONDITION(framebuffer); //DEV Issue: Need valid data
+                MouCa::preCondition(framebuffer.get()); //DEV Issue: Need valid data
                 _frameBuffers.emplace_back(framebuffer);
             }
 
@@ -172,7 +172,7 @@ namespace Vulkan
 
             void insertRenderPass(RenderPassSPtr renderpass)
             {
-                MOUCA_PRE_CONDITION(renderpass); //DEV Issue: Need valid data
+                MouCa::preCondition(renderpass.get()); //DEV Issue: Need valid data
                 _renderPasses.emplace_back(renderpass);
             }
 
@@ -180,86 +180,86 @@ namespace Vulkan
 
             void insertFence(FenceSPtr fence)
             {
-                MOUCA_PRE_CONDITION(fence); //DEV Issue: Need valid data
+                MouCa::preCondition(fence.get()); //DEV Issue: Need valid data
                 _fences.emplace_back(fence);
             }
             void removeFence(FenceWPtr fence);
 
             void insertSequence(QueueSequenceSPtr sequences)
             {
-                MOUCA_PRE_CONDITION(sequences); //DEV Issue: Need valid data
+                MouCa::preCondition(sequences.get()); //DEV Issue: Need valid data
                 _sequences.emplace_back(sequences);
             }
 
             void insertGraphicsPipeline(GraphicsPipelineSPtr pipelineGraphic)
             {
-                MOUCA_PRE_CONDITION(pipelineGraphic); //DEV Issue: Need valid data
+                MouCa::preCondition(pipelineGraphic.get()); //DEV Issue: Need valid data
                 _graphicsPipelines.emplace_back(pipelineGraphic);
             }
 
             void insertPipelineLayout(PipelineLayoutSPtr pipelineLayout)
             {
-                MOUCA_PRE_CONDITION(pipelineLayout); //DEV Issue: Need valid data
+                MouCa::preCondition(pipelineLayout.get()); //DEV Issue: Need valid data
                 _pipelineLayouts.emplace_back(pipelineLayout);
             }
 
             void insertDescriptorSetLayout(DescriptorSetLayoutSPtr descriptorSetLayout)
             {
-                MOUCA_PRE_CONDITION(descriptorSetLayout); //DEV Issue: Need valid data
+                MouCa::preCondition(descriptorSetLayout.get()); //DEV Issue: Need valid data
                 _descriptorSetLayouts.emplace_back(descriptorSetLayout);
             }
 
             void insertShaderModule(ShaderModuleSPtr shader)
             {
-                MOUCA_PRE_CONDITION(shader); //DEV Issue: Need valid data
+                MouCa::preCondition(shader.get()); //DEV Issue: Need valid data
                 _shaderModules.emplace_back(shader);
             }
 
             void insertDescriptorSet(DescriptorSetSPtr descriptorSet)
             {
-                MOUCA_PRE_CONDITION(descriptorSet); //DEV Issue: Need valid data
+                MouCa::preCondition(descriptorSet.get()); //DEV Issue: Need valid data
                 _descriptorSets.emplace_back(descriptorSet);
             }
 
             void insertDescriptorPool(DescriptorPoolSPtr descriptorPool)
             {
-                MOUCA_PRE_CONDITION(descriptorPool); //DEV Issue: Need valid data
+                MouCa::preCondition(descriptorPool.get()); //DEV Issue: Need valid data
                 _descriptorPools.emplace_back(descriptorPool);
             }
 
             void insertSampler(SamplerSPtr sampler)
             {
-                MOUCA_PRE_CONDITION(sampler); //DEV Issue: Need valid data
+                MouCa::preCondition(sampler.get()); //DEV Issue: Need valid data
                 _samplers.emplace_back(sampler);
             }
 
             void insertCommandBuffer(CommandBufferSPtr commandBuffer)
             {
-                MOUCA_PRE_CONDITION(commandBuffer); //DEV Issue: Need valid data
+                MouCa::preCondition(commandBuffer.get()); //DEV Issue: Need valid data
                 _commandBuffers.emplace_back(commandBuffer);
             }
 
             void insertCommandPool(CommandPoolSPtr commandPool)
             {
-                MOUCA_PRE_CONDITION(commandPool); //DEV Issue: Need valid data
+                MouCa::preCondition(commandPool.get()); //DEV Issue: Need valid data
                 _commandPools.emplace_back(commandPool);
             }
 
             void insertRayTracingPipeline(RayTracingPipelineSPtr rayTracingPipeline)
             {
-                MOUCA_PRE_CONDITION(rayTracingPipeline); //DEV Issue: Need valid data
+                MouCa::preCondition(rayTracingPipeline.get()); //DEV Issue: Need valid data
                 _rayTracingPipelines.emplace_back(rayTracingPipeline);
             }
 
             void insertAccelerationStructure(AccelerationStructureSPtr as)
             {
-                MOUCA_PRE_CONDITION(as); //DEV Issue: Need valid data
+                MouCa::preCondition(as.get()); //DEV Issue: Need valid data
                 _accelerationStructures.emplace_back(as);
             }
 
             void insertTracingRay(TracingRaySPtr tracingRay)
             {
-                MOUCA_PRE_CONDITION(tracingRay); //DEV Issue: Need valid data
+                MouCa::preCondition(tracingRay.get()); //DEV Issue: Need valid data
                 _tracingRays.emplace_back(tracingRay);
             }
 

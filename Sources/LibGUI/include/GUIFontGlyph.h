@@ -163,7 +163,7 @@ class GUIFontPolice
 
 		FT_Int32 GetFlag() const;
 
-		void LoadFace(FT_Library& pLibrary, const Core::StringOS& strFilename, const float size, FT_Face& pFace);
+		void LoadFace(FT_Library& pLibrary, const Core::Path& strFilename, const float size, FT_Face& pFace);
 		
 		GUIFontGlyph::SGlyphBitmap ConvertGlyphToBitmap(const FT_GlyphSlot& slot) const;
 		void CreateSpecialGlyph();
@@ -172,7 +172,7 @@ class GUIFontPolice
 		GUIFontPolice();
 		virtual ~GUIFontPolice();
 
-		void Create(const Core::StringOS& strFilename, const float fSize, std::shared_ptr<GUIFontAtlas>& pAtlas);
+		void Create(const Core::Path& strFilename, const float fSize, std::shared_ptr<GUIFontAtlas>& pAtlas);
 
 		void Release();
 		

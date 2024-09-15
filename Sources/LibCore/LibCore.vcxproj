@@ -24,21 +24,21 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -67,14 +67,10 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <ClCompile />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-    </ClCompile>
+    <ClCompile />
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -88,6 +84,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <ClCompile />
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies.h" />
@@ -103,7 +100,6 @@
     <ClInclude Include="include\CoreLocale.h" />
     <ClInclude Include="include\CoreMaths.h" />
     <ClInclude Include="include\CoreOperatingSystem.h" />
-    <ClInclude Include="include\CoreProcess.h" />
     <ClInclude Include="include\CoreResource.h" />
     <ClInclude Include="include\CoreSignal.h" />
     <ClInclude Include="include\CoreString.h" />
@@ -121,13 +117,13 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="source\CoreByteBuffer.cpp" />
+    <ClCompile Include="source\CoreDefine.cpp" />
     <ClCompile Include="source\CoreError.cpp" />
     <ClCompile Include="source\CoreException.cpp" />
     <ClCompile Include="source\CoreFile.cpp" />
     <ClCompile Include="source\CoreFileTracker.cpp" />
     <ClCompile Include="source\CoreIdentifier.cpp" />
     <ClCompile Include="source\CoreLocale.cpp" />
-    <ClCompile Include="source\CoreProcess.cpp" />
     <ClCompile Include="source\CoreStandardOS.cpp" />
     <ClCompile Include="source\CorePluginManager.cpp" />
   </ItemGroup>

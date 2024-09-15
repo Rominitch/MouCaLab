@@ -189,9 +189,9 @@ namespace MouCaGraphic
                     XML::NodeUPtr       _globalData;    ///< Saved node
                     RT::ApplicationInfo _info;
 
-                    const Core::String& getFileName() const { return _xmlFileName; }
+                    const Core::Path& getFileName() const { return _xmlFileName; }
                 private:
-                    Core::String    _xmlFileName;
+                    Core::Path    _xmlFileName;
             };
 
             void load(ContextLoading& context);
@@ -272,7 +272,7 @@ namespace MouCaGraphic
             void loadCommandPools(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak);
             void loadCommandBuffers(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak);
             void loadCommandsGroup(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak);
-            void loadCommands(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak, const VkExtent2D& resolution, std::vector<Vulkan::CommandUPtr>& commands, const Core::String& nodeName=u8"Command");
+            void loadCommands(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak, const VkExtent2D& resolution, std::vector<Vulkan::CommandUPtr>& commands, const Core::String& nodeName="Command");
 
             void loadQueueSequences(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak);
             void loadSequences(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak, Vulkan::QueueSequenceWPtr queueSequence);
@@ -296,5 +296,7 @@ namespace MouCaGraphic
             void loadRayTracingShaderGroup(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak, Vulkan::RayTracingPipeline& pipeline);
             void loadTracingRay(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak);
             void loadAccelerationStructures(ContextLoading& context, Vulkan::ContextDeviceWPtr deviceWeak);
+
+            Core::ErrorData makeLoaderError(const ContextLoading& context, const Core::StringView& idError) const;
     };
 }

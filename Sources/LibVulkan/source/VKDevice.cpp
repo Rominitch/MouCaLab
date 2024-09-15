@@ -25,19 +25,19 @@ Device::Device() :
     _rayTracingPipelineProperties({VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR}),
     _accelerationStructureFeatures({VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR})
 {
-    MOUCA_PRE_CONDITION(isNull());			                //Dev Issue: Bad constructor !
+    MouCa::preCondition(isNull());			                //Dev Issue: Bad constructor !
 }
 
 Device::~Device()
 {
-    MOUCA_PRE_CONDITION(isNull());			                //Dev Issue: Missing release()
-    MOUCA_PRE_CONDITION(_queueGraphic == VK_NULL_HANDLE);	//Dev Issue: Missing release()
+    MouCa::preCondition(isNull());			                //Dev Issue: Missing release()
+    MouCa::preCondition(_queueGraphic == VK_NULL_HANDLE);	//Dev Issue: Missing release()
 }
 
 void Device::initialize(const VkPhysicalDevice physicalDevice, const uint32_t queueFamilyID, const std::vector<const char*>& extensions)
 {
-    MOUCA_PRE_CONDITION(isNull());
-    MOUCA_PRE_CONDITION(physicalDevice != VK_NULL_HANDLE);
+    MouCa::preCondition(isNull());
+    MouCa::preCondition(physicalDevice != VK_NULL_HANDLE);
 
     //Search Queue families
     uint32_t nbQueueFamilies = 0;
@@ -124,19 +124,11 @@ void Device::initialize(const VkPhysicalDevice physicalDevice, const uint32_t qu
         checkExtensions(physicalDevice, extensions);
         ptrExtensions = extensions.data();
     }
-    
-    //Build feature v2 (support of raytracing)
-    const VkPhysicalDeviceFeatures2 physicalDeviceFeatures2
-    {
-        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
-        _enabled.getNext(),
-        _enabled._features,
-    };
 
-    const VkDeviceCreateInfo deviceCreateInfo =
+    VkDeviceCreateInfo deviceCreateInfo
     {
         VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,           // VkStructureType                    sType
-        &physicalDeviceFeatures2,                       // const void                        *pNext
+        nullptr,                                        // const void                        *pNext
         0,                                              // VkDeviceCreateFlags                flags
         static_cast<uint32_t>(queueCreateInfos.size()), // uint32_t                           queueCreateInfoCount
         queueCreateInfos.data(),                        // const VkDeviceQueueCreateInfo     *pQueueCreateInfos
@@ -144,14 +136,29 @@ void Device::initialize(const VkPhysicalDevice physicalDevice, const uint32_t qu
         nullptr,                                        // const char * const                *ppEnabledLayerNames
         static_cast<uint32_t>(extensions.size()),       // uint32_t                           enabledExtensionCount
         ptrExtensions,									// const char * const                *ppEnabledExtensionNames
-        nullptr                                         // const VkPhysicalDeviceFeatures    *pEnabledFeatures
+        &features                                       // const VkPhysicalDeviceFeatures    *pEnabledFeatures
     };
+
+    //Build feature v2 (support of raytracing)
+    const VkPhysicalDeviceFeatures2 physicalDeviceFeatures2
+    {
+        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
+        _enabled.getNext(),
+        _enabled._features,
+    };
+    
+    // Enable raytracing
+    if(std::find(extensions.cbegin(), extensions.cend(), VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) != extensions.cend())
+    {
+        deviceCreateInfo.pNext            = &physicalDeviceFeatures2;
+        deviceCreateInfo.pEnabledFeatures = nullptr;
+    }
 
     // Build Device
     VkDevice deviceID;
     if(vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &deviceID) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"VulkanError", u8"DeviceError");
+        throw Core::Exception(Core::ErrorData("VulkanError", "DeviceError"));
     }
 
     configureDevice(physicalDevice, deviceID, queueFamilyID);
@@ -161,12 +168,12 @@ void Device::initialize(const VkPhysicalDevice physicalDevice, const uint32_t qu
     uint32_t nbLayersProperties = 0;
     if(vkEnumerateDeviceLayerProperties(physicalDevice, &nbLayersProperties, nullptr) != VK_SUCCESS && nbLayersProperties > 0)
     {
-        MOUCA_THROW_ERROR(u8"VulkanError", u8"NbLayersError");
+        throw Core::Exception(Core::ErrorData("VulkanError", "NbLayersError"));
     }
     std::vector<VkLayerProperties> layerProperties(nbLayersProperties);
     if(vkEnumerateDeviceLayerProperties(physicalDevice, &nbLayersProperties, layerProperties.data())  != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"VulkanError", u8"NbLayersError");
+        throw Core::Exception(Core::ErrorData("VulkanError", "NbLayersError"));
     }
     std::cout << "Vulkan - Physical Layers:" << std::endl;
     for(const auto& layer: layerProperties)
@@ -187,14 +194,14 @@ void Device::initialize(const VkPhysicalDevice physicalDevice, const uint32_t qu
     vkGetRayTracingShaderGroupHandlesKHR        = reinterpret_cast<PFN_vkGetRayTracingShaderGroupHandlesKHR>(vkGetDeviceProcAddr(deviceID, "vkGetRayTracingShaderGroupHandlesKHR"));
     vkCreateRayTracingPipelinesKHR              = reinterpret_cast<PFN_vkCreateRayTracingPipelinesKHR>(vkGetDeviceProcAddr(deviceID, "vkCreateRayTracingPipelinesKHR"));
 
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 }
 
 void Device::configureDevice(const VkPhysicalDevice physicalDevice, const VkDevice deviceID, const uint32_t queueFamilyID)
 {
-    MOUCA_PRE_CONDITION(isNull());
-    MOUCA_PRE_CONDITION(physicalDevice != VK_NULL_HANDLE);
-    MOUCA_PRE_CONDITION(deviceID != VK_NULL_HANDLE);
+    MouCa::preCondition(isNull());
+    MouCa::preCondition(physicalDevice != VK_NULL_HANDLE);
+    MouCa::preCondition(deviceID != VK_NULL_HANDLE);
 
     //Set current id
     _physicalDevice = physicalDevice;
@@ -229,15 +236,15 @@ void Device::configureDevice(const VkPhysicalDevice physicalDevice, const VkDevi
             break;
         }
     }
-    MOUCA_POST_CONDITION(_depthFormat != VK_FORMAT_UNDEFINED);
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(_depthFormat != VK_FORMAT_UNDEFINED);
+    MouCa::postCondition(!isNull());
 }
 
 void Device::initializeBestGPU(const Environment& environment, const std::vector<const char*>& extensions, const Surface* surface, const PhysicalDeviceFeatures& enabled)
 {
-    MOUCA_PRE_CONDITION(!environment.isNull());
-    MOUCA_PRE_CONDITION(isNull());
-    MOUCA_PRE_CONDITION(surface == nullptr || !surface->isNull());
+    MouCa::preCondition(!environment.isNull());
+    MouCa::preCondition(isNull());
+    MouCa::preCondition(surface == nullptr || !surface->isNull());
 
     _enabled = enabled;
 
@@ -284,7 +291,7 @@ void Device::initializeBestGPU(const Environment& environment, const std::vector
                 // Check if feature is mandatory and can be use on physical device
                 if(*wanted && *wanted != *current)
                 {
-                    MOUCA_THROW_ERROR_1("VulkanError", "UnsupportedPhysicalDeviceFeatures", std::to_string(id));
+                    throw Core::Exception(Core::ErrorData("VulkanError", "UnsupportedPhysicalDeviceFeatures") << std::to_string(id));
                 }
                 ++wanted;
                 ++current;
@@ -332,18 +339,18 @@ void Device::initializeBestGPU(const Environment& environment, const std::vector
     //Finish
     if(canditates.empty())
     {
-        MOUCA_THROW_ERROR(u8"VulkanError", u8"BestDeviceError");
+        throw Core::Exception(Core::ErrorData("VulkanError", "BestDeviceError"));
     }
 
     // Initialize device
     initialize(canditates.begin()->deviceID, canditates.begin()->queueFamilyID, extensions);
 
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 }
 
 void Device::release()
 {
-    MOUCA_ASSERT(!isNull());
+    MouCa::assertion(!isNull());
 
     waitIdle();
 
@@ -353,26 +360,26 @@ void Device::release()
     _device       = VK_NULL_HANDLE;
     _queueGraphic = VK_NULL_HANDLE;
 
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 void Device::waitIdle() const
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
 
     //Finish current task
     if( vkDeviceWaitIdle(_device) != VK_SUCCESS)
     {
 // DisableCodeCoverage
-        MOUCA_THROW_ERROR(u8"VulkanError", u8"LockedDevice");
+        throw Core::Exception(Core::ErrorData("VulkanError", "LockedDevice"));
 // EnableCodeCoverage
     }
 }
 
 void Device::checkExtensions(const VkPhysicalDevice& physicalDevice, const std::vector<const char*>& extensions) const
 {
-    MOUCA_PRE_CONDITION(physicalDevice != VK_NULL_HANDLE);	//DEV Issue: Need to have a valid physical device !
-    MOUCA_PRE_CONDITION(!extensions.empty());				//DEV Issue: need to check extension only if sent !
+    MouCa::preCondition(physicalDevice != VK_NULL_HANDLE);	//DEV Issue: Need to have a valid physical device !
+    MouCa::preCondition(!extensions.empty());				//DEV Issue: need to check extension only if sent !
 
     //Read extensions supported by all
     uint32_t nbExtensions = 0;
@@ -380,7 +387,7 @@ void Device::checkExtensions(const VkPhysicalDevice& physicalDevice, const std::
     {
 // DisableCodeCoverage
         // Impossible to reach ? vkEnumerateDeviceExtensionProperties launch exception before !?
-        MOUCA_THROW_ERROR(u8"VulkanError", u8"PhysicalDeviceExtensionError");
+        throw Core::Exception(Core::ErrorData("VulkanError", "PhysicalDeviceExtensionError"));
 // EnableCodeCoverage
     }
     std::vector<VkExtensionProperties> availableExtensions(nbExtensions);
@@ -388,7 +395,7 @@ void Device::checkExtensions(const VkPhysicalDevice& physicalDevice, const std::
     {
 // DisableCodeCoverage
         // Impossible to reach ?
-        MOUCA_THROW_ERROR(u8"VulkanError", u8"PhysicalDeviceExtensionError");
+        throw Core::Exception(Core::ErrorData("VulkanError", "PhysicalDeviceExtensionError"));
 // EnableCodeCoverage
     }
 
@@ -410,7 +417,7 @@ void Device::checkExtensions(const VkPhysicalDevice& physicalDevice, const std::
     {
         if(!compare(extension))
         {
-            MOUCA_THROW_ERROR_1(u8"VulkanError", u8"MissingPhysicalDeviceExtensionError", extension);
+            throw Core::Exception(Core::ErrorData("VulkanError", "MissingPhysicalDeviceExtensionError") << extension);
         }
     }
 }
@@ -469,12 +476,12 @@ uint32_t Device::getQueueFamiliyIndex(VkQueueFlagBits queueFlags) const
         }
     }
 
-    MOUCA_THROW_ERROR(u8"Vulkan", u8"FamilyQueueInvalidError");
+    throw Core::Exception(Core::ErrorData("Vulkan", "FamilyQueueInvalidError"));
 }
 
 void Device::readFormatProperties(const VkFormat format, VkFormatProperties& formatProps) const
 {
-    MOUCA_ASSERT(_physicalDevice != VK_NULL_HANDLE);        //DEV Issue: Missing initialize ?
+    MouCa::assertion(_physicalDevice != VK_NULL_HANDLE);        //DEV Issue: Missing initialize ?
     vkGetPhysicalDeviceFormatProperties(_physicalDevice, format, &formatProps);
 }
 

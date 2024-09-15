@@ -23,11 +23,11 @@ namespace Core
             };
 
             /// Default constructor: build an unknown error.
-            ErrorData():
-            _filePath(), _line(0)
+            ErrorData(const std::source_location& source = std::source_location::current()):
+            _sourceLocation(source)
             {
-                _errorDefinition[static_cast<size_t>(Code::LibraryCode)] = u8"BasicError";
-                _errorDefinition[static_cast<size_t>(Code::ErrorCode)]   = u8"UnknownError";
+                _errorDefinition[static_cast<size_t>(Code::LibraryCode)] = "BasicError";
+                _errorDefinition[static_cast<size_t>(Code::ErrorCode)]   = "UnknownError";
             }
 
             //------------------------------------------------------------------------
@@ -38,8 +38,8 @@ namespace Core
             /// \param[in] strInfo: parameter inside message to substitute.
             /// \param[in] strFile: file where error has been met.
             /// \param[in] iLine: line in source where error has been met.
-            ErrorData(const String& strLib, const String& strError, const Path& filePath, const int iLine):
-            _filePath(filePath), _line(iLine)
+            ErrorData(const StringView& strLib, const StringView& strError, const std::source_location& source = std::source_location::current()):
+            _sourceLocation(source)
             {
                 _errorDefinition[static_cast<size_t>(Code::LibraryCode)] = strLib;
                 _errorDefinition[static_cast<size_t>(Code::ErrorCode)]   = strError;
@@ -50,7 +50,7 @@ namespace Core
             /// 
             /// \param[in] copy: object to copy.
             ErrorData(const ErrorData& copy):
-            _filePath(copy._filePath), _line(copy._line),
+            _sourceLocation(copy._sourceLocation),
             _errorDefinition(copy._errorDefinition),
             _parameters(copy._parameters)
             {}
@@ -62,7 +62,7 @@ namespace Core
             /// \brief  Get library name.
             /// 
             /// \returns Library name.
-            const String& getLibraryLabel() const
+            const StringView& getLibraryLabel() const
             {
                 return _errorDefinition[0];
             }
@@ -71,7 +71,7 @@ namespace Core
             /// \brief  Get error name.
             /// 
             /// \returns Error name.
-            const String& getErrorLabel() const
+            const StringView& getErrorLabel() const
             {
                 return _errorDefinition[1];
             }
@@ -84,21 +84,12 @@ namespace Core
             String convertMessage(const String& strMessage) const;
 
             //------------------------------------------------------------------------
-            /// \brief  Get file name.
+            /// \brief  Get where exception is launched.
             /// 
             /// \returns File name.
-            const Path& getFile() const
+            const std::source_location& getSourceLocation() const
             {
-                return _filePath;
-            }
-
-            //------------------------------------------------------------------------
-            /// \brief  Get line.
-            /// 
-            /// \returns Line.
-            int getLine() const
-            {
-                return _line;
+                return _sourceLocation;
             }
 
             //------------------------------------------------------------------------
@@ -130,10 +121,9 @@ namespace Core
             }
 
         private:
-            std::array<String, static_cast<size_t>(Code::NbCode)> _errorDefinition;    ///< Error definition: Library + ErrorCode
-
-            Path                     _filePath;               ///< Source code where error is launched.
-            int                      _line;                   ///< Line position in source code where error is launched.
+            std::array<StringView, static_cast<size_t>(Code::NbCode)> _errorDefinition;    ///< Error definition: Library + ErrorCode
             std::vector<String>      _parameters;             ///< Parameters list for substitute in message.
+
+            std::source_location     _sourceLocation;
     };
 }

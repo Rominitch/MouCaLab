@@ -12,25 +12,25 @@ namespace Vulkan
 PipelineLayout::PipelineLayout() :
 _layout(VK_NULL_HANDLE)
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 PipelineLayout::~PipelineLayout()
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 void PipelineLayout::addPushConstant(const VkPushConstantRange& constant)
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 
     _constants.emplace_back(constant);
 }
 
 void PipelineLayout::initialize(const Device& device, const std::vector<VkDescriptorSetLayout>& descriptorLayouts)
 {
-    MOUCA_PRE_CONDITION(isNull());
-    MOUCA_PRE_CONDITION(!device.isNull());
+    MouCa::preCondition(isNull());
+    MouCa::preCondition(!device.isNull());
 
     VkPipelineLayoutCreateInfo layoutCreateInfo =
     {
@@ -45,13 +45,13 @@ void PipelineLayout::initialize(const Device& device, const std::vector<VkDescri
 
     if(vkCreatePipelineLayout(device.getInstance(), &layoutCreateInfo, nullptr, &_layout) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR(u8"Vulkan", u8"PipelineLayoutCreationError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "PipelineLayoutCreationError"));
     }
 }
 
 void PipelineLayout::release(const Device& device)
 {
-    MOUCA_ASSERT(!isNull());
+    MouCa::assertion(!isNull());
 
     vkDestroyPipelineLayout(device.getInstance(), _layout, nullptr);
     _layout = VK_NULL_HANDLE;

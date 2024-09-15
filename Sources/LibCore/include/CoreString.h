@@ -12,6 +12,7 @@ namespace Core
         using StringStreamOS = std::wstringstream;
 
         /// Converter system
+        /*
         using ConverterWUTF8 = std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>;
         static ConverterWUTF8 g_converter;
         /*
@@ -165,10 +166,15 @@ namespace Core
     #endif
 
     /// Basic String
-    using StringUTF8 = std::string;
+    using StringUTF8     = std::u8string;
+    using StringViewUTF8 = std::u8string_view;
+
+    using StringCPP     = std::string;
+    using StringViewCPP = std::string_view;
 
     // Standard Program string
-    using String = StringUTF8;
+    using String     = StringCPP;
+    using StringView = StringViewCPP;
 
     // Custom string
     using StringHex = std::string;
@@ -177,14 +183,24 @@ namespace Core
 
     using Path = std::filesystem::path;
 
+    constexpr std::string operator"" _S(const char8_t* str, std::size_t)
+    {
+        return reinterpret_cast<const char*>(str);
+    }
+
     //------------------------------------------------------------------------
     /// \brief  Convert UTF8 string to OS string.
     /// 
     /// \param[in] data: string in UTF8.
     /// \returns OS string
-    inline StringOS convertToOS(const StringUTF8& data)
+    inline StringOS convertToOS(const StringCPP& data)
     {
-        return StringOS(g_converter.from_bytes(data).c_str());
+        CA2W ca2w(data.c_str());
+        return StringOS(ca2w);
+        //std::wstring_convert<std::codecvt_utf8<wchar_t>> myconv;
+        //return myconv.from_bytes(data);
+
+        //return StringOS(g_converter.from_bytes(data).c_str());
         //C++20 wait std::c8rtomb();
     }
 
@@ -193,8 +209,15 @@ namespace Core
     /// 
     /// \param[in] data: OS string.
     /// \returns UTF8 string
-    inline StringUTF8 convertToU8(const StringOS& data)
+    inline StringCPP convertToU8(const StringOS& data)
     {
-        return StringUTF8(g_converter.to_bytes(data).c_str());
+        CW2A cw2a(data.c_str());
+        return StringCPP(cw2a);
+
+        //std::wstring_convert<std::codecvt_utf8<wchar_t>> myconv;
+        //return myconv.to_bytes(data);
+        // 
+        //return StringCPP();// (data.begin(), data.end());
+        //return StringCPP(g_converter.to_bytes(data).c_str());
     }
 }

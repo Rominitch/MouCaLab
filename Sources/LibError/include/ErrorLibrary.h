@@ -27,7 +27,7 @@ namespace Core
             /// 
             /// \param[in] strMessage: .
             /// \param[in] strSolution: .
-            ErrorDescription(const String& strMessage, const String& strSolution):
+            ErrorDescription(const StringView& strMessage, const StringView& strSolution):
             _message(strMessage), _solution(strSolution)
             {}
 
@@ -68,7 +68,7 @@ namespace Core
 
             void release();
 
-            void initialize(XML::Parser& parser, const String& strLibraryLabel, const String& strCountry);
+            void initialize(XML::Parser& parser, const StringView& strLibraryLabel, const String& strCountry);
 
             ErrorDescription const * const getDescription(const String& strLabel) const;
 

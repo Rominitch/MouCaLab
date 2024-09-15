@@ -56,7 +56,7 @@ namespace Core
         constexpr static DataType roundUpperDiv(const DataType value, const DataType divider)
         {
             static_assert(std::numeric_limits<DataType>::is_integer);
-            MOUCA_ASSERT(divider > 0);
+            MouCa::assertion(divider > 0);
 
             return 1 + ((value - 1) / divider);
         }
@@ -69,7 +69,7 @@ namespace Core
         template<typename DataType>
         static DataType angleCyclic(DataType angleRad)
         {
-            MOUCA_PRE_CONDITION(!std::numeric_limits<DataType>::is_integer);
+            MouCa::preCondition(!std::numeric_limits<DataType>::is_integer);
 
             const DataType f2PI = PI<DataType> * static_cast<DataType>(2.0);
             bool normalized;
@@ -91,7 +91,7 @@ namespace Core
                 }
             }
             while(!normalized);
-            MOUCA_POST_CONDITION(static_cast<DataType>(0.0) <= angleRad && angleRad < f2PI); //DEV Issue: more than 1 multiple ?
+            MouCa::postCondition(static_cast<DataType>(0.0) <= angleRad && angleRad < f2PI); //DEV Issue: more than 1 multiple ?
             return angleRad;
         }
 

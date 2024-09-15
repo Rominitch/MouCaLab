@@ -9,14 +9,14 @@ namespace RT
 
 Mesh::~Mesh()
 {
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 void Mesh::initialize(std::shared_ptr<BufferCPUBase> pVBOBuffer, std::shared_ptr<BufferCPUBase> pIBOBuffer, const SubMeshDescriptors& descriptors, const FaceOrder faceOrder, const Topology topology, const RT::BoundingBox& bbox)
 {
-    MOUCA_PRE_CONDITION(isNull());
-    MOUCA_PRE_CONDITION(faceOrder < FaceOrder::NbFaceOrder);
-    MOUCA_PRE_CONDITION(topology  < Topology::NbTopology);
+    MouCa::preCondition(isNull());
+    MouCa::preCondition(faceOrder < FaceOrder::NbFaceOrder);
+    MouCa::preCondition(topology  < Topology::NbTopology);
 
     _VBOBuffer = pVBOBuffer;
     _IBOBuffer = pIBOBuffer;
@@ -26,18 +26,18 @@ void Mesh::initialize(std::shared_ptr<BufferCPUBase> pVBOBuffer, std::shared_ptr
     _topology  = topology;
     _bbox      = bbox;
 
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 #ifndef NDEBUG
     // Big data control
-    MOUCA_POST_CONDITION(_VBOBuffer->getNbElements() > 0);
-    MOUCA_POST_CONDITION(_IBOBuffer->getNbElements() > 0);
+    MouCa::postCondition(_VBOBuffer->getNbElements() > 0);
+    MouCa::postCondition(_IBOBuffer->getNbElements() > 0);
 
     for(const auto& descriptor : _descriptors)
     {
-        MOUCA_POST_CONDITION(descriptor._nbVertices <= _VBOBuffer->getNbElements());
-        MOUCA_POST_CONDITION(descriptor._startIndex <= _IBOBuffer->getNbElements() * _IBOBuffer->getDescriptor().getComponentDescriptor(0).getNbComponents());
-        MOUCA_POST_CONDITION(descriptor._nbIndices  > 0);
-        MOUCA_POST_CONDITION((descriptor._startIndex + descriptor._nbIndices) <= _IBOBuffer->getNbElements() * _IBOBuffer->getDescriptor().getComponentDescriptor(0).getNbComponents());
+        MouCa::postCondition(descriptor._nbVertices <= _VBOBuffer->getNbElements());
+        MouCa::postCondition(descriptor._startIndex <= _IBOBuffer->getNbElements() * _IBOBuffer->getDescriptor().getComponentDescriptor(0).getNbComponents());
+        MouCa::postCondition(descriptor._nbIndices  > 0);
+        MouCa::postCondition((descriptor._startIndex + descriptor._nbIndices) <= _IBOBuffer->getNbElements() * _IBOBuffer->getDescriptor().getComponentDescriptor(0).getNbComponents());
     }
 #endif
 }
@@ -48,7 +48,7 @@ void Mesh::release()
     _IBOBuffer.reset();
     _descriptors.clear();
 
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 }

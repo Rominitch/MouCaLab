@@ -36,7 +36,7 @@ namespace RT
                 StaticVisible       = VisibilityAlways | Static
             };
 
-            Object(const Type type=TObject, const Core::String& strLabel = u8"Default Object"):
+            Object(const Type type=TObject, const Core::String& strLabel = "Default Object"):
             TypeInfo(type, strLabel), _state(StaticVisible)
             {}
 

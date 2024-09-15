@@ -10,18 +10,18 @@ namespace Vulkan
 DebugReport::DebugReport():
 _callback(VK_NULL_HANDLE)
 {
-    MOUCA_ASSERT(isNull());
+    MouCa::assertion(isNull());
 }
 
 DebugReport::~DebugReport()
 {
-    MOUCA_ASSERT(isNull());
+    MouCa::assertion(isNull());
 }
 
 void DebugReport::initialize(const VkInstance& vulkanInstance)
 {
-    MOUCA_ASSERT(isNull());
-    MOUCA_ASSERT(vulkanInstance != VK_NULL_HANDLE);
+    MouCa::assertion(isNull());
+    MouCa::assertion(vulkanInstance != VK_NULL_HANDLE);
   
     const VkDebugReportCallbackCreateInfoEXT callbackCreateInfo =
     {
@@ -36,22 +36,22 @@ void DebugReport::initialize(const VkInstance& vulkanInstance)
     auto func = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(vulkanInstance, "vkCreateDebugReportCallbackEXT");
     if(func == nullptr)
     {
-        MOUCA_THROW_ERROR("Vulkan", "DebugReportError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "DebugReportError"));
     }
 
     if(func(vulkanInstance, &callbackCreateInfo, nullptr, &_callback) != VK_SUCCESS)
     {
-        MOUCA_THROW_ERROR("Vulkan", "DebugReportError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "DebugReportError"));
     }
 }
 
 void DebugReport::release(const VkInstance& vulkanInstance)
 {
-    MOUCA_ASSERT(!isNull());
+    MouCa::assertion(!isNull());
     auto func = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(vulkanInstance, "vkDestroyDebugReportCallbackEXT");
     if(func == nullptr)
     {
-        MOUCA_THROW_ERROR("Vulkan", "DebugReportError");
+        throw Core::Exception(Core::ErrorData("Vulkan", "DebugReportError"));
     }
 
     func(vulkanInstance, _callback, nullptr);
@@ -61,34 +61,31 @@ void DebugReport::release(const VkInstance& vulkanInstance)
 
 VKAPI_ATTR VkBool32 VKAPI_CALL DebugReport::debugCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objType, uint64_t obj, size_t location, int32_t code, const char* layerPrefix, const char* msg, void* userData)
 {
-    Core::String typeError(u8"Unknown");
+    Core::String typeError("Unknown");
     if(flags & VK_DEBUG_REPORT_INFORMATION_BIT_EXT)
-        typeError = u8"Information";
+        typeError = "Information";
     else if(flags & VK_DEBUG_REPORT_WARNING_BIT_EXT)
-        typeError = u8"Warning";
+        typeError = "Warning";
     else if(flags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT)
-        typeError = u8"Performance";
+        typeError = "Performance";
     else if(flags & VK_DEBUG_REPORT_ERROR_BIT_EXT)
-        typeError = u8"Error";
+        typeError = "Error";
     else if(flags & VK_DEBUG_REPORT_DEBUG_BIT_EXT)
-        typeError = u8"Debug";
+        typeError = "Debug";
 
     Core::String message(msg);
 
     Core::String print;
     if(flags & VK_DEBUG_REPORT_ERROR_BIT_EXT || flags & VK_DEBUG_REPORT_WARNING_BIT_EXT)
     {
-        print = u8"----------------------------------------------------------\r\nVulkan: "
-            + typeError + u8":\r\n\t" + message
-            + u8"\r\n----------------------------------------------------------\r\n";
+        print = std::format("----------------------------------------------------------\r\nVulkan: {}:\r\n\t{}\r\n----------------------------------------------------------\r\n", typeError, message);
     }
     else
     {
-        print = u8"Vulkan: " + typeError + u8":\t" + message + u8"\r\n";
+        print = std::format("Vulkan: {}:\t{}\r\n", typeError, message);
     }
 
-    std::cerr << print.c_str() << std::endl;
-    OutputDebugString(Core::convertToOS(print).c_str());
+    MouCa::logConsole(print);
 
     return (flags & VK_DEBUG_REPORT_ERROR_BIT_EXT) ? VK_TRUE : VK_FALSE;
 }

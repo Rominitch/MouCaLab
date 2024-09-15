@@ -14,13 +14,14 @@ class MouCaEnvironment : public testing::Environment
         static Core::Path g_inputPath;
         static Core::Path g_outputPath;
         static Core::Path g_workingPath;
+        static Core::Path g_assetsPath;
 
         static bool _isDemonstrator;     ///< Enable playable demo.
 
     public:
         void initialize(int argc, char** argv)
         {
-            MOUCA_ASSERT(argc > 0);
+            MouCa::assertion(argc > 0);
 
             //Read application path
             Core::Path path;
@@ -28,26 +29,36 @@ class MouCaEnvironment : public testing::Environment
             {
                 path = Core::Path(argv[0]).parent_path();
             }
-            MOUCA_ASSERT(std::filesystem::is_directory(path));
+            MouCa::assertion(std::filesystem::is_directory(path));
 
             g_inputPath   = Core::Path(path.wstring()) / L".." / L"Inputs";
+#ifdef MOUCA_OUTPUTS
+            g_outputPath  = Core::Path(MOUCA_OUTPUTS);
+#else
             g_outputPath  = Core::Path(path.wstring()) / L".." / L"Outputs";
+#endif
             g_workingPath = Core::Path(path.wstring());
+
+#ifdef MOUCA_ASSETS
+            g_assetsPath = Core::Path(MOUCA_ASSETS);
+#else
+            g_assetsPath = g_inputPath;
+#endif
 
             // Try to create Outputs folder (needed from scratch)
             std::filesystem::create_directories(g_outputPath);
 
             for (int id = 1; id < argc; ++id)
             {
-                if (Core::String(argv[id]).compare(u8"--demonstrator") == 0)
+                if (Core::String(argv[id]).compare("--demonstrator") == 0)
                 {
                     _isDemonstrator = true;
                 }
             }
 
             //Post condition all data must be valid !
-            MOUCA_ASSERT(std::filesystem::is_directory(getInputPath()));
-            MOUCA_ASSERT(std::filesystem::is_directory(getOutputPath()));
+            MouCa::assertion(std::filesystem::is_directory(getInputPath()));
+            MouCa::assertion(std::filesystem::is_directory(getOutputPath()));
         }
 
         static const Core::Path& getInputPath()
@@ -65,6 +76,11 @@ class MouCaEnvironment : public testing::Environment
             return g_workingPath;
         }
 
+        static const Core::Path& getAssetsPath()
+        {
+            return g_assetsPath;
+        }
+
         //------------------------------------------------------------------------
         /// \brief  Activate demonstrator mode using "--demonstrator"
         /// 
@@ -75,9 +91,11 @@ class MouCaEnvironment : public testing::Environment
         }
 };
 
+
 //-------------------------------------------------------------------------------------------------
 //                                         GoogleTest Extended
 //-------------------------------------------------------------------------------------------------
+
 namespace testing
 {
     template <typename T1, typename T2>
@@ -128,7 +146,7 @@ namespace testing
     } \
     catch (const boost::system::system_error & e) { \
       std::stringstream ss; \
-      ss << u8"BOOST Exception: " << e.what(); \
+      ss << "BOOST Exception: " << e.what(); \
       std::cout << ss.str() << std::endl; \
       goto GTEST_CONCAT_TOKEN_(gtest_label_testnothrow_, __LINE__); \
     } \

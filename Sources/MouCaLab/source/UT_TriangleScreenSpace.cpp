@@ -24,7 +24,7 @@ TEST_F(TriangleScreenSpaceTest, run)
     MouCaGraphic::VulkanManager manager;
 
     MouCaGraphic::Engine3DXMLLoader loader(manager);
-    ASSERT_NO_FATAL_FAILURE(loadEngine(loader, u8"TriangleScreenSpace.xml"));
+    ASSERT_NO_FATAL_FAILURE(loadEngine(loader, "TriangleScreenSpace.xml"));
 
     // Execute commands
     updateCommandBuffersSurface(loader);
@@ -32,7 +32,7 @@ TEST_F(TriangleScreenSpaceTest, run)
     // Execute rendering
     if (MouCaEnvironment::isDemonstrator())
     {
-        mainLoop(manager, u8"Triangle ScreenSpace Demo ");
+        mainLoop(manager, "Triangle ScreenSpace Demo ");
     }
     else
     {
@@ -49,7 +49,7 @@ TEST_F(TriangleScreenSpaceTest, run)
             ASSERT_EQ(VK_SUCCESS, sequence->execute(context->getDevice()));
         }
 
-        takeScreenshot(manager, L"triangleScreenSpace.png");
+        takeScreenshot(manager, "triangleScreenSpace.png");
     }
 
     // Clean

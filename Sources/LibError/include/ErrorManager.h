@@ -30,7 +30,7 @@ namespace Core
             /// \param[in]  printer: link to printer.
             void setPrinter(const ErrorPrinterPtr& printer) override
             {
-                MOUCA_ASSERT(printer != nullptr);
+                MouCa::assertion(printer != nullptr);
                 _printer = printer;
             }
 

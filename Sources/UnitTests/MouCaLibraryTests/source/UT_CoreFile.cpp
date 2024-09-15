@@ -18,7 +18,7 @@ TEST(CoreFile, open)
 
     {
         Core::File myfile(string);
-        ASSERT_NO_THROW(myfile.open(L"r")) << u8"File: " << string.string();
+        ASSERT_NO_THROW(myfile.open(L"r")) << "File: " << string.string();
     }
 }
 
@@ -26,17 +26,17 @@ TEST(CoreFile, errorChecking)
 {
     // Bad open
     {
-        Core::Path string(MouCaEnvironment::getInputPath() / L"libraries" / L"UnknownFileName.txt");
+        Core::Path string(MouCaEnvironment::getInputPath() / "libraries" / "UnknownFileName.txt");
         Core::File myfile;
 
         ASSERT_NO_THROW(myfile.setFileInfo(string));
-        ASSERT_ANY_THROW(myfile.open(L"r")) << u8"File: " << string.string();
+        ASSERT_ANY_THROW(myfile.open(L"r")) << "File: " << string.string();
     }
 }
 
 TEST(CoreFile, readString)
 {
-    Core::Path string( MouCaEnvironment::getInputPath() / L"libraries" / L"MyString.txt");
+    Core::Path string( MouCaEnvironment::getInputPath() / "libraries" / "MyString.txt");
     Core::File myfile;
 
     ASSERT_TRUE(Core::File::isExist(string));
@@ -45,7 +45,7 @@ TEST(CoreFile, readString)
     ASSERT_TRUE(myfile.isExist());
     EXPECT_FALSE(myfile.isOpened());
 
-    ASSERT_NO_THROW(myfile.open(L"r")) << u8"File: " << string.string();
+    ASSERT_NO_THROW(myfile.open(L"r")) << "File: " << string.string();
     EXPECT_TRUE(myfile.isOpened());
 
     EXPECT_EQ("Juste un petit texte", myfile.extractString());
@@ -55,25 +55,25 @@ TEST(CoreFile, readString)
 
 TEST(CoreFile, readUTF8)
 {
-    Core::Path string( MouCaEnvironment::getInputPath() / L"libraries" / L"MyUTF8.txt");
+    Core::Path string( MouCaEnvironment::getInputPath() / "libraries" / "MyUTF8.txt");
     
     Core::File myfile;
     ASSERT_NO_THROW(myfile.setFileInfo(string));
-    ASSERT_NO_THROW(myfile.open(L"r"));
+    ASSERT_NO_THROW(myfile.open());
 
     // UTF8 sans BOM
-    EXPECT_EQ(Core::convertToU8(L"\u7530\u4E2D\u3002"), myfile.extractUTF8());
+    EXPECT_EQ(u8"\u7530\u4E2D\u3002", myfile.extractUTF8());
 
     ASSERT_NO_THROW(myfile.close());
 }
 
 TEST(CoreFile, write)
 {
-    Core::Path string(MouCaEnvironment::getOutputPath() / L"MyText.txt");
+    Core::Path string(MouCaEnvironment::getOutputPath() / "MyText.txt");
 
     Core::File myfile;
     ASSERT_NO_THROW(myfile.setFileInfo(string));
-    ASSERT_NO_THROW(myfile.open(L"w+")) << u8"File: " << string.string();
+    ASSERT_NO_THROW(myfile.open(L"w+")) << "File: " << string.string();
     const std::string text("Juste un petit texte");
     
     ASSERT_NO_THROW(myfile.write(text.c_str(), sizeof(char)*text.size()));
@@ -91,7 +91,7 @@ TEST(CoreFile, writeText)
     {
         Core::File myfile;
         ASSERT_NO_THROW(myfile.setFileInfo(string));
-        ASSERT_NO_THROW(myfile.open(L"w+")) << u8"File: " << string.string();
+        ASSERT_NO_THROW(myfile.open(L"w+")) << "File: " << string.string();
         ASSERT_NO_THROW(myfile.writeText("Hello World: %d", 42));
         ASSERT_NO_THROW(myfile.close());
     }
@@ -99,7 +99,7 @@ TEST(CoreFile, writeText)
     {
         Core::File myfile;
         ASSERT_NO_THROW(myfile.setFileInfo(string));
-        ASSERT_NO_THROW(myfile.open(L"r")) << u8"File: " << string.string();
+        ASSERT_NO_THROW(myfile.open(L"r")) << "File: " << string.string();
         EXPECT_EQ("Hello World: 42", myfile.extractString());
         ASSERT_NO_THROW(myfile.close());
     }

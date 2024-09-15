@@ -14,7 +14,7 @@ namespace RT
         public:
             using HandleBuffer = void*;
 
-            MemoryAreaBase(const Core::String& label=u8"Default Buffer"):
+            MemoryAreaBase(const Core::String& label="Default Buffer"):
             _handle(nullptr), _nbElements(0), _label(label)
             {}
 

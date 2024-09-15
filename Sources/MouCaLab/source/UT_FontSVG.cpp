@@ -21,6 +21,7 @@
 #include <LibVulkan/include/VKContextDevice.h>
 #include <LibVulkan/include/VKCommand.h>
 #include <LibVulkan/include/VKCommandBuffer.h>
+#include <LibVulkan/include/VKCommandBufferSurface.h>
 #include <LibVulkan/include/VKDescriptorSet.h>
 #include <LibVulkan/include/VKSequence.h>
 #include <LibVulkan/include/VKSubmitInfo.h>
@@ -71,6 +72,17 @@ struct GlyphInstance
     GlyphInstance():
     glyph_index(0), sharpness(1.0f)
     {}
+};
+
+class FontSVGTest;
+struct RefreshSystem
+{
+    FontSVGTest* testManager;
+    MouCaGraphic::Engine3DXMLLoader* loader;
+    MouCaGraphic::VulkanManager* manager;
+
+    void afterShaderRefresh();
+    
 };
 
 class FontSVGTest : public MouCaLabTest
@@ -124,22 +136,28 @@ class FontSVGTest : public MouCaLabTest
         GUI::FontFamilySVGWPtr _fontFamilyNoto;
         GUI::FontFamilySVGWPtr _fontFamilyCeltic;
         GUI::FontFamilySVGWPtr _fontFamilyMevNo;
+        GUI::FontFamilySVGWPtr _fontFamilyEmoji;
         
         std::array<GlyphInstance, MAX_VISIBLE_GLYPHS> _glyphInstances;
         uint32_t                                      _glyphCount;
 
         // Performances / GUI
-        std::array<bool, 4> _modeGUI = { false, false, false, false };
+        std::array<bool, 6> _modeGUI = { false, false, false, false, false, false };
         uint32_t      _nbChars;
         TimeElapsed   _charAppends;
         TimeElapsed   _fontBuild;
 
         uint32_t      _startDemo;
+        bool          _hasEmoji = false;
 
-        static std::vector<const char*> _textDebug;
-        static std::vector<const char*> _text;
-        static std::vector<const char*> _textASCII;
-        static std::vector<const char*> _textU8;
+        RefreshSystem rs;
+
+        static std::vector<const char8_t*> _textDebug;
+        static std::vector<const char8_t*> _text;
+        static std::vector<const char8_t*> _textASCII;
+        static std::vector<const char8_t*> _textU8;
+        static std::vector<const char8_t*> _textEmoji;
+        static std::vector<const char8_t*> _textHarfbuzz;
 
         static Core::Path _fontRoboto;
         static Core::Path _fontNoto;
@@ -147,16 +165,18 @@ class FontSVGTest : public MouCaLabTest
         static Core::Path _fontNotoA;
         static Core::Path _fontCeltic;
         static Core::Path _fontMevNo;
+        //static Core::Path _fontNotoEmoji;
+        static Core::Path _fontSeguiEmoji;
 
         struct Text
         {
-            const std::vector<const char*>& _text;
+            const std::vector<const char8_t*>& _text;
             glm::vec2                 _offset;
             float                     _scale;
             float                     _interline;
             GUI::FontFamilySVGWPtr*   _font;
 
-            Text(const std::vector<const char*>& text, const glm::vec2& offset, GUI::FontFamilySVGWPtr* font, const float scale = 1.0f, const float interline = 30.0f) :
+            Text(const std::vector<const char8_t*>& text, const glm::vec2& offset, GUI::FontFamilySVGWPtr* font, const float scale = 1.0f, const float interline = 30.0f) :
             _text(text), _offset(offset), _font(font), _scale(scale), _interline(interline)
             {}
         };
@@ -169,12 +189,12 @@ class FontSVGTest : public MouCaLabTest
             _modeGUI[_startDemo] = true;
         }
 
-        char32_t toUtf32(const std::string& s)
+        char32_t toUtf32(const std::u8string& s)
         {
             try
             {
                 std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> convert;
-                auto asInt = convert.from_bytes(s);
+                auto asInt = convert.from_bytes(std::string(s.begin(), s.end()));
                 return std::u32string(reinterpret_cast<char32_t const*>(asInt.data()), asInt.length()).front();
             }
             catch (...)
@@ -183,7 +203,7 @@ class FontSVGTest : public MouCaLabTest
             }
         }
 
-        bool append_text(GUI::FontFamilySVG& font, glm::vec2 offset, float scale, const char* text)
+        bool append_text(GUI::FontFamilySVG& font, glm::vec2 offset, float scale, const char8_t* text)
         {
             bool update = false;
             _charAppends.start();
@@ -212,7 +232,7 @@ class FontSVGTest : public MouCaLabTest
                     byteGlyph = 2;
                 }
 
-                const auto glyph = toUtf32(std::string(text, byteGlyph));
+                const auto glyph = toUtf32(std::u8string(text, byteGlyph));
 
                 GUI::FontFamilySVG::GlyphSVG gi;
                 update |= font.tryGlyph(glyph, gi);
@@ -279,7 +299,7 @@ class FontSVGTest : public MouCaLabTest
         //bool buildText(GUI::FontFamilySVGWPtr font, std::vector<const char*> text, const glm::vec2& offset, const float scale, const float interLine)
         bool buildText(const Text& text)
         {
-            MOUCA_PRE_CONDITION(!text._font->expired());
+            MouCa::preCondition(!text._font->expired());
 
             bool update = false;
 
@@ -305,6 +325,15 @@ class FontSVGTest : public MouCaLabTest
             _fontFamilyNoto   = fontSVGManager.createFont({ fontPath / _fontNoto, fontPath / _fontNotoJP, fontPath / _fontNotoA });
             _fontFamilyCeltic = fontSVGManager.createFont({ fontPath / _fontCeltic });
             _fontFamilyMevNo  = fontSVGManager.createFont({ fontPath / _fontMevNo  });
+            
+            // Emoji
+            Core::Path windowsFont = Core::Path("C:\\Windows") / u8"Fonts";
+            if (std::filesystem::exists(windowsFont))
+            {
+                _hasEmoji = true;
+                _fontFamilyEmoji = fontSVGManager.createFont({ windowsFont / _fontSeguiEmoji });
+                ASSERT_FALSE(_fontFamilyEmoji.expired());
+            }
 
             _fontBuild.cumulate();
         }
@@ -335,11 +364,10 @@ class FontSVGTest : public MouCaLabTest
         
         void demoPage(const uint32_t idPage, GUI::FontSVGManager& fontSVGManager)
         {
-            const std::array<std::vector<Text>, 4> _pages
+            const std::array<std::vector<Text>, 6> _pages
             {{
                 //Page 0 
                 { Text(_text, glm::vec2(-0.7f, -0.51f), &_fontFamilyRoboto, 0.0003f, 0.045f) },
-                //{ Text(_text, glm::vec2(0.0f, 0.0f), &_fontFamilyRoboto, 1.0f, 0.045f) },
                 //Page 1 
                 {
                     Text(_textASCII, glm::vec2(-0.7f, -0.51f), &_fontFamilyRoboto, 0.0003f, 0.045f),
@@ -348,16 +376,19 @@ class FontSVGTest : public MouCaLabTest
                     Text(_textASCII, glm::vec2(-0.7f,  0.10f), &_fontFamilyCeltic, 0.0003f, 0.045f),
                 },
                 //Page 2
-                { Text(_textU8, glm::vec2(-0.7f, -0.3f), &_fontFamilyNoto, 0.0012f, 0.16f) },
-                //Page 3
-                { Text(_textDebug, glm::vec2(-0.85f, 0.2f), &_fontFamilyNoto, 0.0027f, 0.45f) },
-                //{ Text(_textDebug, glm::vec2(0.0f, 0.0f), &_fontFamilyNoto, 10.0f, 0.45f) },
+                { Text(_textU8,       glm::vec2(-0.7f, -0.3f), &_fontFamilyNoto, 0.0012f, 0.16f) },
+                //Page 3              
+                { Text(_textDebug,    glm::vec2(-0.85f, 0.2f), &_fontFamilyNoto, 0.0027f, 0.45f) },
+                //Page 4              
+                { Text(_textEmoji,    glm::vec2(-0.85f, 0.2f), &_fontFamilyEmoji, 0.0027f, 0.45f) },
+                //Page 5
+                { Text(_textHarfbuzz, glm::vec2(-0.7f, -0.51f), &_fontFamilyNoto, 0.0003f, 0.045f) },
             }};
 
             // Build page from empty manager
             {
                 // Build all fonts from scratch
-                buildFontFamilies(fontSVGManager);
+                ASSERT_NO_THROW(buildFontFamilies(fontSVGManager));
                 _glyphCount = 0;
                 _nbChars    = 0;
                 bool update = false;
@@ -366,6 +397,7 @@ class FontSVGTest : public MouCaLabTest
                 // Build all texts
                 for(const auto& text : _pages[idPage])
                 {
+                    ASSERT_TRUE(!text._font->expired());
                     update |= buildText(text);
                 }
                 // Update glyph buffer if needed
@@ -449,14 +481,14 @@ class FontSVGTest : public MouCaLabTest
 
             ImGuiIO& io = ImGui::GetIO();
             ImGui::SetNextWindowSize(io.DisplaySize, ImGuiCond_FirstUseEver);
-            ImGui::Begin(u8"Font", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+            ImGui::Begin("Font", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
             //ImGui::TextUnformatted(title.c_str());
             //ImGui::TextUnformatted(deviceProperties.deviceName);
             //ImGui::Text("%.2f ms/frame (%.1d fps)", (1000.0f / lastFPS), lastFPS);
 
             ImGui::PushItemWidth(110.0f * 1.0f);
             
-            if (ImGui::CollapsingHeader(u8"Demo", ImGuiTreeNodeFlags_DefaultOpen))
+            if (ImGui::CollapsingHeader("Demo", ImGuiTreeNodeFlags_DefaultOpen))
             {
                 bool change = false;
                 uint32_t pageId = 0;
@@ -491,6 +523,25 @@ class FontSVGTest : public MouCaLabTest
                     change = true;
                     pageId = 3;
                 }
+                if (_hasEmoji)
+                {
+                    if(ImGui::RadioButton("Emoji", _modeGUI[4]))
+                    {
+                        _modeGUI.fill(false);
+                        _modeGUI[4] = true;
+
+                        change = true;
+                        pageId = 4;
+                    }
+                }
+                if(ImGui::RadioButton("Harfbuzz", _modeGUI[5]))
+                {
+                    _modeGUI.fill(false);
+                    _modeGUI[5] = true;
+
+                    change = true;
+                    pageId = 5;
+                }
                 
                 if(change)
                 {
@@ -501,7 +552,7 @@ class FontSVGTest : public MouCaLabTest
                 update = true;
             }
 
-            if (ImGui::CollapsingHeader(u8"Performances", ImGuiTreeNodeFlags_None))
+            if (ImGui::CollapsingHeader("Performances", ImGuiTreeNodeFlags_None))
             {
                 static uint32_t nbGlyphs = 1;
                 static const uint32_t nbRun = 30; // For stable result
@@ -574,63 +625,74 @@ class FontSVGTest : public MouCaLabTest
         // EnableCodeCoverage
 };
 
-std::vector<const char*> FontSVGTest::_textDebug =
+std::vector<const char8_t*> FontSVGTest::_textDebug =
 {
-    "L@Q%iE#,"
+    u8"L@Q%iE#,"
 };
 
-std::vector<const char*> FontSVGTest::_text =
+std::vector<const char8_t*> FontSVGTest::_text =
 {
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet scelerisque augue, sit amet commodo neque.",
-    "Vestibulum eu eros a justo molestie bibendum quis in urna. Integer quis tristique magna. Morbi in ultricies lorem. Donec",
-    "lacinia nisi et arcu scelerisque, eget viverra ante dapibus. Proin enim neque, vehicula id congue quis, consequat sit amet tortor.",
-    "Aenean ac lorem sit amet magna rhoncus rhoncus ac ac neque. Cras sed rutrum sem.",
-    "Donec placerat ultricies ex, a gravida lorem commodo ut. Mauris faucibus aliquet ligula, vitae condimentum dui semper et.",
-    "Aenean pellentesque ac ligula a varius. Suspendisse congue lorem lorem, ac consectetur ipsum condimentum id.",
-    "",
-    "Vestibulum quis erat sem. Fusce efficitur libero et leo sagittis, ac volutpat felis ullamcorper. Curabitur fringilla eros eget ex",
-    "lobortis, at posuere sem consectetur. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis",
-    "egestas. Vivamus eu enim leo. Morbi ultricies lorem et pellentesque vestibulum. Proin eu ultricies sem. Quisque laoreet, ligula",
-    "non molestie congue, odio nunc tempus arcu, vel aliquet leo turpis non enim. Sed risus dui, condimentum et eros a, molestie",
-    "imperdiet nisl. Vivamus quis ante venenatis, cursus magna ut, tincidunt elit. Aenean nisl risus, porttitor et viverra quis,",
-    "tempus vitae nisl.",
-    "",
-    "Suspendisse ut scelerisque tellus. In ac quam sem.Curabitur suscipit massa nisl. Ut et metus sed lacus dapibus molestie. Nullam",
-    "porttitor sit amet magna quis dapibus. Nulla tincidunt, arcu sit amet hendrerit consequat, felis leo blandit libero, eu posuere",
-    "nisl quam interdum nulla. Quisque nec efficitur libero. Quisque quis orci vitae metus feugiat aliquam eu et nulla. Etiam aliquet",
-    "ante vitae lacus aliquam, et gravida elit mollis. Proin molestie, justo tempus rhoncus aliquam, tellus erat venenatis erat,",
-    "porttitor dapibus nunc purus id enim. Integer a nunc ut velit porta maximus. Nullam rutrum nisi in sagittis pharetra. Proin id",
-    "pharetra augue, sed vulputate lorem. Aenean dapibus, turpis nec ullamcorper pharetra, ex augue congue nibh, condimentum",
-    "vestibulum arcu urna quis ex.",
-    "",
-    "Vestibulum non dignissim nibh, quis vestibulum odio. Ut sed viverra ante, fringilla convallis tellus. Donec in est rutrum,",
-    "imperdiet dolor a, vestibulum magna. In nec justo tellus. Ut non erat eu leo ornare imperdiet in sit amet lorem. Nullam quis",
-    "nisl diam. Aliquam laoreet dui et ligula posuere cursus.",
-    "",
-    "Donec vestibulum ante eget arcu dapibus lobortis.Curabitur condimentum tellus felis, id luctus mi ultrices quis. Aenean nulla",
-    "justo, venenatis vel risus et, suscipit faucibus nulla. Pellentesque habitant morbi tristique senectus et netus et malesuada",
-    "fames ac turpis egestas. Sed lacinia metus eleifend lacinia blandit.Morbi est nibh, dapibus nec arcu quis, volutpat lacinia",
-    "dolor. Vestibulum quis viverra erat.Maecenas ultricies odio neque, et eleifend arcu auctor in. Suspendisse placerat massa nisl,",
-    "non condimentum ligula sodales at.Phasellus eros urna, elementum in ultricies quis, vulputate id magna. Donec efficitur rutrum",
-    "urna sed tempus. Vestibulum eu augue dolor. Vestibulum vehicula suscipit purus, sit amet ultricies ligula malesuada sit amet.",
-    "Duis consectetur elit euismod arcu aliquet vehicula. Pellentesque lobortis dui et nisl vehicula, in placerat quam dapibus.Fusce",
-    "auctor arcu a purus bibendum, eget blandit nisi lobortis.",
+    u8"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet scelerisque augue, sit amet commodo neque.",
+    u8"Vestibulum eu eros a justo molestie bibendum quis in urna. Integer quis tristique magna. Morbi in ultricies lorem. Donec",
+    u8"lacinia nisi et arcu scelerisque, eget viverra ante dapibus. Proin enim neque, vehicula id congue quis, consequat sit amet tortor.",
+    u8"Aenean ac lorem sit amet magna rhoncus rhoncus ac ac neque. Cras sed rutrum sem.",
+    u8"Donec placerat ultricies ex, a gravida lorem commodo ut. Mauris faucibus aliquet ligula, vitae condimentum dui semper et.",
+    u8"Aenean pellentesque ac ligula a varius. Suspendisse congue lorem lorem, ac consectetur ipsum condimentum id.",
+    u8"",
+    u8"Vestibulum quis erat sem. Fusce efficitur libero et leo sagittis, ac volutpat felis ullamcorper. Curabitur fringilla eros eget ex",
+    u8"lobortis, at posuere sem consectetur. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis",
+    u8"egestas. Vivamus eu enim leo. Morbi ultricies lorem et pellentesque vestibulum. Proin eu ultricies sem. Quisque laoreet, ligula",
+    u8"non molestie congue, odio nunc tempus arcu, vel aliquet leo turpis non enim. Sed risus dui, condimentum et eros a, molestie",
+    u8"imperdiet nisl. Vivamus quis ante venenatis, cursus magna ut, tincidunt elit. Aenean nisl risus, porttitor et viverra quis,",
+    u8"tempus vitae nisl.",
+    u8"",
+    u8"Suspendisse ut scelerisque tellus. In ac quam sem.Curabitur suscipit massa nisl. Ut et metus sed lacus dapibus molestie. Nullam",
+    u8"porttitor sit amet magna quis dapibus. Nulla tincidunt, arcu sit amet hendrerit consequat, felis leo blandit libero, eu posuere",
+    u8"nisl quam interdum nulla. Quisque nec efficitur libero. Quisque quis orci vitae metus feugiat aliquam eu et nulla. Etiam aliquet",
+    u8"ante vitae lacus aliquam, et gravida elit mollis. Proin molestie, justo tempus rhoncus aliquam, tellus erat venenatis erat,",
+    u8"porttitor dapibus nunc purus id enim. Integer a nunc ut velit porta maximus. Nullam rutrum nisi in sagittis pharetra. Proin id",
+    u8"pharetra augue, sed vulputate lorem. Aenean dapibus, turpis nec ullamcorper pharetra, ex augue congue nibh, condimentum",
+    u8"vestibulum arcu urna quis ex.",
+    u8"",
+    u8"Vestibulum non dignissim nibh, quis vestibulum odio. Ut sed viverra ante, fringilla convallis tellus. Donec in est rutrum,",
+    u8"imperdiet dolor a, vestibulum magna. In nec justo tellus. Ut non erat eu leo ornare imperdiet in sit amet lorem. Nullam quis",
+    u8"nisl diam. Aliquam laoreet dui et ligula posuere cursus.",
+    u8"",
+    u8"Donec vestibulum ante eget arcu dapibus lobortis.Curabitur condimentum tellus felis, id luctus mi ultrices quis. Aenean nulla",
+    u8"justo, venenatis vel risus et, suscipit faucibus nulla. Pellentesque habitant morbi tristique senectus et netus et malesuada",
+    u8"fames ac turpis egestas. Sed lacinia metus eleifend lacinia blandit.Morbi est nibh, dapibus nec arcu quis, volutpat lacinia",
+    u8"dolor. Vestibulum quis viverra erat.Maecenas ultricies odio neque, et eleifend arcu auctor in. Suspendisse placerat massa nisl,",
+    u8"non condimentum ligula sodales at.Phasellus eros urna, elementum in ultricies quis, vulputate id magna. Donec efficitur rutrum",
+    u8"urna sed tempus. Vestibulum eu augue dolor. Vestibulum vehicula suscipit purus, sit amet ultricies ligula malesuada sit amet.",
+    u8"Duis consectetur elit euismod arcu aliquet vehicula. Pellentesque lobortis dui et nisl vehicula, in placerat quam dapibus.Fusce",
+    u8"auctor arcu a purus bibendum, eget blandit nisi lobortis.",
 };
 
-std::vector<const char*> FontSVGTest::_textASCII =
+std::vector<const char8_t*> FontSVGTest::_textASCII =
 {
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-    "abcdefghijklmnopqrstuvwxyz",
-    "0123456789 \t\"'<>[]{}()=_+-*\\/,;:!?.%#&$^@|~"
+    u8"ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    u8"abcdefghijklmnopqrstuvwxyz",
+    u8"0123456789 \t\"'<>[]{}()=_+-*\\/,;:!?.%#&$^@|~"
 };
 
-std::vector<const char*> FontSVGTest::_textU8 =
+std::vector<const char8_t*> FontSVGTest::_textU8 =
 {
     u8"アイウエオ式",
     u8"アイウエオ",
     u8"式指揮士気",
     u8"عندما يريد العالم أن يتكلّم ‬ ، فهو يتحدّث بلغة يونيكود"
 };
+
+std::vector<const char8_t*> FontSVGTest::_textEmoji =
+{
+    u8"😁🤮💃🦊"
+};
+
+std::vector<const char8_t*> FontSVGTest::_textHarfbuzz =
+{
+    u8"a̜͌m̟͆u̼̓s᷂ͥe̱᷄"
+};
+
 
 Core::Path FontSVGTest::_fontRoboto(u8"Roboto-Medium.ttf");
 
@@ -641,8 +703,64 @@ Core::Path FontSVGTest::_fontNotoA(u8"NotoSansArabicUI-Regular.ttf");
 Core::Path FontSVGTest::_fontCeltic(u8"Celtic Knot.TTF");
 Core::Path FontSVGTest::_fontMevNo(u8"mevno1.ttf");
 
+//Core::Path FontSVGTest::_fontNotoEmoji(u8"NotoColorEmoji.ttf");                       //Not working
+//Core::Path FontSVGTest::_fontNotoEmoji(u8"NotoColorEmoji_WindowsCompatible.ttf");     //Not working
+Core::Path FontSVGTest::_fontSeguiEmoji(u8"seguiemj.ttf");
+
+
+void RefreshSystem::afterShaderRefresh()
+{
+    MouCa::logConsole("DEMO: Shader");
+
+    testManager->updateCommandBuffers(*loader);
+    testManager->updateCommandBuffersSurface(*loader);
+
+    // Step4 : Restart all commands
+    for (auto& window : manager->getContextWindows())
+    {
+        window->getCommandBuffer().execute(VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+        window->setReady(true);
+    }
+
+    manager->getDevices().front()->getDevice().waitIdle();
+}
+
 TEST_F(FontSVGTest, run)
 {
+    /*
+    const std::array<int8_t, 24> table
+    {
+        0,0,0,
+        0,0,1,
+        1,0,1,
+        0,0,1,
+        1,0,1,
+        1,1,1,
+        1,0,0
+    };
+    std::array<bool, 3> value{ true, true, true };
+
+    int compute = 0;
+    for (int8_t v : table)
+        compute = (compute << 1) | v;
+    printf("0x%x", compute);
+
+    const std::array<int8_t, 24> table2
+    {
+        1,0,0,
+        1,1,1,
+        1,0,1,
+        0,0,1,
+        1,0,1,
+        0,0,1,
+        0,0,0
+    };
+    compute = 0;
+    for (int8_t v : table2)
+        compute = (compute << 1) | v;
+    printf("0x%x", compute);
+    */
+
     MouCaGraphic::VulkanManager manager;
     MouCaGraphic::ImGUIManager  GUI;
 
@@ -669,7 +787,7 @@ TEST_F(FontSVGTest, run)
     loader._cpuMeshDescriptors[0] = getGlyphInstanceDescriptor();
 
     // Create Vulkan objects
-    ASSERT_NO_FATAL_FAILURE(loadEngine(loader, u8"FontSVG.xml"));
+    ASSERT_NO_FATAL_FAILURE(loadEngine(loader, "FontSVG.xml"));
 
     // Link event manager
     loader._dialogs[0].lock()->initialize(_eventManager, _resolution);
@@ -703,7 +821,7 @@ TEST_F(FontSVGTest, run)
     loaderGUI._buffers[1] = GUI.getIndexBuffer();
 
     // Create Vulkan objects
-    ASSERT_NO_FATAL_FAILURE(loadEngine(loaderGUI, u8"ImGUI.xml"));
+    ASSERT_NO_FATAL_FAILURE(loadEngine(loaderGUI, "ImGUI.xml"));
 
     // Transfer commands
     {
@@ -769,6 +887,11 @@ TEST_F(FontSVGTest, run)
     // Execute commands
     updateCommandBuffers(loader);
     updateCommandBuffersSurface(loader);
+
+    rs.testManager = this;
+    rs.loader = &loader;
+    rs.manager = &manager;
+    manager.getAfterShaderChanged().connectMember(&rs, &RefreshSystem::afterShaderRefresh);
 
 //-------------------------------------------------------------------------------------------------
 //                                             Step 5: Play
@@ -864,10 +987,8 @@ TEST_F(FontSVGTest, run)
                 updateCommandBuffersSurface(loader, 0);
             }
         };
-        mainLoop(manager, u8"FontSVG Demo ", demo);
-
-        // EnableCodeCoverage
-    }
+        mainLoop(manager, "FontSVG Demo ", demo);
+    } // EnableCodeCoverage
     else
     {
         // Get Sequencer
@@ -882,7 +1003,7 @@ TEST_F(FontSVGTest, run)
         }
 
         // Compare to expected result
-        takeScreenshot(manager, L"VulkanFontSVG.png");
+        takeScreenshot(manager, "VulkanFontSVG.png");
     }
 
     // Clean

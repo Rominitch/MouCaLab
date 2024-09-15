@@ -30,8 +30,8 @@ void Outline::convert(FT_Outline& outline)
         if (pts.getCode() == Code::EndCurve)
         {
             std::cout << "Curve: " << startLoop << " to " << id << std::endl;
-            MOUCA_ASSERT(startLoop==0 || startLoop+1 == pts.getIndex());
-            MOUCA_ASSERT(pts.getIndex() < _outlinePoints.size());
+            MouCa::assertion(startLoop==0 || startLoop+1 == pts.getIndex());
+            MouCa::assertion(pts.getIndex() < _outlinePoints.size());
 
             startLoop = id;
         }
@@ -40,7 +40,7 @@ void Outline::convert(FT_Outline& outline)
             const uint32_t nbCtrl = static_cast<uint32_t>(pts.getCode()) & 0x3;
             for (uint32_t ctrl = 0; ctrl < nbCtrl; ++ctrl)
             {
-                MOUCA_ASSERT( (pts.getIndex() + ctrl) < _controlPoints.size() );
+                MouCa::assertion( (pts.getIndex() + ctrl) < _controlPoints.size() );
             }
         }
         ++id;
@@ -61,7 +61,7 @@ void Outline::decompose(FT_Outline& outline)
     FT_BBox outline_bbox;
     if (FT_Outline_Get_BBox(&outline, &outline_bbox))
     {
-        MOUCA_THROW_ERROR(u8"FontError", u8"GetBBoxError");
+        throw Core::Exception(Core::ErrorData("FontError", "GetBBoxError"));
     }
 
 	_bbox = BoundingBox2D(glm::vec2(outline_bbox.xMin, outline_bbox.yMin) * _scale, glm::vec2(outline_bbox.xMax , outline_bbox.yMax) * _scale);
@@ -81,7 +81,7 @@ void Outline::decompose(FT_Outline& outline)
 
     if (FT_Outline_Decompose(&outline, &funcs, this))
     {
-        MOUCA_THROW_ERROR(u8"FontError", u8"OutlineDecomposeError");
+        throw Core::Exception(Core::ErrorData("FontError", "OutlineDecomposeError"));
     }
 
     // Final loop point
@@ -103,7 +103,7 @@ int Outline::FTMove(const FT_Vector* point, Outline* o)
 
     const glm::vec2 to_p = glm::vec2(point->x, point->y);
 
-    //MOUCA_ASSERT(o->_points.size() % 2 == 0);
+    //MouCa::assertion(o->_points.size() % 2 == 0);
 
 	//o->_contours.emplace_back(ContourRange(static_cast<uint32_t>(o->_points.size()), UINT32_MAX));
     //o->_points.emplace_back(to_p * _scale);
@@ -144,11 +144,6 @@ int Outline::FTConic(const FT_Vector* control, const FT_Vector* point, Outline* 
 int Outline::FTCubic(const FT_Vector* control1, const FT_Vector* control2, const FT_Vector* to, Outline* o)
 {
     const glm::vec2 to_p = glm::vec2(to->x, to->y);
-    //const glm::vec2 p = RT::Maths::lerp(o->_points.back(), to_p * _scale, 0.5f);
-    //o->_points.emplace_back(p);
-    //o->_points.emplace_back(to_p * _scale);
-
-    //o->_outlinePoints[latestCurve].setIndex(static_cast<uint32_t>(o->_outlinePoints.size()));
     o->_outlinePoints.emplace_back(Point(scale(to_p * _scale2, o), Code::Cubic, static_cast<uint32_t>(o->_controlPoints.size())));
     o->_controlPoints.emplace_back(scale(glm::vec2(control1->x, control1->y) * _scale2, o));
     o->_controlPoints.emplace_back(scale(glm::vec2(control2->x, control2->y) * _scale2, o));
@@ -288,12 +283,12 @@ struct Cell
 
         if (_to != UINT32_MAX && _to != idPoint)
         {
-            MOUCA_ASSERT(_to < idPoint);
+            MouCa::assertion(_to < idPoint);
 
             if (_from == ucontour_begin)
             {
-                MOUCA_ASSERT(_to % 2 == 0);
-                MOUCA_ASSERT(_from % 2 == 0);
+                MouCa::assertion(_to % 2 == 0);
+                MouCa::assertion(_from % 2 == 0);
 
                 _start_len = (_to - _from) / 2;
             }
@@ -317,7 +312,7 @@ struct Cell
 
 	static uint32_t addRange(uint32_t cell, uint32_t from, uint32_t to)
     {
-        MOUCA_ASSERT(from % 2 == 0 && to % 2 == 0);
+        MouCa::assertion(from % 2 == 0 && to % 2 == 0);
 
         from /= 2;
         to   /= 2;
@@ -366,7 +361,7 @@ struct Cell
             _to   = UINT32_MAX;
         }
 
-        MOUCA_ASSERT(_to == UINT32_MAX || _to == contour._end);
+        MouCa::assertion(_to == UINT32_MAX || _to == contour._end);
         _to = UINT32_MAX;
 
         if (_from != UINT32_MAX && _start_len != 0)
@@ -395,7 +390,7 @@ struct Cell
             _start_len = 0;
         }
 
-		MOUCA_POST_CONDITION(_from == UINT32_MAX && _to == UINT32_MAX);
+		MouCa::postCondition(_from == UINT32_MAX && _to == UINT32_MAX);
         return ret;
     }
 
@@ -453,7 +448,7 @@ struct Cells
     Cells(const BoundingBox2D& bbox, uint32_t cellX, uint32_t cellY):
 	_cells(cellX * cellY)
     {
-		MOUCA_PRE_CONDITION(cellX > 0 && cellY > 0);
+		MouCa::preCondition(cellX > 0 && cellY > 0);
 
         const float w = bbox._max.x - bbox._min.x;
 		const float h = bbox._max.y - bbox._min.y;
@@ -470,7 +465,7 @@ struct Cells
 				++itCell;
             }
         }
-		MOUCA_POST_CONDITION(itCell == _cells.end());
+		MouCa::postCondition(itCell == _cells.end());
     }
 
     bool for_each_wipcell_add_bezier(const BoundingBox2D& globalBBox, const glm::vec2& cellSize, const BezierCurve& curve, const uint32_t idPoint, const uint32_t ucontour_begin)
@@ -484,7 +479,7 @@ struct Cells
 
         auto min = (bezier_bbox._min - globalBBox._min) * scale;
 		auto max = (bezier_bbox._max - globalBBox._min) * scale;
-		//MOUCA_ASSERT(glm::all(glm::lessThanEqual(glm::vec2(0.0f, 0.0f), min)) && glm::all(glm::lessThanEqual(min, max)));
+		//MouCa::assertion(glm::all(glm::lessThanEqual(glm::vec2(0.0f, 0.0f), min)) && glm::all(glm::lessThanEqual(min, max)));
         
         if (max.x >= cellSize.x) max.x = cellSize.x - 1;
         if (max.y >= cellSize.y) max.y = cellSize.y - 1;
@@ -579,7 +574,7 @@ bool Outline::tryFitInCell()
 
 	// Fill cells
     uint32_t filled_line = addFilledLine(newPoints);
-    MOUCA_ASSERT(filled_line % 2 == 0);
+    MouCa::assertion(filled_line % 2 == 0);
 	uint32_t filled_cell = filled_line << 7 | 1;
 	cells.fill(newPoints, newContours, filled_cell);
 

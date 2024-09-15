@@ -87,7 +87,7 @@ class LoaderManagerTest : public testing::Test
             // Generate list of data
             for(uint32_t job = 0; job < _nbJobs; ++job)
             {
-                const auto imageName = Core::StringOS(L"img") + Core::convertToOS(std::to_string(job)) + Core::StringOS(L".ktx");
+                const auto imageName = std::format("img{}.ktx", job);
                 // Duplicate data
                 const auto dest = MouCaEnvironment::getOutputPath() / imageName;
                 ASSERT_TRUE( std::filesystem::copy_file( filename, dest, std::filesystem::copy_options::overwrite_existing ) );
@@ -106,20 +106,20 @@ class LoaderManagerTest : public testing::Test
 
         void SetUp() override
         {
-            MOUCA_PRE_CONDITION(items.empty());
+            MouCa::preCondition(items.empty());
 
             core = std::make_unique<MouCaCore::CoreSystem>();
             generateJob();
 
-            MOUCA_POST_CONDITION(!items.empty());
+            MouCa::postCondition(!items.empty());
         }
 
         void TearDown() override
         {
-            MOUCA_PRE_CONDITION(items.empty());
+            MouCa::preCondition(items.empty());
 
             // Control resource loading
-            MOUCA_PRE_CONDITION(core->getResourceManager().getResources().size() == _nbJobs);
+            MouCa::preCondition(core->getResourceManager().getResources().size() == _nbJobs);
             for(const auto& resource : core->getResourceManager().getResources())
             {
                 ASSERT_FALSE(resource->isNull());

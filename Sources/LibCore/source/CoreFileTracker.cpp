@@ -17,25 +17,25 @@ _thread(std::make_shared<FileTracker::TrackerThread>(*this))
 
 FileTracker::~FileTracker()
 {
-    MOUCA_PRE_CONDITION( _thread->isNull() || _thread->isTerminated() );
+    MouCa::preCondition( _thread->isNull() || _thread->isTerminated() );
 }
 
 void FileTracker::registerResource( Core::ResourceSPtr resource )
 {
-    MOUCA_PRE_CONDITION( _thread != nullptr );
+    MouCa::preCondition( _thread != nullptr );
     _thread->registerResource(resource);
 }
 
 void FileTracker::unregisterResource( Core::ResourceSPtr resource )
 {
-    MOUCA_PRE_CONDITION( _thread != nullptr );
+    MouCa::preCondition( _thread != nullptr );
     _thread->unregisterResource(resource);
 }
 
 void FileTracker::startTracking()
 {
-    MOUCA_PRE_CONDITION( _thread != nullptr );
-    MOUCA_PRE_CONDITION( _thread->isNull() );
+    MouCa::preCondition( _thread != nullptr );
+    MouCa::preCondition( _thread->isNull() );
     _thread->ready();
     _thread->start();
 
@@ -44,16 +44,16 @@ void FileTracker::startTracking()
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
-    MOUCA_POST_CONDITION( !_thread->isTerminated() );
+    MouCa::postCondition( !_thread->isTerminated() );
 }
 
 void FileTracker::stopTracking()
 {
-    MOUCA_PRE_CONDITION( !_thread->isTerminated() );
+    MouCa::preCondition( !_thread->isTerminated() );
     _thread->finish();
     _thread->join();
 
-    MOUCA_POST_CONDITION( _thread->isTerminated() );
+    MouCa::postCondition( _thread->isTerminated() );
 }
 
 FileTracker::TrackerThread::TrackerThread( FileTracker& manager ) :
@@ -64,8 +64,8 @@ _manager(manager), _threadAlive( false ), _updateHandleList(false), _isRunning(f
 
 void FileTracker::TrackerThread::registerResource( Core::ResourceSPtr resource )
 {
-    MOUCA_PRE_CONDITION( resource != nullptr && !resource->getTrackedFilename().empty() ); // DEV Issue: Need valid resource !
-    MOUCA_PRE_CONDITION( _tracked.size() < MAXIMUM_WAIT_OBJECTS );                         // DEV Issue: 64 item tracked for one wait !
+    MouCa::preCondition( resource != nullptr && !resource->getTrackedFilename().empty() ); // DEV Issue: Need valid resource !
+    MouCa::preCondition( _tracked.size() < MAXIMUM_WAIT_OBJECTS );                         // DEV Issue: 64 item tracked for one wait !
 
     // Protect Multi-threading access
     std::lock_guard<std::mutex> guard( _lockTracked );
@@ -87,11 +87,11 @@ void FileTracker::TrackerThread::registerResource( Core::ResourceSPtr resource )
     else
     {
         // Add new resources + tracking system
-        MOUCA_ASSERT( folder.size() < MAX_PATH );
+        MouCa::assertion( folder.size() < MAX_PATH );
         const HANDLE modifyHandle = FindFirstChangeNotification( folder.c_str(), FALSE, FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_SIZE );
         if( modifyHandle == INVALID_HANDLE_VALUE )
         {
-            MOUCA_THROW_ERROR_1( u8"Tools", u8"FileTrackingError", convertToU8( resource->getTrackedFilename() ) );
+            throw Core::Exception(Core::ErrorData("Tools", "FileTrackingError") << resource->getTrackedFilename().string() );
         }
 
         const key newKey = {modifyHandle, folder};
@@ -101,12 +101,12 @@ void FileTracker::TrackerThread::registerResource( Core::ResourceSPtr resource )
         _updateHandleList = true;
     }
 
-    MOUCA_POST_CONDITION( std::find_if( _tracked.begin(), _tracked.end(), [&]( const std::pair<key, std::vector<FileInfo>>& data ) { return data.first._trackedPath == folder; } ) != _tracked.end() ); // DEV Issue: folder is tracked now !
+    MouCa::postCondition( std::find_if( _tracked.begin(), _tracked.end(), [&]( const std::pair<key, std::vector<FileInfo>>& data ) { return data.first._trackedPath == folder; } ) != _tracked.end() ); // DEV Issue: folder is tracked now !
 }
 
 void FileTracker::TrackerThread::unregisterResource( Core::ResourceSPtr resource )
 {
-    MOUCA_PRE_CONDITION( resource != nullptr && !resource->getTrackedFilename().empty() );    // DEV Issue: Need valid resource !
+    MouCa::preCondition( resource != nullptr && !resource->getTrackedFilename().empty() );    // DEV Issue: Need valid resource !
 
     // Protect Multi-threading access
     std::lock_guard<std::mutex> guard( _lockTracked );
@@ -122,7 +122,7 @@ void FileTracker::TrackerThread::unregisterResource( Core::ResourceSPtr resource
             if( itTracked->second.size() == 1 )
             {
 //                 auto itHandle = std::find_if( _waitHandle.begin(), _waitHandle.end(), [&]( const HANDLE& handle ) { return handle == itTracked->first._handle; } );
-//                 MOUCA_ASSERT( itHandle != _waitHandle.end() );
+//                 MouCa::assertion( itHandle != _waitHandle.end() );
 //                 _waitHandle.erase( itHandle );
                 _updateHandleList = true;
                 itTracked = _tracked.erase( itTracked );
@@ -165,6 +165,9 @@ void FileTracker::TrackerThread::run()
         {}
         else
         {
+            // Protect Multi-threading access
+            std::lock_guard<std::mutex> guard( _lockTracked );
+
             // Analyze tracked resources
             DWORD count = 0;
             for( const auto& handle : _waitHandle )
@@ -173,22 +176,22 @@ void FileTracker::TrackerThread::run()
                 {
                     if( FindNextChangeNotification( handle ) == FALSE )
                     {
-                        MOUCA_THROW_ERROR( u8"Tools", u8"FileTrackingError" );
+                        throw Core::Exception(Core::ErrorData( "Tools", "FileTrackingError" ));
                     }
 
-                    // Protect Multi-threading access
-                    std::lock_guard<std::mutex> guard( _lockTracked );
                     if( !_tracked.empty() )
                     {
                         auto itTracked = std::find_if( _tracked.begin(), _tracked.end(), [&]( const std::pair<key, std::vector<FileInfo>>& data ) { return data.first._handle == handle; } );
                         for( auto& fileInfo : itTracked->second )
                         {
-                            MOUCA_ASSERT( fileInfo._data.lock() );
+                            MouCa::assertion( !fileInfo._data.expired() );
                             ResourceSPtr resource = fileInfo._data.lock();
                             // Check if this file has same edited time than before
-                            auto newTime = std::filesystem::last_write_time( std::filesystem::path( resource->getTrackedFilename() ) );
+                            const auto newTime = std::filesystem::last_write_time( resource->getTrackedFilename() );
                             if( newTime != fileInfo._lastEdited )
                             {
+                                MouCa::logConsole(std::format("FileTracker: {} has changed.", resource->getTrackedFilename().string()));
+
                                 // Update time
                                 fileInfo._lastEdited = newTime;
 

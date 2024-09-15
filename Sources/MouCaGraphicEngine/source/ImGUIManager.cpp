@@ -27,17 +27,17 @@ RT::BufferDescriptor ImGUIManager::getMeshDescriptor()
 
 ImGUIManager::ImGUIManager()
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 ImGUIManager::~ImGUIManager()
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 }
 
 void ImGUIManager::initialize( const RT::Array2ui& resolution )
 {
-    MOUCA_PRE_CONDITION(isNull());
+    MouCa::preCondition(isNull());
 
     // Start ImGUI
     ImGui::CreateContext();
@@ -92,12 +92,12 @@ void ImGUIManager::initialize( const RT::Array2ui& resolution )
     _pushConstBlock.scale     = glm::vec2(2.0f / io.DisplaySize.x, 2.0f / io.DisplaySize.y);
     _pushConstBlock.translate = glm::vec2(-1.0f);
 
-    MOUCA_POST_CONDITION(!isNull());
+    MouCa::postCondition(!isNull());
 }
 
 void ImGUIManager::release(const Vulkan::ContextDevice& context)
 {
-    MOUCA_PRE_CONDITION(!isNull());
+    MouCa::preCondition(!isNull());
 
     const auto& device = context.getDevice();
 
@@ -121,15 +121,15 @@ void ImGUIManager::release(const Vulkan::ContextDevice& context)
 
     ImGui::DestroyContext();
 
-    MOUCA_POST_CONDITION(isNull());
+    MouCa::postCondition(isNull());
 }
 
 /** Update vertex and index buffer containing the imGui elements when required */
 bool ImGUIManager::prepareBuffer(const Vulkan::ContextDevice& context)
 {
-    MOUCA_PRE_CONDITION(!isNull());                        // DEV Issue: Missing to call initialize() ?
-    MOUCA_PRE_CONDITION(!context.isNull());                // DEV Issue: Bad context ?
-    MOUCA_PRE_CONDITION(ImGui::GetDrawData() != nullptr);  // DEV Issue: Missing to call initialize() ?
+    MouCa::preCondition(!isNull());                        // DEV Issue: Missing to call initialize() ?
+    MouCa::preCondition(!context.isNull());                // DEV Issue: Bad context ?
+    MouCa::preCondition(ImGui::GetDrawData() != nullptr);  // DEV Issue: Missing to call initialize() ?
 
     ImDrawData* imDrawData = ImGui::GetDrawData();
 
@@ -209,7 +209,7 @@ void ImGUIManager::buildCommands(Vulkan::Commands& commands)
     commands.clear();
 
     ImDrawData* imDrawData = ImGui::GetDrawData();
-    MOUCA_ASSERT(imDrawData != nullptr);
+    MouCa::assertion(imDrawData != nullptr);
 
     int32_t vertexOffset = 0;
     int32_t indexOffset = 0;

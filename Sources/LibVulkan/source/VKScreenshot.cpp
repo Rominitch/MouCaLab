@@ -37,7 +37,7 @@ void GPUImageReader::initialize(const ContextWindow& context, const RT::Componen
     {
         imageFormat = VK_FORMAT_R32_SINT;
     }
-    MOUCA_ASSERT(imageFormat != VK_FORMAT_UNDEFINED); //DEV Issue: unsupported format.
+    MouCa::assertion(imageFormat != VK_FORMAT_UNDEFINED); //DEV Issue: unsupported format.
     
     const auto& device = context.getContextDevice().getDevice();
 
@@ -91,7 +91,7 @@ void GPUImageReader::release(const ContextWindow& context)
 
 void GPUImageReader::extractTo(const VkImage& srcImage, const ContextDevice& contextDevice, const RT::Array3ui& positionSrc, const RT::Array3ui& positionDst, const RT::Array3ui& sizes)
 {
-    MOUCA_PRE_CONDITION(!contextDevice.isNull());  //DEV Issue: Need a valid context.
+    MouCa::preCondition(!contextDevice.isNull());  //DEV Issue: Need a valid context.
 
     const auto& device = contextDevice.getDevice();
     auto commandBuffer = std::make_shared<CommandBuffer>();
@@ -242,8 +242,8 @@ void GPUImageReader::extractTo(const VkImage& srcImage, const ContextDevice& con
 void GPUImageReader::extractTo(const VkImage& srcImage, const ContextWindow& context, const RT::Array3ui& positionSrc, const RT::Array3ui& positionDst, const RT::Array3ui& sizes, RT::Image& diskImage)
 {
     const auto& contextDevice = context.getContextDevice();
-    MOUCA_PRE_CONDITION(!contextDevice.isNull());          //DEV Issue: Need a valid context.
-    MOUCA_PRE_CONDITION(diskImage.isNull());               //DEV Issue: 
+    MouCa::preCondition(!contextDevice.isNull());          //DEV Issue: Need a valid context.
+    MouCa::preCondition(diskImage.isNull());               //DEV Issue: 
 
     extractTo(srcImage, contextDevice, positionSrc, positionDst, sizes);
 
@@ -257,11 +257,11 @@ void GPUImageReader::extractTo(const VkImage& srcImage, const ContextWindow& con
     // Map image memory so we can start copying from it
     _image.getMemory().map(device);
     uint8_t* data = _image.getMemory().getMappedMemory<uint8_t>();
-    MOUCA_ASSERT(data != nullptr);
+    MouCa::assertion(data != nullptr);
     data += subResourceLayout.offset;
 
     // Copy to image buffer CPU
-    RT::BufferLinkedCPU buffer(u8"linkedScreenshot");
+    RT::BufferLinkedCPU buffer("linkedScreenshot");
     const size_t memorySize = static_cast<size_t>(sizes.x) * static_cast<size_t>(sizes.y);
     buffer.create(_descriptor, memorySize, data, subResourceLayout.rowPitch);
 
@@ -272,8 +272,8 @@ void GPUImageReader::extractTo(const VkImage& srcImage, const ContextWindow& con
 
 void GPUImageReader::extractTo(const VkImage& srcImage, const ContextDevice& contextDevice, const RT::Array3ui& positionSrc, const RT::Array3ui& positionDst, const RT::Array3ui& sizes, RT::BufferCPU& output)
 {
-    MOUCA_PRE_CONDITION(!contextDevice.isNull());          //DEV Issue: Need a valid context.
-    MOUCA_PRE_CONDITION(output.getData() != nullptr);      //DEV Issue: 
+    MouCa::preCondition(!contextDevice.isNull());          //DEV Issue: Need a valid context.
+    MouCa::preCondition(output.getData() != nullptr);      //DEV Issue: 
 
     extractTo(srcImage, contextDevice, positionSrc, positionDst, sizes);
     const auto& device = contextDevice.getDevice();
@@ -287,7 +287,7 @@ void GPUImageReader::extractTo(const VkImage& srcImage, const ContextDevice& con
     // Map image memory so we can start copying from it
     _image.getMemory().map(device);
     char* data = _image.getMemory().getMappedMemory<char>();
-    MOUCA_ASSERT(data != nullptr);
+    MouCa::assertion(data != nullptr);
     data += subResourceLayout.offset;
 
     int32_t* widgetID = reinterpret_cast<int32_t*>(data);
