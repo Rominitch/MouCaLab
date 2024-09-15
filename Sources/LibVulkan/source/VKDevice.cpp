@@ -147,8 +147,8 @@ void Device::initialize(const VkPhysicalDevice physicalDevice, const uint32_t qu
         _enabled._features,
     };
     
-    // Enable next chain
-    if( _enabled.getNext() != nullptr )
+    // Enable raytracing
+    if(std::find(extensions.cbegin(), extensions.cend(), VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) != extensions.cend())
     {
         deviceCreateInfo.pNext            = &physicalDeviceFeatures2;
         deviceCreateInfo.pEnabledFeatures = nullptr;
