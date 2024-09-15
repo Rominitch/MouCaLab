@@ -14,12 +14,12 @@ Exception::Exception(const ErrorData& pFirstError) noexcept
 {
 #if !defined NDEBUG && defined DUMP_MESSAGE
     // Simple dump of exception data
-    std::cerr << u8"----- Exception --------------"  << std::endl
-              << "Location:\t" << pFirstError.getFile() << u8"(" << pFirstError.getLine() << u8") " << std::endl
-              << "Code:\t\t"   <<  pFirstError.getLibraryLabel() << u8" " << pFirstError.getErrorLabel() << std::endl;
+    std::cerr << "----- Exception --------------"  << std::endl
+              << "Location:\t" << pFirstError.getSourceLocation().file_name() << "(" << pFirstError.getSourceLocation().line() << ") " << std::endl
+              << "Code:\t\t"   <<  pFirstError.getLibraryLabel() << " " << pFirstError.getErrorLabel() << std::endl;
     for( const auto& parameters : pFirstError.getParameters())
     {
-        std::cerr << u8"\t" << parameters << std::endl;
+        std::cerr << "\t" << parameters << std::endl;
     }
     std::cerr << std::endl;
 #endif

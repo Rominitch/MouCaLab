@@ -14,6 +14,7 @@ class MouCaEnvironment : public testing::Environment
         static Core::Path g_inputPath;
         static Core::Path g_outputPath;
         static Core::Path g_workingPath;
+        static Core::Path g_assetsPath;
 
         static bool _isDemonstrator;     ///< Enable playable demo.
 
@@ -31,8 +32,18 @@ class MouCaEnvironment : public testing::Environment
             MouCa::assertion(std::filesystem::is_directory(path));
 
             g_inputPath   = Core::Path(path.wstring()) / L".." / L"Inputs";
+#ifdef MOUCA_OUTPUTS
+            g_outputPath  = Core::Path(MOUCA_OUTPUTS);
+#else
             g_outputPath  = Core::Path(path.wstring()) / L".." / L"Outputs";
+#endif
             g_workingPath = Core::Path(path.wstring());
+
+#ifdef MOUCA_ASSETS
+            g_assetsPath = Core::Path(MOUCA_ASSETS);
+#else
+            g_assetsPath = g_inputPath;
+#endif
 
             // Try to create Outputs folder (needed from scratch)
             std::filesystem::create_directories(g_outputPath);
@@ -63,6 +74,11 @@ class MouCaEnvironment : public testing::Environment
         static const Core::Path& getWorkingPath()
         {
             return g_workingPath;
+        }
+
+        static const Core::Path& getAssetsPath()
+        {
+            return g_assetsPath;
         }
 
         //------------------------------------------------------------------------

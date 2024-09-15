@@ -98,14 +98,10 @@
       </IgnoreSpecificDefaultLibraries>
     </Link>
     <ClCompile />
-    <ClCompile>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
-    </ClCompile>
+    <ClCompile />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
-    </ClCompile>
+    <ClCompile />
     <Link>
       <AdditionalDependencies>LibCore.lib;LibNetwork.lib;LibRT.lib;LibXML.lib;LibError.lib;LibSteam.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -114,7 +110,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <ClCompile>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

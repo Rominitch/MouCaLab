@@ -2,9 +2,9 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <BOOST_PATH>$(SolutionDir)..\SDK\Boost-1.79.0\</BOOST_PATH>
+    <BOOST_PATH>$(MOUCA_SDK)Boost-1.86.0\</BOOST_PATH>
     <BOOST_COMPILER>vc143</BOOST_COMPILER>
-    <BOOST_VERSION_C>1_79</BOOST_VERSION_C>
+    <BOOST_VERSION_C>1_86</BOOST_VERSION_C>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>

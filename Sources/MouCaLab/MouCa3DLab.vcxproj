@@ -103,7 +103,6 @@
     <ClCompile>
       <PreprocessorDefinitions>MOUCACORE_ENGINE;MOUCA_3D_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(MOUCA_LAB_TEST);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -130,7 +129,6 @@
     <ClCompile>
       <PreprocessorDefinitions>MOUCACORE_ENGINE;MOUCA_3D_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(MOUCA_LAB_TEST);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>LibCore.lib;LibGUI.lib;LibGLFW.lib;LibRT.lib;LibError.lib;LibMedia.lib;LibVulkan.lib;LibVR.lib;LibXML.lib;MouCaCore.lib;MouCaGraphicEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -154,7 +152,6 @@
     <ClCompile>
       <PreprocessorDefinitions>MOUCACORE_ENGINE;MOUCA_3D_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(MOUCA_LAB_TEST);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

@@ -2,16 +2,17 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <MOUCA_BINARY>$(SolutionDir)..\Bin\</MOUCA_BINARY>
-    <MOUCA_COMPILE>$(SolutionDir)..\Compile\</MOUCA_COMPILE>
-    <MOUCA_SDK>$(SolutionDir)..\SDK\</MOUCA_SDK>
-    <MOUCA_LAB_INCLUDE>$(SolutionDir)..\MouCaLab\Sources\</MOUCA_LAB_INCLUDE>
+    <MOUCA_MAIN_DIRECTORY>$(SolutionDir)..\</MOUCA_MAIN_DIRECTORY>
+    <MOUCA_BINARY>$(MOUCA_MAIN_DIRECTORY)Bin\</MOUCA_BINARY>
+    <MOUCA_COMPILE>$(MOUCA_MAIN_DIRECTORY)Compile\</MOUCA_COMPILE>
+    <MOUCA_SDK>$(MOUCA_MAIN_DIRECTORY)SDK\</MOUCA_SDK>
+    <MOUCA_LAB_INCLUDE>$(MOUCA_MAIN_DIRECTORY)MouCaLab\Sources\</MOUCA_LAB_INCLUDE>
     <MOUCA_LAB_TEST>$(MOUCA_LAB_INCLUDE)UnitTests\</MOUCA_LAB_TEST>
     <GTEST_PRODUCTION>$(MOUCA_SDK)googletest-1.10.0\include</GTEST_PRODUCTION>
   </PropertyGroup>
   <PropertyGroup>
-    <OutDir>$(SolutionDir)..\Bin\$(Configuration)$(PlatformArchitecture)\</OutDir>
-    <IntDir>$(SolutionDir)..\Compile\$(Configuration)$(PlatformArchitecture)\$(ProjectName)\</IntDir>
+    <OutDir>$(MOUCA_BINARY)$(Configuration)$(PlatformArchitecture)\</OutDir>
+    <IntDir>$(MOUCA_COMPILE)$(Configuration)$(PlatformArchitecture)\$(ProjectName)\</IntDir>
     <_PropertySheetDisplayName>MouCaTechProp</_PropertySheetDisplayName>
   </PropertyGroup>
   <ItemDefinitionGroup>
@@ -28,7 +29,7 @@
       <StringPooling>true</StringPooling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <WarningLevel>Level4</WarningLevel>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -37,8 +38,14 @@
       <LargeAddressAware>true</LargeAddressAware>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
+    <BuildLog>
+      <Path>$(MOUCA_COMPILE)$(Configuration)$(PlatformArchitecture)\$(ProjectName)\$(MSBuildProjectName).log</Path>
+    </BuildLog>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <BuildMacro Include="MOUCA_MAIN_DIRECTORY">
+      <Value>$(MOUCA_MAIN_DIRECTORY)</Value>
+    </BuildMacro>
     <BuildMacro Include="MOUCA_BINARY">
       <Value>$(MOUCA_BINARY)</Value>
     </BuildMacro>

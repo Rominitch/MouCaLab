@@ -12,6 +12,7 @@ namespace Core
 
     //----------------------------------------------------------------------------
     /// \brief Compute time elapse tick.
+    template<class Precision>
     class Elapser
     {
         MOUCA_NOCOPY_NOMOVE(Elapser);
@@ -37,7 +38,6 @@ namespace Core
             //------------------------------------------------------------------------
             /// \brief  Tick allows to catch current time and compute elapsed time between now and latest tick.
             /// 
-            template<typename Precision>
             int64_t tick()
             {
                 _afterFrameTimer = ChronoClock::now();
@@ -46,8 +46,19 @@ namespace Core
 
                 return elapse;
             }
+
+            //------------------------------------------------------------------------
+            /// \brief
+            ///
+            int64_t elapse()
+            {
+                _afterFrameTimer = ChronoClock::now();
+                return std::chrono::duration_cast<Precision>(_afterFrameTimer - _beforeFrameTimer).count();
+            }
+
         private:
             ChronoTimePoint _beforeFrameTimer;
             ChronoTimePoint _afterFrameTimer;
     };
+    using ElapserCP = Elapser<std::chrono::milliseconds>;
 }

@@ -172,9 +172,9 @@ TEST(Bezier3, PERFORMANCE_1000)
             bezierPts[3].x *= cases & 0x8 ? 1.0f : -1.0f;
             
             uint32_t sol;        
-            Core::Elapser t;
+            Core::Elapser<std::chrono::microseconds> t;
             RT::Maths::Bezier3::computeIntersections(bezierPts, line, sol);
-            timeCumulate[sol] += t.tick<std::chrono::microseconds>();
+            timeCumulate[sol] += t.tick();
             ++count[sol];
         }
     }

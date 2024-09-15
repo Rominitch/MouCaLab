@@ -152,6 +152,16 @@ namespace Core
     };
 }
 
+//Define operator for byte
+inline int8_t operator "" _i8(unsigned long long int number)
+{
+    return static_cast<int8_t>(number);
+}
+inline uint8_t operator "" _u8(unsigned long long int number)
+{
+    return static_cast<uint8_t>(number);
+}
+
 //Define operator for short
 inline int16_t operator "" _i16 (unsigned long long int number)
 {
@@ -162,11 +172,11 @@ inline uint16_t operator "" _u16(unsigned long long int number)
     return static_cast<uint16_t>(number);
 }
 
-#define BT_NOMOVE(ClassName)                                \
+#define MOUCA_NOMOVE(ClassName)                             \
            ClassName(ClassName&&) = delete;                 \
            ClassName& operator=(ClassName&&) = delete
 
-#define BT_DEFAULTMOVE(ClassName)                           \
+#define MOUCA_DEFAULTMOVE(ClassName)                        \
            ClassName(ClassName&&) = default;                \
            ClassName& operator=(ClassName&&) = default
 
@@ -176,8 +186,8 @@ inline uint16_t operator "" _u16(unsigned long long int number)
 
 #define MOUCA_NOCOPY_NOMOVE(ClassName)                      \
            MOUCA_NOCOPY(ClassName);                         \
-           BT_NOMOVE(ClassName)
+           MOUCA_NOMOVE(ClassName)
 
 #define MOUCA_NOCOPY_DEFAULTMOVE(ClassName)                 \
            MOUCA_NOCOPY(ClassName);                         \
-           BT_DEFAULTMOVE(ClassName)
+           MOUCA_DEFAULTMOVE(ClassName)

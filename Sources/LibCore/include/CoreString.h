@@ -166,7 +166,8 @@ namespace Core
     #endif
 
     /// Basic String
-    using StringUTF8 = std::u8string;
+    using StringUTF8     = std::u8string;
+    using StringViewUTF8 = std::u8string_view;
 
     using StringCPP     = std::string;
     using StringViewCPP = std::string_view;
@@ -181,6 +182,11 @@ namespace Core
     using StringStream = std::stringstream;
 
     using Path = std::filesystem::path;
+
+    constexpr std::string operator"" _S(const char8_t* str, std::size_t)
+    {
+        return reinterpret_cast<const char*>(str);
+    }
 
     //------------------------------------------------------------------------
     /// \brief  Convert UTF8 string to OS string.

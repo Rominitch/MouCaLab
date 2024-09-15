@@ -50,17 +50,35 @@ void ImageFI::createFill(const RT::BufferCPUBase& imageBuffer, const uint32_t wi
     MouCa::preCondition(width * height == imageBuffer.getNbElements());
 
     const RT::BufferDescriptor& descriptor = imageBuffer.getDescriptor();
-    MouCa::preCondition(descriptor.getNbDescriptors() == 1 && descriptor.getComponentDescriptor(0).getNbComponents() == 4); //DEV: We support only rgba component
+    MouCa::preCondition(descriptor.getNbDescriptors() == 1 ); //DEV: We support one descriptor
 
-    //Create new buffer
-    _imageData = FreeImage_Allocate(static_cast<int>(width), static_cast<int>(height), 8 * static_cast<int>(descriptor.getByteSize()));
+    //Create new buffer RGB or mono float
+    static const int byteToBit = 8;
+    if(descriptor.getComponentDescriptor(0).getNbComponents() >= 3)
+    {
+        _imageData = FreeImage_Allocate(static_cast<int>(width), static_cast<int>(height), byteToBit * static_cast<int>(descriptor.getByteSize()));
+    }
+    else
+    {
+        if(descriptor.getComponentDescriptor(0).getFormatType() == RT::Type::UInt16)
+        {
+            _imageData = FreeImage_AllocateT(FIT_UINT16, static_cast<int>(width), static_cast<int>(height), 16);
+        }
+        else
+        {
+            MouCa::preCondition(descriptor.getComponentDescriptor(0).getFormatType() == RT::Type::Float);
+            MouCa::preCondition(byteToBit * static_cast<int>(descriptor.getByteSize()) == 32);
+            _imageData = FreeImage_AllocateT(FIT_FLOAT, static_cast<int>(width), static_cast<int>(height), 32);
+        }
+    }
+
     if (_imageData == nullptr)
     {
         throw Core::Exception(Core::ErrorData("BasicError", "NULLPointerError") << "_imageData");
     }
 
-    const char* pSource = reinterpret_cast<const char*>(imageBuffer.getData());
-    char* pPixel = reinterpret_cast<char*>(FreeImage_GetBits(_imageData));
+    const uint8_t* pSource = reinterpret_cast<const uint8_t*>(imageBuffer.getData());
+    uint8_t* pPixel = FreeImage_GetBits(_imageData);
 
     //Copy the picture
     const uint64_t pitchRow = imageBuffer.getPitchRow();
@@ -120,7 +138,11 @@ void ImageFI::saveImage(const Core::Path& filename)
 
     //Check that the plugin has sufficient writing and export capabilities ...
     const unsigned int bpp = FreeImage_GetBPP(_imageData);
-    if(FreeImage_FIFSupportsWriting(imageFormat) && FreeImage_FIFSupportsExportBPP(imageFormat, bpp))
+    const bool supportWriteFormat = FreeImage_FIFSupportsWriting(imageFormat);
+    const bool supportBPP         = FreeImage_FIFSupportsExportBPP(imageFormat, bpp);
+    const bool supportType        = FreeImage_FIFSupportsExportType(imageFormat, FreeImage_GetImageType(_imageData));
+
+    if( supportWriteFormat && supportBPP && supportType)
     {
         // ok, we can save the file
         if(FreeImage_SaveU(imageFormat, _imageData, filename.c_str(), 0) == FALSE)

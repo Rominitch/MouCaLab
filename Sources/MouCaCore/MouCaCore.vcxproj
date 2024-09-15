@@ -89,14 +89,10 @@
       <NoEntryPoint>false</NoEntryPoint>
     </Link>
     <PostBuildEvent />
-    <ClCompile>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
-    </ClCompile>
+    <ClCompile />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
-    </ClCompile>
+    <ClCompile />
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -115,9 +111,7 @@
       <AdditionalDependencies>LibBasicTools.lib;LibError.lib;LibMedia.lib;LibRT.lib;LibXML.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent />
-    <ClCompile>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
-    </ClCompile>
+    <ClCompile />
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies.h" />

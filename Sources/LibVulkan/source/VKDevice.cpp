@@ -124,19 +124,11 @@ void Device::initialize(const VkPhysicalDevice physicalDevice, const uint32_t qu
         checkExtensions(physicalDevice, extensions);
         ptrExtensions = extensions.data();
     }
-    
-    //Build feature v2 (support of raytracing)
-    const VkPhysicalDeviceFeatures2 physicalDeviceFeatures2
-    {
-        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
-        _enabled.getNext(),
-        _enabled._features,
-    };
 
-    const VkDeviceCreateInfo deviceCreateInfo =
+    VkDeviceCreateInfo deviceCreateInfo
     {
         VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,           // VkStructureType                    sType
-        &physicalDeviceFeatures2,                       // const void                        *pNext
+        nullptr,                                        // const void                        *pNext
         0,                                              // VkDeviceCreateFlags                flags
         static_cast<uint32_t>(queueCreateInfos.size()), // uint32_t                           queueCreateInfoCount
         queueCreateInfos.data(),                        // const VkDeviceQueueCreateInfo     *pQueueCreateInfos
@@ -144,8 +136,23 @@ void Device::initialize(const VkPhysicalDevice physicalDevice, const uint32_t qu
         nullptr,                                        // const char * const                *ppEnabledLayerNames
         static_cast<uint32_t>(extensions.size()),       // uint32_t                           enabledExtensionCount
         ptrExtensions,									// const char * const                *ppEnabledExtensionNames
-        nullptr                                         // const VkPhysicalDeviceFeatures    *pEnabledFeatures
+        &features                                       // const VkPhysicalDeviceFeatures    *pEnabledFeatures
     };
+
+    //Build feature v2 (support of raytracing)
+    const VkPhysicalDeviceFeatures2 physicalDeviceFeatures2
+    {
+        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
+        _enabled.getNext(),
+        _enabled._features,
+    };
+    
+    // Enable next chain
+    if( _enabled.getNext() != nullptr )
+    {
+        deviceCreateInfo.pNext            = &physicalDeviceFeatures2;
+        deviceCreateInfo.pEnabledFeatures = nullptr;
+    }
 
     // Build Device
     VkDevice deviceID;

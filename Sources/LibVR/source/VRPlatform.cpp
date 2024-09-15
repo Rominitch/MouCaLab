@@ -155,7 +155,7 @@ void Platform::pollEvents()
                 std::cout << "TrackDevice Update" << std::endl;
 #endif
 
-                auto& trackedDevice = _trackedDevices[event.trackedDeviceIndex];
+                //auto& trackedDevice = _trackedDevices[event.trackedDeviceIndex];
             }
             break;
 
